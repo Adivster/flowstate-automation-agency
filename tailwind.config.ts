@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -19,6 +18,11 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: ['Inter var', 'sans-serif'],
+				mono: ['JetBrains Mono', 'monospace'],
+				pixel: ['Press Start 2P', 'cursive', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -63,7 +67,6 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// FlowState specific colors
 				flow: {
 					background: 'hsl(var(--flow-background))',
 					foreground: 'hsl(var(--flow-foreground))',
@@ -81,9 +84,11 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
-			fontFamily: {
-				sans: ['Inter var', 'sans-serif'],
-				mono: ['JetBrains Mono', 'monospace'],
+			gridTemplateColumns: {
+				'20': 'repeat(20, minmax(0, 1fr))',
+			},
+			gridTemplateRows: {
+				'10': 'repeat(10, minmax(0, 1fr))',
 			},
 			keyframes: {
 				'accordion-down': {
@@ -121,6 +126,14 @@ export default {
 				'pulse-subtle': {
 					'0%, 100%': { opacity: '1' },
 					'50%': { opacity: '0.85' }
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0)' },
+					'50%': { transform: 'translateY(-5px)' }
+				},
+				'pixelate-in': {
+					'0%': { filter: 'blur(10px)' },
+					'100%': { filter: 'blur(0)' }
 				}
 			},
 			animation: {
@@ -134,7 +147,9 @@ export default {
 				'slide-out-right': 'slide-out-right 0.3s ease-out',
 				'enter': 'fade-in 0.5s ease-out, scale-in 0.2s ease-out',
 				'exit': 'fade-out 0.3s ease-out, scale-out 0.2s ease-out',
-				'pulse-subtle': 'pulse-subtle 3s infinite ease-in-out'
+				'pulse-subtle': 'pulse-subtle 3s infinite ease-in-out',
+				'float': 'float 3s infinite ease-in-out',
+				'pixelate-in': 'pixelate-in 0.5s ease-out'
 			},
 			backdropFilter: {
 				'none': 'none',
