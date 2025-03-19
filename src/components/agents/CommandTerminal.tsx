@@ -132,20 +132,31 @@ const CommandTerminal: React.FC = () => {
     return () => clearInterval(interval);
   }, [isOpen]);
   
+  // Auto-open terminal when the component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsOpen(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+  
   return (
     <>
       {/* Terminal toggle button */}
       <motion.div 
         className="fixed bottom-6 right-6 z-50"
         whileHover={{ scale: 1.05 }}
+        initial={{ scale: 0.9 }}
+        animate={{ scale: [0.9, 1.1, 1], rotate: [0, 5, -5, 0] }}
+        transition={{ duration: 0.5, repeat: 2, repeatDelay: 3 }}
       >
         <Button
           size="sm"
           variant="outline"
-          className="rounded-full p-3 bg-flow-background shadow-md"
+          className="rounded-full p-3 bg-flow-background shadow-lg border-2 border-green-500 animate-pulse"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <Terminal className="h-4 w-4" />
+          <Terminal className={`h-5 w-5 ${isOpen ? 'text-green-500' : 'text-green-400'}`} />
         </Button>
       </motion.div>
       
