@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -48,44 +47,45 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Cyberpunk dark theme */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
     
-    /* FlowState specific colors - dark mode */
-    --flow-background: 222.2 84% 4.9%;
-    --flow-foreground: 210 40% 98%;
-    --flow-card: 222.2 84% 5.9%;
-    --flow-card-foreground: 210 40% 98%;
-    --flow-accent: 210 100% 60%;
+    /* FlowState cyberpunk neon colors */
+    --flow-background: 222 47% 5%;
+    --flow-foreground: 180 100% 80%;
+    --flow-card: 225 30% 8%;
+    --flow-card-foreground: 180 100% 80%;
+    --flow-accent: 320 100% 60%;
     --flow-accent-foreground: 0 0% 100%;
-    --flow-muted: 217.2 32.6% 17.5%;
-    --flow-muted-foreground: 215 20.2% 65.1%;
-    --flow-border: 217.2 32.6% 17.5%;
+    --flow-muted: 225 20% 15%;
+    --flow-muted-foreground: 180 10% 70%;
+    --flow-border: 260 30% 50%;
   }
 }
 
@@ -175,3 +175,71 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
+/* Add Hebrew font support */
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap');
+
+/* RTL support */
+.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl .ltr-element {
+  direction: ltr;
+}
+
+/* Cyberpunk UI elements */
+.neon-border {
+  box-shadow: 0 0 5px theme('colors.flow.accent'), 
+              0 0 10px theme('colors.flow.accent'),
+              0 0 15px theme('colors.flow.accent');
+}
+
+.neon-text {
+  text-shadow: 0 0 5px theme('colors.flow.accent'), 
+               0 0 10px theme('colors.flow.accent');
+}
+
+.cyber-grid {
+  background-size: 50px 50px;
+  background-image: 
+    linear-gradient(to right, rgba(var(--flow-accent), 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(var(--flow-accent), 0.1) 1px, transparent 1px);
+}
+
+.neon-glow {
+  filter: drop-shadow(0 0 8px rgb(var(--flow-accent)));
+}
+
+/* Pixelated UI elements */
+.pixel-text {
+  font-family: 'Press Start 2P', cursive;
+  letter-spacing: -0.05em;
+}
+
+/* Scan line effect for monitors */
+.scan-lines {
+  position: relative;
+  overflow: hidden;
+}
+
+.scan-lines::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    transparent 0px,
+    rgba(0, 0, 0, 0.05) 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Hebrew typography adjustments */
+.font-heebo {
+  font-family: 'Heebo', sans-serif;
+}

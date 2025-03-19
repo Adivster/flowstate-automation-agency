@@ -1,7 +1,14 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+
+interface RoutePoint {
+  division: string;
+  x: number;
+  y: number;
+}
 
 interface AgentProps {
   agent: {
@@ -16,15 +23,48 @@ interface AgentProps {
       y: number;
     };
   };
+  routePath?: RoutePoint[];
 }
 
-const AgentCharacter: React.FC<AgentProps> = ({ agent }) => {
+const AgentCharacter: React.FC<AgentProps> = ({ agent, routePath = [] }) => {
   const [position, setPosition] = useState(agent.position);
+  const [currentRouteIndex, setCurrentRouteIndex] = useState(0);
+  const animationRef = useRef<number | null>(null);
+  const { t } = useLanguage();
   
-  // Random movement within division area
+  // Status translations
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'working': return t('working');
+      case 'idle': return t('idle');
+      case 'paused': return t('paused');
+      case 'error': return t('error');
+      default: return status;
+    }
+  };
+  
+  // Movement between route points or random movement within division area
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (agent.status === 'working') {
+    if (agent.status === 'working' && routePath.length > 0) {
+      // Route-based movement for working agents
+      const moveToNextPoint = () => {
+        const nextIndex = (currentRouteIndex + 1) % routePath.length;
+        const nextPoint = routePath[nextIndex];
+        
+        setPosition({
+          x: nextPoint.x,
+          y: nextPoint.y
+        });
+        
+        setCurrentRouteIndex(nextIndex);
+      };
+      
+      const interval = setInterval(moveToNextPoint, 10000 + (agent.id * 5000)); // Move every 10-35 seconds
+      
+      return () => clearInterval(interval);
+    } else if (agent.status === 'working') {
+      // Random movement within division area
+      const interval = setInterval(() => {
         // Create small random movements around the original position
         const newX = agent.position.x + (Math.random() * 6 - 3);
         const newY = agent.position.y + (Math.random() * 6 - 3);
@@ -33,11 +73,11 @@ const AgentCharacter: React.FC<AgentProps> = ({ agent }) => {
           x: Math.max(5, Math.min(95, newX)),
           y: Math.max(5, Math.min(85, newY))
         });
-      }
-    }, 3000 + (agent.id * 500)); // Stagger movements
-    
-    return () => clearInterval(interval);
-  }, [agent]);
+      }, 3000 + (agent.id * 500)); // Stagger movements
+      
+      return () => clearInterval(interval);
+    }
+  }, [agent, currentRouteIndex, routePath]);
   
   const statusColors = {
     working: 'bg-green-500',
@@ -54,25 +94,29 @@ const AgentCharacter: React.FC<AgentProps> = ({ agent }) => {
       style={{
         left: `${position.x}%`,
         top: `${position.y}%`,
-        zIndex: 10
+        zIndex: 20
       }}
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ 
         scale: 1, 
         opacity: 1,
-        y: agent.status === 'working' ? [0, -3, 0] : 0
+        y: agent.status === 'working' ? [0, -3, 0] : 0,
+        x: position.x,
+        y: position.y
       }}
       transition={{
         y: { 
           repeat: agent.status === 'working' ? Infinity : 0,
           duration: 1.5
         },
-        opacity: { duration: 0.3 }
+        opacity: { duration: 0.3 },
+        x: { duration: 1, type: "spring" },
+        y: { duration: 1, type: "spring" }
       }}
     >
       {/* Agent avatar */}
       <div className="relative">
-        <div className={`rounded-full p-2 ${agent.status === 'working' ? 'bg-flow-accent/20' : 'bg-flow-muted/50'}`}>
+        <div className={`rounded-full p-2 ${agent.status === 'working' ? 'bg-flow-accent/20 neon-glow' : 'bg-flow-muted/50'}`}>
           <Icon className="h-4 w-4 text-flow-foreground" />
         </div>
         

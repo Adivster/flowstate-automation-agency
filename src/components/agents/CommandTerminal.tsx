@@ -1,236 +1,166 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, X, ArrowRight, Check, AlertCircle } from 'lucide-react';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
+import { Terminal, X, Send, ChevronDown, ChevronUp } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
-interface CommandProps {
-  text: string;
-  status: 'success' | 'error' | 'running' | 'idle';
-  timestamp: Date;
-}
-
-const CommandTerminal: React.FC = () => {
+const CommandTerminal = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [commandInput, setCommandInput] = useState('');
-  const [commandHistory, setCommandHistory] = useState<CommandProps[]>([
-    { 
-      text: 'system --init', 
-      status: 'success', 
-      timestamp: new Date(Date.now() - 60000) 
-    },
-    { 
-      text: 'agent --list', 
-      status: 'success', 
-      timestamp: new Date(Date.now() - 45000) 
-    }
+  const [command, setCommand] = useState('');
+  const [commandHistory, setCommandHistory] = useState<Array<{type: 'input' | 'output', content: string}>>([
+    { type: 'output', content: 'Welcome to the Agency Command Interface v2.0' },
+    { type: 'output', content: 'Type "help" for available commands' },
   ]);
-  
-  // Demo command execution
-  const executeCommand = (command: string) => {
+  const terminalRef = useRef<HTMLDivElement>(null);
+  const { t, isRTL } = useLanguage();
+
+  useEffect(() => {
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    }
+  }, [commandHistory, isOpen]);
+
+  const handleCommand = (e: React.FormEvent) => {
+    e.preventDefault();
     if (!command.trim()) return;
-    
-    // Add command to history as running
-    setCommandHistory(prev => [
-      ...prev, 
-      { text: command, status: 'running', timestamp: new Date() }
-    ]);
-    
-    setCommandInput('');
-    
-    // Simulate command processing
+
+    // Add command to history
+    setCommandHistory([...commandHistory, { type: 'input', content: command }]);
+
+    // Process command
+    let response = 'Command not recognized. Type "help" for available commands.';
+
+    if (command.toLowerCase() === 'help') {
+      response = `Available commands:
+- status: Check agent status
+- spawn [agent-type]: Create new agent
+- list agents: List all agents
+- assign [task] to [agent]: Assign task
+- clear: Clear terminal`;
+    } else if (command.toLowerCase() === 'status') {
+      response = 'System Status: 24 agents active, 18 tasks in progress, all systems operational.';
+    } else if (command.toLowerCase() === 'list agents') {
+      response = 'Active Agents: Data Agent, Sec Agent, Dev Agent, Researcher, PM Agent, AI Agent...';
+    } else if (command.toLowerCase() === 'clear') {
+      setCommandHistory([]);
+      setCommand('');
+      return;
+    } else if (command.toLowerCase().startsWith('spawn')) {
+      const agentType = command.split(' ')[1];
+      response = `Initiating spawn sequence for new ${agentType || 'generic'} agent...`;
+      
+      // Add second response after a delay
+      setTimeout(() => {
+        setCommandHistory(prev => [...prev, { 
+          type: 'output', 
+          content: `Agent initialization complete. New ${agentType || 'generic'} agent is now active.` 
+        }]);
+      }, 1500);
+    }
+
+    // Add response to history
     setTimeout(() => {
-      let status: 'success' | 'error';
-      let message = '';
-      
-      if (command.includes('--help')) {
-        status = 'success';
-        message = 'Available commands: agent, task, workflow, division, system';
-      } 
-      else if (command.startsWith('agent')) {
-        status = 'success';
-        message = 'Agent command executed successfully';
-      }
-      else if (command.startsWith('error')) {
-        status = 'error';
-        message = 'Command failed: Invalid syntax';
-      }
-      else {
-        // Random success/error
-        status = Math.random() > 0.3 ? 'success' : 'error';
-        message = status === 'success' 
-          ? 'Command executed successfully' 
-          : 'Command failed: Insufficient permissions';
-      }
-      
-      // Update command status
-      setCommandHistory(prev => 
-        prev.map((cmd, i) => 
-          i === prev.length - 1 ? { ...cmd, status } : cmd
-        )
+      setCommandHistory(prev => [...prev, { type: 'output', content: response }]);
+    }, 300);
+
+    setCommand('');
+  };
+  
+  const renderCommandOutput = (item: {type: 'input' | 'output', content: string}, index: number) => {
+    if (item.type === 'input') {
+      return (
+        <div key={index} className="flex gap-2 text-xs text-flow-accent font-mono py-1">
+          <span className="text-flow-accent-foreground">&gt;</span>
+          <span className={isRTL ? "ltr-element" : ""}>{item.content}</span>
+        </div>
       );
-      
-      // Show toast notification
-      if (status === 'success') {
-        toast.success(message);
-      } else {
-        toast.error(message);
-      }
-    }, 800);
-  };
-  
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      executeCommand(commandInput);
+    } else {
+      return (
+        <div key={index} className="text-xs text-flow-foreground font-mono mt-1 mb-2">
+          {item.content.split('\n').map((line, i) => (
+            <div key={i} className={isRTL ? "ltr-element" : ""}>{line}</div>
+          ))}
+        </div>
+      );
     }
   };
-  
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'success':
-        return <Check className="h-3 w-3 text-green-500" />;
-      case 'error':
-        return <AlertCircle className="h-3 w-3 text-red-500" />;
-      case 'running':
-        return <motion.div 
-          className="h-3 w-3 rounded-full bg-amber-500"
-          animate={{ opacity: [1, 0.5, 1] }}
-          transition={{ repeat: Infinity, duration: 1.5 }}
-        />;
-      default:
-        return null;
-    }
-  };
-  
-  // Demo: periodically add system messages
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (Math.random() > 0.7 && isOpen) {
-        const systemMessages = [
-          "agent-001 completed task #45392",
-          "workflow scan-documents initiated",
-          "system resources at 42% utilization",
-          "new agent spawned: research division",
-          "knowledge base updated successfully"
-        ];
-        
-        const randomMessage = systemMessages[Math.floor(Math.random() * systemMessages.length)];
-        
-        setCommandHistory(prev => [
-          ...prev, 
-          { 
-            text: `system: ${randomMessage}`, 
-            status: 'success', 
-            timestamp: new Date() 
-          }
-        ]);
-      }
-    }, 10000);
-    
-    return () => clearInterval(interval);
-  }, [isOpen]);
-  
-  // Auto-open terminal when the component mounts
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsOpen(true);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
-  
+
   return (
     <>
       {/* Terminal toggle button */}
-      <motion.div 
-        className="fixed bottom-6 right-6 z-50"
-        whileHover={{ scale: 1.05 }}
-        initial={{ scale: 0.9 }}
-        animate={{ scale: [0.9, 1.1, 1], rotate: [0, 5, -5, 0] }}
-        transition={{ duration: 0.5, repeat: 2, repeatDelay: 3 }}
-      >
+      <div className="fixed bottom-5 right-5 z-50">
         <Button
-          size="sm"
+          size="icon"
           variant="outline"
-          className="rounded-full p-3 bg-flow-background shadow-lg border-2 border-green-500 animate-pulse"
           onClick={() => setIsOpen(!isOpen)}
+          className={`rounded-full h-12 w-12 shadow-lg neon-border ${isOpen ? 'bg-flow-accent' : 'bg-flow-background'}`}
         >
-          <Terminal className={`h-5 w-5 ${isOpen ? 'text-green-500' : 'text-green-400'}`} />
+          {isOpen ? <X className="h-5 w-5" /> : <Terminal className="h-5 w-5" />}
         </Button>
-      </motion.div>
-      
-      {/* Terminal window */}
+      </div>
+
+      {/* Terminal panel */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-4"
-            initial={{ y: 300, opacity: 0 }}
+            initial={{ y: 400, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 300, opacity: 0 }}
+            exit={{ y: 400, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed bottom-0 left-0 right-0 z-40 bg-gray-900 border-t-2 border-flow-accent neon-border"
+            style={{ height: '300px' }}
           >
-            <Card className="mx-auto max-w-3xl h-64 border border-flow-border bg-black/80 text-white overflow-hidden shadow-lg backdrop-blur">
-              <div className="flex justify-between items-center p-2 border-b border-gray-800 bg-gray-900">
-                <div className="flex items-center">
-                  <Terminal className="h-3 w-3 mr-2" />
-                  <span className="text-xs font-mono">FlowState Terminal</span>
-                </div>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 w-6 p-0 hover:bg-gray-800 rounded"
+            <div className="flex justify-between items-center p-3 border-b border-flow-accent/50">
+              <h3 className="text-flow-accent text-sm font-bold pixel-text">{t('commandTerminal')}</h3>
+              <div className="flex gap-2">
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-6 w-6 text-flow-muted-foreground hover:text-flow-accent"
                   onClick={() => setIsOpen(false)}
                 >
-                  <X className="h-3 w-3" />
+                  <ChevronDown className="h-4 w-4" />
                 </Button>
-              </div>
-              
-              <div className="p-3 h-[calc(100%-64px)] overflow-y-auto font-mono text-xs">
-                {/* Command history */}
-                <div className="space-y-2">
-                  {commandHistory.map((cmd, i) => (
-                    <div key={i} className="flex items-start">
-                      <div className="mr-2 mt-0.5">
-                        {getStatusIcon(cmd.status)}
-                      </div>
-                      <div>
-                        <div className="flex items-center">
-                          <span className="text-green-500 mr-1">$</span>
-                          <span>{cmd.text}</span>
-                        </div>
-                        <div className="text-gray-500 text-[0.65rem]">
-                          {cmd.timestamp.toLocaleTimeString()}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Command input */}
-              <div className="p-2 border-t border-gray-800 flex items-center">
-                <span className="text-green-500 mr-2">$</span>
-                <input
-                  type="text"
-                  value={commandInput}
-                  onChange={(e) => setCommandInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Type command or 'help' for options"
-                  className="bg-transparent flex-1 outline-none text-xs font-mono"
-                  autoFocus
-                />
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 px-2 hover:bg-gray-800 text-xs"
-                  onClick={() => executeCommand(commandInput)}
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-6 w-6 text-flow-muted-foreground hover:text-flow-accent"
+                  onClick={() => setCommandHistory([])}
                 >
-                  <ArrowRight className="h-3 w-3 mr-1" />
-                  Run
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
-            </Card>
+            </div>
+            
+            {/* Terminal output */}
+            <div 
+              ref={terminalRef}
+              className="p-4 h-[205px] overflow-y-auto scan-lines font-mono"
+              style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
+            >
+              {commandHistory.map((item, index) => renderCommandOutput(item, index))}
+            </div>
+            
+            {/* Command input */}
+            <form onSubmit={handleCommand} className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex">
+              <Input
+                type="text"
+                value={command}
+                onChange={(e) => setCommand(e.target.value)}
+                placeholder={t('enterCommand')}
+                className={`flex-1 bg-transparent border-flow-accent/30 text-flow-foreground text-sm ${isRTL ? "ltr-element" : ""}`}
+              />
+              <Button 
+                type="submit" 
+                size="sm" 
+                className="ml-2 bg-flow-accent hover:bg-flow-accent/80 neon-glow"
+              >
+                <Send className="h-4 w-4 mr-1" />
+                {t('execute')}
+              </Button>
+            </form>
           </motion.div>
         )}
       </AnimatePresence>
