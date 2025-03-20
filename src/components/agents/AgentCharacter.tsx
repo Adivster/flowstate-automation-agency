@@ -100,9 +100,7 @@ const AgentCharacter: React.FC<AgentProps> = ({ agent, routePath = [] }) => {
       animate={{ 
         scale: 1, 
         opacity: 1,
-        y: agent.status === 'working' ? [0, -3, 0] : 0,
-        x: position.x,
-        y: position.y
+        y: agent.status === 'working' ? [0, -3, 0] : 0
       }}
       transition={{
         y: { 
@@ -110,8 +108,7 @@ const AgentCharacter: React.FC<AgentProps> = ({ agent, routePath = [] }) => {
           duration: 1.5
         },
         opacity: { duration: 0.3 },
-        x: { duration: 1, type: "spring" },
-        y: { duration: 1, type: "spring" }
+        scale: { duration: 0.3 }
       }}
     >
       {/* Agent avatar */}
