@@ -1,11 +1,82 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Database, FileSearch, User, Code, Shield, BrainCog, Monitor, Coffee, ChartBar, BookOpen, Zap } from 'lucide-react';
+import { Database, FileSearch, User, Code, Shield, BrainCog, Monitor, Coffee, ChartBar, BookOpen, Zap, Server, Activity, Cpu } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import AgentCharacter from './AgentCharacter';
 import { useLanguage } from '@/contexts/LanguageContext';
+
+// Component for rendering desks and workstations
+const Workstation = ({ x, y, width = 10, height = 6, rotation = 0, hasComputer = true, hasPerson = false, type = 'desk' }) => {
+  const deskColors = {
+    'desk': 'bg-gray-400 dark:bg-gray-700',
+    'meeting': 'bg-amber-800 dark:bg-amber-900',
+    'server': 'bg-slate-600 dark:bg-slate-800'
+  };
+  
+  return (
+    <div 
+      className={`absolute ${deskColors[type]} rounded-sm`}
+      style={{
+        left: `${x}%`,
+        top: `${y}%`,
+        width: `${width}%`,
+        height: `${height}%`,
+        transform: `rotate(${rotation}deg)`,
+        zIndex: 5
+      }}
+    >
+      {hasComputer && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2/3 h-1/2 bg-blue-900 dark:bg-blue-800 rounded-sm flex items-center justify-center">
+          <div className="w-3/4 h-3/4 bg-cyan-300 dark:bg-cyan-400 opacity-70"></div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Component for decorative elements
+const DecorativeElement = ({ type, x, y, size = 3 }) => {
+  const getElement = () => {
+    switch(type) {
+      case 'plant':
+        return <div className="w-full h-full bg-green-700 dark:bg-green-800 rounded-full"></div>;
+      case 'coffee':
+        return <Coffee className="w-full h-full text-red-500" />;
+      case 'monitor':
+        return (
+          <div className="w-full h-full bg-gray-800 rounded border border-gray-600 flex items-center justify-center p-1">
+            <Activity className="w-2/3 h-2/3 text-cyan-400" />
+          </div>
+        );
+      case 'server':
+        return (
+          <div className="w-full h-full bg-gray-800 rounded-sm border border-purple-500 flex flex-col gap-1 p-0.5">
+            <div className="h-1/4 w-full bg-purple-500 opacity-70 rounded-sm"></div>
+            <div className="h-1/4 w-full bg-cyan-500 opacity-70 rounded-sm"></div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+  
+  return (
+    <div 
+      className="absolute"
+      style={{
+        left: `${x}%`,
+        top: `${y}%`,
+        width: `${size}%`,
+        height: `${size}%`,
+        zIndex: 6
+      }}
+    >
+      {getElement()}
+    </div>
+  );
+};
 
 const OfficeFloorPlan = () => {
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
@@ -78,69 +149,91 @@ const OfficeFloorPlan = () => {
     },
   ];
   
-  // Define office furniture and decorations with cyberpunk style
-  const furniture = [
-    { id: 'desk1', type: 'desk', position: { x: 10, y: 45, width: 5, height: 3 } },
-    { id: 'desk2', type: 'desk', position: { x: 85, y: 45, width: 5, height: 3 } },
-    { id: 'plant1', type: 'plant', position: { x: 5, y: 10, width: 3, height: 3 } },
-    { id: 'plant2', type: 'plant', position: { x: 90, y: 10, width: 3, height: 3 } },
-    { id: 'server', type: 'server', position: { x: 90, y: 75, width: 5, height: 8 } },
-    { id: 'coffeeMachine', type: 'coffee', position: { x: 7, y: 60, width: 3, height: 3 } },
-    { id: 'mainframe', type: 'mainframe', position: { x: 48, y: 10, width: 4, height: 10 } },
+  // Workstations - more visible desks matching the reference images
+  const workstations = [
+    // Research division workstations
+    { x: 25, y: 35, width: 12, height: 5, type: 'desk' },
+    { x: 25, y: 42, width: 12, height: 5, type: 'desk' },
+    { x: 32, y: 49, width: 8, height: 5, type: 'desk', rotation: 90 },
+    
+    // Development division workstations
+    { x: 60, y: 35, width: 12, height: 5, type: 'desk' },
+    { x: 60, y: 42, width: 12, height: 5, type: 'desk' },
+    { x: 67, y: 49, width: 8, height: 5, type: 'desk', rotation: 90 },
+    
+    // Strategy division - meeting table
+    { x: 25, y: 75, width: 15, height: 8, type: 'meeting' },
+    
+    // Security division - server racks
+    { x: 60, y: 75, width: 5, height: 8, type: 'server' },
+    { x: 67, y: 75, width: 5, height: 8, type: 'server' },
   ];
   
-  // Define agents working in the office
+  // Decorative elements
+  const decorations = [
+    { type: 'plant', x: 5, y: 10, size: 4 },
+    { type: 'plant', x: 90, y: 10, size: 4 },
+    { type: 'coffee', x: 7, y: 60, size: 3 },
+    { type: 'monitor', x: 48, y: 15, size: 4 },
+    { type: 'server', x: 90, y: 75, size: 5 },
+    { type: 'monitor', x: 15, y: 35, size:.3 },
+    { type: 'monitor', x: 15, y: 40, size: 3 },
+    { type: 'monitor', x: 82, y: 35, size: 3 },
+    { type: 'monitor', x: 82, y: 40, size: 3 },
+  ];
+  
+  // Define agents with more varied positions around workstations
   const agents = [
     {
       id: 1,
-      name: 'Data Agent',
+      name: 'Data Analyst',
       role: 'Data Analysis',
       status: 'working' as const,
       icon: Database,
       division: 'research',
-      position: { x: 25, y: 35 },
+      position: { x: 27, y: 33 }, // Positioned at workstation
       route: [
-        { division: 'research', x: 25, y: 35 },
-        { division: 'development', x: 60, y: 35 },
-        { division: 'research', x: 30, y: 45 },
+        { division: 'research', x: 27, y: 33 },
+        { division: 'research', x: 27, y: 42 },
+        { division: 'development', x: 62, y: 33 },
       ]
     },
     {
       id: 2,
-      name: 'Sec Agent',
+      name: 'Security Lead',
       role: 'Security',
       status: 'idle' as const,
       icon: Shield,
       division: 'security',
-      position: { x: 60, y: 75 },
+      position: { x: 58, y: 75 }, // Positioned at security console
       route: [
-        { division: 'security', x: 60, y: 75 },
+        { division: 'security', x: 58, y: 75 },
         { division: 'strategy', x: 30, y: 78 },
         { division: 'security', x: 65, y: 75 },
       ]
     },
     {
       id: 3,
-      name: 'Dev Agent',
+      name: 'Senior Dev',
       role: 'Coding',
       status: 'working' as const,
       icon: Code,
       division: 'development',
-      position: { x: 65, y: 40 },
+      position: { x: 62, y: 40 }, // At dev workstation
       route: [
-        { division: 'development', x: 65, y: 40 },
+        { division: 'development', x: 62, y: 40 },
         { division: 'research', x: 30, y: 45 },
-        { division: 'development', x: 60, y: 38 },
+        { division: 'development', x: 62, y: 33 },
       ]
     },
     {
       id: 4,
-      name: 'Researcher',
+      name: 'Research Lead',
       role: 'Data Mining',
       status: 'working' as const,
       icon: FileSearch,
       division: 'research',
-      position: { x: 30, y: 45 },
+      position: { x: 30, y: 45 }, // Near research boards
       route: [
         { division: 'research', x: 30, y: 45 },
         { division: 'development', x: 65, y: 40 },
@@ -150,12 +243,12 @@ const OfficeFloorPlan = () => {
     },
     {
       id: 5,
-      name: 'PM Agent',
+      name: 'Project Manager',
       role: 'Management',
       status: 'paused' as const,
       icon: User,
       division: 'strategy',
-      position: { x: 25, y: 75 },
+      position: { x: 25, y: 75 }, // At meeting table
       route: [
         { division: 'strategy', x: 25, y: 75 },
         { division: 'research', x: 25, y: 35 },
@@ -164,23 +257,48 @@ const OfficeFloorPlan = () => {
     },
     {
       id: 6,
-      name: 'AI Agent',
+      name: 'AI Engineer',
       role: 'Strategy',
       status: 'error' as const,
       icon: BrainCog,
       division: 'strategy',
-      position: { x: 35, y: 80 },
+      position: { x: 35, y: 75 }, // At strategy table
       route: [
-        { division: 'strategy', x: 35, y: 80 },
+        { division: 'strategy', x: 35, y: 75 },
         { division: 'security', x: 60, y: 75 },
         { division: 'development', x: 60, y: 35 },
         { division: 'strategy', x: 30, y: 78 },
       ]
+    },
+    {
+      id: 7, 
+      name: 'Backend Dev',
+      role: 'Systems',
+      status: 'working' as const,
+      icon: Server,
+      division: 'development',
+      position: { x: 58, y: 33 }, // At first dev desk
+      route: [
+        { division: 'development', x: 58, y: 33 },
+        { division: 'development', x: 67, y: 47 },
+        { division: 'security', x: 58, y: 75 },
+      ]
+    },
+    {
+      id: 8,
+      name: 'Hardware Specialist',
+      role: 'Infrastructure',
+      status: 'working' as const,
+      icon: Cpu,
+      division: 'security',
+      position: { x: 66, y: 73 }, // Working on servers
+      route: [
+        { division: 'security', x: 66, y: 73 },
+        { division: 'security', x: 58, y: 75 },
+        { division: 'development', x: 67, y: 47 },
+      ]
     }
   ];
-  
-  // Get a division by id
-  const getDivision = (id: string) => divisions.find(d => d.id === id);
   
   // Handle division selection
   const handleDivisionClick = (divisionId: string) => {
@@ -219,47 +337,6 @@ const OfficeFloorPlan = () => {
     );
   };
   
-  // Render a piece of furniture
-  const renderFurniture = (item: typeof furniture[0]) => {
-    const { position, type } = item;
-    
-    const getColor = () => {
-      switch (type) {
-        case 'desk': return 'bg-gray-400 dark:bg-gray-700';
-        case 'plant': return 'bg-green-700';
-        case 'server': return 'bg-gray-600 dark:bg-gray-800 neon-border';
-        case 'coffee': return 'bg-red-700 dark:bg-red-900';
-        case 'mainframe': return 'bg-blue-800 dark:bg-blue-900 neon-border';
-        default: return 'bg-gray-500';
-      }
-    };
-    
-    const renderFurnitureIcon = () => {
-      switch (type) {
-        case 'server': return <Database className="h-3 w-3 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />;
-        case 'coffee': return <Coffee className="h-3 w-3 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />;
-        case 'mainframe': return <Zap className="h-3 w-3 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />;
-        default: return null;
-      }
-    };
-    
-    return (
-      <div 
-        key={item.id}
-        className={`absolute rounded-sm ${getColor()} scan-lines`}
-        style={{
-          left: `${position.x}%`,
-          top: `${position.y}%`,
-          width: `${position.width}%`,
-          height: `${position.height}%`,
-          zIndex: 5
-        }}
-      >
-        {renderFurnitureIcon()}
-      </div>
-    );
-  };
-  
   // Filter agents by division
   const getAgentsInDivision = (divisionId: string) => {
     return agents.filter(agent => agent.division === divisionId);
@@ -277,10 +354,6 @@ const OfficeFloorPlan = () => {
             backgroundSize: '20px 20px'
           }}
         />
-        
-        {/* Decorative elements */}
-        <div className="absolute top-2 left-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs neon-border">Floor Plan v2.0</div>
-        <div className="absolute bottom-2 right-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs neon-border">Agency HQ</div>
         
         {/* Render divisions */}
         {divisions.map((division) => {
@@ -314,7 +387,7 @@ const OfficeFloorPlan = () => {
                 </Badge>
               </div>
               
-              {/* Render division decoration items */}
+              {/* Division decoration items */}
               {division.decoration.map(item => renderDecoration(item, division.color))}
               
               {isSelected && (
@@ -345,8 +418,29 @@ const OfficeFloorPlan = () => {
           );
         })}
         
-        {/* Render furniture and decorations */}
-        {furniture.map(item => renderFurniture(item))}
+        {/* Render workstations */}
+        {workstations.map((station, index) => (
+          <Workstation
+            key={`station-${index}`}
+            x={station.x}
+            y={station.y}
+            width={station.width}
+            height={station.height}
+            rotation={station.rotation || 0}
+            type={station.type}
+          />
+        ))}
+        
+        {/* Render decorative elements */}
+        {decorations.map((item, index) => (
+          <DecorativeElement
+            key={`decor-${index}`}
+            type={item.type}
+            x={item.x}
+            y={item.y}
+            size={item.size}
+          />
+        ))}
         
         {/* Render agents */}
         {agents.map(agent => (
@@ -356,6 +450,22 @@ const OfficeFloorPlan = () => {
             routePath={agent.route}
           />
         ))}
+        
+        {/* Decorative elements */}
+        <div className="absolute top-2 left-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs neon-border">Floor Plan v2.0</div>
+        <div className="absolute bottom-2 right-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs neon-border">Agency HQ</div>
+        
+        {/* Central server/mainframe */}
+        <div className="absolute left-1/2 top-[15%] -translate-x-1/2 w-6 h-12 bg-blue-900 dark:bg-blue-800 rounded-sm border border-flow-accent/50 neon-border flex flex-col items-center justify-center gap-1 overflow-hidden">
+          <div className="w-5 h-1 bg-flow-accent/80 animate-pulse-subtle rounded-sm"></div>
+          <div className="w-5 h-1 bg-green-500/80 animate-pulse-subtle rounded-sm"></div>
+          <div className="w-5 h-1 bg-purple-500/80 animate-pulse-subtle rounded-sm"></div>
+          <Cpu className="w-4 h-4 text-flow-accent/90" />
+        </div>
+        
+        {/* Floor markings */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full border-2 border-flow-accent/20 opacity-30"></div>
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full border-2 border-flow-accent/30 opacity-30"></div>
       </div>
     </Card>
   );
