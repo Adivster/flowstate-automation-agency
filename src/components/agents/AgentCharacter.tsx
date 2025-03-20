@@ -97,20 +97,20 @@ const AgentCharacter: React.FC<AgentProps> = ({ agent, routePath = [] }) => {
   
   return (
     <motion.div
-      className="absolute flex flex-col items-center"
+      className="absolute flex flex-col items-center pointer-events-none"
       style={{
         left: `${position.x}%`,
         top: `${position.y}%`,
-        zIndex: 20
+        zIndex: 40
       }}
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ 
         scale: 1, 
         opacity: 1,
-        y: agent.status === 'working' ? [0, -3, 0] : 0
+        translateY: agent.status === 'working' ? [0, -3, 0] : 0
       }}
       transition={{
-        y: { 
+        translateY: { 
           repeat: agent.status === 'working' ? Infinity : 0,
           duration: 1.5
         },
@@ -118,6 +118,20 @@ const AgentCharacter: React.FC<AgentProps> = ({ agent, routePath = [] }) => {
         scale: { duration: 0.3 }
       }}
     >
+      {/* Animated holographic glow effect for active agents */}
+      {agent.status === 'working' && (
+        <motion.div 
+          className="absolute inset-0 rounded-full bg-flow-accent/5 backdrop-blur-sm"
+          initial={{ scale: 1 }}
+          animate={{ scale: [1, 1.5, 1] }}
+          transition={{ 
+            repeat: Infinity, 
+            duration: 4,
+            ease: "easeInOut" 
+          }}
+        />
+      )}
+      
       {/* Agent avatar */}
       <div className="relative">
         <div 
@@ -141,7 +155,7 @@ const AgentCharacter: React.FC<AgentProps> = ({ agent, routePath = [] }) => {
             <motion.div 
               className="h-full bg-flow-accent/70"
               animate={{ 
-                width: ["0%", "100%", "0%"],
+                width: ["0%", "100%", "0%"]
               }}
               transition={{ 
                 repeat: Infinity, 
@@ -157,7 +171,7 @@ const AgentCharacter: React.FC<AgentProps> = ({ agent, routePath = [] }) => {
       </div>
       
       {/* Name tooltip with cyberpunk styling */}
-      <div className="mt-1 px-1.5 py-0.5 bg-flow-background/80 backdrop-blur-sm border border-flow-border/30 rounded text-[0.6rem] whitespace-nowrap shadow-lg">
+      <div className="mt-1 px-1.5 py-0.5 bg-black/70 backdrop-blur-sm border border-flow-border/30 rounded text-[0.6rem] whitespace-nowrap shadow-lg">
         {agent.name}
       </div>
       
@@ -175,20 +189,6 @@ const AgentCharacter: React.FC<AgentProps> = ({ agent, routePath = [] }) => {
             }}
           />
         </div>
-      )}
-      
-      {/* Animated holographic glow effect for active agents */}
-      {agent.status === 'working' && (
-        <motion.div 
-          className="absolute inset-0 rounded-full bg-flow-accent/5 backdrop-blur-sm"
-          initial={{ scale: 1 }}
-          animate={{ scale: [1, 1.5, 1] }}
-          transition={{ 
-            repeat: Infinity, 
-            duration: 4,
-            ease: "easeInOut" 
-          }}
-        />
       )}
     </motion.div>
   );
