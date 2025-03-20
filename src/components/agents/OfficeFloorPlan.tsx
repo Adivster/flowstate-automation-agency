@@ -7,6 +7,16 @@ import { Badge } from '@/components/ui/badge';
 import AgentCharacter from './AgentCharacter';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+// Define the workstation type to include the optional rotation property
+type WorkstationType = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  type: string;
+  rotation?: number;
+};
+
 // Component for rendering desks and workstations
 const Workstation = ({ x, y, width = 10, height = 6, rotation = 0, hasComputer = true, hasPerson = false, type = 'desk' }) => {
   const deskColors = {
@@ -222,7 +232,7 @@ const OfficeFloorPlan = () => {
   ];
   
   // Workstations - more visible desks matching the reference images
-  const workstations = [
+  const workstations: WorkstationType[] = [
     // Research division workstations
     { x: 20, y: 35, width: 8, height: 4, type: 'desk' },
     { x: 30, y: 35, width: 8, height: 4, type: 'desk' },
