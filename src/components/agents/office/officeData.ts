@@ -1,5 +1,4 @@
-
-import { Database, FileSearch, User, Code, Shield, BrainCog, Monitor, Coffee, ChartBar, BookOpen, Zap, Server, Activity, Cpu, DollarSign, MessagesSquare } from 'lucide-react';
+import { Database, FileSearch, User, Code, Shield, BrainCog, Monitor, Coffee, ChartBar, BookOpen, Zap, Server, Activity, Cpu, DollarSign, MessagesSquare, LayoutGrid } from 'lucide-react';
 import { WorkstationType } from './Workstation';
 
 export interface RoutePoint {
@@ -57,7 +56,6 @@ export interface Hologram {
   size: number;
 }
 
-// Define office divisions with enhanced visual themes
 export const getDivisions = (t: (key: string) => string): Division[] => [
   {
     id: 'kb',
@@ -124,30 +122,24 @@ export const getDivisions = (t: (key: string) => string): Division[] => [
   },
 ];
 
-// Workstations - more visible desks matching the reference images
 export const workstations: WorkstationType[] = [
-  // KB division workstations
   { x: 20, y: 35, width: 8, height: 4, type: 'desk' },
   { x: 30, y: 35, width: 8, height: 4, type: 'desk' },
   { x: 20, y: 42, width: 8, height: 4, type: 'desk' },
   { x: 30, y: 42, width: 8, height: 4, type: 'desk' },
   
-  // Analytics division workstations
   { x: 60, y: 35, width: 8, height: 4, type: 'desk' },
   { x: 70, y: 35, width: 8, height: 4, type: 'desk' },
   { x: 60, y: 42, width: 8, height: 4, type: 'desk' },
   { x: 70, y: 42, width: 8, height: 4, type: 'desk' },
   
-  // Operations division - meeting table
   { x: 22, y: 75, width: 15, height: 8, type: 'meeting' },
   
-  // Strategy division - server racks
   { x: 60, y: 75, width: 4, height: 8, type: 'server' },
   { x: 66, y: 75, width: 4, height: 8, type: 'server' },
   { x: 72, y: 75, width: 4, height: 8, type: 'server' },
 ];
 
-// Decorative elements
 export const decorations: Decoration[] = [
   { type: 'plant', x: 5, y: 10, size: 4 },
   { type: 'plant', x: 90, y: 10, size: 4 },
@@ -157,7 +149,6 @@ export const decorations: Decoration[] = [
   { type: 'server', x: 80, y: 75, size: 5 },
 ];
 
-// Holographic projections
 export const holograms: Hologram[] = [
   { type: 'chart', x: 25, y: 32, size: 6 },
   { type: 'data', x: 65, y: 32, size: 6 },
@@ -166,7 +157,6 @@ export const holograms: Hologram[] = [
   { type: 'data', x: 62, y: 72, size: 5 },
 ];
 
-// Define agents with more varied positions around workstations
 export const agents: Agent[] = [
   {
     id: 1,
@@ -175,7 +165,7 @@ export const agents: Agent[] = [
     status: 'working',
     icon: BookOpen,
     division: 'kb',
-    position: { x: 22, y: 34 }, // Positioned at workstation
+    position: { x: 22, y: 34 },
     route: [
       { division: 'kb', x: 22, y: 34 },
       { division: 'kb', x: 32, y: 34 },
@@ -189,7 +179,7 @@ export const agents: Agent[] = [
     status: 'working',
     icon: Shield,
     division: 'strategy',
-    position: { x: 62, y: 74 }, // Positioned at security console
+    position: { x: 62, y: 74 },
     route: [
       { division: 'strategy', x: 62, y: 74 },
       { division: 'strategy', x: 68, y: 74 },
@@ -203,7 +193,7 @@ export const agents: Agent[] = [
     status: 'working',
     icon: ChartBar,
     division: 'analytics',
-    position: { x: 62, y: 34 }, // At dev workstation
+    position: { x: 62, y: 34 },
     route: [
       { division: 'analytics', x: 62, y: 34 },
       { division: 'analytics', x: 72, y: 34 },
@@ -217,7 +207,7 @@ export const agents: Agent[] = [
     status: 'working',
     icon: FileSearch,
     division: 'kb',
-    position: { x: 32, y: 41 }, // Near research boards
+    position: { x: 32, y: 41 },
     route: [
       { division: 'kb', x: 32, y: 41 },
       { division: 'kb', x: 22, y: 41 },
@@ -231,7 +221,7 @@ export const agents: Agent[] = [
     status: 'paused',
     icon: LayoutGrid,
     division: 'operations',
-    position: { x: 25, y: 74 }, // At meeting table
+    position: { x: 25, y: 74 },
     route: [
       { division: 'operations', x: 25, y: 74 },
       { division: 'operations', x: 35, y: 74 },
@@ -245,7 +235,7 @@ export const agents: Agent[] = [
     status: 'error',
     icon: BrainCog,
     division: 'strategy',
-    position: { x: 35, y: 74 }, // At strategy table
+    position: { x: 35, y: 74 },
     route: [
       { division: 'strategy', x: 35, y: 74 },
       { division: 'strategy', x: 60, y: 74 },
@@ -253,13 +243,13 @@ export const agents: Agent[] = [
     ]
   },
   {
-    id: 7, 
+    id: 7,
     name: 'Integration Agent',
     role: 'Operations',
     status: 'working',
     icon: Server,
     division: 'operations',
-    position: { x: 72, y: 41 }, // At second dev desk
+    position: { x: 72, y: 41 },
     route: [
       { division: 'operations', x: 72, y: 41 },
       { division: 'operations', x: 62, y: 41 },
@@ -273,7 +263,7 @@ export const agents: Agent[] = [
     status: 'working',
     icon: Activity,
     division: 'analytics',
-    position: { x: 74, y: 74 }, // Working on servers
+    position: { x: 74, y: 74 },
     route: [
       { division: 'analytics', x: 74, y: 74 },
       { division: 'analytics', x: 68, y: 74 },
