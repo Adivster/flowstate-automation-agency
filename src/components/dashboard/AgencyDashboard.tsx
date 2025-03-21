@@ -5,6 +5,7 @@ import { TransitionWrapper } from '../ui/TransitionWrapper';
 import StatsOverview from './StatsOverview';
 import DivisionCard from './DivisionCard';
 import AgentGrid from '../agents/AgentGrid';
+import TaskManagement from './TaskManagement';
 
 const AgencyDashboard: React.FC = () => {
   const divisions = [
@@ -78,6 +79,13 @@ const AgencyDashboard: React.FC = () => {
       
       <section className="space-y-6">
         <TransitionWrapper delay={100}>
+          <h3 className="text-xl font-medium">Task Management</h3>
+        </TransitionWrapper>
+        <TaskManagement />
+      </section>
+      
+      <section className="space-y-6">
+        <TransitionWrapper delay={150}>
           <h3 className="text-xl font-medium">Active Divisions</h3>
         </TransitionWrapper>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -85,14 +93,14 @@ const AgencyDashboard: React.FC = () => {
             <DivisionCard
               key={division.title}
               {...division}
-              delay={150 + (index * 50)}
+              delay={200 + (index * 50)}
             />
           ))}
         </div>
       </section>
       
       <section className="space-y-6">
-        <TransitionWrapper delay={150}>
+        <TransitionWrapper delay={200}>
           <h3 className="text-xl font-medium">Top Performing Agents</h3>
         </TransitionWrapper>
         <AgentGrid />
