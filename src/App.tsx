@@ -12,6 +12,7 @@ import Agents from "./pages/Agents";
 import Workflows from "./pages/Workflows";
 import Knowledge from "./pages/Knowledge";
 import Analytics from "./pages/Analytics";
+import Courses from "./pages/Courses";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
                 <Route path="/workflows" element={<Workflows />} />
                 <Route path="/knowledge" element={<Knowledge />} />
                 <Route path="/analytics" element={<Analytics />} />
+                <Route path="/courses" element={<Courses />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

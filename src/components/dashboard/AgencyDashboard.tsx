@@ -96,9 +96,9 @@ const AgencyDashboard: React.FC = () => {
     <div className="space-y-10 py-6">
       <TransitionWrapper>
         <div className="space-y-2">
-          <h2 className="text-3xl font-semibold tracking-tight">XYZ Business Agency</h2>
+          <h2 className="text-3xl font-semibold tracking-tight">FlowState Business Agency</h2>
           <p className="text-flow-foreground/70">
-            FlowState-powered automation for your growing business
+            AI-powered automation for your growing business
           </p>
         </div>
       </TransitionWrapper>
@@ -112,7 +112,7 @@ const AgencyDashboard: React.FC = () => {
       
       <section className="space-y-6">
         <TransitionWrapper delay={100}>
-          <h3 className="text-xl font-medium">Task Management</h3>
+          <h3 className="text-xl font-medium">Task Overview</h3>
         </TransitionWrapper>
         <TaskManagement />
       </section>

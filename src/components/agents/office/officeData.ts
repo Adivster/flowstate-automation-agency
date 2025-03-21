@@ -1,3 +1,4 @@
+
 import { Database, FileSearch, User, Code, Shield, BrainCog, Monitor, Coffee, ChartBar, BookOpen, Zap, Server, Activity, Cpu, DollarSign, MessagesSquare, LayoutGrid } from 'lucide-react';
 import { WorkstationType } from './Workstation';
 
