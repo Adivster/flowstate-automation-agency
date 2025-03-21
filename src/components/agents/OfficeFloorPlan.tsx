@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cpu, MessageCircle } from 'lucide-react';
+import { Cpu, MessageCircle, Activity, BarChart, Users, Clock } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import AgentCharacter from './AgentCharacter';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -19,6 +19,7 @@ import {
 
 const OfficeFloorPlan = () => {
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
+  const [selectedAgent, setSelectedAgent] = useState<number | null>(null);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
   const { t, isRTL } = useLanguage();
   
@@ -27,7 +28,15 @@ const OfficeFloorPlan = () => {
   
   // Handle division selection
   const handleDivisionClick = (divisionId: string) => {
-    setSelectedDivision(selectedDivision === divisionId ? null : divisionId);
+    setSelectedDivision(divisionId);
+    setSelectedAgent(null);
+    setShowInfoPanel(true);
+  };
+  
+  // Handle agent selection
+  const handleAgentClick = (agentId: number) => {
+    setSelectedAgent(agentId);
+    setSelectedDivision(null);
     setShowInfoPanel(true);
   };
 
@@ -36,6 +45,7 @@ const OfficeFloorPlan = () => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setSelectedDivision(null);
+        setSelectedAgent(null);
         setShowInfoPanel(false);
       }
     };
@@ -45,10 +55,23 @@ const OfficeFloorPlan = () => {
     };
   }, []);
   
+  // Generate random performance data for divisions and agents
+  const generatePerformanceData = () => {
+    return {
+      taskCompletion: Math.floor(Math.random() * 30) + 70, // 70-100%
+      resourceUtilization: Math.floor(Math.random() * 30) + 60, // 60-90%
+      efficiency: Math.floor(Math.random() * 25) + 75, // 75-100%
+      uptime: Math.floor(Math.random() * 5) + 95, // 95-100%
+      errorRate: Math.floor(Math.random() * 5), // 0-5%
+      tasksCompleted: Math.floor(Math.random() * 100) + 50, // 50-150
+      averageResponseTime: (Math.random() * 2 + 0.5).toFixed(2), // 0.5-2.5s
+    };
+  };
+  
   return (
-    <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-gray-100 dark:bg-gray-900 scan-lines neon-border">
+    <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-gray-100 dark:bg-gray-900 neon-border">
       {/* Office floor */}
-      <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800 cyber-grid">
+      <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800">
         {/* Refined grid pattern */}
         <div 
           className="absolute inset-0" 
@@ -58,79 +81,22 @@ const OfficeFloorPlan = () => {
           }}
         />
         
-        {/* Floor markings - circular central element with improved animations */}
-        <motion.div 
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full border border-flow-accent/20 opacity-10"
-          animate={{ 
-            scale: [1, 1.05, 1],
-            rotate: 360
-          }}
-          transition={{ 
-            scale: { duration: 10, repeat: Infinity, ease: "easeInOut" },
-            rotate: { duration: 60, repeat: Infinity, ease: "linear" }
-          }}
-        />
-        <motion.div 
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 rounded-full border border-flow-accent/30 opacity-20"
-          animate={{ 
-            scale: [1, 1.1, 1],
-            rotate: -360
-          }}
-          transition={{ 
-            scale: { duration: 8, repeat: Infinity, ease: "easeInOut" },
-            rotate: { duration: 50, repeat: Infinity, ease: "linear" }
-          }}
-        />
-        
-        {/* Central server/mainframe with enhanced effects */}
-        <motion.div 
-          className="absolute left-1/2 top-[15%] -translate-x-1/2 w-10 h-18 bg-blue-900 dark:bg-blue-800 rounded-sm border border-flow-accent/70 neon-border flex flex-col items-center justify-center gap-1 overflow-hidden z-20"
-          animate={{ 
-            boxShadow: [
-              '0 0 5px rgba(59, 130, 246, 0.3)',
-              '0 0 15px rgba(59, 130, 246, 0.5)',
-              '0 0 5px rgba(59, 130, 246, 0.3)'
-            ]
-          }}
-          transition={{ duration: 3, repeat: Infinity }}
+        {/* Central server/mainframe */}
+        <div 
+          className="absolute left-1/2 top-[15%] -translate-x-1/2 w-10 h-18 bg-blue-900 dark:bg-blue-800 rounded-sm border border-flow-accent/70 flex flex-col items-center justify-center gap-1 overflow-hidden z-20"
         >
-          <motion.div 
-            className="absolute inset-0 bg-blue-500/10"
-            animate={{ 
-              background: [
-                'rgba(59, 130, 246, 0.1)',
-                'rgba(59, 130, 246, 0.2)',
-                'rgba(59, 130, 246, 0.1)'
-              ]
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-          <div className="w-6 h-1 bg-flow-accent/80 animate-pulse-subtle rounded-sm"></div>
-          <div className="w-6 h-1 bg-green-500/80 animate-pulse-subtle rounded-sm"></div>
-          <div className="w-6 h-1 bg-purple-500/80 animate-pulse-subtle rounded-sm"></div>
+          <div className="w-6 h-1 bg-flow-accent/80 rounded-sm"></div>
+          <div className="w-6 h-1 bg-green-500/80 rounded-sm"></div>
+          <div className="w-6 h-1 bg-purple-500/80 rounded-sm"></div>
           <Cpu className="w-5 h-5 text-flow-accent/90" />
-        </motion.div>
+        </div>
         
-        {/* Communication hub - new feature */}
-        <motion.div
-          className="absolute right-[15%] top-[15%] w-8 h-8 rounded-full bg-indigo-900 border border-indigo-500/70 neon-border flex items-center justify-center z-20"
-          whileHover={{ scale: 1.1 }}
-          animate={{
-            boxShadow: [
-              '0 0 5px rgba(99, 102, 241, 0.3)',
-              '0 0 15px rgba(99, 102, 241, 0.5)',
-              '0 0 5px rgba(99, 102, 241, 0.3)'
-            ]
-          }}
-          transition={{ duration: 3, repeat: Infinity }}
+        {/* Communication hub */}
+        <div
+          className="absolute right-[15%] top-[15%] w-8 h-8 rounded-full bg-indigo-900 border border-indigo-500/70 flex items-center justify-center z-20"
         >
           <MessageCircle className="w-4 h-4 text-indigo-400" />
-          <motion.div
-            className="absolute w-12 h-12 rounded-full border border-indigo-500/30"
-            animate={{ scale: [1, 1.5, 1], opacity: [0.7, 0, 0.7] }}
-            transition={{ duration: 3, repeat: Infinity }}
-          />
-        </motion.div>
+        </div>
         
         {/* Render workstations */}
         {workstations.map((station, index) => (
@@ -178,31 +144,33 @@ const OfficeFloorPlan = () => {
           />
         ))}
         
-        {/* Render agents with improved animations */}
+        {/* Render agents with clear visuals */}
         {agents.map(agent => (
           <AgentCharacter 
             key={agent.id} 
             agent={agent}
             routePath={agent.route}
+            isSelected={selectedAgent === agent.id}
+            onAgentClick={handleAgentClick}
           />
         ))}
         
-        {/* Decorative elements with better positioning */}
-        <div className="absolute top-2 left-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs neon-border z-30">Floor Plan v2.1</div>
-        <div className="absolute bottom-6 right-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs neon-border z-30">Agency HQ</div>
+        {/* Floor markings */}
+        <div className="absolute top-2 left-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs z-30">Floor Plan v3.0</div>
+        <div className="absolute bottom-3 right-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs z-30">{t('agency')}</div>
         
         {/* Info panel for selected division */}
         <AnimatePresence>
           {selectedDivision && showInfoPanel && (
             <motion.div 
-              className="absolute bottom-2 left-2 right-2 h-24 bg-black/60 backdrop-blur-sm rounded-md border border-flow-accent/30 p-3 z-50"
+              className="absolute bottom-4 left-4 right-4 bg-black/80 rounded-md border border-flow-accent/30 p-4 z-50"
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 50, opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="flex justify-between">
-                <h3 className="text-white text-sm font-bold">
+              <div className="flex justify-between mb-3">
+                <h3 className="text-white text-lg font-bold flex items-center">
                   {divisions.find(d => d.id === selectedDivision)?.name}
                 </h3>
                 <button 
@@ -212,14 +180,151 @@ const OfficeFloorPlan = () => {
                   ×
                 </button>
               </div>
-              <p className="text-white/80 text-xs mt-1">
+              
+              <p className="text-white/80 text-sm mb-4">
                 {divisions.find(d => d.id === selectedDivision)?.description}
               </p>
-              <div className="flex justify-end mt-1">
-                <button className="text-xs bg-flow-accent/90 text-white px-2 py-0.5 rounded hover:bg-flow-accent">
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div className="bg-white/10 rounded p-2 text-center">
+                  <div className="text-white text-sm font-semibold">
+                    {agents.filter(a => a.division === selectedDivision).length}
+                  </div>
+                  <div className="text-white/70 text-xs flex items-center justify-center">
+                    <Users className="h-3 w-3 mr-1" />
+                    {t('activeAgents')}
+                  </div>
+                </div>
+                
+                <div className="bg-white/10 rounded p-2 text-center">
+                  <div className="text-white text-sm font-semibold">
+                    {generatePerformanceData().taskCompletion}%
+                  </div>
+                  <div className="text-white/70 text-xs flex items-center justify-center">
+                    <Activity className="h-3 w-3 mr-1" />
+                    {t('taskCompletion')}
+                  </div>
+                </div>
+                
+                <div className="bg-white/10 rounded p-2 text-center">
+                  <div className="text-white text-sm font-semibold">
+                    {generatePerformanceData().efficiency}%
+                  </div>
+                  <div className="text-white/70 text-xs flex items-center justify-center">
+                    <BarChart className="h-3 w-3 mr-1" />
+                    {t('efficiency')}
+                  </div>
+                </div>
+                
+                <div className="bg-white/10 rounded p-2 text-center">
+                  <div className="text-white text-sm font-semibold">
+                    {generatePerformanceData().tasksCompleted}
+                  </div>
+                  <div className="text-white/70 text-xs flex items-center justify-center">
+                    <Activity className="h-3 w-3 mr-1" />
+                    {t('tasksCompleted')}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-end">
+                <button className="text-xs bg-flow-accent/90 text-white px-3 py-1 rounded hover:bg-flow-accent">
                   {t('viewDetails')}
                 </button>
               </div>
+            </motion.div>
+          )}
+          
+          {/* Info panel for selected agent */}
+          {selectedAgent && showInfoPanel && (
+            <motion.div 
+              className="absolute bottom-4 left-4 right-4 bg-black/80 rounded-md border border-flow-accent/30 p-4 z-50"
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 50, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {(() => {
+                const agent = agents.find(a => a.id === selectedAgent);
+                const performance = generatePerformanceData();
+                if (!agent) return null;
+                
+                return (
+                  <>
+                    <div className="flex justify-between mb-3">
+                      <h3 className="text-white text-lg font-bold flex items-center">
+                        {agent.name}
+                      </h3>
+                      <button 
+                        className="text-white/70 hover:text-white"
+                        onClick={() => setShowInfoPanel(false)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                    
+                    <div className="flex items-center mb-4">
+                      <div className={`px-2 py-0.5 rounded-full text-xs
+                        ${agent.status === 'working' ? 'bg-green-500/20 text-green-400' : 
+                         agent.status === 'idle' ? 'bg-gray-500/20 text-gray-400' : 
+                         agent.status === 'paused' ? 'bg-amber-500/20 text-amber-400' : 
+                         'bg-red-500/20 text-red-400'}`
+                      }>
+                        {t(agent.status)}
+                      </div>
+                      <div className="text-white/60 text-xs ml-3">{agent.role}</div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                      <div className="bg-white/10 rounded p-2 text-center">
+                        <div className="text-white text-sm font-semibold">
+                          {performance.tasksCompleted}
+                        </div>
+                        <div className="text-white/70 text-xs flex items-center justify-center">
+                          <Activity className="h-3 w-3 mr-1" />
+                          {t('tasksCompleted')}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-white/10 rounded p-2 text-center">
+                        <div className="text-white text-sm font-semibold">
+                          {performance.averageResponseTime}s
+                        </div>
+                        <div className="text-white/70 text-xs flex items-center justify-center">
+                          <Clock className="h-3 w-3 mr-1" />
+                          {t('averageResponseTime')}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-white/10 rounded p-2 text-center">
+                        <div className="text-white text-sm font-semibold">
+                          {performance.errorRate}%
+                        </div>
+                        <div className="text-white/70 text-xs flex items-center justify-center">
+                          <Activity className="h-3 w-3 mr-1" />
+                          {t('errorRate')}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-white/10 rounded p-2 text-center">
+                        <div className="text-white text-sm font-semibold">
+                          {performance.uptime}%
+                        </div>
+                        <div className="text-white/70 text-xs flex items-center justify-center">
+                          <Activity className="h-3 w-3 mr-1" />
+                          {t('uptime')}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-end">
+                      <button className="text-xs bg-flow-accent/90 text-white px-3 py-1 rounded hover:bg-flow-accent">
+                        {t('viewDetails')}
+                      </button>
+                    </div>
+                  </>
+                );
+              })()}
             </motion.div>
           )}
         </AnimatePresence>

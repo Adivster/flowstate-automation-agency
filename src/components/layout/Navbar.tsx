@@ -3,8 +3,9 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Layers, Activity, Command, Search, Menu, X } from 'lucide-react';
+import { Layers, Activity, Command, Search, Menu, X, BookOpen } from 'lucide-react';
 import GlassMorphism from '../ui/GlassMorphism';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface NavbarProps {
   className?: string;
@@ -12,15 +13,17 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ className }) => {
   const [isOpen, setIsOpen] = React.useState(false);
+  const { t } = useLanguage();
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
   const navItems = [
-    { label: 'Dashboard', href: '/' },
-    { label: 'Agents', href: '/agents' },
-    { label: 'Workflows', href: '/workflows' },
-    { label: 'Knowledge Base', href: '/knowledge' },
-    { label: 'Analytics', href: '/analytics' },
+    { label: t('dashboard'), href: '/' },
+    { label: t('agents'), href: '/agents' },
+    { label: t('workflows'), href: '/workflows' },
+    { label: t('knowledge'), href: '/knowledge' },
+    { label: t('analytics'), href: '/analytics' },
+    { label: t('courses'), href: '/courses' },
   ];
 
   return (
@@ -33,7 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
               className="flex items-center space-x-2 text-flow-foreground hover:text-flow-accent transition-colors"
             >
               <Layers className="h-6 w-6" />
-              <span className="font-semibold text-lg">FlowState</span>
+              <span className="font-semibold text-lg">{t('agency')}</span>
             </Link>
           </div>
 
@@ -62,6 +65,10 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
             <button 
               className="p-2 rounded-full text-flow-foreground/70 hover:text-flow-foreground hover:bg-flow-muted transition-colors"
               aria-label="Command"
+              onClick={() => {
+                // Dispatch a custom event to open the communication terminal
+                window.dispatchEvent(new CustomEvent('openCommunicationTerminal'));
+              }}
             >
               <Command className="h-5 w-5" />
             </button>

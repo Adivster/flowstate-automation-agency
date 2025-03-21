@@ -40,6 +40,7 @@ export const translations = {
     online: 'Online',
     typeMessage: 'Type your message...',
     startConversation: 'Start a conversation',
+    messagePlaceholder: 'What can I help you with?',
     
     // Divisions
     researchDivision: 'Research Division',
@@ -50,6 +51,14 @@ export const translations = {
     strategyDesc: 'Plans and coordinates agency efforts',
     securityDivision: 'Security Division',
     securityDesc: 'Ensures data privacy and security compliance',
+    knowledgeBase: 'Knowledge Base',
+    knowledgeBaseDesc: 'Manages and organizes information resources',
+    analyticsDivision: 'Analytics Division',
+    analyticsDesc: 'Processes data and generates insights',
+    operationsDivision: 'Operations Division',
+    operationsDesc: 'Oversees day-to-day functioning of the agency',
+    loungeName: 'Agents Lounge',
+    loungeDesc: 'Relaxation area for idle agents',
     
     // Agent statuses
     working: 'Working',
@@ -69,13 +78,26 @@ export const translations = {
     pendingTasks: 'Pending Tasks',
     activeTasks: 'Active Tasks',
     systemHealth: 'System Health',
+    
+    // Division performance
+    divisionPerformance: 'Division Performance',
+    taskCompletion: 'Task Completion Rate',
+    resourceUtilization: 'Resource Utilization',
+    efficiency: 'Efficiency',
+    
+    // Agent performance
+    agentPerformance: 'Agent Performance',
+    tasksCompleted: 'Tasks Completed',
+    averageResponseTime: 'Average Response Time',
+    errorRate: 'Error Rate',
+    uptime: 'Uptime',
   },
   he: {
-    // Common - Hebrew translations
+    // Common - Hebrew translations with improved natural phrasing
     agency: 'סוכנות פלואוסטייט',
     dashboard: 'לוח בקרה',
     agents: 'סוכנים',
-    workflows: 'זרימות עבודה',
+    workflows: 'תהליכי עבודה',
     knowledge: 'מאגר ידע',
     analytics: 'ניתוח נתונים',
     settings: 'הגדרות',
@@ -85,35 +107,44 @@ export const translations = {
     
     // Agents page
     agencyHQ: 'מטה הסוכנות',
-    monitorAgents: 'עקוב אחר פעילות הסוכנים ונהל מחלקות במשרד הווירטואלי שלך',
+    monitorAgents: 'מעקב אחר פעילות הסוכנים וניהול המחלקות במשרד הווירטואלי שלך',
     activeAgents: 'סוכנים פעילים',
-    officeView: 'תצוגת משרד',
+    officeView: 'מבט משרד',
     agentList: 'רשימת סוכנים',
-    systemMetrics: 'נתוני מערכת',
-    interactiveOffice: 'תוכנית קומה אינטראקטיבית - לחץ על מחלקות להצגת פרטים',
+    systemMetrics: 'מדדי מערכת',
+    interactiveOffice: 'תרשים קומה אינטראקטיבי - לחץ על המחלקות להצגת פרטים נוספים',
     proTip: 'טיפ מקצועי:',
-    openTerminal: 'פתח את המסוף באמצעות הלחצן בפינה הימנית התחתונה כדי להפעיל פקודות',
+    openTerminal: 'פתח את המסוף בעזרת הכפתור בפינה השמאלית התחתונה כדי להפעיל פקודות',
     openChat: 'פתח צ\'אט',
     allActiveAgents: 'כל הסוכנים הפעילים בסוכנות שלך',
     performanceMetrics: 'מדדי ביצועים והישגי הסוכנות',
-    courseDescription: 'שלוט בניהול סוכנות AI עם הקורסים המקיפים שלנו',
-    viewDetails: 'הצג פרטים',
+    courseDescription: 'למד ניהול סוכנות AI עם הקורסים המקיפים שלנו',
+    viewDetails: 'צפה בפרטים',
     
     // Communication bot
     communicationBot: 'בוט תקשורת',
     online: 'מקוון',
-    typeMessage: 'הקלד את ההודעה שלך...',
+    typeMessage: 'הקלד את הודעתך...',
     startConversation: 'התחל שיחה',
+    messagePlaceholder: 'במה אוכל לעזור לך?',
     
     // Divisions
     researchDivision: 'מחלקת מחקר',
     researchDesc: 'מתמחה באיסוף וניתוח נתונים',
     developmentDivision: 'מחלקת פיתוח',
-    developmentDesc: 'בונה ומפעילה פתרונות בינה מלאכותית',
+    developmentDesc: 'בונה ומטמיעה פתרונות בינה מלאכותית',
     strategyDivision: 'מחלקת אסטרטגיה',
-    strategyDesc: 'מתכננת ומתאמת מאמצי הסוכנות',
+    strategyDesc: 'מתכננת ומתאמת את מאמצי הסוכנות',
     securityDivision: 'מחלקת אבטחה',
-    securityDesc: 'מבטיחה פרטיות נתונים ותאימות אבטחה',
+    securityDesc: 'מבטיחה פרטיות נתונים ותאימות לתקני אבטחה',
+    knowledgeBase: 'מאגר ידע',
+    knowledgeBaseDesc: 'מנהל ומארגן משאבי מידע',
+    analyticsDivision: 'מחלקת אנליטיקה',
+    analyticsDesc: 'מעבדת נתונים ומפיקה תובנות',
+    operationsDivision: 'מחלקת תפעול',
+    operationsDesc: 'מפקחת על הפעילות היומיומית של הסוכנות',
+    loungeName: 'מרחב המנוחה',
+    loungeDesc: 'אזור רגיעה לסוכנים פנויים',
     
     // Agent statuses
     working: 'עובד',
@@ -133,6 +164,19 @@ export const translations = {
     pendingTasks: 'משימות ממתינות',
     activeTasks: 'משימות פעילות',
     systemHealth: 'בריאות המערכת',
+    
+    // Division performance
+    divisionPerformance: 'ביצועי המחלקה',
+    taskCompletion: 'שיעור השלמת משימות',
+    resourceUtilization: 'ניצול משאבים',
+    efficiency: 'יעילות',
+    
+    // Agent performance
+    agentPerformance: 'ביצועי סוכן',
+    tasksCompleted: 'משימות שהושלמו',
+    averageResponseTime: 'זמן תגובה ממוצע',
+    errorRate: 'שיעור שגיאות',
+    uptime: 'זמן פעילות',
   }
 };
 

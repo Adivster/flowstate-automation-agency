@@ -14,6 +14,7 @@ import Knowledge from "./pages/Knowledge";
 import Analytics from "./pages/Analytics";
 import Courses from "./pages/Courses";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import CommunicationTerminal from "./components/communication/CommunicationTerminal";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              <CommunicationTerminal />
             </BrowserRouter>
           </TooltipProvider>
         </LanguageProvider>

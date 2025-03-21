@@ -24,9 +24,16 @@ interface AgentProps {
     };
   };
   routePath?: RoutePoint[];
+  isSelected?: boolean;
+  onAgentClick?: (id: number) => void;
 }
 
-const AgentCharacter: React.FC<AgentProps> = ({ agent, routePath = [] }) => {
+const AgentCharacter: React.FC<AgentProps> = ({ 
+  agent, 
+  routePath = [], 
+  isSelected = false, 
+  onAgentClick 
+}) => {
   const [position, setPosition] = useState(agent.position);
   const [currentRouteIndex, setCurrentRouteIndex] = useState(0);
   const animationRef = useRef<number | null>(null);
@@ -86,26 +93,18 @@ const AgentCharacter: React.FC<AgentProps> = ({ agent, routePath = [] }) => {
     error: 'bg-red-500'
   };
   
-  const statusGlows = {
-    working: 'shadow-[0_0_10px_#10b981] neon-glow',
-    idle: 'shadow-[0_0_6px_#6b7280]',
-    paused: 'shadow-[0_0_8px_#f59e0b]',
-    error: 'shadow-[0_0_12px_#ef4444] animate-pulse'
-  };
-  
   const Icon = agent.icon;
   
   return (
     <motion.div
-      className="absolute flex flex-col items-center pointer-events-none"
+      className={`absolute cursor-pointer ${isSelected ? 'z-50' : 'z-40'}`}
       style={{
         left: `${position.x}%`,
         top: `${position.y}%`,
-        zIndex: 40
       }}
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ 
-        scale: 1, 
+        scale: isSelected ? 1.1 : 1, 
         opacity: 1,
         translateY: agent.status === 'working' ? [0, -3, 0] : 0
       }}
@@ -117,79 +116,30 @@ const AgentCharacter: React.FC<AgentProps> = ({ agent, routePath = [] }) => {
         opacity: { duration: 0.3 },
         scale: { duration: 0.3 }
       }}
+      onClick={() => onAgentClick && onAgentClick(agent.id)}
     >
-      {/* Animated holographic glow effect for active agents */}
-      {agent.status === 'working' && (
-        <motion.div 
-          className="absolute inset-0 rounded-full bg-flow-accent/5 backdrop-blur-sm"
-          initial={{ scale: 1 }}
-          animate={{ scale: [1, 1.5, 1] }}
-          transition={{ 
-            repeat: Infinity, 
-            duration: 4,
-            ease: "easeInOut" 
-          }}
-        />
-      )}
-      
       {/* Agent avatar */}
-      <div className="relative">
-        <div 
-          className={`rounded-full p-2 ${
-            agent.status === 'working' 
-              ? 'bg-flow-accent/20 backdrop-blur-sm border border-flow-accent/30' 
-              : 'bg-flow-muted/50'
-          } ${statusGlows[agent.status]}`}
-        >
-          <Icon className={`h-4 w-4 ${agent.status === 'working' ? 'text-flow-accent animate-pulse-subtle' : 'text-flow-foreground'}`} />
-        </div>
-        
-        {/* Holographic data visualization for working agents */}
-        {agent.status === 'working' && (
-          <motion.div 
-            className="absolute -top-3 -right-3 w-10 h-2 rounded-md overflow-hidden bg-black/20 backdrop-blur-sm border border-flow-accent/30"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+      <div className="flex flex-col items-center">
+        <div className="relative mb-1">
+          <div 
+            className={`rounded-full p-2 ${
+              agent.status === 'working' 
+                ? 'bg-flow-accent/20 border border-flow-accent/30' 
+                : 'bg-flow-muted/50'
+            } ${isSelected ? 'ring-2 ring-white' : ''}`}
           >
-            <motion.div 
-              className="h-full bg-flow-accent/70"
-              animate={{ 
-                width: ["0%", "100%", "0%"]
-              }}
-              transition={{ 
-                repeat: Infinity, 
-                duration: 3, 
-                ease: "linear"
-              }}
-            />
-          </motion.div>
-        )}
-        
-        {/* Status indicator */}
-        <div className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${statusColors[agent.status]} ${agent.status === 'working' ? 'animate-pulse-subtle' : ''}`}></div>
-      </div>
-      
-      {/* Name tooltip with cyberpunk styling */}
-      <div className="mt-1 px-1.5 py-0.5 bg-black/70 backdrop-blur-sm border border-flow-border/30 rounded text-[0.6rem] whitespace-nowrap shadow-lg">
-        {agent.name}
-      </div>
-      
-      {/* Task progress for working agents */}
-      {agent.status === 'working' && (
-        <div className="mt-1 w-10 h-1 bg-flow-muted/50 rounded-full overflow-hidden backdrop-blur-sm border border-flow-border/20">
-          <motion.div 
-            className="h-full bg-flow-accent"
-            initial={{ width: "0%" }}
-            animate={{ width: "100%" }}
-            transition={{ 
-              repeat: Infinity, 
-              duration: 3 + Math.random() * 2,
-              repeatType: "reverse"
-            }}
-          />
+            <Icon className={`h-4 w-4 ${agent.status === 'working' ? 'text-flow-accent animate-pulse-subtle' : 'text-flow-foreground'}`} />
+          </div>
+          
+          {/* Status indicator */}
+          <div className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${statusColors[agent.status]} ${agent.status === 'working' ? 'animate-pulse-subtle' : ''}`}></div>
         </div>
-      )}
+        
+        {/* Name tooltip with clearer styling */}
+        <div className={`px-1.5 py-0.5 bg-black/80 border border-flow-border/30 rounded text-[0.6rem] whitespace-nowrap shadow-lg ${isSelected ? 'bg-flow-accent/30 text-white' : ''}`}>
+          {agent.name}
+        </div>
+      </div>
     </motion.div>
   );
 };

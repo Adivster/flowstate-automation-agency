@@ -7,12 +7,9 @@ import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Cpu, Users, Briefcase, BookOpen, MessageCircle } from 'lucide-react';
 import OfficeFloorPlan from '@/components/agents/OfficeFloorPlan';
-import CommandTerminal from '@/components/agents/CommandTerminal';
 import AgencyMetrics from '@/components/agents/AgencyMetrics';
 import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
-import AgentCommunicationBot from '@/components/agents/AgentCommunicationBot';
-import CoursesList from '@/components/courses/CoursesList';
 
 const Agents = () => {
   const { t, isRTL } = useLanguage();
@@ -45,7 +42,7 @@ const Agents = () => {
           </div>
           
           <Tabs defaultValue="office" className="space-y-6">
-            <TabsList className="grid w-full max-w-md grid-cols-4 neon-border">
+            <TabsList className="grid w-full max-w-md grid-cols-3 neon-border">
               <TabsTrigger value="office" className="flex items-center gap-2">
                 <Briefcase className="h-4 w-4" />
                 <span className="hidden sm:inline">{t('officeView')}</span>
@@ -57,10 +54,6 @@ const Agents = () => {
               <TabsTrigger value="metrics" className="flex items-center gap-2">
                 <Cpu className="h-4 w-4" />
                 <span className="hidden sm:inline">{t('systemMetrics')}</span>
-              </TabsTrigger>
-              <TabsTrigger value="courses" className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('courses')}</span>
               </TabsTrigger>
             </TabsList>
             
@@ -77,7 +70,7 @@ const Agents = () => {
                 </div>
                 <button 
                   className="text-xs flex items-center gap-1 px-2 py-1 rounded-full bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 transition-colors"
-                  onClick={() => document.getElementById('communication-bot')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => window.dispatchEvent(new CustomEvent('openCommunicationTerminal'))}
                 >
                   <MessageCircle className="h-3 w-3" />
                   {t('openChat')}
@@ -100,23 +93,9 @@ const Agents = () => {
               
               <AgencyMetrics />
             </TabsContent>
-            
-            <TabsContent value="courses" className="space-y-6">
-              <div className="text-sm text-flow-foreground/60 mb-4">
-                {t('courseDescription')}
-              </div>
-              
-              <CoursesList />
-            </TabsContent>
           </Tabs>
-          
-          <div id="communication-bot" className="mt-10">
-            <AgentCommunicationBot />
-          </div>
         </TransitionWrapper>
       </main>
-      
-      <CommandTerminal />
       
       <Footer />
     </div>
