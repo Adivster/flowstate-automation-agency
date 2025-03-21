@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Terminal, X, Send, ChevronDown, Bot, MessageCircle } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 const CommunicationTerminal = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +25,7 @@ const CommunicationTerminal = () => {
   
   const terminalRef = useRef<HTMLDivElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
-  const { t, isRTL } = useLanguage();
+  const terminalWrapperRef = useRef<HTMLDivElement>(null);
 
   // Listen for the custom event to open the terminal
   useEffect(() => {
@@ -40,6 +39,25 @@ const CommunicationTerminal = () => {
       window.removeEventListener('openCommunicationTerminal', handleOpenTerminal);
     };
   }, []);
+
+  // Handle outside clicks
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isOpen && 
+        terminalWrapperRef.current && 
+        !terminalWrapperRef.current.contains(event.target as Node) &&
+        !(event.target as Element).closest('.terminal-toggle-btn')
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   // Scroll to bottom when new messages/commands arrive
   useEffect(() => {
@@ -140,14 +158,14 @@ const CommunicationTerminal = () => {
       return (
         <div key={index} className="flex gap-2 text-xs text-flow-accent font-mono py-1">
           <span className="text-flow-accent-foreground">&gt;</span>
-          <span className={isRTL ? "ltr-element" : ""}>{item.content}</span>
+          <span>{item.content}</span>
         </div>
       );
     } else {
       return (
         <div key={index} className="text-xs text-flow-foreground font-mono mt-1 mb-2">
           {item.content.split('\n').map((line, i) => (
-            <div key={i} className={isRTL ? "ltr-element" : ""}>{line}</div>
+            <div key={i}>{line}</div>
           ))}
         </div>
       );
@@ -162,7 +180,7 @@ const CommunicationTerminal = () => {
           size="icon"
           variant="outline"
           onClick={() => setIsOpen(!isOpen)}
-          className={`rounded-full h-12 w-12 shadow-lg neon-border ${isOpen ? 'bg-flow-accent' : 'bg-flow-background'}`}
+          className={`terminal-toggle-btn rounded-full h-12 w-12 shadow-lg neon-border ${isOpen ? 'bg-flow-accent' : 'bg-flow-background'}`}
         >
           {isOpen ? <X className="h-5 w-5" /> : <Terminal className="h-5 w-5" />}
         </Button>
@@ -172,6 +190,7 @@ const CommunicationTerminal = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            ref={terminalWrapperRef}
             initial={{ y: 400, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 400, opacity: 0 }}
@@ -184,11 +203,11 @@ const CommunicationTerminal = () => {
                 <TabsList className="h-8">
                   <TabsTrigger value="command" className="text-xs">
                     <Terminal className="h-3.5 w-3.5 mr-1.5" />
-                    {t('commandTerminal')}
+                    Command Terminal
                   </TabsTrigger>
                   <TabsTrigger value="chat" className="text-xs">
                     <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
-                    {t('communicationBot')}
+                    Communication Bot
                   </TabsTrigger>
                 </TabsList>
                 <div className="flex gap-2">
@@ -219,8 +238,8 @@ const CommunicationTerminal = () => {
                     type="text"
                     value={command}
                     onChange={(e) => setCommand(e.target.value)}
-                    placeholder={t('enterCommand')}
-                    className={`flex-1 bg-transparent border-flow-accent/30 text-flow-foreground text-sm ${isRTL ? "ltr-element" : ""}`}
+                    placeholder="Enter command..."
+                    className="flex-1 bg-transparent border-flow-accent/30 text-flow-foreground text-sm"
                     onKeyPress={handleKeyPress}
                   />
                   <Button 
@@ -229,7 +248,7 @@ const CommunicationTerminal = () => {
                     className="ml-2 bg-flow-accent hover:bg-flow-accent/80 neon-glow"
                   >
                     <Send className="h-4 w-4 mr-1" />
-                    {t('execute')}
+                    Execute
                   </Button>
                 </form>
               </TabsContent>
@@ -271,7 +290,7 @@ const CommunicationTerminal = () => {
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder={t('messagePlaceholder')}
+                    placeholder="What can I help you with?"
                     className="flex-1 bg-transparent border-flow-accent/30 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                   />
                   <Button 

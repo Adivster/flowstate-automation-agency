@@ -1,10 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cpu, MessageCircle, Activity, BarChart, Users, Clock } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import AgentCharacter from './AgentCharacter';
-import { useLanguage } from '@/contexts/LanguageContext';
 import Workstation from './office/Workstation';
 import DecorativeElement from './office/DecorativeElement';
 import HolographicElement from './office/HolographicElement';
@@ -21,10 +20,10 @@ const OfficeFloorPlan = () => {
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<number | null>(null);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
-  const { t, isRTL } = useLanguage();
+  const infoPanelRef = useRef<HTMLDivElement>(null);
   
-  // Get divisions with translations
-  const divisions = getDivisions(t);
+  // Get divisions
+  const divisions = getDivisions();
   
   // Handle division selection
   const handleDivisionClick = (divisionId: string) => {
@@ -39,6 +38,24 @@ const OfficeFloorPlan = () => {
     setSelectedDivision(null);
     setShowInfoPanel(true);
   };
+
+  // Handle outside clicks for info panel
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        showInfoPanel && 
+        infoPanelRef.current && 
+        !infoPanelRef.current.contains(event.target as Node)
+      ) {
+        setShowInfoPanel(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showInfoPanel]);
 
   // Close info panel when clicking escape
   useEffect(() => {
@@ -157,12 +174,13 @@ const OfficeFloorPlan = () => {
         
         {/* Floor markings */}
         <div className="absolute top-2 left-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs z-30">Floor Plan v3.0</div>
-        <div className="absolute bottom-3 right-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs z-30">{t('agency')}</div>
+        <div className="absolute bottom-3 right-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs z-30">FlowState Agency</div>
         
         {/* Info panel for selected division */}
         <AnimatePresence>
           {selectedDivision && showInfoPanel && (
             <motion.div 
+              ref={infoPanelRef}
               className="absolute bottom-4 left-4 right-4 bg-black/80 rounded-md border border-flow-accent/30 p-4 z-50"
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -192,7 +210,7 @@ const OfficeFloorPlan = () => {
                   </div>
                   <div className="text-white/70 text-xs flex items-center justify-center">
                     <Users className="h-3 w-3 mr-1" />
-                    {t('activeAgents')}
+                    Active Agents
                   </div>
                 </div>
                 
@@ -202,7 +220,7 @@ const OfficeFloorPlan = () => {
                   </div>
                   <div className="text-white/70 text-xs flex items-center justify-center">
                     <Activity className="h-3 w-3 mr-1" />
-                    {t('taskCompletion')}
+                    Task Completion
                   </div>
                 </div>
                 
@@ -212,7 +230,7 @@ const OfficeFloorPlan = () => {
                   </div>
                   <div className="text-white/70 text-xs flex items-center justify-center">
                     <BarChart className="h-3 w-3 mr-1" />
-                    {t('efficiency')}
+                    Efficiency
                   </div>
                 </div>
                 
@@ -222,14 +240,14 @@ const OfficeFloorPlan = () => {
                   </div>
                   <div className="text-white/70 text-xs flex items-center justify-center">
                     <Activity className="h-3 w-3 mr-1" />
-                    {t('tasksCompleted')}
+                    Tasks Completed
                   </div>
                 </div>
               </div>
               
               <div className="flex justify-end">
                 <button className="text-xs bg-flow-accent/90 text-white px-3 py-1 rounded hover:bg-flow-accent">
-                  {t('viewDetails')}
+                  View Details
                 </button>
               </div>
             </motion.div>
@@ -238,6 +256,7 @@ const OfficeFloorPlan = () => {
           {/* Info panel for selected agent */}
           {selectedAgent && showInfoPanel && (
             <motion.div 
+              ref={infoPanelRef}
               className="absolute bottom-4 left-4 right-4 bg-black/80 rounded-md border border-flow-accent/30 p-4 z-50"
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -270,7 +289,7 @@ const OfficeFloorPlan = () => {
                          agent.status === 'paused' ? 'bg-amber-500/20 text-amber-400' : 
                          'bg-red-500/20 text-red-400'}`
                       }>
-                        {t(agent.status)}
+                        {agent.status.charAt(0).toUpperCase() + agent.status.slice(1)}
                       </div>
                       <div className="text-white/60 text-xs ml-3">{agent.role}</div>
                     </div>
@@ -282,7 +301,7 @@ const OfficeFloorPlan = () => {
                         </div>
                         <div className="text-white/70 text-xs flex items-center justify-center">
                           <Activity className="h-3 w-3 mr-1" />
-                          {t('tasksCompleted')}
+                          Tasks Completed
                         </div>
                       </div>
                       
@@ -292,7 +311,7 @@ const OfficeFloorPlan = () => {
                         </div>
                         <div className="text-white/70 text-xs flex items-center justify-center">
                           <Clock className="h-3 w-3 mr-1" />
-                          {t('averageResponseTime')}
+                          Avg Response Time
                         </div>
                       </div>
                       
@@ -302,7 +321,7 @@ const OfficeFloorPlan = () => {
                         </div>
                         <div className="text-white/70 text-xs flex items-center justify-center">
                           <Activity className="h-3 w-3 mr-1" />
-                          {t('errorRate')}
+                          Error Rate
                         </div>
                       </div>
                       
@@ -312,14 +331,14 @@ const OfficeFloorPlan = () => {
                         </div>
                         <div className="text-white/70 text-xs flex items-center justify-center">
                           <Activity className="h-3 w-3 mr-1" />
-                          {t('uptime')}
+                          Uptime
                         </div>
                       </div>
                     </div>
                     
                     <div className="flex justify-end">
                       <button className="text-xs bg-flow-accent/90 text-white px-3 py-1 rounded hover:bg-flow-accent">
-                        {t('viewDetails')}
+                        View Details
                       </button>
                     </div>
                   </>

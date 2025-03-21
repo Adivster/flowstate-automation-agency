@@ -1,8 +1,5 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-
-// Supported languages
-export type Language = 'en' | 'he';
+import React, { createContext, useContext, ReactNode } from 'react';
 
 // Translation dictionary
 export const translations = {
@@ -91,101 +88,12 @@ export const translations = {
     averageResponseTime: 'Average Response Time',
     errorRate: 'Error Rate',
     uptime: 'Uptime',
-  },
-  he: {
-    // Common - Hebrew translations with improved natural phrasing
-    agency: 'סוכנות פלואוסטייט',
-    dashboard: 'לוח בקרה',
-    agents: 'סוכנים',
-    workflows: 'תהליכי עבודה',
-    knowledge: 'מאגר ידע',
-    analytics: 'ניתוח נתונים',
-    settings: 'הגדרות',
-    darkMode: 'מצב כהה',
-    lightMode: 'מצב בהיר',
-    courses: 'קורסים',
-    
-    // Agents page
-    agencyHQ: 'מטה הסוכנות',
-    monitorAgents: 'מעקב אחר פעילות הסוכנים וניהול המחלקות במשרד הווירטואלי שלך',
-    activeAgents: 'סוכנים פעילים',
-    officeView: 'מבט משרד',
-    agentList: 'רשימת סוכנים',
-    systemMetrics: 'מדדי מערכת',
-    interactiveOffice: 'תרשים קומה אינטראקטיבי - לחץ על המחלקות להצגת פרטים נוספים',
-    proTip: 'טיפ מקצועי:',
-    openTerminal: 'פתח את המסוף בעזרת הכפתור בפינה השמאלית התחתונה כדי להפעיל פקודות',
-    openChat: 'פתח צ\'אט',
-    allActiveAgents: 'כל הסוכנים הפעילים בסוכנות שלך',
-    performanceMetrics: 'מדדי ביצועים והישגי הסוכנות',
-    courseDescription: 'למד ניהול סוכנות AI עם הקורסים המקיפים שלנו',
-    viewDetails: 'צפה בפרטים',
-    
-    // Communication bot
-    communicationBot: 'בוט תקשורת',
-    online: 'מקוון',
-    typeMessage: 'הקלד את הודעתך...',
-    startConversation: 'התחל שיחה',
-    messagePlaceholder: 'במה אוכל לעזור לך?',
-    
-    // Divisions
-    researchDivision: 'מחלקת מחקר',
-    researchDesc: 'מתמחה באיסוף וניתוח נתונים',
-    developmentDivision: 'מחלקת פיתוח',
-    developmentDesc: 'בונה ומטמיעה פתרונות בינה מלאכותית',
-    strategyDivision: 'מחלקת אסטרטגיה',
-    strategyDesc: 'מתכננת ומתאמת את מאמצי הסוכנות',
-    securityDivision: 'מחלקת אבטחה',
-    securityDesc: 'מבטיחה פרטיות נתונים ותאימות לתקני אבטחה',
-    knowledgeBase: 'מאגר ידע',
-    knowledgeBaseDesc: 'מנהל ומארגן משאבי מידע',
-    analyticsDivision: 'מחלקת אנליטיקה',
-    analyticsDesc: 'מעבדת נתונים ומפיקה תובנות',
-    operationsDivision: 'מחלקת תפעול',
-    operationsDesc: 'מפקחת על הפעילות היומיומית של הסוכנות',
-    loungeName: 'מרחב המנוחה',
-    loungeDesc: 'אזור רגיעה לסוכנים פנויים',
-    
-    // Agent statuses
-    working: 'עובד',
-    idle: 'פנוי',
-    paused: 'מושהה',
-    error: 'שגיאה',
-    
-    // Terminal
-    commandTerminal: 'מסוף פקודות',
-    enterCommand: 'הקלד פקודה...',
-    execute: 'הפעל',
-    terminalWelcome: 'ברוכים הבאים לממשק הפקודות של הסוכנות',
-    availableCommands: 'פקודות זמינות:',
-    
-    // Metrics
-    completedTasks: 'משימות שהושלמו',
-    pendingTasks: 'משימות ממתינות',
-    activeTasks: 'משימות פעילות',
-    systemHealth: 'בריאות המערכת',
-    
-    // Division performance
-    divisionPerformance: 'ביצועי המחלקה',
-    taskCompletion: 'שיעור השלמת משימות',
-    resourceUtilization: 'ניצול משאבים',
-    efficiency: 'יעילות',
-    
-    // Agent performance
-    agentPerformance: 'ביצועי סוכן',
-    tasksCompleted: 'משימות שהושלמו',
-    averageResponseTime: 'זמן תגובה ממוצע',
-    errorRate: 'שיעור שגיאות',
-    uptime: 'זמן פעילות',
   }
 };
 
 // Context type
 type LanguageContextType = {
-  language: Language;
-  setLanguage: (lang: Language) => void;
   t: (key: keyof typeof translations.en) => string;
-  isRTL: boolean;
 };
 
 // Create context
@@ -193,17 +101,13 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 // Provider component
 export const LanguageProvider: React.FC<{children: ReactNode}> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
-  
-  const isRTL = language === 'he';
-  
   // Translation function
   const t = (key: keyof typeof translations.en): string => {
-    return translations[language][key] || translations.en[key] || key;
+    return translations.en[key] || key;
   };
   
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, isRTL }}>
+    <LanguageContext.Provider value={{ t }}>
       {children}
     </LanguageContext.Provider>
   );

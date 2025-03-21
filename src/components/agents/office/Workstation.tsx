@@ -77,6 +77,7 @@ const Workstation: React.FC<WorkstationProps> = ({
         width: `${width}%`,
         height: `${height}%`,
         transform: `rotate(${rotation}deg)`,
+        transformOrigin: 'center center',
         zIndex: 10
       }}
     >

@@ -9,13 +9,12 @@ import { Cpu, Users, Briefcase, BookOpen, MessageCircle } from 'lucide-react';
 import OfficeFloorPlan from '@/components/agents/OfficeFloorPlan';
 import AgencyMetrics from '@/components/agents/AgencyMetrics';
 import { useLanguage } from '@/contexts/LanguageContext';
-import LanguageSwitcher from '@/components/layout/LanguageSwitcher';
 
 const Agents = () => {
-  const { t, isRTL } = useLanguage();
+  const { t } = useLanguage();
   
   return (
-    <div className={`min-h-screen bg-flow-background text-flow-foreground flex flex-col cyber-grid ${isRTL ? 'rtl' : 'ltr'}`}>
+    <div className="min-h-screen bg-flow-background text-flow-foreground flex flex-col cyber-grid">
       <Helmet>
         <title>{t('agents')} | {t('agency')}</title>
       </Helmet>
@@ -37,7 +36,6 @@ const Agents = () => {
                 <span className="inline-block h-2 w-2 rounded-full bg-green-500 animate-pulse mr-2"></span>
                 24 {t('activeAgents')}
               </div>
-              <LanguageSwitcher />
             </div>
           </div>
           
@@ -73,7 +71,7 @@ const Agents = () => {
                   onClick={() => window.dispatchEvent(new CustomEvent('openCommunicationTerminal'))}
                 >
                   <MessageCircle className="h-3 w-3" />
-                  {t('openChat')}
+                  Open Chat
                 </button>
               </div>
             </TabsContent>
