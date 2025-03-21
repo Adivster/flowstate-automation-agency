@@ -32,10 +32,10 @@ const Analytics = () => {
   
   // Agent performance
   const agentPerformance = [
-    { name: 'Research', value: 35 },
-    { name: 'Development', value: 40 },
-    { name: 'Strategy', value: 15 },
-    { name: 'Security', value: 10 },
+    { name: 'KB Division', value: 35 },
+    { name: 'Operations', value: 40 },
+    { name: 'Analytics', value: 15 },
+    { name: 'Marketing', value: 10 },
   ];
   
   // Task distribution data
@@ -64,7 +64,7 @@ const Analytics = () => {
       
       <Navbar />
       
-      <main className="flex-1 container mx-auto px-4 py-16">
+      <main className="flex-1 container mx-auto px-4 pt-24 pb-12">
         <TransitionWrapper>
           <div className="mb-8">
             <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
@@ -162,7 +162,7 @@ const Analytics = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Agent Performance</CardTitle>
+                    <CardTitle>Division Performance</CardTitle>
                     <CardDescription>Contribution by division</CardDescription>
                   </CardHeader>
                   <CardContent>

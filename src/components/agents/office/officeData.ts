@@ -1,5 +1,5 @@
 
-import { Database, FileSearch, User, Code, Shield, BrainCog, Monitor, Coffee, ChartBar, BookOpen, Zap, Server, Activity, Cpu } from 'lucide-react';
+import { Database, FileSearch, User, Code, Shield, BrainCog, Monitor, Coffee, ChartBar, BookOpen, Zap, Server, Activity, Cpu, DollarSign, MessagesSquare } from 'lucide-react';
 import { WorkstationType } from './Workstation';
 
 export interface RoutePoint {
@@ -60,14 +60,14 @@ export interface Hologram {
 // Define office divisions with enhanced visual themes
 export const getDivisions = (t: (key: string) => string): Division[] => [
   {
-    id: 'research',
-    name: t('researchDivision'),
-    color: 'bg-cyan-500',
-    icon: FileSearch,
+    id: 'kb',
+    name: t('knowledgeBase'),
+    color: 'bg-indigo-500',
+    icon: BookOpen,
     position: { x: 15, y: 30, width: 28, height: 30 },
-    description: t('researchDesc'),
-    agents: 6,
-    tasks: 12,
+    description: t('knowledgeBaseDesc'),
+    agents: 3,
+    tasks: 30,
     decoration: [
       { type: 'boards', x: 25, y: 35 },
       { type: 'desk', x: 22, y: 40 },
@@ -76,46 +76,46 @@ export const getDivisions = (t: (key: string) => string): Division[] => [
     ]
   },
   {
-    id: 'development',
-    name: t('developmentDivision'),
-    color: 'bg-green-500',
-    icon: Code,
+    id: 'analytics',
+    name: t('analyticsDivision'),
+    color: 'bg-cyan-500',
+    icon: ChartBar,
     position: { x: 55, y: 30, width: 28, height: 30 },
-    description: t('developmentDesc'),
-    agents: 8,
-    tasks: 15,
+    description: t('analyticsDesc'),
+    agents: 3,
+    tasks: 22,
     decoration: [
       { type: 'computer', x: 60, y: 35 },
       { type: 'computer', x: 65, y: 35 },
-      { type: 'server', x: 70, y: 40 },
       { type: 'desk', x: 60, y: 38 },
       { type: 'desk', x: 65, y: 38 },
+      { type: 'chart', x: 70, y: 40 },
+    ]
+  },
+  {
+    id: 'operations',
+    name: t('operationsDivision'),
+    color: 'bg-green-500',
+    icon: LayoutGrid,
+    position: { x: 15, y: 70, width: 28, height: 20 },
+    description: t('operationsDesc'),
+    agents: 4,
+    tasks: 45,
+    decoration: [
+      { type: 'boards', x: 25, y: 75 },
+      { type: 'desk', x: 30, y: 78 },
+      { type: 'computer', x: 25, y: 75 },
     ]
   },
   {
     id: 'strategy',
     name: t('strategyDivision'),
     color: 'bg-purple-500',
-    icon: BrainCog,
-    position: { x: 15, y: 70, width: 28, height: 20 },
-    description: t('strategyDesc'),
-    agents: 4,
-    tasks: 8,
-    decoration: [
-      { type: 'boards', x: 25, y: 75 },
-      { type: 'desk', x: 30, y: 78 },
-      { type: 'chart', x: 35, y: 75 },
-    ]
-  },
-  {
-    id: 'security',
-    name: t('securityDivision'),
-    color: 'bg-red-500',
     icon: Shield,
     position: { x: 55, y: 70, width: 28, height: 20 },
-    description: t('securityDesc'),
-    agents: 5,
-    tasks: 10,
+    description: t('strategyDesc'),
+    agents: 2,
+    tasks: 20,
     decoration: [
       { type: 'server', x: 65, y: 75 },
       { type: 'computer', x: 60, y: 72 },
@@ -126,22 +126,22 @@ export const getDivisions = (t: (key: string) => string): Division[] => [
 
 // Workstations - more visible desks matching the reference images
 export const workstations: WorkstationType[] = [
-  // Research division workstations
+  // KB division workstations
   { x: 20, y: 35, width: 8, height: 4, type: 'desk' },
   { x: 30, y: 35, width: 8, height: 4, type: 'desk' },
   { x: 20, y: 42, width: 8, height: 4, type: 'desk' },
   { x: 30, y: 42, width: 8, height: 4, type: 'desk' },
   
-  // Development division workstations
+  // Analytics division workstations
   { x: 60, y: 35, width: 8, height: 4, type: 'desk' },
   { x: 70, y: 35, width: 8, height: 4, type: 'desk' },
   { x: 60, y: 42, width: 8, height: 4, type: 'desk' },
   { x: 70, y: 42, width: 8, height: 4, type: 'desk' },
   
-  // Strategy division - meeting table
+  // Operations division - meeting table
   { x: 22, y: 75, width: 15, height: 8, type: 'meeting' },
   
-  // Security division - server racks
+  // Strategy division - server racks
   { x: 60, y: 75, width: 4, height: 8, type: 'server' },
   { x: 66, y: 75, width: 4, height: 8, type: 'server' },
   { x: 72, y: 75, width: 4, height: 8, type: 'server' },
@@ -170,77 +170,77 @@ export const holograms: Hologram[] = [
 export const agents: Agent[] = [
   {
     id: 1,
-    name: 'Data Analyst',
-    role: 'Data Analysis',
+    name: 'KB Content Agent',
+    role: 'Knowledge Base',
     status: 'working',
-    icon: Database,
-    division: 'research',
+    icon: BookOpen,
+    division: 'kb',
     position: { x: 22, y: 34 }, // Positioned at workstation
     route: [
-      { division: 'research', x: 22, y: 34 },
-      { division: 'research', x: 32, y: 34 },
-      { division: 'research', x: 22, y: 41 },
+      { division: 'kb', x: 22, y: 34 },
+      { division: 'kb', x: 32, y: 34 },
+      { division: 'kb', x: 22, y: 41 },
     ]
   },
   {
     id: 2,
-    name: 'Security Lead',
-    role: 'Security',
+    name: 'Strategy Agent',
+    role: 'Strategy',
     status: 'working',
     icon: Shield,
-    division: 'security',
+    division: 'strategy',
     position: { x: 62, y: 74 }, // Positioned at security console
     route: [
-      { division: 'security', x: 62, y: 74 },
-      { division: 'security', x: 68, y: 74 },
-      { division: 'security', x: 74, y: 74 },
+      { division: 'strategy', x: 62, y: 74 },
+      { division: 'strategy', x: 68, y: 74 },
+      { division: 'strategy', x: 74, y: 74 },
     ]
   },
   {
     id: 3,
-    name: 'Senior Dev',
-    role: 'Coding',
+    name: 'Dashboard Agent',
+    role: 'Analytics',
     status: 'working',
-    icon: Code,
-    division: 'development',
+    icon: ChartBar,
+    division: 'analytics',
     position: { x: 62, y: 34 }, // At dev workstation
     route: [
-      { division: 'development', x: 62, y: 34 },
-      { division: 'development', x: 72, y: 34 },
-      { division: 'development', x: 62, y: 41 },
+      { division: 'analytics', x: 62, y: 34 },
+      { division: 'analytics', x: 72, y: 34 },
+      { division: 'analytics', x: 62, y: 41 },
     ]
   },
   {
     id: 4,
-    name: 'Research Lead',
-    role: 'Data Mining',
+    name: 'KB Search Agent',
+    role: 'Knowledge Base',
     status: 'working',
     icon: FileSearch,
-    division: 'research',
+    division: 'kb',
     position: { x: 32, y: 41 }, // Near research boards
     route: [
-      { division: 'research', x: 32, y: 41 },
-      { division: 'research', x: 22, y: 41 },
-      { division: 'research', x: 32, y: 34 },
+      { division: 'kb', x: 32, y: 41 },
+      { division: 'kb', x: 22, y: 41 },
+      { division: 'kb', x: 32, y: 34 },
     ]
   },
   {
     id: 5,
-    name: 'Project Manager',
-    role: 'Management',
+    name: 'Workflow Agent',
+    role: 'Operations',
     status: 'paused',
-    icon: User,
-    division: 'strategy',
+    icon: LayoutGrid,
+    division: 'operations',
     position: { x: 25, y: 74 }, // At meeting table
     route: [
-      { division: 'strategy', x: 25, y: 74 },
-      { division: 'strategy', x: 35, y: 74 },
-      { division: 'research', x: 25, y: 35 },
+      { division: 'operations', x: 25, y: 74 },
+      { division: 'operations', x: 35, y: 74 },
+      { division: 'kb', x: 25, y: 35 },
     ]
   },
   {
     id: 6,
-    name: 'AI Engineer',
+    name: 'Market Research Agent',
     role: 'Strategy',
     status: 'error',
     icon: BrainCog,
@@ -248,36 +248,36 @@ export const agents: Agent[] = [
     position: { x: 35, y: 74 }, // At strategy table
     route: [
       { division: 'strategy', x: 35, y: 74 },
-      { division: 'security', x: 60, y: 74 },
-      { division: 'development', x: 60, y: 35 },
+      { division: 'strategy', x: 60, y: 74 },
+      { division: 'analytics', x: 60, y: 35 },
     ]
   },
   {
     id: 7, 
-    name: 'Backend Dev',
-    role: 'Systems',
+    name: 'Integration Agent',
+    role: 'Operations',
     status: 'working',
     icon: Server,
-    division: 'development',
+    division: 'operations',
     position: { x: 72, y: 41 }, // At second dev desk
     route: [
-      { division: 'development', x: 72, y: 41 },
-      { division: 'development', x: 62, y: 41 },
-      { division: 'security', x: 68, y: 74 },
+      { division: 'operations', x: 72, y: 41 },
+      { division: 'operations', x: 62, y: 41 },
+      { division: 'strategy', x: 68, y: 74 },
     ]
   },
   {
     id: 8,
-    name: 'Hardware Specialist',
-    role: 'Infrastructure',
+    name: 'Metrics Agent',
+    role: 'Analytics',
     status: 'working',
-    icon: Cpu,
-    division: 'security',
+    icon: Activity,
+    division: 'analytics',
     position: { x: 74, y: 74 }, // Working on servers
     route: [
-      { division: 'security', x: 74, y: 74 },
-      { division: 'security', x: 68, y: 74 },
-      { division: 'security', x: 62, y: 74 },
+      { division: 'analytics', x: 74, y: 74 },
+      { division: 'analytics', x: 68, y: 74 },
+      { division: 'analytics', x: 62, y: 74 },
     ]
   }
 ];

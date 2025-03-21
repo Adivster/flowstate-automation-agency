@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AgentGrid from '@/components/agents/AgentGrid';
-import TransitionWrapper from '@/components/ui/TransitionWrapper';
+import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Cpu, Users, Briefcase } from 'lucide-react';
 import OfficeFloorPlan from '@/components/agents/OfficeFloorPlan';
@@ -23,7 +23,7 @@ const Agents = () => {
       
       <Navbar />
       
-      <main className="flex-1 container mx-auto px-4 py-12">
+      <main className="flex-1 container mx-auto px-4 pt-24 pb-12">
         <TransitionWrapper>
           <div className="flex flex-col md:flex-row justify-between items-start mb-6">
             <div>
