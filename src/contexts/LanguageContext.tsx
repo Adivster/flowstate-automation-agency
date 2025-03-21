@@ -17,6 +17,7 @@ export const translations = {
     settings: 'Settings',
     darkMode: 'Dark Mode',
     lightMode: 'Light Mode',
+    courses: 'Courses',
     
     // Agents page
     agencyHQ: 'Agency HQ',
@@ -28,8 +29,17 @@ export const translations = {
     interactiveOffice: 'Interactive office floor plan - click on divisions to view details',
     proTip: 'Pro tip:',
     openTerminal: 'Open the terminal with the button in the bottom right to run agency commands',
+    openChat: 'Open Chat',
     allActiveAgents: 'All active agents within your agency',
     performanceMetrics: 'Performance metrics and agency achievements',
+    courseDescription: 'Master AI agency management with our comprehensive courses',
+    viewDetails: 'View Details',
+    
+    // Communication bot
+    communicationBot: 'Communication Bot',
+    online: 'Online',
+    typeMessage: 'Type your message...',
+    startConversation: 'Start a conversation',
     
     // Divisions
     researchDivision: 'Research Division',
@@ -71,6 +81,7 @@ export const translations = {
     settings: 'הגדרות',
     darkMode: 'מצב כהה',
     lightMode: 'מצב בהיר',
+    courses: 'קורסים',
     
     // Agents page
     agencyHQ: 'מטה הסוכנות',
@@ -82,8 +93,17 @@ export const translations = {
     interactiveOffice: 'תוכנית קומה אינטראקטיבית - לחץ על מחלקות להצגת פרטים',
     proTip: 'טיפ מקצועי:',
     openTerminal: 'פתח את המסוף באמצעות הלחצן בפינה הימנית התחתונה כדי להפעיל פקודות',
+    openChat: 'פתח צ\'אט',
     allActiveAgents: 'כל הסוכנים הפעילים בסוכנות שלך',
     performanceMetrics: 'מדדי ביצועים והישגי הסוכנות',
+    courseDescription: 'שלוט בניהול סוכנות AI עם הקורסים המקיפים שלנו',
+    viewDetails: 'הצג פרטים',
+    
+    // Communication bot
+    communicationBot: 'בוט תקשורת',
+    online: 'מקוון',
+    typeMessage: 'הקלד את ההודעה שלך...',
+    startConversation: 'התחל שיחה',
     
     // Divisions
     researchDivision: 'מחלקת מחקר',
