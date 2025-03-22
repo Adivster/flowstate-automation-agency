@@ -14,7 +14,7 @@ const CommandTerminal = () => {
     { type: 'output', content: 'Type "help" for available commands' },
   ]);
   const terminalRef = useRef<HTMLDivElement>(null);
-  const { t, isRTL } = useLanguage();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (terminalRef.current) {
@@ -73,14 +73,14 @@ const CommandTerminal = () => {
       return (
         <div key={index} className="flex gap-2 text-xs text-flow-accent font-mono py-1">
           <span className="text-flow-accent-foreground">&gt;</span>
-          <span className={isRTL ? "ltr-element" : ""}>{item.content}</span>
+          <span>{item.content}</span>
         </div>
       );
     } else {
       return (
         <div key={index} className="text-xs text-flow-foreground font-mono mt-1 mb-2">
           {item.content.split('\n').map((line, i) => (
-            <div key={i} className={isRTL ? "ltr-element" : ""}>{line}</div>
+            <div key={i}>{line}</div>
           ))}
         </div>
       );
@@ -150,7 +150,7 @@ const CommandTerminal = () => {
                 value={command}
                 onChange={(e) => setCommand(e.target.value)}
                 placeholder={t('enterCommand')}
-                className={`flex-1 bg-transparent border-flow-accent/30 text-flow-foreground text-sm ${isRTL ? "ltr-element" : ""}`}
+                className="flex-1 bg-transparent border-flow-accent/30 text-flow-foreground text-sm"
               />
               <Button 
                 type="submit" 

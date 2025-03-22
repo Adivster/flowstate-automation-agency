@@ -8,10 +8,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import CoursesList from '@/components/courses/CoursesList';
 
 const Courses = () => {
-  const { t, isRTL } = useLanguage();
+  const { t } = useLanguage();
   
   return (
-    <div className={`min-h-screen bg-flow-background text-flow-foreground flex flex-col cyber-grid ${isRTL ? 'rtl' : 'ltr'}`}>
+    <div className="min-h-screen bg-flow-background text-flow-foreground flex flex-col cyber-grid">
       <Helmet>
         <title>{t('courses')} | {t('agency')}</title>
       </Helmet>

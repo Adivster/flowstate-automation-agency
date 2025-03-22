@@ -8,6 +8,7 @@ import Workstation from './office/Workstation';
 import DecorativeElement from './office/DecorativeElement';
 import HolographicElement from './office/HolographicElement';
 import Division from './office/Division';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   getDivisions, 
   workstations, 
@@ -21,6 +22,7 @@ const OfficeFloorPlan = () => {
   const [selectedAgent, setSelectedAgent] = useState<number | null>(null);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
   const infoPanelRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
   
   // Get divisions
   const divisions = getDivisions();
@@ -247,7 +249,7 @@ const OfficeFloorPlan = () => {
               
               <div className="flex justify-end">
                 <button className="text-xs bg-flow-accent/90 text-white px-3 py-1 rounded hover:bg-flow-accent">
-                  View Details
+                  {t('viewDetails')}
                 </button>
               </div>
             </motion.div>
@@ -289,7 +291,7 @@ const OfficeFloorPlan = () => {
                          agent.status === 'paused' ? 'bg-amber-500/20 text-amber-400' : 
                          'bg-red-500/20 text-red-400'}`
                       }>
-                        {agent.status.charAt(0).toUpperCase() + agent.status.slice(1)}
+                        {t(agent.status)}
                       </div>
                       <div className="text-white/60 text-xs ml-3">{agent.role}</div>
                     </div>
@@ -338,7 +340,7 @@ const OfficeFloorPlan = () => {
                     
                     <div className="flex justify-end">
                       <button className="text-xs bg-flow-accent/90 text-white px-3 py-1 rounded hover:bg-flow-accent">
-                        View Details
+                        {t('viewDetails')}
                       </button>
                     </div>
                   </>
