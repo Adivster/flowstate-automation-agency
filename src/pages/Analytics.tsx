@@ -1,4 +1,3 @@
-
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -7,8 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { AreaChart, BarChart, LineChart, PieChart } from '@/components/ui/chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CalendarDays, Clock, TrendingUp, Users } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Analytics = () => {
+  const { t } = useLanguage();
+  
   // Weekly activity data
   const weeklyActivity = [
     { name: 'Mon', value: 145 },
@@ -67,8 +69,8 @@ const Analytics = () => {
       <main className="flex-1 container mx-auto px-4 pt-24 pb-12">
         <TransitionWrapper>
           <div className="mb-8">
-            <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-            <p className="text-flow-foreground/70 mt-2">
+            <h1 className="text-3xl font-bold mb-1 neon-text">{t('analytics')}</h1>
+            <p className="text-flow-foreground/70">
               Comprehensive metrics and insights into your AI agency's operations
             </p>
           </div>

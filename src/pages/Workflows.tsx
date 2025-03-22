@@ -1,4 +1,3 @@
-
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -6,9 +5,11 @@ import TransitionWrapper from '@/components/ui/TransitionWrapper';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ArrowRight, CheckCircle, Clock, Code, FileText } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Workflows = () => {
-  // Sample workflow data - in a real app, this would come from an API
+  const { t } = useLanguage();
+  
   const workflows = [
     {
       id: 'wf-1',
@@ -71,10 +72,9 @@ const Workflows = () => {
       
       <main className="flex-1 container mx-auto px-4 py-24">
         <TransitionWrapper>
-          <h1 className="text-4xl font-bold mb-8">Workflows</h1>
-          
           <div className="mb-8">
-            <p className="text-flow-foreground/80 max-w-3xl">
+            <h1 className="text-3xl font-bold mb-1 neon-text">{t('workflows')}</h1>
+            <p className="text-flow-foreground/70">
               Automated workflows connect AI agents to accomplish complex tasks. 
               Monitor, adjust, and deploy new workflows from this dashboard.
             </p>

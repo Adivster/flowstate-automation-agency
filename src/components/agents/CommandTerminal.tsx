@@ -113,7 +113,7 @@ const CommandTerminal = () => {
             style={{ height: '300px' }}
           >
             <div className="flex justify-between items-center p-3 border-b border-flow-accent/50">
-              <h3 className="text-flow-accent text-sm font-bold pixel-text">{t('commandTerminal')}</h3>
+              <h3 className="text-flow-accent text-sm font-bold pixel-text neon-text">{t('commandTerminal')}</h3>
               <div className="flex gap-2">
                 <Button 
                   size="icon" 

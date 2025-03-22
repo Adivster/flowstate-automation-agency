@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -138,6 +139,14 @@
   /* Typography improvements */
   h1, h2, h3, h4, h5, h6 {
     @apply tracking-tight;
+  }
+  
+  /* Enhanced neon text effect for headers */
+  .neon-text {
+    @apply text-flow-accent;
+    text-shadow: 0 0 5px theme('colors.flow.accent'), 
+                 0 0 10px theme('colors.flow.accent'),
+                 0 0 15px theme('colors.flow.accent');
   }
   
   /* Game UI specific styles */
