@@ -89,8 +89,8 @@ const CommandTerminal = () => {
 
   return (
     <>
-      {/* Terminal toggle button */}
-      <div className="fixed bottom-5 right-5 z-50">
+      {/* Terminal toggle button - positioned higher */}
+      <div className="terminal-button">
         <Button
           size="icon"
           variant="outline"
@@ -113,7 +113,7 @@ const CommandTerminal = () => {
             style={{ height: '300px' }}
           >
             <div className="flex justify-between items-center p-3 border-b border-flow-accent/50">
-              <h3 className="text-flow-accent text-sm font-bold pixel-text neon-text">{t('commandTerminal')}</h3>
+              <h3 className="text-flow-accent text-sm font-bold neon-text">{t('commandTerminal')}</h3>
               <div className="flex gap-2">
                 <Button 
                   size="icon" 
@@ -143,7 +143,7 @@ const CommandTerminal = () => {
               {commandHistory.map((item, index) => renderCommandOutput(item, index))}
             </div>
             
-            {/* Command input - Fixed positioning to prevent overlap */}
+            {/* Command input with fixed layout */}
             <form onSubmit={handleCommand} className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex items-center">
               <Input
                 type="text"
@@ -155,7 +155,7 @@ const CommandTerminal = () => {
               <Button 
                 type="submit" 
                 size="sm" 
-                className="ml-2 bg-flow-accent hover:bg-flow-accent/80 neon-glow"
+                className="ml-2 bg-flow-accent hover:bg-flow-accent/80 neon-glow min-w-20"
               >
                 <Send className="h-4 w-4 mr-1" />
                 {t('execute')}

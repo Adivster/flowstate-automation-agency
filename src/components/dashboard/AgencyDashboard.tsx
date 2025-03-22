@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   BookOpen, 
@@ -98,7 +99,7 @@ const AgencyDashboard: React.FC = () => {
     <div className="space-y-10 py-6">
       <TransitionWrapper>
         <div className="space-y-2">
-          <h2 className="text-3xl font-semibold tracking-tight neon-text">{t('flowStateBusinessAgency')}</h2>
+          <h2 className="text-3xl font-bold mb-1 neon-text">FlowState Business Agency</h2>
           <p className="text-flow-foreground/70">
             AI-powered automation for your growing business
           </p>
@@ -107,21 +108,21 @@ const AgencyDashboard: React.FC = () => {
       
       <section className="space-y-6">
         <TransitionWrapper delay={50}>
-          <h3 className="text-xl font-medium neon-text">{t('performanceOverview')}</h3>
+          <h3 className="text-xl font-medium neon-text">Performance Overview</h3>
         </TransitionWrapper>
         <StatsOverview />
       </section>
       
       <section className="space-y-6">
         <TransitionWrapper delay={100}>
-          <h3 className="text-xl font-medium neon-text">{t('taskOverview')}</h3>
+          <h3 className="text-xl font-medium neon-text">Task Overview</h3>
         </TransitionWrapper>
         <TaskManagement />
       </section>
       
       <section className="space-y-6">
         <TransitionWrapper delay={150}>
-          <h3 className="text-xl font-medium neon-text">{t('coreDivisions')}</h3>
+          <h3 className="text-xl font-medium neon-text">Core Divisions</h3>
           <p className="text-sm text-flow-foreground/70">
             Essential divisions included in our Basic Plan ($49/month)
           </p>
@@ -139,7 +140,7 @@ const AgencyDashboard: React.FC = () => {
 
       <section className="space-y-6">
         <TransitionWrapper delay={250}>
-          <h3 className="text-xl font-medium neon-text">{t('additionalDivisions')}</h3>
+          <h3 className="text-xl font-medium neon-text">Additional Divisions</h3>
           <p className="text-sm text-flow-foreground/70">
             Unlock more capabilities with our Pro Plan ($199/month) or Premium Plan (Contact Sales)
           </p>
@@ -157,7 +158,7 @@ const AgencyDashboard: React.FC = () => {
       
       <section className="space-y-6">
         <TransitionWrapper delay={350}>
-          <h3 className="text-xl font-medium neon-text">{t('topPerformingAgents')}</h3>
+          <h3 className="text-xl font-medium neon-text">Top Performing Agents</h3>
         </TransitionWrapper>
         <AgentGrid />
       </section>
@@ -165,7 +166,7 @@ const AgencyDashboard: React.FC = () => {
       <section className="space-y-6">
         <TransitionWrapper delay={400}>
           <div className="bg-flow-muted/30 p-6 rounded-xl border border-flow-border">
-            <h3 className="text-xl font-medium mb-4 neon-text">{t('pricingPlans')}</h3>
+            <h3 className="text-xl font-medium mb-4 neon-text">Pricing Plans</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="p-6 bg-flow-background border border-flow-border rounded-xl">
                 <h4 className="text-lg font-medium">Basic Plan</h4>

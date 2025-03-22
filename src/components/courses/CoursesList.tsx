@@ -117,6 +117,10 @@ const CoursesList: React.FC = () => {
                   src={course.image} 
                   alt={course.title} 
                   className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                  onError={(e) => {
+                    // Fallback image if the original one fails to load
+                    (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
+                  }}
                 />
                 {course.popular && (
                   <div className="absolute top-3 right-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full">

@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -173,8 +174,8 @@ const CommunicationTerminal = () => {
 
   return (
     <>
-      {/* Terminal toggle button */}
-      <div className="fixed bottom-5 right-5 z-50">
+      {/* Terminal toggle button positioned higher */}
+      <div className="terminal-button">
         <Button
           size="icon"
           variant="outline"
@@ -231,7 +232,7 @@ const CommunicationTerminal = () => {
                   {commandHistory.map((item, index) => renderCommandOutput(item, index))}
                 </div>
                 
-                {/* Command input */}
+                {/* Command input with fixed layout to prevent button overlap */}
                 <form onSubmit={handleCommand} className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex items-center">
                   <Input
                     type="text"
@@ -244,7 +245,7 @@ const CommunicationTerminal = () => {
                   <Button 
                     type="submit" 
                     size="sm" 
-                    className="ml-2 bg-flow-accent hover:bg-flow-accent/80 neon-glow"
+                    className="ml-2 bg-flow-accent hover:bg-flow-accent/80 neon-glow min-w-20"
                   >
                     <Send className="h-4 w-4 mr-1" />
                     Execute
@@ -282,7 +283,7 @@ const CommunicationTerminal = () => {
                   ))}
                 </div>
                 
-                {/* Chat input - Fixed positioning of buttons */}
+                {/* Chat input with fixed layout to prevent button overlap */}
                 <div className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex items-center">
                   <Input
                     type="text"
@@ -295,7 +296,7 @@ const CommunicationTerminal = () => {
                   <Button 
                     size="sm" 
                     onClick={handleSendMessage}
-                    className="ml-2 bg-indigo-500 hover:bg-indigo-600"
+                    className="ml-2 bg-indigo-500 hover:bg-indigo-600 min-w-10"
                   >
                     <Send className="h-4 w-4" />
                   </Button>

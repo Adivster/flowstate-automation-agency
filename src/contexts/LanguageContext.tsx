@@ -16,6 +16,15 @@ export const translations = {
     lightMode: 'Light Mode',
     courses: 'Courses',
     
+    // Dashboard sections
+    flowStateBusinessAgency: 'FlowState Business Agency',
+    performanceOverview: 'Performance Overview',
+    taskOverview: 'Task Overview',
+    coreDivisions: 'Core Divisions',
+    additionalDivisions: 'Additional Divisions',
+    topPerformingAgents: 'Top Performing Agents',
+    pricingPlans: 'Pricing Plans',
+    
     // Agents page
     agencyHQ: 'Agency HQ',
     monitorAgents: 'Monitor agent activities and manage divisions in your virtual office',

@@ -1,3 +1,4 @@
+
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -65,7 +66,7 @@ const Workflows = () => {
   return (
     <div className="min-h-screen bg-flow-background text-flow-foreground flex flex-col">
       <Helmet>
-        <title>Workflows | FlowState Agency</title>
+        <title>{t('workflows')} | {t('agency')}</title>
       </Helmet>
       
       <Navbar />
