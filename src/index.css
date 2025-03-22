@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -239,4 +240,47 @@
 /* Hebrew typography adjustments */
 .font-heebo {
   font-family: 'Heebo', sans-serif;
+}
+
+/* Subtle pulse animation for agents and elements */
+@keyframes pulse-subtle {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Task progress bar animation */
+@keyframes progress-fill {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.progress-fill {
+  animation: progress-fill 1s ease-out forwards;
+}
+
+/* Data transmission path */
+@keyframes dash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+.animated-path {
+  stroke-dasharray: 5, 5;
+  animation: dash 1s linear infinite;
 }

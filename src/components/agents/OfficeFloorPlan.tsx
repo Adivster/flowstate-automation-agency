@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cpu, MessageCircle, Activity, BarChart, Users, Clock } from 'lucide-react';
+import { Cpu, MessageCircle, Activity, BarChart, Users, Clock, Zap, Server } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import AgentCharacter from './AgentCharacter';
 import Workstation from './office/Workstation';
@@ -16,21 +17,208 @@ import {
   agents
 } from './office/officeData';
 
+// Data transmission path component
+const DataTransmissionPath = ({ start, end, color, pulseSpeed = 3 }) => {
+  return (
+    <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-10">
+      <svg width="100%" height="100%" className="absolute top-0 left-0">
+        <line 
+          x1={`${start.x}%`} 
+          y1={`${start.y}%`} 
+          x2={`${end.x}%`} 
+          y2={`${end.y}%`} 
+          stroke={color} 
+          strokeWidth="1" 
+          strokeDasharray="3,3" 
+          className="opacity-30" 
+        />
+        
+        {/* Animated pulse along the path */}
+        <circle r="2" fill={color} className={`opacity-70`}>
+          <animateMotion
+            dur={`${pulseSpeed}s`}
+            repeatCount="indefinite"
+            path={`M${start.x},${start.y} L${end.x},${end.y}`}
+          />
+        </circle>
+      </svg>
+    </div>
+  );
+};
+
+// Animated notification popup
+const NotificationPopup = ({ x, y, message, type = 'info', onComplete }) => {
+  return (
+    <motion.div
+      className={`absolute text-xs px-2 py-1 rounded-md z-50 whitespace-nowrap 
+        ${type === 'success' ? 'bg-green-600/90 text-white' : 
+         type === 'error' ? 'bg-red-600/90 text-white' : 
+         type === 'warning' ? 'bg-amber-500/90 text-white' : 
+         'bg-blue-600/90 text-white'}`}
+      style={{ left: `${x}%`, top: `${y}%` }}
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: -20 }}
+      exit={{ opacity: 0, y: -30 }}
+      transition={{ duration: 0.3 }}
+      onAnimationComplete={onComplete}
+    >
+      {message}
+    </motion.div>
+  );
+};
+
 const OfficeFloorPlan = () => {
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<number | null>(null);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [dataTransmissions, setDataTransmissions] = useState([]);
+  const [pulsing, setPulsing] = useState({});
   const infoPanelRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
   
   // Get divisions - pass the translation function
   const divisions = getDivisions(t);
   
+  // Create initial data transmissions
+  useEffect(() => {
+    // Create connections between divisions
+    const initialTransmissions = [
+      { 
+        id: 1, 
+        start: { x: 25, y: 45 }, 
+        end: { x: 65, y: 45 }, 
+        color: '#6366f1' 
+      },
+      { 
+        id: 2, 
+        start: { x: 29, y: 60 }, 
+        end: { x: 61, y: 75 }, 
+        color: '#8b5cf6' 
+      },
+      { 
+        id: 3, 
+        start: { x: 45, y: 25 }, 
+        end: { x: 25, y: 35 }, 
+        color: '#ec4899' 
+      },
+      { 
+        id: 4, 
+        start: { x: 50, y: 25 }, 
+        end: { x: 65, y: 35 }, 
+        color: '#14b8a6' 
+      }
+    ];
+    
+    setDataTransmissions(initialTransmissions);
+    
+    // Periodically add temporary transmissions for more dynamic feel
+    const interval = setInterval(() => {
+      // Randomly select two divisions to connect
+      const divs = ['kb', 'analytics', 'operations', 'strategy', 'lounge'];
+      const div1 = divs[Math.floor(Math.random() * divs.length)];
+      let div2 = divs[Math.floor(Math.random() * divs.length)];
+      while (div1 === div2) {
+        div2 = divs[Math.floor(Math.random() * divs.length)];
+      }
+      
+      // Get positions for these divisions
+      const division1 = divisions.find(d => d.id === div1);
+      const division2 = divisions.find(d => d.id === div2);
+      
+      if (division1 && division2) {
+        const newTransmission = {
+          id: Math.random().toString(),
+          start: { 
+            x: division1.position.x + (division1.position.width / 2), 
+            y: division1.position.y + (division1.position.height / 2)
+          },
+          end: { 
+            x: division2.position.x + (division2.position.width / 2), 
+            y: division2.position.y + (division2.position.height / 2)
+          },
+          color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`,
+          temporary: true
+        };
+        
+        setDataTransmissions(prev => [...prev, newTransmission]);
+        
+        // Remove the temporary transmission after a delay
+        setTimeout(() => {
+          setDataTransmissions(prev => prev.filter(t => t.id !== newTransmission.id));
+        }, 4000);
+        
+        // Show notification by random chance
+        if (Math.random() > 0.5) {
+          const msgTypes = ['Data synced', 'Process completed', 'Update received', 'Task assigned'];
+          const msg = msgTypes[Math.floor(Math.random() * msgTypes.length)];
+          const notifTypes = ['success', 'info', 'warning'];
+          const type = notifTypes[Math.floor(Math.random() * notifTypes.length)];
+          
+          // Add notification
+          const notif = {
+            id: Date.now(),
+            x: division2.position.x + (division2.position.width / 2),
+            y: division2.position.y - 5,
+            message: msg,
+            type
+          };
+          
+          setNotifications(prev => [...prev, notif]);
+          
+          // Remove notification after 2 seconds
+          setTimeout(() => {
+            setNotifications(prev => prev.filter(n => n.id !== notif.id));
+          }, 2000);
+        }
+      }
+    }, 8000);
+    
+    return () => clearInterval(interval);
+  }, [divisions]);
+
+  // Simulate periodic division activity
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const randomDivId = divisions[Math.floor(Math.random() * divisions.length)].id;
+      
+      // Add pulse effect to division
+      setPulsing(prev => ({
+        ...prev,
+        [randomDivId]: true
+      }));
+      
+      // Remove pulse effect after a delay
+      setTimeout(() => {
+        setPulsing(prev => ({
+          ...prev,
+          [randomDivId]: false
+        }));
+      }, 3000);
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, [divisions]);
+  
   // Handle division selection
   const handleDivisionClick = (divisionId: string) => {
     setSelectedDivision(divisionId);
     setSelectedAgent(null);
     setShowInfoPanel(true);
+    
+    // Pulse the division when selected
+    setPulsing(prev => ({
+      ...prev,
+      [divisionId]: true
+    }));
+    
+    // Remove pulse effect after a delay
+    setTimeout(() => {
+      setPulsing(prev => ({
+        ...prev,
+        [divisionId]: false
+      }));
+    }, 2000);
   };
   
   // Handle agent selection
@@ -99,24 +287,64 @@ const OfficeFloorPlan = () => {
           }}
         />
         
-        {/* Central server/mainframe */}
-        <div 
-          className="absolute left-1/2 top-[15%] -translate-x-1/2 w-10 h-18 bg-blue-900 dark:bg-blue-800 rounded-sm border border-flow-accent/70 flex flex-col items-center justify-center gap-1 overflow-hidden z-20"
-        >
-          <div className="w-6 h-1 bg-flow-accent/80 rounded-sm"></div>
-          <div className="w-6 h-1 bg-green-500/80 rounded-sm"></div>
-          <div className="w-6 h-1 bg-purple-500/80 rounded-sm"></div>
-          <Cpu className="w-5 h-5 text-flow-accent/90" />
-        </div>
+        {/* Data transmission paths */}
+        {dataTransmissions.map(transmission => (
+          <DataTransmissionPath 
+            key={transmission.id}
+            start={transmission.start}
+            end={transmission.end}
+            color={transmission.color}
+            pulseSpeed={transmission.temporary ? 1.5 : 3 + Math.random() * 3}
+          />
+        ))}
         
-        {/* Communication hub */}
+        {/* Animated notifications */}
+        <AnimatePresence>
+          {notifications.map(notification => (
+            <NotificationPopup
+              key={notification.id}
+              x={notification.x}
+              y={notification.y}
+              message={notification.message}
+              type={notification.type}
+              onComplete={() => {}}
+            />
+          ))}
+        </AnimatePresence>
+        
+        {/* Central server/mainframe with animated glow */}
+        <motion.div 
+          className="absolute left-1/2 top-[15%] -translate-x-1/2 w-10 h-18 bg-blue-900 dark:bg-blue-800 rounded-sm border border-flow-accent/70 flex flex-col items-center justify-center gap-1 overflow-hidden z-20"
+          animate={{ 
+            boxShadow: ['0 0 5px rgba(99, 102, 241, 0.3)', '0 0 15px rgba(99, 102, 241, 0.5)', '0 0 5px rgba(99, 102, 241, 0.3)']
+          }}
+          transition={{ 
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          <div className="w-6 h-1 bg-flow-accent/80 rounded-sm">
+            <div className="h-full bg-white/80 animate-pulse" style={{ width: '30%' }}></div>
+          </div>
+          <div className="w-6 h-1 bg-green-500/80 rounded-sm">
+            <div className="h-full bg-white/80 animate-pulse" style={{ width: '60%', animationDelay: '0.3s' }}></div>
+          </div>
+          <div className="w-6 h-1 bg-purple-500/80 rounded-sm">
+            <div className="h-full bg-white/80 animate-pulse" style={{ width: '45%', animationDelay: '0.6s' }}></div>
+          </div>
+          <Cpu className="w-5 h-5 text-flow-accent/90" />
+        </motion.div>
+        
+        {/* Communication hub with animated ping effect */}
         <div
           className="absolute right-[15%] top-[15%] w-8 h-8 rounded-full bg-indigo-900 border border-indigo-500/70 flex items-center justify-center z-20"
         >
           <MessageCircle className="w-4 h-4 text-indigo-400" />
+          <div className="absolute inset-0 rounded-full border border-indigo-400 animate-ping opacity-50"></div>
         </div>
         
-        {/* Render workstations */}
+        {/* Render workstations with hover effect */}
         {workstations.map((station, index) => (
           <Workstation
             key={`station-${index}`}
@@ -157,6 +385,7 @@ const OfficeFloorPlan = () => {
             key={division.id}
             division={division}
             isSelected={selectedDivision === division.id}
+            isPulsing={pulsing[division.id]}
             onDivisionClick={handleDivisionClick}
             agents={agents}
           />
@@ -331,7 +560,7 @@ const OfficeFloorPlan = () => {
                           {performance.uptime}%
                         </div>
                         <div className="text-white/70 text-xs flex items-center justify-center">
-                          <Activity className="h-3 w-3 mr-1" />
+                          <Zap className="h-3 w-3 mr-1" />
                           Uptime
                         </div>
                       </div>

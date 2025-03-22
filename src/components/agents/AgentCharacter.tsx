@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Progress } from "@/components/ui/progress";
 
 interface RoutePoint {
   division: string;
@@ -36,6 +37,8 @@ const AgentCharacter: React.FC<AgentProps> = ({
 }) => {
   const [position, setPosition] = useState(agent.position);
   const [currentRouteIndex, setCurrentRouteIndex] = useState(0);
+  const [taskProgress, setTaskProgress] = useState(Math.floor(Math.random() * 30) + 70); // 70-100% initial progress
+  const [energyLevel, setEnergyLevel] = useState(Math.floor(Math.random() * 40) + 60); // 60-100% initial energy
   const animationRef = useRef<number | null>(null);
   const { t } = useLanguage();
   
@@ -49,6 +52,31 @@ const AgentCharacter: React.FC<AgentProps> = ({
       default: return status;
     }
   };
+  
+  // Simulate task progress changes
+  useEffect(() => {
+    if (agent.status === 'working') {
+      const interval = setInterval(() => {
+        // Randomly update task progress for working agents
+        setTaskProgress(prev => {
+          const change = Math.random() > 0.5 ? Math.random() * 5 : -Math.random() * 3;
+          return Math.max(40, Math.min(100, prev + change));
+        });
+        
+        // Slowly decrease energy level
+        setEnergyLevel(prev => Math.max(20, prev - Math.random() * 2));
+      }, 3000);
+      
+      return () => clearInterval(interval);
+    } else if (agent.status === 'idle') {
+      // Idle agents regain energy
+      const interval = setInterval(() => {
+        setEnergyLevel(prev => Math.min(100, prev + Math.random() * 5));
+      }, 2000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [agent.status]);
   
   // Movement between route points or random movement within division area
   useEffect(() => {
@@ -86,11 +114,24 @@ const AgentCharacter: React.FC<AgentProps> = ({
     }
   }, [agent, currentRouteIndex, routePath]);
   
+  // Determine colors based on status and progress values
   const statusColors = {
     working: 'bg-green-500',
     idle: 'bg-gray-500',
     paused: 'bg-amber-500',
     error: 'bg-red-500'
+  };
+  
+  const getTaskProgressColor = () => {
+    if (taskProgress > 80) return 'bg-green-500';
+    if (taskProgress > 50) return 'bg-amber-500';
+    return 'bg-red-500';
+  };
+  
+  const getEnergyLevelColor = () => {
+    if (energyLevel > 70) return 'bg-cyan-500';
+    if (energyLevel > 40) return 'bg-amber-500';
+    return 'bg-red-500';
   };
   
   const Icon = agent.icon;
@@ -120,6 +161,14 @@ const AgentCharacter: React.FC<AgentProps> = ({
     >
       {/* Agent avatar */}
       <div className="flex flex-col items-center">
+        {/* Task progress bar */}
+        <div className="w-12 h-1 mb-1 rounded-full overflow-hidden bg-gray-800">
+          <div 
+            className={`h-full ${getTaskProgressColor()} transition-all duration-500`}
+            style={{ width: `${taskProgress}%` }}
+          ></div>
+        </div>
+        
         <div className="relative mb-1">
           <div 
             className={`rounded-full p-2 ${
@@ -133,6 +182,14 @@ const AgentCharacter: React.FC<AgentProps> = ({
           
           {/* Status indicator */}
           <div className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${statusColors[agent.status]} ${agent.status === 'working' ? 'animate-pulse-subtle' : ''}`}></div>
+        </div>
+        
+        {/* Energy level bar */}
+        <div className="w-12 h-1 mb-1 rounded-full overflow-hidden bg-gray-800">
+          <div 
+            className={`h-full ${getEnergyLevelColor()} transition-all duration-500`}
+            style={{ width: `${energyLevel}%` }}
+          ></div>
         </div>
         
         {/* Name tooltip with clearer styling */}

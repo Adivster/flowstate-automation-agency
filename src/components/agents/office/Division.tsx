@@ -27,11 +27,18 @@ interface DivisionProps {
     }>;
   };
   isSelected: boolean;
+  isPulsing?: boolean;
   onDivisionClick: (id: string) => void;
   agents: Array<any>;
 }
 
-const Division: React.FC<DivisionProps> = ({ division, isSelected, onDivisionClick, agents }) => {
+const Division: React.FC<DivisionProps> = ({ 
+  division, 
+  isSelected, 
+  isPulsing = false,
+  onDivisionClick, 
+  agents 
+}) => {
   const { t } = useLanguage();
   const Icon = division.icon;
   const agentsInDivision = agents.filter(agent => agent.division === division.id);
@@ -68,20 +75,48 @@ const Division: React.FC<DivisionProps> = ({ division, isSelected, onDivisionCli
     );
   };
   
+  // Get tailwind color class based on division color string
+  const getColorClass = (baseColor) => {
+    return baseColor.replace('bg-', '');
+  };
+  
   return (
     <motion.div
       key={division.id}
-      className={`absolute rounded-md ${division.color} bg-opacity-20 border-2 cursor-pointer transition-colors duration-200 ${isSelected ? 'border-white shadow-lg' : `border-${division.color}`}`}
+      className={`absolute rounded-md ${division.color} bg-opacity-20 border-2 cursor-pointer transition-colors duration-200 
+        ${isSelected ? 'border-white shadow-lg' : `border-${getColorClass(division.color)}`}
+        ${isPulsing ? 'shadow-lg' : ''}`}
       style={{
         left: `${division.position.x}%`,
         top: `${division.position.y}%`,
         width: `${division.position.width}%`,
         height: `${division.position.height}%`,
-        zIndex: isSelected ? 30 : 20
+        zIndex: isSelected ? 30 : 20,
+        boxShadow: isPulsing ? `0 0 15px ${getColorClass(division.color)}` : ''
       }}
       onClick={() => onDivisionClick(division.id)}
       whileHover={{ scale: 1.01 }}
-      animate={isSelected ? { scale: 1.03 } : { scale: 1 }}
+      animate={
+        isSelected ? { 
+          scale: 1.03,
+        } : 
+        isPulsing ? {
+          boxShadow: [
+            `0 0 5px ${getColorClass(division.color)}`,
+            `0 0 15px ${getColorClass(division.color)}`,
+            `0 0 5px ${getColorClass(division.color)}`
+          ]
+        } : { 
+          scale: 1
+        }
+      }
+      transition={{
+        boxShadow: {
+          duration: 1.5,
+          repeat: isPulsing ? Infinity : 0,
+          repeatType: "reverse"
+        }
+      }}
     >
       <div className="absolute top-2 left-2 flex items-center">
         <Icon className="h-4 w-4 mr-1 text-white" />
@@ -96,6 +131,14 @@ const Division: React.FC<DivisionProps> = ({ division, isSelected, onDivisionCli
       
       {/* Division decoration items */}
       {division.decoration.map(item => renderDecoration(item))}
+      
+      {/* Activity indicators - only show when division is active */}
+      {isPulsing && (
+        <div className="absolute right-2 top-2 flex items-center">
+          <span className="animate-ping absolute h-2 w-2 rounded-full bg-white opacity-75"></span>
+          <span className="relative h-2 w-2 rounded-full bg-white"></span>
+        </div>
+      )}
     </motion.div>
   );
 };
