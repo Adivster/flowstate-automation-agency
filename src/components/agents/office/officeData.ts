@@ -1,4 +1,3 @@
-
 import { Database, FileSearch, User, Code, Shield, BrainCog, Monitor, Coffee, ChartBar, BookOpen, Zap, Server, Activity, Cpu, DollarSign, MessagesSquare, LayoutGrid } from 'lucide-react';
 import { WorkstationType } from './Workstation';
 
@@ -57,87 +56,91 @@ export interface Hologram {
   size: number;
 }
 
-export const getDivisions = (t: (key: string) => string): Division[] => [
-  {
-    id: 'kb',
-    name: t('knowledgeBase'),
-    color: 'bg-indigo-500',
-    icon: BookOpen,
-    position: { x: 15, y: 30, width: 28, height: 30 },
-    description: t('knowledgeBaseDesc'),
-    agents: 3,
-    tasks: 30,
-    decoration: [
-      { type: 'boards', x: 25, y: 35 },
-      { type: 'desk', x: 22, y: 40 },
-      { type: 'computer', x: 22, y: 38 },
-      { type: 'chart', x: 35, y: 35 },
-    ]
-  },
-  {
-    id: 'analytics',
-    name: t('analyticsDivision'),
-    color: 'bg-cyan-500',
-    icon: ChartBar,
-    position: { x: 55, y: 30, width: 28, height: 30 },
-    description: t('analyticsDesc'),
-    agents: 3,
-    tasks: 22,
-    decoration: [
-      { type: 'computer', x: 60, y: 35 },
-      { type: 'computer', x: 65, y: 35 },
-      { type: 'desk', x: 60, y: 38 },
-      { type: 'desk', x: 65, y: 38 },
-      { type: 'chart', x: 70, y: 40 },
-    ]
-  },
-  {
-    id: 'operations',
-    name: t('operationsDivision'),
-    color: 'bg-green-500',
-    icon: LayoutGrid,
-    position: { x: 15, y: 70, width: 28, height: 20 },
-    description: t('operationsDesc'),
-    agents: 4,
-    tasks: 45,
-    decoration: [
-      { type: 'boards', x: 25, y: 75 },
-      { type: 'desk', x: 30, y: 78 },
-      { type: 'computer', x: 25, y: 75 },
-    ]
-  },
-  {
-    id: 'strategy',
-    name: t('strategyDivision'),
-    color: 'bg-purple-500',
-    icon: Shield,
-    position: { x: 55, y: 70, width: 28, height: 20 },
-    description: t('strategyDesc'),
-    agents: 2,
-    tasks: 20,
-    decoration: [
-      { type: 'server', x: 65, y: 75 },
-      { type: 'computer', x: 60, y: 72 },
-      { type: 'monitor', x: 70, y: 72 },
-    ]
-  },
-  {
-    id: 'lounge',
-    name: t('loungeName'),
-    color: 'bg-amber-500',
-    icon: Coffee,
-    position: { x: 35, y: 10, width: 30, height: 15 },
-    description: t('loungeDesc'),
-    agents: 2,
-    tasks: 0,
-    decoration: [
-      { type: 'coffee', x: 40, y: 15 },
-      { type: 'coffee', x: 50, y: 15 },
-      { type: 'sofa', x: 45, y: 17 },
-      { type: 'sofa', x: 55, y: 17 },
-    ]
-  }
-];
+export const getDivisions = (translator?: (key: string) => string): Division[] => {
+  const t = translator || ((key: string) => key);
+  
+  return [
+    {
+      id: 'kb',
+      name: t('knowledgeBase'),
+      color: 'bg-indigo-500',
+      icon: BookOpen,
+      position: { x: 15, y: 30, width: 28, height: 30 },
+      description: t('knowledgeBaseDesc'),
+      agents: 3,
+      tasks: 30,
+      decoration: [
+        { type: 'boards', x: 25, y: 35 },
+        { type: 'desk', x: 22, y: 40 },
+        { type: 'computer', x: 22, y: 38 },
+        { type: 'chart', x: 35, y: 35 },
+      ]
+    },
+    {
+      id: 'analytics',
+      name: t('analyticsDivision'),
+      color: 'bg-cyan-500',
+      icon: ChartBar,
+      position: { x: 55, y: 30, width: 28, height: 30 },
+      description: t('analyticsDesc'),
+      agents: 3,
+      tasks: 22,
+      decoration: [
+        { type: 'computer', x: 60, y: 35 },
+        { type: 'computer', x: 65, y: 35 },
+        { type: 'desk', x: 60, y: 38 },
+        { type: 'desk', x: 65, y: 38 },
+        { type: 'chart', x: 70, y: 40 },
+      ]
+    },
+    {
+      id: 'operations',
+      name: t('operationsDivision'),
+      color: 'bg-green-500',
+      icon: LayoutGrid,
+      position: { x: 15, y: 70, width: 28, height: 20 },
+      description: t('operationsDesc'),
+      agents: 4,
+      tasks: 45,
+      decoration: [
+        { type: 'boards', x: 25, y: 75 },
+        { type: 'desk', x: 30, y: 78 },
+        { type: 'computer', x: 25, y: 75 },
+      ]
+    },
+    {
+      id: 'strategy',
+      name: t('strategyDivision'),
+      color: 'bg-purple-500',
+      icon: Shield,
+      position: { x: 55, y: 70, width: 28, height: 20 },
+      description: t('strategyDesc'),
+      agents: 2,
+      tasks: 20,
+      decoration: [
+        { type: 'server', x: 65, y: 75 },
+        { type: 'computer', x: 60, y: 72 },
+        { type: 'monitor', x: 70, y: 72 },
+      ]
+    },
+    {
+      id: 'lounge',
+      name: t('loungeName'),
+      color: 'bg-amber-500',
+      icon: Coffee,
+      position: { x: 35, y: 10, width: 30, height: 15 },
+      description: t('loungeDesc'),
+      agents: 2,
+      tasks: 0,
+      decoration: [
+        { type: 'coffee', x: 40, y: 15 },
+        { type: 'coffee', x: 50, y: 15 },
+        { type: 'sofa', x: 45, y: 17 },
+        { type: 'sofa', x: 55, y: 17 },
+      ]
+    }
+  ];
+};
 
 export const workstations: WorkstationType[] = [
   { x: 20, y: 35, width: 8, height: 4, type: 'desk' },
@@ -156,7 +159,6 @@ export const workstations: WorkstationType[] = [
   { x: 66, y: 75, width: 4, height: 8, type: 'server' },
   { x: 72, y: 75, width: 4, height: 8, type: 'server' },
   
-  // Lounge furniture
   { x: 40, y: 15, width: 6, height: 3, type: 'sofa' },
   { x: 50, y: 15, width: 6, height: 3, type: 'sofa' },
   { x: 45, y: 13, width: 4, height: 2, type: 'coffee_table' },
@@ -183,7 +185,6 @@ export const holograms: Hologram[] = [
   { type: 'data', x: 62, y: 72, size: 5 },
 ];
 
-// Add more idle agents in the lounge area
 export const agents: Agent[] = [
   {
     id: 1,

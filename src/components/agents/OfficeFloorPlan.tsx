@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cpu, MessageCircle, Activity, BarChart, Users, Clock } from 'lucide-react';
@@ -24,8 +23,8 @@ const OfficeFloorPlan = () => {
   const infoPanelRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
   
-  // Get divisions
-  const divisions = getDivisions();
+  // Get divisions - pass the translation function
+  const divisions = getDivisions(t);
   
   // Handle division selection
   const handleDivisionClick = (divisionId: string) => {
