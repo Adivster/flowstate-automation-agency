@@ -97,7 +97,7 @@ const Knowledge = () => {
       
       <main className="flex-1 container mx-auto px-4 py-24">
         <TransitionWrapper>
-          <h1 className="text-4xl font-bold mb-8">Knowledge Base</h1>
+          <h1 className="text-3xl font-bold mb-8 neon-text">Knowledge Base</h1>
           
           <div className="mb-8">
             <p className="text-flow-foreground/80 max-w-3xl">
