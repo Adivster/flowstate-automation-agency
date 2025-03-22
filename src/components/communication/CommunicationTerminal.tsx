@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -233,7 +232,7 @@ const CommunicationTerminal = () => {
                 </div>
                 
                 {/* Command input */}
-                <form onSubmit={handleCommand} className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex">
+                <form onSubmit={handleCommand} className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex items-center">
                   <Input
                     type="text"
                     value={command}
@@ -283,8 +282,8 @@ const CommunicationTerminal = () => {
                   ))}
                 </div>
                 
-                {/* Chat input */}
-                <div className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex items-center gap-2">
+                {/* Chat input - Fixed positioning of buttons */}
+                <div className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex items-center">
                   <Input
                     type="text"
                     value={newMessage}
@@ -296,7 +295,7 @@ const CommunicationTerminal = () => {
                   <Button 
                     size="sm" 
                     onClick={handleSendMessage}
-                    className="bg-indigo-500 hover:bg-indigo-600"
+                    className="ml-2 bg-indigo-500 hover:bg-indigo-600"
                   >
                     <Send className="h-4 w-4" />
                   </Button>

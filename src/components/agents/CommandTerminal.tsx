@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Terminal, X, Send, ChevronDown, ChevronUp } from 'lucide-react';
+import { Terminal, X, Send, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const CommandTerminal = () => {
@@ -143,8 +143,8 @@ const CommandTerminal = () => {
               {commandHistory.map((item, index) => renderCommandOutput(item, index))}
             </div>
             
-            {/* Command input */}
-            <form onSubmit={handleCommand} className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex">
+            {/* Command input - Fixed positioning to prevent overlap */}
+            <form onSubmit={handleCommand} className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex items-center">
               <Input
                 type="text"
                 value={command}

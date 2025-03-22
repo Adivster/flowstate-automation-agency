@@ -126,6 +126,7 @@ const AgentCommunicationBot: React.FC = () => {
             )}
           </AnimatePresence>
           
+          {/* Chat input - Fixed to prevent button overlap */}
           <div className="p-3 border-t border-flow-border flex items-center gap-2">
             <input
               type="text"

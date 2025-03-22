@@ -18,7 +18,7 @@ const CoursesList: React.FC = () => {
       level: 'beginner',
       duration: '3 hours',
       modules: 7,
-      image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+      image: 'https://images.unsplash.com/photo-1677442340913-7058d395ec12?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
       popular: true
     },
     {
@@ -28,7 +28,7 @@ const CoursesList: React.FC = () => {
       level: 'intermediate',
       duration: '5 hours',
       modules: 12,
-      image: 'https://images.unsplash.com/photo-1648203847710-88eba909902f?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+      image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
       popular: false
     },
     {
@@ -38,7 +38,7 @@ const CoursesList: React.FC = () => {
       level: 'advanced',
       duration: '8 hours',
       modules: 15,
-      image: 'https://images.unsplash.com/photo-1677442340913-7058d395ec12?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+      image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
       popular: true
     },
     {
@@ -48,7 +48,7 @@ const CoursesList: React.FC = () => {
       level: 'intermediate',
       duration: '4 hours',
       modules: 9,
-      image: 'https://images.unsplash.com/photo-1677442333574-e52e6529bcc4?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+      image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
       popular: false
     },
     {
@@ -58,7 +58,7 @@ const CoursesList: React.FC = () => {
       level: 'intermediate',
       duration: '6 hours',
       modules: 10,
-      image: 'https://images.unsplash.com/photo-1639762681057-408e52192e55?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+      image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
       popular: false
     },
     {
@@ -68,7 +68,7 @@ const CoursesList: React.FC = () => {
       level: 'advanced',
       duration: '10 hours',
       modules: 18,
-      image: 'https://images.unsplash.com/photo-1677442335684-e6258be07152?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
+      image: 'https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
       popular: false
     }
   ];
