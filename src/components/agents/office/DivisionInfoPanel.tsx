@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Users, Activity, BarChart } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { usePerformanceData } from '@/hooks/usePerformanceData';
 
 interface Division {
   id: string;
@@ -15,26 +16,20 @@ interface Agent {
   division: string;
 }
 
-interface PerformanceData {
-  taskCompletion: number;
-  efficiency: number;
-  tasksCompleted: number;
-}
-
 interface DivisionInfoPanelProps {
   division: Division;
   agents: Agent[];
-  performanceData: PerformanceData;
   onClose: () => void;
 }
 
 const DivisionInfoPanel: React.FC<DivisionInfoPanelProps> = ({ 
   division, 
-  agents, 
-  performanceData, 
+  agents,
   onClose 
 }) => {
   const { t } = useLanguage();
+  // Pass division ID to get consistent performance data
+  const performanceData = usePerformanceData(division.id);
   
   return (
     <motion.div 

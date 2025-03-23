@@ -5,6 +5,7 @@ import { LucideIcon } from 'lucide-react';
 import GlassMorphism from '../ui/GlassMorphism';
 import InfoChip from '../ui/InfoChip';
 import TransitionWrapper from '../ui/TransitionWrapper';
+import { usePerformanceData } from '@/hooks/usePerformanceData';
 
 interface DivisionCardProps {
   title: string;
@@ -41,7 +42,15 @@ const DivisionCard: React.FC<DivisionCardProps> = ({
   };
 
   const { iconColor, bgColor } = divisionThemes[type];
-  const progress = Math.round((taskStatus.completed / taskStatus.total) * 100);
+  
+  // Use a stable ID (combination of title and type) to get consistent performance data
+  const divisionId = `${title}-${type}`;
+  const performanceData = usePerformanceData(divisionId);
+  
+  // Use the stable taskStatus or calculate it from performanceData
+  const progress = taskStatus 
+    ? Math.round((taskStatus.completed / taskStatus.total) * 100)
+    : performanceData.taskCompletion;
 
   return (
     <TransitionWrapper delay={delay}>
@@ -74,7 +83,11 @@ const DivisionCard: React.FC<DivisionCardProps> = ({
               />
             </div>
             <div className="text-xs text-flow-foreground/70">
-              {taskStatus.completed} of {taskStatus.total} tasks completed
+              {taskStatus ? (
+                `${taskStatus.completed} of ${taskStatus.total} tasks completed`
+              ) : (
+                `${performanceData.tasksCompleted} tasks completed`
+              )}
             </div>
           </div>
         </div>

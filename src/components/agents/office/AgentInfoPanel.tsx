@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Activity, Clock, Zap } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { usePerformanceData } from '@/hooks/usePerformanceData';
 
 interface AgentDetails {
   id: number;
@@ -11,25 +12,18 @@ interface AgentDetails {
   status: 'working' | 'idle' | 'paused' | 'error';
 }
 
-interface PerformanceData {
-  tasksCompleted: number;
-  averageResponseTime: string;
-  errorRate: number;
-  uptime: number;
-}
-
 interface AgentInfoPanelProps {
   agent: AgentDetails;
-  performanceData: PerformanceData;
   onClose: () => void;
 }
 
 const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({ 
   agent, 
-  performanceData, 
   onClose 
 }) => {
   const { t } = useLanguage();
+  // Pass agent ID to get consistent performance data
+  const performanceData = usePerformanceData(agent.id);
   
   return (
     <motion.div 

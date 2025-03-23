@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
@@ -14,7 +13,6 @@ import CentralServer from './office/CentralServer';
 import CommunicationHub from './office/CommunicationHub';
 import DivisionInfoPanel from './office/DivisionInfoPanel';
 import AgentInfoPanel from './office/AgentInfoPanel';
-import { usePerformanceData } from '@/hooks/usePerformanceData';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   getDivisions, 
@@ -50,15 +48,9 @@ const OfficeFloorPlan: React.FC = () => {
   const [pulsing, setPulsing] = useState<Record<string, boolean>>({});
   const { t } = useLanguage();
   
-  // Get performance data
-  const performanceData = usePerformanceData();
-  
-  // Get divisions - pass the translation function
   const divisions = getDivisions(t);
   
-  // Create initial data transmissions
   useEffect(() => {
-    // Create connections between divisions
     const initialTransmissions: DataTransmission[] = [
       { 
         id: 1, 
@@ -88,25 +80,20 @@ const OfficeFloorPlan: React.FC = () => {
     
     setDataTransmissions(initialTransmissions);
     
-    // Clean up to avoid memory leaks
     return () => {
       setDataTransmissions([]);
     };
   }, []);
   
-  // Create temporary data transmissions periodically
   useEffect(() => {
-    // Periodically add temporary transmissions for more dynamic feel
     const interval = setInterval(() => {
-      // Randomly select two divisions to connect
       const divs = ['kb', 'analytics', 'operations', 'strategy', 'lounge'];
-      const div1 = divs[Math.floor(Math.random() * divs.length)];
+      let div1 = divs[Math.floor(Math.random() * divs.length)];
       let div2 = divs[Math.floor(Math.random() * divs.length)];
       while (div1 === div2) {
         div2 = divs[Math.floor(Math.random() * divs.length)];
       }
       
-      // Get positions for these divisions
       const division1 = divisions.find(d => d.id === div1);
       const division2 = divisions.find(d => d.id === div2);
       
@@ -127,19 +114,16 @@ const OfficeFloorPlan: React.FC = () => {
         
         setDataTransmissions(prev => [...prev, newTransmission]);
         
-        // Remove the temporary transmission after a delay
         setTimeout(() => {
           setDataTransmissions(prev => prev.filter(t => t.id !== newTransmission.id));
         }, 4000);
         
-        // Show notification by random chance
         if (Math.random() > 0.5) {
           const msgTypes = ['Data synced', 'Process completed', 'Update received', 'Task assigned'];
           const msg = msgTypes[Math.floor(Math.random() * msgTypes.length)];
           const notifTypes = ['success', 'info', 'warning', 'error'] as const;
-          const type = notifTypes[Math.floor(Math.random() * 3)]; // Avoid error type most of the time
+          const type = notifTypes[Math.floor(Math.random() * 3)];
           
-          // Add notification
           const notif: Notification = {
             id: Date.now(),
             x: division2.position.x + (division2.position.width / 2),
@@ -150,7 +134,6 @@ const OfficeFloorPlan: React.FC = () => {
           
           setNotifications(prev => [...prev, notif]);
           
-          // Remove notification after 2 seconds
           setTimeout(() => {
             setNotifications(prev => prev.filter(n => n.id !== notif.id));
           }, 2000);
@@ -160,19 +143,16 @@ const OfficeFloorPlan: React.FC = () => {
     
     return () => clearInterval(interval);
   }, [divisions]);
-
-  // Simulate periodic division activity
+  
   useEffect(() => {
     const interval = setInterval(() => {
       const randomDivId = divisions[Math.floor(Math.random() * divisions.length)].id;
       
-      // Add pulse effect to division
       setPulsing(prev => ({
         ...prev,
         [randomDivId]: true
       }));
       
-      // Remove pulse effect after a delay
       setTimeout(() => {
         setPulsing(prev => ({
           ...prev,
@@ -184,19 +164,16 @@ const OfficeFloorPlan: React.FC = () => {
     return () => clearInterval(interval);
   }, [divisions]);
   
-  // Handle division selection
   const handleDivisionClick = (divisionId: string) => {
     setSelectedDivision(divisionId);
     setSelectedAgent(null);
     setShowInfoPanel(true);
     
-    // Pulse the division when selected
     setPulsing(prev => ({
       ...prev,
       [divisionId]: true
     }));
     
-    // Remove pulse effect after a delay
     setTimeout(() => {
       setPulsing(prev => ({
         ...prev,
@@ -205,19 +182,16 @@ const OfficeFloorPlan: React.FC = () => {
     }, 2000);
   };
   
-  // Handle agent selection
   const handleAgentClick = (agentId: number) => {
     setSelectedAgent(agentId);
     setSelectedDivision(null);
     setShowInfoPanel(true);
   };
 
-  // Handle closing info panel
   const handleCloseInfoPanel = () => {
     setShowInfoPanel(false);
   };
   
-  // Handle escape key to close info panel
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -232,11 +206,17 @@ const OfficeFloorPlan: React.FC = () => {
     };
   }, []);
   
+  const selectedDivisionObject = selectedDivision 
+    ? divisions.find(d => d.id === selectedDivision) 
+    : null;
+    
+  const selectedAgentObject = selectedAgent 
+    ? agents.find(a => a.id === selectedAgent) 
+    : null;
+  
   return (
     <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-gray-100 dark:bg-gray-900 neon-border">
-      {/* Office floor */}
       <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800">
-        {/* Refined grid pattern */}
         <div 
           className="absolute inset-0" 
           style={{ 
@@ -245,7 +225,6 @@ const OfficeFloorPlan: React.FC = () => {
           }}
         />
         
-        {/* Data transmission paths */}
         {dataTransmissions.map(transmission => (
           <DataTransmissionPath 
             key={transmission.id}
@@ -256,7 +235,6 @@ const OfficeFloorPlan: React.FC = () => {
           />
         ))}
         
-        {/* Animated notifications */}
         <AnimatePresence>
           {notifications.map(notification => (
             <NotificationPopup
@@ -270,13 +248,10 @@ const OfficeFloorPlan: React.FC = () => {
           ))}
         </AnimatePresence>
         
-        {/* Central server/mainframe with animated glow */}
         <CentralServer />
         
-        {/* Communication hub with animated ping effect */}
         <CommunicationHub />
         
-        {/* Render workstations */}
         {workstations.map((station, index) => (
           <Workstation
             key={`station-${index}`}
@@ -289,7 +264,6 @@ const OfficeFloorPlan: React.FC = () => {
           />
         ))}
         
-        {/* Render decorative elements */}
         {decorations.map((item, index) => (
           <DecorativeElement
             key={`decor-${index}`}
@@ -300,7 +274,6 @@ const OfficeFloorPlan: React.FC = () => {
           />
         ))}
         
-        {/* Render holographic projections */}
         {holograms.map((item, index) => (
           <HolographicElement
             key={`holo-${index}`}
@@ -311,7 +284,6 @@ const OfficeFloorPlan: React.FC = () => {
           />
         ))}
         
-        {/* Render divisions */}
         {divisions.map((division) => (
           <Division
             key={division.id}
@@ -323,7 +295,6 @@ const OfficeFloorPlan: React.FC = () => {
           />
         ))}
         
-        {/* Render agents */}
         {agents.map(agent => (
           <AgentCharacter 
             key={agent.id} 
@@ -334,31 +305,26 @@ const OfficeFloorPlan: React.FC = () => {
           />
         ))}
         
-        {/* Floor markings */}
         <div className="absolute top-2 left-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs z-30">Floor Plan v3.0</div>
         <div className="absolute bottom-3 right-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs z-30">FlowState Agency</div>
         
-        {/* Info panels */}
         <AnimatePresence>
-          {selectedDivision && showInfoPanel && (
+          {selectedDivisionObject && showInfoPanel && (
             <DivisionInfoPanel
-              division={divisions.find(d => d.id === selectedDivision)!}
+              division={selectedDivisionObject}
               agents={agents}
-              performanceData={performanceData}
               onClose={handleCloseInfoPanel}
             />
           )}
           
-          {selectedAgent && showInfoPanel && (
+          {selectedAgentObject && showInfoPanel && (
             <AgentInfoPanel
-              agent={agents.find(a => a.id === selectedAgent)!}
-              performanceData={performanceData}
+              agent={selectedAgentObject}
               onClose={handleCloseInfoPanel}
             />
           )}
         </AnimatePresence>
         
-        {/* Chat button */}
         <div className="flex justify-end items-center absolute bottom-3 left-2 z-30">
           <button 
             className="text-xs flex items-center gap-1 px-2 py-1 rounded-full bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 transition-colors"
