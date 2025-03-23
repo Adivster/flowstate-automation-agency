@@ -43,18 +43,38 @@ const Division: React.FC<DivisionProps> = ({
   const Icon = division.icon;
   const agentsInDivision = agents.filter(agent => agent.division === division.id);
   
-  // Render decoration items inside division
+  // Render decoration items inside division with improved visual distinction
   const renderDecoration = (item: any) => {
     const getIcon = () => {
       switch (item.type) {
-        case 'boards': return <div className="h-4 w-4 bg-white rounded-sm"></div>;
-        case 'computer': return <div className="h-4 w-4 bg-blue-500 rounded-sm"></div>;
-        case 'chart': return <div className="h-4 w-4 bg-cyan-500 rounded-sm"></div>;
-        case 'desk': return <div className="h-2 w-3 bg-gray-300 dark:bg-gray-600 rounded-sm"></div>;
-        case 'server': return <div className="h-4 w-4 bg-purple-500 rounded-sm"></div>;
-        case 'monitor': return <div className="h-4 w-4 bg-blue-400 rounded-sm"></div>;
-        case 'coffee': return <div className="h-4 w-4 bg-amber-500 rounded-full"></div>;
-        case 'sofa': return <div className="h-3 w-5 bg-amber-400 rounded-sm"></div>;
+        case 'boards': return <div className="h-4 w-6 bg-white/70 rounded-sm"></div>;
+        case 'computer': return <div className="h-4 w-5 bg-blue-500/70 rounded-sm flex items-center justify-center">
+          <div className="h-2 w-3 bg-blue-200/90 rounded-sm"></div>
+        </div>;
+        case 'chart': return <div className="h-4 w-4 bg-cyan-500/70 rounded-sm flex items-center justify-center">
+          <div className="h-2 w-2 border-b border-l border-cyan-200"></div>
+        </div>;
+        case 'desk': return <div className="h-2 w-5 bg-gray-300/70 dark:bg-gray-600/70 rounded-sm"></div>;
+        case 'server': return <div className="h-4 w-3 bg-purple-500/70 rounded-sm flex flex-col justify-around items-center">
+          <div className="h-0.5 w-2 bg-purple-200"></div>
+          <div className="h-0.5 w-2 bg-purple-200"></div>
+        </div>;
+        case 'monitor': return <div className="h-3 w-4 bg-blue-400/70 rounded-t-sm flex items-center justify-center">
+          <div className="h-1.5 w-3 bg-blue-100/80 rounded-[1px]"></div>
+        </div>;
+        case 'coffee': return <div className="h-3 w-2.5 bg-amber-700/70 rounded-sm">
+          <div className="h-0.5 w-1.5 bg-amber-200/70 mx-auto"></div>
+        </div>;
+        case 'sofa': return <div className="h-2 w-5 bg-amber-400/70 rounded-sm">
+          <div className="h-0.5 w-4 bg-amber-200/70 mx-auto"></div>
+        </div>;
+        case 'plant': return <div className="h-3 w-3 flex flex-col items-center">
+          <div className="h-2 w-2 bg-green-500/70 rounded-full"></div>
+          <div className="h-1 w-0.5 bg-green-800/70"></div>
+        </div>;
+        case 'meeting': return <div className="h-4 w-4 bg-gray-400/40 rounded-full flex items-center justify-center">
+          <div className="h-2 w-2 bg-gray-600/70 rounded-full"></div>
+        </div>;
         default: return null;
       }
     };
@@ -68,23 +88,38 @@ const Division: React.FC<DivisionProps> = ({
           top: `${item.y}%`
         }}
       >
-        <div className="p-1 rounded-sm">
+        <div className="rounded-sm">
           {getIcon()}
         </div>
       </div>
     );
   };
   
-  // Get tailwind color class based on division color string
-  const getColorClass = (baseColor) => {
-    return baseColor.replace('bg-', '');
+  // Get hex color from Tailwind class
+  const getTailwindColor = (colorClass) => {
+    // Base color mapping - these correspond to Tailwind's color system
+    const colorMap = {
+      'bg-purple-500': '#a855f7',
+      'bg-green-500': '#22c55e',
+      'bg-blue-500': '#3b82f6',
+      'bg-amber-500': '#f59e0b',
+      'bg-indigo-500': '#6366f1',
+      'bg-emerald-500': '#10b981',
+      'bg-cyan-500': '#06b6d4',
+      'bg-red-500': '#ef4444',
+      'bg-lime-500': '#84cc16',
+      'bg-pink-500': '#ec4899',
+      'bg-flow-accent': '#3b82f6'
+    };
+    
+    return colorMap[colorClass] || '#3b82f6'; // Default to flow-accent if not found
   };
   
   return (
     <motion.div
       key={division.id}
       className={`absolute rounded-md ${division.color} bg-opacity-20 border-2 cursor-pointer transition-colors duration-200 
-        ${isSelected ? 'border-white shadow-lg' : `border-${getColorClass(division.color)}`}
+        ${isSelected ? 'border-white shadow-lg' : `border-${division.color.replace('bg-', '')}`}
         ${isPulsing ? 'shadow-lg' : ''}`}
       style={{
         left: `${division.position.x}%`,
@@ -92,7 +127,7 @@ const Division: React.FC<DivisionProps> = ({
         width: `${division.position.width}%`,
         height: `${division.position.height}%`,
         zIndex: isSelected ? 30 : 20,
-        boxShadow: isPulsing ? `0 0 15px ${getColorClass(division.color)}` : ''
+        boxShadow: isPulsing ? `0 0 15px ${getTailwindColor(division.color)}` : ''
       }}
       onClick={() => onDivisionClick(division.id)}
       whileHover={{ scale: 1.01 }}
@@ -102,9 +137,9 @@ const Division: React.FC<DivisionProps> = ({
         } : 
         isPulsing ? {
           boxShadow: [
-            `0 0 5px ${getColorClass(division.color)}`,
-            `0 0 15px ${getColorClass(division.color)}`,
-            `0 0 5px ${getColorClass(division.color)}`
+            `0 0 5px ${getTailwindColor(division.color)}`,
+            `0 0 15px ${getTailwindColor(division.color)}`,
+            `0 0 5px ${getTailwindColor(division.color)}`
           ]
         } : { 
           scale: 1
@@ -129,7 +164,7 @@ const Division: React.FC<DivisionProps> = ({
         </Badge>
       </div>
       
-      {/* Division decoration items */}
+      {/* Division decoration items with improved spacing */}
       {division.decoration.map(item => renderDecoration(item))}
       
       {/* Activity indicators - only show when division is active */}

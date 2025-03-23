@@ -3,7 +3,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Progress } from "@/components/ui/progress";
 
 interface RoutePoint {
   division: string;
@@ -38,7 +37,6 @@ const AgentCharacter: React.FC<AgentProps> = ({
   const [position, setPosition] = useState(agent.position);
   const [currentRouteIndex, setCurrentRouteIndex] = useState(0);
   const [taskProgress, setTaskProgress] = useState(Math.floor(Math.random() * 30) + 70); // 70-100% initial progress
-  const [energyLevel, setEnergyLevel] = useState(Math.floor(Math.random() * 40) + 60); // 60-100% initial energy
   const animationRef = useRef<number | null>(null);
   const { t } = useLanguage();
   
@@ -60,21 +58,16 @@ const AgentCharacter: React.FC<AgentProps> = ({
         // Randomly update task progress for working agents
         setTaskProgress(prev => {
           const change = Math.random() > 0.5 ? Math.random() * 5 : -Math.random() * 3;
-          return Math.max(40, Math.min(100, prev + change));
+          return Math.max(20, Math.min(100, prev + change));
         });
-        
-        // Slowly decrease energy level
-        setEnergyLevel(prev => Math.max(20, prev - Math.random() * 2));
       }, 3000);
       
       return () => clearInterval(interval);
     } else if (agent.status === 'idle') {
-      // Idle agents regain energy
-      const interval = setInterval(() => {
-        setEnergyLevel(prev => Math.min(100, prev + Math.random() * 5));
-      }, 2000);
-      
-      return () => clearInterval(interval);
+      // Idle agents have no active tasks
+      setTaskProgress(0);
+    } else if (agent.status === 'paused') {
+      // Paused tasks maintain their current progress
     }
   }, [agent.status]);
   
@@ -123,15 +116,12 @@ const AgentCharacter: React.FC<AgentProps> = ({
   };
   
   const getTaskProgressColor = () => {
+    if (agent.status === 'idle') return 'bg-gray-500/50';
+    if (agent.status === 'paused') return 'bg-amber-500';
+    if (agent.status === 'error') return 'bg-red-500';
     if (taskProgress > 80) return 'bg-green-500';
     if (taskProgress > 50) return 'bg-amber-500';
-    return 'bg-red-500';
-  };
-  
-  const getEnergyLevelColor = () => {
-    if (energyLevel > 70) return 'bg-cyan-500';
-    if (energyLevel > 40) return 'bg-amber-500';
-    return 'bg-red-500';
+    return 'bg-indigo-500';
   };
   
   const Icon = agent.icon;
@@ -161,14 +151,6 @@ const AgentCharacter: React.FC<AgentProps> = ({
     >
       {/* Agent avatar */}
       <div className="flex flex-col items-center">
-        {/* Task progress bar */}
-        <div className="w-12 h-1 mb-1 rounded-full overflow-hidden bg-gray-800">
-          <div 
-            className={`h-full ${getTaskProgressColor()} transition-all duration-500`}
-            style={{ width: `${taskProgress}%` }}
-          ></div>
-        </div>
-        
         <div className="relative mb-1">
           <div 
             className={`rounded-full p-2 ${
@@ -184,12 +166,19 @@ const AgentCharacter: React.FC<AgentProps> = ({
           <div className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${statusColors[agent.status]} ${agent.status === 'working' ? 'animate-pulse-subtle' : ''}`}></div>
         </div>
         
-        {/* Energy level bar */}
-        <div className="w-12 h-1 mb-1 rounded-full overflow-hidden bg-gray-800">
-          <div 
-            className={`h-full ${getEnergyLevelColor()} transition-all duration-500`}
-            style={{ width: `${energyLevel}%` }}
-          ></div>
+        {/* Single task progress bar */}
+        <div className="w-12 h-1.5 mb-1 rounded-full overflow-hidden bg-gray-800/60">
+          {agent.status === 'idle' ? (
+            <div className="h-full bg-gray-500/30 w-full"></div>
+          ) : (
+            <div 
+              className={`h-full ${getTaskProgressColor()} transition-all duration-500`}
+              style={{ 
+                width: `${agent.status === 'working' ? taskProgress : agent.status === 'idle' ? 0 : taskProgress}%`, 
+                opacity: agent.status === 'working' ? '1' : '0.7' 
+              }}
+            ></div>
+          )}
         </div>
         
         {/* Name tooltip with clearer styling */}
