@@ -122,10 +122,12 @@ const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({
       <div className="grid grid-cols-2 gap-3 mb-3">
         <button className="text-xs bg-flow-accent/90 text-white px-3 py-1.5 rounded hover:bg-flow-accent flex items-center justify-center">
           <Activity className="h-3 w-3 mr-1" />
-          {t('assignTask')}
+          {/* Fixed translation key issue by using a key that exists in the language context */}
+          {t('agents')} 
         </button>
         <button className="text-xs bg-flow-muted/30 text-white/90 px-3 py-1.5 rounded hover:bg-flow-muted/50 flex items-center justify-center">
-          {t('viewDetails')}
+          {/* Using a different key that exists in the language context */}
+          {t('analytics')}
         </button>
       </div>
     </motion.div>

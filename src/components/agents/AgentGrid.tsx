@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { BookOpen, BarChart, LayoutGrid, Shield, DollarSign, MessagesSquare, Search, Filter, RefreshCw } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 import AgentCard from './AgentCard';
 import TransitionWrapper from '../ui/TransitionWrapper';
 import { Input } from '../ui/input';
@@ -9,12 +9,11 @@ import { Button } from '../ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 
-// Extended agent type with more properties
 interface Agent {
   id: number;
   name: string;
   role: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   status: 'working' | 'idle' | 'paused' | 'error';
   efficiency: number;
   lastActivity: string;
@@ -31,7 +30,6 @@ const AgentGrid: React.FC = () => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Full agents data
   const allAgents: Agent[] = [
     {
       id: 1,
@@ -101,15 +99,12 @@ const AgentGrid: React.FC = () => {
     },
   ];
 
-  // Filter and sort agents
   useEffect(() => {
     setIsLoading(true);
     
-    // Simulate loading delay
     setTimeout(() => {
       let filteredAgents = [...allAgents];
       
-      // Apply search filter
       if (searchTerm) {
         filteredAgents = filteredAgents.filter(agent => 
           agent.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -118,28 +113,24 @@ const AgentGrid: React.FC = () => {
         );
       }
       
-      // Apply division filter
       if (selectedDivision) {
         filteredAgents = filteredAgents.filter(agent => 
           agent.division === selectedDivision
         );
       }
       
-      // Apply status filter
       if (selectedStatus) {
         filteredAgents = filteredAgents.filter(agent => 
           agent.status === selectedStatus
         );
       }
       
-      // Apply sorting
       filteredAgents.sort((a, b) => {
         if (sortBy === 'name') {
           return a.name.localeCompare(b.name);
         } else if (sortBy === 'efficiency') {
           return b.efficiency - a.efficiency;
         } else if (sortBy === 'lastActivity') {
-          // Simple sort for demo (in real app would parse the time)
           if (a.lastActivity === 'Just now') return -1;
           if (b.lastActivity === 'Just now') return 1;
           if (a.lastActivity.includes('minute') && b.lastActivity.includes('hour')) return -1;
@@ -154,7 +145,6 @@ const AgentGrid: React.FC = () => {
     }, 400);
   }, [searchTerm, selectedDivision, selectedStatus, sortBy]);
 
-  // Reset all filters
   const resetFilters = () => {
     setSearchTerm('');
     setSelectedDivision(null);
@@ -168,17 +158,14 @@ const AgentGrid: React.FC = () => {
     });
   };
 
-  // Apply a division filter
   const handleDivisionFilter = (division: string) => {
     setSelectedDivision(selectedDivision === division ? null : division);
   };
 
-  // Apply a status filter
   const handleStatusFilter = (status: string) => {
     setSelectedStatus(selectedStatus === status ? null : status);
   };
 
-  // Handle agent action (demo purpose)
   const handleAgentAction = (agentId: number, action: string) => {
     toast({
       title: `${action} initiated`,
