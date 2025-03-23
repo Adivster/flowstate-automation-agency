@@ -174,7 +174,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
             <div 
               className={`h-full ${getTaskProgressColor()} transition-all duration-500`}
               style={{ 
-                width: `${agent.status === 'working' ? taskProgress : agent.status === 'idle' ? 0 : taskProgress}%`, 
+                width: `${taskProgress}%`, 
                 opacity: agent.status === 'working' ? '1' : '0.7' 
               }}
             ></div>
