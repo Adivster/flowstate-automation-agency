@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Activity, Clock, Zap } from 'lucide-react';
+import { Activity, Clock, Zap, BarChart3 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePerformanceData } from '@/hooks/usePerformanceData';
+import { LineChart } from '@/components/ui/chart';
 
 interface AgentDetails {
   id: number;
@@ -25,9 +26,18 @@ const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({
   // Pass agent ID to get consistent performance data
   const performanceData = usePerformanceData(agent.id);
   
+  // Generate chart data from performance data for visualization
+  const chartData = [
+    { name: "Jan", value: performanceData.taskCompletion - 10 },
+    { name: "Feb", value: performanceData.taskCompletion - 5 },
+    { name: "Mar", value: performanceData.taskCompletion - 15 },
+    { name: "Apr", value: performanceData.taskCompletion - 8 },
+    { name: "May", value: performanceData.taskCompletion },
+  ];
+  
   return (
     <motion.div 
-      className="absolute bottom-4 left-4 right-4 bg-black/80 rounded-md border border-flow-accent/30 p-4 z-50"
+      className="absolute bottom-4 left-4 right-4 bg-black/80 backdrop-blur-sm rounded-md border border-flow-accent/30 p-4 z-50"
       initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 50, opacity: 0 }}
@@ -99,8 +109,22 @@ const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({
         </div>
       </div>
       
-      <div className="flex justify-end">
-        <button className="text-xs bg-flow-accent/90 text-white px-3 py-1 rounded hover:bg-flow-accent">
+      <div className="mb-4 bg-white/5 p-3 rounded-md">
+        <h4 className="text-white/90 text-xs font-medium mb-2 flex items-center">
+          <BarChart3 className="h-3 w-3 mr-1" />
+          Performance Trend
+        </h4>
+        <div className="h-[120px]">
+          <LineChart data={chartData} />
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-3 mb-3">
+        <button className="text-xs bg-flow-accent/90 text-white px-3 py-1.5 rounded hover:bg-flow-accent flex items-center justify-center">
+          <Activity className="h-3 w-3 mr-1" />
+          {t('assignTask')}
+        </button>
+        <button className="text-xs bg-flow-muted/30 text-white/90 px-3 py-1.5 rounded hover:bg-flow-muted/50 flex items-center justify-center">
           {t('viewDetails')}
         </button>
       </div>

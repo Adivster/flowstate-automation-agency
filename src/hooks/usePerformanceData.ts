@@ -9,6 +9,23 @@ export interface PerformanceData {
   errorRate: number;
   tasksCompleted: number;
   averageResponseTime: string;
+  // Additional fields for better visualizations
+  historicalData: {
+    taskCompletion: number[];
+    efficiency: number[];
+    errorRate: number[];
+  };
+  resourceAllocation: {
+    cpu: number;
+    memory: number;
+    network: number;
+    storage: number;
+  };
+  priorityDistribution: {
+    high: number;
+    medium: number;
+    low: number;
+  };
 }
 
 /**
@@ -29,14 +46,52 @@ export const usePerformanceData = (entityId?: string | number): PerformanceData 
     // Generate deterministic random numbers based on the seed
     const random = createSeededRandom(seed);
     
+    // Base performance metrics
+    const taskCompletion = Math.floor(random() * 30 + 70); // 70-100%
+    const efficiency = Math.floor(random() * 25 + 75); // 75-100%
+    const errorRate = Math.floor(random() * 5); // 0-5%
+    
+    // Generate consistent historical data (for charts)
+    const generateHistoricalPoints = (baseValue: number, variance: number, count: number) => {
+      const result = [];
+      let current = baseValue;
+      
+      for (let i = 0; i < count; i++) {
+        // Randomize within a small range for realistic data fluctuation
+        const change = (random() * variance * 2) - variance;
+        current = Math.max(0, Math.min(100, current + change));
+        result.push(Math.round(current));
+      }
+      
+      return result;
+    };
+    
     return {
-      taskCompletion: Math.floor(random() * 30 + 70), // 70-100%
+      taskCompletion,
       resourceUtilization: Math.floor(random() * 30 + 60), // 60-90%
-      efficiency: Math.floor(random() * 25 + 75), // 75-100%
+      efficiency,
       uptime: Math.floor(random() * 5 + 95), // 95-100%
-      errorRate: Math.floor(random() * 5), // 0-5%
+      errorRate,
       tasksCompleted: Math.floor(random() * 100 + 50), // 50-150
       averageResponseTime: (random() * 2 + 0.5).toFixed(2), // 0.5-2.5s
+      
+      // Additional data for visualization
+      historicalData: {
+        taskCompletion: generateHistoricalPoints(taskCompletion, 5, 10),
+        efficiency: generateHistoricalPoints(efficiency, 3, 10),
+        errorRate: generateHistoricalPoints(errorRate, 1, 10),
+      },
+      resourceAllocation: {
+        cpu: Math.floor(random() * 40 + 60), // 60-100%
+        memory: Math.floor(random() * 50 + 50), // 50-100%
+        network: Math.floor(random() * 60 + 40), // 40-100%
+        storage: Math.floor(random() * 70 + 30), // 30-100%
+      },
+      priorityDistribution: {
+        high: Math.floor(random() * 40), // 0-40%
+        medium: Math.floor(random() * 40), // 0-40%
+        low: 100 - Math.floor(random() * 40) - Math.floor(random() * 40), // Remaining %
+      }
     };
   }, [entityId]); // Only regenerate if entityId changes
 };
