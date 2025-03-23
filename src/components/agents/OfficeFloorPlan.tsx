@@ -1,13 +1,20 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Cpu, MessageCircle, Activity, BarChart, Users, Clock, Zap, Server } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { AnimatePresence } from 'framer-motion';
+import { MessageCircle } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import AgentCharacter from './AgentCharacter';
 import Workstation from './office/Workstation';
 import DecorativeElement from './office/DecorativeElement';
 import HolographicElement from './office/HolographicElement';
 import Division from './office/Division';
+import DataTransmissionPath from './office/DataTransmissionPath';
+import NotificationPopup from './office/NotificationPopup';
+import CentralServer from './office/CentralServer';
+import CommunicationHub from './office/CommunicationHub';
+import DivisionInfoPanel from './office/DivisionInfoPanel';
+import AgentInfoPanel from './office/AgentInfoPanel';
+import { usePerformanceData } from '@/hooks/usePerformanceData';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   getDivisions, 
@@ -17,65 +24,34 @@ import {
   agents
 } from './office/officeData';
 
-// Data transmission path component
-const DataTransmissionPath = ({ start, end, color, pulseSpeed = 3 }) => {
-  return (
-    <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-10">
-      <svg width="100%" height="100%" className="absolute top-0 left-0">
-        <line 
-          x1={`${start.x}%`} 
-          y1={`${start.y}%`} 
-          x2={`${end.x}%`} 
-          y2={`${end.y}%`} 
-          stroke={color} 
-          strokeWidth="1" 
-          strokeDasharray="3,3" 
-          className="opacity-30" 
-        />
-        
-        {/* Animated pulse along the path */}
-        <circle r="2" fill={color} className={`opacity-70`}>
-          <animateMotion
-            dur={`${pulseSpeed}s`}
-            repeatCount="indefinite"
-            path={`M${start.x},${start.y} L${end.x},${end.y}`}
-          />
-        </circle>
-      </svg>
-    </div>
-  );
-};
+interface Notification {
+  id: number;
+  x: number;
+  y: number;
+  message: string;
+  type: 'success' | 'info' | 'warning' | 'error';
+}
 
-// Animated notification popup
-const NotificationPopup = ({ x, y, message, type = 'info', onComplete }) => {
-  return (
-    <motion.div
-      className={`absolute text-xs px-2 py-1 rounded-md z-50 whitespace-nowrap 
-        ${type === 'success' ? 'bg-green-600/90 text-white' : 
-         type === 'error' ? 'bg-red-600/90 text-white' : 
-         type === 'warning' ? 'bg-amber-500/90 text-white' : 
-         'bg-blue-600/90 text-white'}`}
-      style={{ left: `${x}%`, top: `${y}%` }}
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: -20 }}
-      exit={{ opacity: 0, y: -30 }}
-      transition={{ duration: 0.3 }}
-      onAnimationComplete={onComplete}
-    >
-      {message}
-    </motion.div>
-  );
-};
+interface DataTransmission {
+  id: string | number;
+  start: { x: number; y: number };
+  end: { x: number; y: number };
+  color: string;
+  temporary?: boolean;
+  pulseSpeed?: number;
+}
 
-const OfficeFloorPlan = () => {
+const OfficeFloorPlan: React.FC = () => {
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<number | null>(null);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-  const [dataTransmissions, setDataTransmissions] = useState([]);
-  const [pulsing, setPulsing] = useState({});
-  const infoPanelRef = useRef<HTMLDivElement>(null);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [dataTransmissions, setDataTransmissions] = useState<DataTransmission[]>([]);
+  const [pulsing, setPulsing] = useState<Record<string, boolean>>({});
   const { t } = useLanguage();
+  
+  // Get performance data
+  const performanceData = usePerformanceData();
   
   // Get divisions - pass the translation function
   const divisions = getDivisions(t);
@@ -83,7 +59,7 @@ const OfficeFloorPlan = () => {
   // Create initial data transmissions
   useEffect(() => {
     // Create connections between divisions
-    const initialTransmissions = [
+    const initialTransmissions: DataTransmission[] = [
       { 
         id: 1, 
         start: { x: 25, y: 45 }, 
@@ -112,6 +88,14 @@ const OfficeFloorPlan = () => {
     
     setDataTransmissions(initialTransmissions);
     
+    // Clean up to avoid memory leaks
+    return () => {
+      setDataTransmissions([]);
+    };
+  }, []);
+  
+  // Create temporary data transmissions periodically
+  useEffect(() => {
     // Periodically add temporary transmissions for more dynamic feel
     const interval = setInterval(() => {
       // Randomly select two divisions to connect
@@ -127,7 +111,7 @@ const OfficeFloorPlan = () => {
       const division2 = divisions.find(d => d.id === div2);
       
       if (division1 && division2) {
-        const newTransmission = {
+        const newTransmission: DataTransmission = {
           id: Math.random().toString(),
           start: { 
             x: division1.position.x + (division1.position.width / 2), 
@@ -152,11 +136,11 @@ const OfficeFloorPlan = () => {
         if (Math.random() > 0.5) {
           const msgTypes = ['Data synced', 'Process completed', 'Update received', 'Task assigned'];
           const msg = msgTypes[Math.floor(Math.random() * msgTypes.length)];
-          const notifTypes = ['success', 'info', 'warning'];
-          const type = notifTypes[Math.floor(Math.random() * notifTypes.length)];
+          const notifTypes = ['success', 'info', 'warning', 'error'] as const;
+          const type = notifTypes[Math.floor(Math.random() * 3)]; // Avoid error type most of the time
           
           // Add notification
-          const notif = {
+          const notif: Notification = {
             id: Date.now(),
             x: division2.position.x + (division2.position.width / 2),
             y: division2.position.y - 5,
@@ -228,25 +212,12 @@ const OfficeFloorPlan = () => {
     setShowInfoPanel(true);
   };
 
-  // Handle outside clicks for info panel
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        showInfoPanel && 
-        infoPanelRef.current && 
-        !infoPanelRef.current.contains(event.target as Node)
-      ) {
-        setShowInfoPanel(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showInfoPanel]);
-
-  // Close info panel when clicking escape
+  // Handle closing info panel
+  const handleCloseInfoPanel = () => {
+    setShowInfoPanel(false);
+  };
+  
+  // Handle escape key to close info panel
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -260,19 +231,6 @@ const OfficeFloorPlan = () => {
       window.removeEventListener('keydown', handleEsc);
     };
   }, []);
-  
-  // Generate random performance data for divisions and agents
-  const generatePerformanceData = () => {
-    return {
-      taskCompletion: Math.floor(Math.random() * 30) + 70, // 70-100%
-      resourceUtilization: Math.floor(Math.random() * 30) + 60, // 60-90%
-      efficiency: Math.floor(Math.random() * 25) + 75, // 75-100%
-      uptime: Math.floor(Math.random() * 5) + 95, // 95-100%
-      errorRate: Math.floor(Math.random() * 5), // 0-5%
-      tasksCompleted: Math.floor(Math.random() * 100) + 50, // 50-150
-      averageResponseTime: (Math.random() * 2 + 0.5).toFixed(2), // 0.5-2.5s
-    };
-  };
   
   return (
     <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-gray-100 dark:bg-gray-900 neon-border">
@@ -313,38 +271,12 @@ const OfficeFloorPlan = () => {
         </AnimatePresence>
         
         {/* Central server/mainframe with animated glow */}
-        <motion.div 
-          className="absolute left-1/2 top-[15%] -translate-x-1/2 w-10 h-18 bg-blue-900 dark:bg-blue-800 rounded-sm border border-flow-accent/70 flex flex-col items-center justify-center gap-1 overflow-hidden z-20"
-          animate={{ 
-            boxShadow: ['0 0 5px rgba(99, 102, 241, 0.3)', '0 0 15px rgba(99, 102, 241, 0.5)', '0 0 5px rgba(99, 102, 241, 0.3)']
-          }}
-          transition={{ 
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        >
-          <div className="w-6 h-1 bg-flow-accent/80 rounded-sm">
-            <div className="h-full bg-white/80 animate-pulse" style={{ width: '30%' }}></div>
-          </div>
-          <div className="w-6 h-1 bg-green-500/80 rounded-sm">
-            <div className="h-full bg-white/80 animate-pulse" style={{ width: '60%', animationDelay: '0.3s' }}></div>
-          </div>
-          <div className="w-6 h-1 bg-purple-500/80 rounded-sm">
-            <div className="h-full bg-white/80 animate-pulse" style={{ width: '45%', animationDelay: '0.6s' }}></div>
-          </div>
-          <Cpu className="w-5 h-5 text-flow-accent/90" />
-        </motion.div>
+        <CentralServer />
         
         {/* Communication hub with animated ping effect */}
-        <div
-          className="absolute right-[15%] top-[15%] w-8 h-8 rounded-full bg-indigo-900 border border-indigo-500/70 flex items-center justify-center z-20"
-        >
-          <MessageCircle className="w-4 h-4 text-indigo-400" />
-          <div className="absolute inset-0 rounded-full border border-indigo-400 animate-ping opacity-50"></div>
-        </div>
+        <CommunicationHub />
         
-        {/* Render workstations with hover effect */}
+        {/* Render workstations */}
         {workstations.map((station, index) => (
           <Workstation
             key={`station-${index}`}
@@ -391,7 +323,7 @@ const OfficeFloorPlan = () => {
           />
         ))}
         
-        {/* Render agents with clear visuals */}
+        {/* Render agents */}
         {agents.map(agent => (
           <AgentCharacter 
             key={agent.id} 
@@ -406,177 +338,36 @@ const OfficeFloorPlan = () => {
         <div className="absolute top-2 left-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs z-30">Floor Plan v3.0</div>
         <div className="absolute bottom-3 right-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs z-30">FlowState Agency</div>
         
-        {/* Info panel for selected division */}
+        {/* Info panels */}
         <AnimatePresence>
           {selectedDivision && showInfoPanel && (
-            <motion.div 
-              ref={infoPanelRef}
-              className="absolute bottom-4 left-4 right-4 bg-black/80 rounded-md border border-flow-accent/30 p-4 z-50"
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 50, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="flex justify-between mb-3">
-                <h3 className="text-white text-lg font-bold flex items-center">
-                  {divisions.find(d => d.id === selectedDivision)?.name}
-                </h3>
-                <button 
-                  className="text-white/70 hover:text-white"
-                  onClick={() => setShowInfoPanel(false)}
-                >
-                  ×
-                </button>
-              </div>
-              
-              <p className="text-white/80 text-sm mb-4">
-                {divisions.find(d => d.id === selectedDivision)?.description}
-              </p>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                <div className="bg-white/10 rounded p-2 text-center">
-                  <div className="text-white text-sm font-semibold">
-                    {agents.filter(a => a.division === selectedDivision).length}
-                  </div>
-                  <div className="text-white/70 text-xs flex items-center justify-center">
-                    <Users className="h-3 w-3 mr-1" />
-                    Active Agents
-                  </div>
-                </div>
-                
-                <div className="bg-white/10 rounded p-2 text-center">
-                  <div className="text-white text-sm font-semibold">
-                    {generatePerformanceData().taskCompletion}%
-                  </div>
-                  <div className="text-white/70 text-xs flex items-center justify-center">
-                    <Activity className="h-3 w-3 mr-1" />
-                    Task Completion
-                  </div>
-                </div>
-                
-                <div className="bg-white/10 rounded p-2 text-center">
-                  <div className="text-white text-sm font-semibold">
-                    {generatePerformanceData().efficiency}%
-                  </div>
-                  <div className="text-white/70 text-xs flex items-center justify-center">
-                    <BarChart className="h-3 w-3 mr-1" />
-                    Efficiency
-                  </div>
-                </div>
-                
-                <div className="bg-white/10 rounded p-2 text-center">
-                  <div className="text-white text-sm font-semibold">
-                    {generatePerformanceData().tasksCompleted}
-                  </div>
-                  <div className="text-white/70 text-xs flex items-center justify-center">
-                    <Activity className="h-3 w-3 mr-1" />
-                    Tasks Completed
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex justify-end">
-                <button className="text-xs bg-flow-accent/90 text-white px-3 py-1 rounded hover:bg-flow-accent">
-                  {t('viewDetails')}
-                </button>
-              </div>
-            </motion.div>
+            <DivisionInfoPanel
+              division={divisions.find(d => d.id === selectedDivision)!}
+              agents={agents}
+              performanceData={performanceData}
+              onClose={handleCloseInfoPanel}
+            />
           )}
           
-          {/* Info panel for selected agent */}
           {selectedAgent && showInfoPanel && (
-            <motion.div 
-              ref={infoPanelRef}
-              className="absolute bottom-4 left-4 right-4 bg-black/80 rounded-md border border-flow-accent/30 p-4 z-50"
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 50, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {(() => {
-                const agent = agents.find(a => a.id === selectedAgent);
-                const performance = generatePerformanceData();
-                if (!agent) return null;
-                
-                return (
-                  <>
-                    <div className="flex justify-between mb-3">
-                      <h3 className="text-white text-lg font-bold flex items-center">
-                        {agent.name}
-                      </h3>
-                      <button 
-                        className="text-white/70 hover:text-white"
-                        onClick={() => setShowInfoPanel(false)}
-                      >
-                        ×
-                      </button>
-                    </div>
-                    
-                    <div className="flex items-center mb-4">
-                      <div className={`px-2 py-0.5 rounded-full text-xs
-                        ${agent.status === 'working' ? 'bg-green-500/20 text-green-400' : 
-                         agent.status === 'idle' ? 'bg-gray-500/20 text-gray-400' : 
-                         agent.status === 'paused' ? 'bg-amber-500/20 text-amber-400' : 
-                         'bg-red-500/20 text-red-400'}`
-                      }>
-                        {t(agent.status)}
-                      </div>
-                      <div className="text-white/60 text-xs ml-3">{agent.role}</div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                      <div className="bg-white/10 rounded p-2 text-center">
-                        <div className="text-white text-sm font-semibold">
-                          {performance.tasksCompleted}
-                        </div>
-                        <div className="text-white/70 text-xs flex items-center justify-center">
-                          <Activity className="h-3 w-3 mr-1" />
-                          Tasks Completed
-                        </div>
-                      </div>
-                      
-                      <div className="bg-white/10 rounded p-2 text-center">
-                        <div className="text-white text-sm font-semibold">
-                          {performance.averageResponseTime}s
-                        </div>
-                        <div className="text-white/70 text-xs flex items-center justify-center">
-                          <Clock className="h-3 w-3 mr-1" />
-                          Avg Response Time
-                        </div>
-                      </div>
-                      
-                      <div className="bg-white/10 rounded p-2 text-center">
-                        <div className="text-white text-sm font-semibold">
-                          {performance.errorRate}%
-                        </div>
-                        <div className="text-white/70 text-xs flex items-center justify-center">
-                          <Activity className="h-3 w-3 mr-1" />
-                          Error Rate
-                        </div>
-                      </div>
-                      
-                      <div className="bg-white/10 rounded p-2 text-center">
-                        <div className="text-white text-sm font-semibold">
-                          {performance.uptime}%
-                        </div>
-                        <div className="text-white/70 text-xs flex items-center justify-center">
-                          <Zap className="h-3 w-3 mr-1" />
-                          Uptime
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-end">
-                      <button className="text-xs bg-flow-accent/90 text-white px-3 py-1 rounded hover:bg-flow-accent">
-                        {t('viewDetails')}
-                      </button>
-                    </div>
-                  </>
-                );
-              })()}
-            </motion.div>
+            <AgentInfoPanel
+              agent={agents.find(a => a.id === selectedAgent)!}
+              performanceData={performanceData}
+              onClose={handleCloseInfoPanel}
+            />
           )}
         </AnimatePresence>
+        
+        {/* Chat button */}
+        <div className="flex justify-end items-center absolute bottom-3 left-2 z-30">
+          <button 
+            className="text-xs flex items-center gap-1 px-2 py-1 rounded-full bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 transition-colors"
+            onClick={() => window.dispatchEvent(new CustomEvent('openCommunicationTerminal'))}
+          >
+            <MessageCircle className="h-3 w-3" />
+            {t('openChat')}
+          </button>
+        </div>
       </div>
     </Card>
   );

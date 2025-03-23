@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
@@ -37,19 +36,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
   const [position, setPosition] = useState(agent.position);
   const [currentRouteIndex, setCurrentRouteIndex] = useState(0);
   const [taskProgress, setTaskProgress] = useState(Math.floor(Math.random() * 30) + 70); // 70-100% initial progress
-  const animationRef = useRef<number | null>(null);
   const { t } = useLanguage();
-  
-  // Status translations
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'working': return t('working');
-      case 'idle': return t('idle');
-      case 'paused': return t('paused');
-      case 'error': return t('error');
-      default: return status;
-    }
-  };
   
   // Simulate task progress changes
   useEffect(() => {
@@ -66,16 +53,17 @@ const AgentCharacter: React.FC<AgentProps> = ({
     } else if (agent.status === 'idle') {
       // Idle agents have no active tasks
       setTaskProgress(0);
-    } else if (agent.status === 'paused') {
-      // Paused tasks maintain their current progress
     }
+    // For other statuses (paused, error), keep current progress
   }, [agent.status]);
   
   // Movement between route points or random movement within division area
   useEffect(() => {
+    let interval;
+    
     if (agent.status === 'working' && routePath.length > 0) {
       // Route-based movement for working agents
-      const moveToNextPoint = () => {
+      interval = setInterval(() => {
         const nextIndex = (currentRouteIndex + 1) % routePath.length;
         const nextPoint = routePath[nextIndex];
         
@@ -85,14 +73,10 @@ const AgentCharacter: React.FC<AgentProps> = ({
         });
         
         setCurrentRouteIndex(nextIndex);
-      };
-      
-      const interval = setInterval(moveToNextPoint, 10000 + (agent.id * 5000)); // Move every 10-35 seconds
-      
-      return () => clearInterval(interval);
+      }, 10000 + (agent.id * 5000)); // Move every 10-35 seconds
     } else if (agent.status === 'working') {
       // Random movement within division area
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         // Create small random movements around the original position
         const newX = agent.position.x + (Math.random() * 6 - 3);
         const newY = agent.position.y + (Math.random() * 6 - 3);
@@ -102,12 +86,14 @@ const AgentCharacter: React.FC<AgentProps> = ({
           y: Math.max(5, Math.min(85, newY))
         });
       }, 3000 + (agent.id * 500)); // Stagger movements
-      
-      return () => clearInterval(interval);
     }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, [agent, currentRouteIndex, routePath]);
   
-  // Determine colors based on status and progress values
+  // Determine colors based on status
   const statusColors = {
     working: 'bg-green-500',
     idle: 'bg-gray-500',
@@ -115,6 +101,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
     error: 'bg-red-500'
   };
   
+  // Get task progress color based on status and progress
   const getTaskProgressColor = () => {
     if (agent.status === 'idle') return 'bg-gray-500/50';
     if (agent.status === 'paused') return 'bg-amber-500';
@@ -149,8 +136,9 @@ const AgentCharacter: React.FC<AgentProps> = ({
       }}
       onClick={() => onAgentClick && onAgentClick(agent.id)}
     >
-      {/* Agent avatar */}
+      {/* Agent avatar and task progress bar */}
       <div className="flex flex-col items-center">
+        {/* Avatar */}
         <div className="relative mb-1">
           <div 
             className={`rounded-full p-2 ${
@@ -166,7 +154,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
           <div className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${statusColors[agent.status]} ${agent.status === 'working' ? 'animate-pulse-subtle' : ''}`}></div>
         </div>
         
-        {/* Single task progress bar */}
+        {/* Task progress bar */}
         <div className="w-12 h-1.5 mb-1 rounded-full overflow-hidden bg-gray-800/60">
           {agent.status === 'idle' ? (
             <div className="h-full bg-gray-500/30 w-full"></div>
@@ -181,7 +169,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
           )}
         </div>
         
-        {/* Name tooltip with clearer styling */}
+        {/* Name tooltip */}
         <div className={`px-1.5 py-0.5 bg-black/80 border border-flow-border/30 rounded text-[0.6rem] whitespace-nowrap shadow-lg ${isSelected ? 'bg-flow-accent/30 text-white' : ''}`}>
           {agent.name}
         </div>
