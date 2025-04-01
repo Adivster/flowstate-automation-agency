@@ -96,9 +96,9 @@ const Division: React.FC<DivisionProps> = ({
   };
   
   // Get hex color from Tailwind class
-  const getTailwindColor = (colorClass) => {
+  const getTailwindColor = (colorClass: string) => {
     // Base color mapping - these correspond to Tailwind's color system
-    const colorMap = {
+    const colorMap: Record<string, string> = {
       'bg-purple-500': '#a855f7',
       'bg-green-500': '#22c55e',
       'bg-blue-500': '#3b82f6',
@@ -109,6 +109,7 @@ const Division: React.FC<DivisionProps> = ({
       'bg-red-500': '#ef4444',
       'bg-lime-500': '#84cc16',
       'bg-pink-500': '#ec4899',
+      'bg-yellow-500': '#eab308',
       'bg-flow-accent': '#3b82f6'
     };
     
@@ -119,7 +120,7 @@ const Division: React.FC<DivisionProps> = ({
     <motion.div
       key={division.id}
       className={`absolute rounded-md ${division.color} bg-opacity-20 border-2 cursor-pointer transition-colors duration-200 
-        ${isSelected ? 'border-white shadow-lg' : `border-${division.color.replace('bg-', '')}`}
+        ${isSelected ? 'border-white shadow-lg' : 'border-opacity-70'}
         ${isPulsing ? 'shadow-lg' : ''}`}
       style={{
         left: `${division.position.x}%`,
@@ -127,6 +128,7 @@ const Division: React.FC<DivisionProps> = ({
         width: `${division.position.width}%`,
         height: `${division.position.height}%`,
         zIndex: isSelected ? 30 : 20,
+        borderColor: isSelected ? '#ffffff' : getTailwindColor(division.color),
         boxShadow: isPulsing ? `0 0 15px ${getTailwindColor(division.color)}` : ''
       }}
       onClick={() => onDivisionClick(division.id)}
@@ -154,12 +156,14 @@ const Division: React.FC<DivisionProps> = ({
       }}
     >
       <div className="absolute top-2 left-2 flex items-center">
-        <Icon className="h-4 w-4 mr-1 text-white" />
-        <div className="text-xs font-semibold text-white">{division.name}</div>
+        <div className="p-1 rounded-full bg-black/30 backdrop-blur-sm mr-1">
+          <Icon className="h-4 w-4 text-white" />
+        </div>
+        <div className="text-xs font-semibold text-white drop-shadow-md">{division.name}</div>
       </div>
       
       <div className="absolute bottom-1 right-1 flex space-x-1">
-        <Badge variant="outline" className="text-[0.6rem] py-0 px-1 bg-white/20">
+        <Badge variant="outline" className="text-[0.6rem] py-0 px-1 bg-black/30 backdrop-blur-sm text-white border-white/20">
           {agentsInDivision.length} {t('activeAgents')}
         </Badge>
       </div>

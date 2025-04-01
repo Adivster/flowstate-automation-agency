@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
@@ -87,7 +88,7 @@ const OfficeFloorPlan: React.FC = () => {
   
   useEffect(() => {
     const interval = setInterval(() => {
-      const divs = ['kb', 'analytics', 'operations', 'strategy', 'lounge'];
+      const divs = ['kb', 'analytics', 'operations', 'strategy', 'lounge', 'research'];
       let div1 = divs[Math.floor(Math.random() * divs.length)];
       let div2 = divs[Math.floor(Math.random() * divs.length)];
       while (div1 === div2) {
@@ -190,6 +191,18 @@ const OfficeFloorPlan: React.FC = () => {
 
   const handleCloseInfoPanel = () => {
     setShowInfoPanel(false);
+    setSelectedDivision(null);
+    setSelectedAgent(null);
+  };
+  
+  // Background click handler to close panels
+  const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Check if the click was directly on the background
+    if (e.currentTarget === e.target) {
+      setShowInfoPanel(false);
+      setSelectedDivision(null);
+      setSelectedAgent(null);
+    }
   };
   
   useEffect(() => {
@@ -216,7 +229,10 @@ const OfficeFloorPlan: React.FC = () => {
   
   return (
     <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-gray-100 dark:bg-gray-900 neon-border">
-      <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800">
+      <div 
+        className="absolute inset-0 bg-gray-200 dark:bg-gray-800"
+        onClick={handleBackgroundClick}
+      >
         <div 
           className="absolute inset-0" 
           style={{ 
@@ -298,15 +314,18 @@ const OfficeFloorPlan: React.FC = () => {
         {agents.map(agent => (
           <AgentCharacter 
             key={agent.id} 
-            agent={agent}
+            agent={{
+              ...agent,
+              status: agent.status as 'working' | 'idle' | 'paused' | 'error'
+            }}
             routePath={agent.route}
             isSelected={selectedAgent === agent.id}
             onAgentClick={handleAgentClick}
           />
         ))}
         
-        <div className="absolute top-2 left-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs z-30">Floor Plan v3.0</div>
-        <div className="absolute bottom-3 right-2 p-1 bg-gray-300 dark:bg-gray-700 rounded text-xs z-30">FlowState Agency</div>
+        <div className="absolute top-2 left-2 p-1 bg-gray-300/50 dark:bg-gray-700/50 backdrop-blur-sm rounded text-xs z-30">Floor Plan v3.0</div>
+        <div className="absolute bottom-3 right-2 p-1 bg-gray-300/50 dark:bg-gray-700/50 backdrop-blur-sm rounded text-xs z-30">FlowState Agency</div>
         
         <AnimatePresence>
           {selectedDivisionObject && showInfoPanel && (
@@ -319,7 +338,10 @@ const OfficeFloorPlan: React.FC = () => {
           
           {selectedAgentObject && showInfoPanel && (
             <AgentInfoPanel
-              agent={selectedAgentObject}
+              agent={{
+                ...selectedAgentObject,
+                status: selectedAgentObject.status as 'working' | 'idle' | 'paused' | 'error'
+              }}
               onClose={handleCloseInfoPanel}
             />
           )}

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
@@ -143,9 +144,9 @@ const AgentCharacter: React.FC<AgentProps> = ({
           <div 
             className={`rounded-full p-2 ${
               agent.status === 'working' 
-                ? 'bg-flow-accent/20 border border-flow-accent/30' 
+                ? 'bg-flow-accent/30 border border-flow-accent/40 shadow-md' 
                 : 'bg-flow-muted/50'
-            } ${isSelected ? 'ring-2 ring-white' : ''}`}
+            } ${isSelected ? 'ring-2 ring-white shadow-lg' : ''}`}
           >
             <Icon className={`h-4 w-4 ${agent.status === 'working' ? 'text-flow-accent animate-pulse-subtle' : 'text-flow-foreground'}`} />
           </div>
@@ -155,7 +156,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
         </div>
         
         {/* Task progress bar */}
-        <div className="w-12 h-1.5 mb-1 rounded-full overflow-hidden bg-gray-800/60">
+        <div className="w-12 h-1.5 mb-1 rounded-full overflow-hidden bg-black/60 backdrop-blur-sm">
           {agent.status === 'idle' ? (
             <div className="h-full bg-gray-500/30 w-full"></div>
           ) : (
@@ -170,7 +171,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
         </div>
         
         {/* Name tooltip */}
-        <div className={`px-1.5 py-0.5 bg-black/80 border border-flow-border/30 rounded text-[0.6rem] whitespace-nowrap shadow-lg ${isSelected ? 'bg-flow-accent/30 text-white' : ''}`}>
+        <div className={`px-1.5 py-0.5 bg-black/80 backdrop-blur-sm border border-flow-border/30 rounded text-[0.6rem] whitespace-nowrap shadow-lg ${isSelected ? 'bg-flow-accent/30 text-white border-flow-accent/50' : 'text-white'}`}>
           {agent.name}
         </div>
       </div>
