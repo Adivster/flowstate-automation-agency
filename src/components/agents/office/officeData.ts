@@ -1,27 +1,6 @@
-import { Database, FileSearch, User, Code, Shield, BrainCog, Monitor, Coffee, ChartBar, BookOpen, Zap, Server, Activity, Cpu, DollarSign, MessagesSquare, LayoutGrid } from 'lucide-react';
-import { WorkstationType } from './Workstation';
+import { BookOpen, BarChart, LayoutGrid, Shield, Coffee, FlaskConical, Activity } from 'lucide-react';
 
-export interface RoutePoint {
-  division: string;
-  x: number;
-  y: number;
-}
-
-export interface Agent {
-  id: number;
-  name: string;
-  role: string;
-  status: 'working' | 'idle' | 'paused' | 'error';
-  icon: any;
-  division: string;
-  position: {
-    x: number;
-    y: number;
-  };
-  route: RoutePoint[];
-}
-
-export interface Division {
+interface DivisionData {
   id: string;
   name: string;
   color: string;
@@ -42,288 +21,367 @@ export interface Division {
   }>;
 }
 
-export interface Decoration {
+interface WorkstationData {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation?: number;
+  type: string;
+}
+
+interface DecorationData {
   type: string;
   x: number;
   y: number;
-  size: number;
+  size: string;
 }
 
-export interface Hologram {
+interface HologramData {
   type: string;
   x: number;
   y: number;
-  size: number;
+  size: string;
 }
 
-export const getDivisions = (translator?: (key: string) => string): Division[] => {
-  const t = translator || ((key: string) => key);
-  
-  return [
-    {
-      id: 'kb',
-      name: t('knowledgeBase'),
-      color: 'bg-indigo-500',
-      icon: BookOpen,
-      position: { x: 15, y: 30, width: 28, height: 30 },
-      description: t('knowledgeBaseDesc'),
-      agents: 3,
-      tasks: 30,
-      decoration: [
-        { type: 'boards', x: 25, y: 35 },
-        { type: 'desk', x: 22, y: 40 },
-        { type: 'computer', x: 22, y: 38 },
-        { type: 'chart', x: 35, y: 35 },
-      ]
-    },
-    {
-      id: 'analytics',
-      name: t('analyticsDivision'),
-      color: 'bg-cyan-500',
-      icon: ChartBar,
-      position: { x: 55, y: 30, width: 28, height: 30 },
-      description: t('analyticsDesc'),
-      agents: 3,
-      tasks: 22,
-      decoration: [
-        { type: 'computer', x: 60, y: 35 },
-        { type: 'computer', x: 65, y: 35 },
-        { type: 'desk', x: 60, y: 38 },
-        { type: 'desk', x: 65, y: 38 },
-        { type: 'chart', x: 70, y: 40 },
-      ]
-    },
-    {
-      id: 'operations',
-      name: t('operationsDivision'),
-      color: 'bg-green-500',
-      icon: LayoutGrid,
-      position: { x: 15, y: 70, width: 28, height: 20 },
-      description: t('operationsDesc'),
-      agents: 4,
-      tasks: 45,
-      decoration: [
-        { type: 'boards', x: 25, y: 75 },
-        { type: 'desk', x: 30, y: 78 },
-        { type: 'computer', x: 25, y: 75 },
-      ]
-    },
-    {
-      id: 'strategy',
-      name: t('strategyDivision'),
-      color: 'bg-purple-500',
-      icon: Shield,
-      position: { x: 55, y: 70, width: 28, height: 20 },
-      description: t('strategyDesc'),
-      agents: 2,
-      tasks: 20,
-      decoration: [
-        { type: 'server', x: 65, y: 75 },
-        { type: 'computer', x: 60, y: 72 },
-        { type: 'monitor', x: 70, y: 72 },
-      ]
-    },
-    {
-      id: 'lounge',
-      name: t('loungeName'),
-      color: 'bg-amber-500',
-      icon: Coffee,
-      position: { x: 35, y: 10, width: 30, height: 15 },
-      description: t('loungeDesc'),
-      agents: 2,
-      tasks: 0,
-      decoration: [
-        { type: 'coffee', x: 40, y: 15 },
-        { type: 'coffee', x: 50, y: 15 },
-        { type: 'sofa', x: 45, y: 17 },
-        { type: 'sofa', x: 55, y: 17 },
-      ]
-    }
-  ];
-};
+interface AgentData {
+  id: number;
+  name: string;
+  role: string;
+  status: 'working' | 'idle' | 'paused' | 'error';
+  icon: any;
+  division: string;
+  position: {
+    x: number;
+    y: number;
+  };
+  route: Array<{
+    division: string;
+    x: number;
+    y: number;
+  }>;
+}
 
-export const workstations: WorkstationType[] = [
-  { x: 20, y: 35, width: 8, height: 4, type: 'desk' },
-  { x: 30, y: 35, width: 8, height: 4, type: 'desk' },
-  { x: 20, y: 42, width: 8, height: 4, type: 'desk' },
-  { x: 30, y: 42, width: 8, height: 4, type: 'desk' },
-  
-  { x: 60, y: 35, width: 8, height: 4, type: 'desk' },
-  { x: 70, y: 35, width: 8, height: 4, type: 'desk' },
-  { x: 60, y: 42, width: 8, height: 4, type: 'desk' },
-  { x: 70, y: 42, width: 8, height: 4, type: 'desk' },
-  
-  { x: 22, y: 75, width: 15, height: 8, type: 'meeting' },
-  
-  { x: 60, y: 75, width: 4, height: 8, type: 'server' },
-  { x: 66, y: 75, width: 4, height: 8, type: 'server' },
-  { x: 72, y: 75, width: 4, height: 8, type: 'server' },
-  
-  { x: 40, y: 15, width: 6, height: 3, type: 'sofa' },
-  { x: 50, y: 15, width: 6, height: 3, type: 'sofa' },
-  { x: 45, y: 13, width: 4, height: 2, type: 'coffee_table' },
-  { x: 55, y: 13, width: 4, height: 2, type: 'coffee_table' },
+// Function that returns divisions with translated names
+export const getDivisions = (t: (key: string) => string) => [
+  {
+    id: 'kb',
+    name: t('knowledgeBase'),
+    color: 'bg-indigo-500',
+    icon: BookOpen,
+    position: {
+      x: 25, 
+      y: 20, 
+      width: 20, 
+      height: 25
+    },
+    description: t('kbDescription'),
+    agents: 3,
+    tasks: 12,
+    decoration: [
+      { type: 'boards', x: 30, y: 30 },
+      { type: 'computer', x: 35, y: 25 },
+      { type: 'desk', x: 35, y: 35 },
+      { type: 'computer', x: 30, y: 35 },
+    ]
+  },
+  {
+    id: 'analytics',
+    name: t('analyticsDivision'),
+    color: 'bg-yellow-500',
+    icon: BarChart,
+    position: {
+      x: 55, 
+      y: 20, 
+      width: 20, 
+      height: 25
+    },
+    description: t('analyticsDescription'),
+    agents: 2,
+    tasks: 8,
+    decoration: [
+      { type: 'chart', x: 60, y: 25 },
+      { type: 'computer', x: 65, y: 30 },
+      { type: 'desk', x: 60, y: 35 },
+      { type: 'computer', x: 60, y: 30 },
+    ]
+  },
+  {
+    id: 'operations',
+    name: t('operationsDivision'),
+    color: 'bg-purple-500',
+    icon: LayoutGrid,
+    position: {
+      x: 25, 
+      y: 55, 
+      width: 20, 
+      height: 25
+    },
+    description: t('operationsDescription'),
+    agents: 4,
+    tasks: 15,
+    decoration: [
+      { type: 'server', x: 30, y: 60 },
+      { type: 'desk', x: 35, y: 65 },
+      { type: 'monitor', x: 35, y: 60 },
+      { type: 'computer', x: 30, y: 65 },
+    ]
+  },
+  {
+    id: 'strategy',
+    name: t('strategyDivision'),
+    color: 'bg-blue-500',
+    icon: Shield,
+    position: {
+      x: 55, 
+      y: 55, 
+      width: 20, 
+      height: 25
+    },
+    description: t('strategyDescription'),
+    agents: 2,
+    tasks: 6,
+    decoration: [
+      { type: 'boards', x: 60, y: 65 },
+      { type: 'desk', x: 65, y: 65 },
+      { type: 'computer', x: 60, y: 60 },
+      { type: 'meeting', x: 65, y: 60 },
+    ]
+  },
+  // Add the Research division to the floor plan
+  {
+    id: 'research',
+    name: t('researchDivision'),
+    color: 'bg-green-500',
+    icon: FlaskConical,
+    position: {
+      x: 40, 
+      y: 37, 
+      width: 20, 
+      height: 15
+    },
+    description: t('researchDescription'),
+    agents: 4,
+    tasks: 10,
+    decoration: [
+      { type: 'chart', x: 45, y: 42 },
+      { type: 'computer', x: 50, y: 44 },
+      { type: 'desk', x: 45, y: 46 },
+      { type: 'server', x: 47, y: 40 },
+    ]
+  },
+  {
+    id: 'lounge',
+    name: t('lounge'),
+    color: 'bg-amber-500',
+    icon: Coffee,
+    position: {
+      x: 80, 
+      y: 40, 
+      width: 15, 
+      height: 20
+    },
+    description: t('loungeDescription'),
+    agents: 0,
+    tasks: 0,
+    decoration: [
+      { type: 'sofa', x: 85, y: 45 },
+      { type: 'coffee', x: 85, y: 50 },
+      { type: 'plant', x: 87, y: 45 },
+      { type: 'plant', x: 83, y: 45 },
+    ]
+  }
 ];
 
-export const decorations: Decoration[] = [
-  { type: 'plant', x: 5, y: 10, size: 4 },
-  { type: 'plant', x: 90, y: 10, size: 4 },
-  { type: 'plant', x: 38, y: 20, size: 3 },
-  { type: 'plant', x: 52, y: 20, size: 3 },
-  { type: 'coffee', x: 45, y: 15, size: 3 },
-  { type: 'coffee', x: 55, y: 15, size: 3 },
-  { type: 'monitor', x: 75, y: 35, size: 3 },
-  { type: 'monitor', x: 75, y: 42, size: 3 },
-  { type: 'server', x: 80, y: 75, size: 5 },
+export const workstations: WorkstationData[] = [
+  { x: 30, y: 25, width: 5, height: 5, type: 'developer' },
+  { x: 60, y: 30, width: 5, height: 5, type: 'analyst' },
+  { x: 35, y: 60, width: 5, height: 5, type: 'architect' },
+  { x: 65, y: 65, width: 5, height: 5, type: 'strategist' },
+  { x: 45, y: 42, width: 5, height: 5, type: 'scientist' },
 ];
 
-export const holograms: Hologram[] = [
-  { type: 'chart', x: 25, y: 32, size: 6 },
-  { type: 'data', x: 65, y: 32, size: 6 },
-  { type: 'code', x: 70, y: 38, size: 5 },
-  { type: 'chart', x: 25, y: 72, size: 5 },
-  { type: 'data', x: 62, y: 72, size: 5 },
+export const decorations: DecorationData[] = [
+  { type: 'plant', x: 15, y: 30, size: 'small' },
+  { type: 'sculpture', x: 85, y: 70, size: 'medium' },
+  { type: 'painting', x: 50, y: 10, size: 'large' },
 ];
 
-export const agents: Agent[] = [
+export const holograms: HologramData[] = [
+  { type: 'earth', x: 75, y: 25, size: 'medium' },
+  { type: 'circuit', x: 15, y: 70, size: 'small' },
+];
+
+// Add new agent to the Research division
+export const agents = [
   {
     id: 1,
-    name: 'KB Content Agent',
-    role: 'Knowledge Base',
+    name: 'Alice Johnson',
+    role: 'Knowledge Engineer',
     status: 'working',
     icon: BookOpen,
     division: 'kb',
-    position: { x: 22, y: 34 },
+    position: {
+      x: 30,
+      y: 25
+    },
     route: [
-      { division: 'kb', x: 22, y: 34 },
-      { division: 'kb', x: 32, y: 34 },
-      { division: 'kb', x: 22, y: 41 },
+      { division: 'kb', x: 30, y: 25 },
+      { division: 'analytics', x: 60, y: 25 },
+      { division: 'operations', x: 35, y: 60 },
+      { division: 'kb', x: 30, y: 25 }
     ]
   },
   {
     id: 2,
-    name: 'Strategy Agent',
-    role: 'Strategy',
-    status: 'working',
+    name: 'Bob Williams',
+    role: 'Security Analyst',
+    status: 'idle',
     icon: Shield,
     division: 'strategy',
-    position: { x: 62, y: 74 },
+    position: {
+      x: 65,
+      y: 65
+    },
     route: [
-      { division: 'strategy', x: 62, y: 74 },
-      { division: 'strategy', x: 68, y: 74 },
-      { division: 'strategy', x: 74, y: 74 },
+      { division: 'strategy', x: 65, y: 65 },
+      { division: 'operations', x: 35, y: 60 },
+      { division: 'strategy', x: 65, y: 65 }
     ]
   },
   {
     id: 3,
-    name: 'Dashboard Agent',
-    role: 'Analytics',
+    name: 'Charlie Brown',
+    role: 'Data Analyst',
     status: 'working',
-    icon: ChartBar,
+    icon: BarChart,
     division: 'analytics',
-    position: { x: 62, y: 34 },
+    position: {
+      x: 60,
+      y: 25
+    },
     route: [
-      { division: 'analytics', x: 62, y: 34 },
-      { division: 'analytics', x: 72, y: 34 },
-      { division: 'analytics', x: 62, y: 41 },
+      { division: 'analytics', x: 60, y: 25 },
+      { division: 'kb', x: 30, y: 25 },
+      { division: 'analytics', x: 60, y: 25 }
     ]
   },
   {
     id: 4,
-    name: 'KB Search Agent',
-    role: 'Knowledge Base',
-    status: 'working',
-    icon: FileSearch,
-    division: 'kb',
-    position: { x: 32, y: 41 },
+    name: 'Diana Miller',
+    role: 'Integration Specialist',
+    status: 'paused',
+    icon: LayoutGrid,
+    division: 'operations',
+    position: {
+      x: 35,
+      y: 60
+    },
     route: [
-      { division: 'kb', x: 32, y: 41 },
-      { division: 'kb', x: 22, y: 41 },
-      { division: 'kb', x: 32, y: 34 },
+      { division: 'operations', x: 35, y: 60 },
+      { division: 'strategy', x: 65, y: 65 },
     ]
   },
   {
     id: 5,
-    name: 'Workflow Agent',
-    role: 'Operations',
+    name: 'Eva Garcia',
+    role: 'Financial Analyst',
     status: 'working',
-    icon: LayoutGrid,
-    division: 'operations',
-    position: { x: 25, y: 74 },
+    icon: Shield,
+    division: 'strategy',
+    position: {
+      x: 70,
+      y: 70
+    },
     route: [
-      { division: 'operations', x: 25, y: 74 },
-      { division: 'operations', x: 35, y: 74 },
-      { division: 'operations', x: 25, y: 74 },
+      { division: 'strategy', x: 70, y: 70 },
+      { division: 'analytics', x: 60, y: 25 },
     ]
   },
   {
     id: 6,
-    name: 'Market Research Agent',
-    role: 'Strategy',
-    status: 'idle',
-    icon: BrainCog,
-    division: 'lounge',
-    position: { x: 42, y: 15 },
+    name: 'Data Scientist',
+    role: 'Research Division',
+    status: 'working',
+    icon: Activity,
+    division: 'research',
+    position: {
+      x: 45,
+      y: 42
+    },
     route: [
-      { division: 'lounge', x: 42, y: 15 },
-      { division: 'lounge', x: 48, y: 15 },
-      { division: 'lounge', x: 45, y: 18 },
+      { division: 'research', x: 45, y: 42 },
+      { division: 'analytics', x: 60, y: 25 },
+      { division: 'kb', x: 30, y: 25 },
+      { division: 'research', x: 45, y: 42 }
     ]
   },
   {
     id: 7,
-    name: 'Integration Agent',
-    role: 'Operations',
+    name: 'Linda Carter',
+    role: 'Data Architect',
     status: 'working',
-    icon: Server,
-    division: 'operations',
-    position: { x: 30, y: 74 },
+    icon: BarChart,
+    division: 'analytics',
+    position: {
+      x: 58,
+      y: 28
+    },
     route: [
-      { division: 'operations', x: 30, y: 74 },
-      { division: 'operations', x: 35, y: 74 },
-      { division: 'operations', x: 25, y: 74 },
+      { division: 'analytics', x: 58, y: 28 },
+      { division: 'kb', x: 32, y: 22 },
+      { division: 'analytics', x: 58, y: 28 }
     ]
   },
   {
     id: 8,
-    name: 'Metrics Agent',
-    role: 'Analytics',
-    status: 'working',
-    icon: Activity,
-    division: 'analytics',
-    position: { x: 70, y: 41 },
+    name: 'Kevin ONeil',
+    role: 'Operations Manager',
+    status: 'idle',
+    icon: LayoutGrid,
+    division: 'operations',
+    position: {
+      x: 32,
+      y: 57
+    },
     route: [
-      { division: 'analytics', x: 70, y: 41 },
-      { division: 'analytics', x: 65, y: 41 },
-      { division: 'analytics', x: 60, y: 41 },
+      { division: 'operations', x: 32, y: 57 },
+      { division: 'strategy', x: 67, y: 68 },
     ]
   },
   {
     id: 9,
-    name: 'Data Processing Agent',
-    role: 'Analytics',
-    status: 'idle',
-    icon: Database,
-    division: 'lounge',
-    position: { x: 52, y: 15 },
+    name: 'Brian Smith',
+    role: 'Knowledge Analyst',
+    status: 'working',
+    icon: BookOpen,
+    division: 'kb',
+    position: {
+      x: 28,
+      y: 27
+    },
     route: [
-      { division: 'lounge', x: 52, y: 15 },
-      { division: 'lounge', x: 58, y: 15 },
-      { division: 'lounge', x: 55, y: 18 },
+      { division: 'kb', x: 28, y: 27 },
+      { division: 'analytics', x: 62, y: 22 },
+      { division: 'operations', x: 37, y: 58 },
+      { division: 'kb', x: 28, y: 27 }
     ]
   },
   {
     id: 10,
-    name: 'Maintenance Agent',
-    role: 'Operations',
+    name: 'Laura Diaz',
+    role: 'Strategy Consultant',
     status: 'paused',
-    icon: Cpu,
-    division: 'lounge',
-    position: { x: 47, y: 18 },
+    icon: Shield,
+    division: 'strategy',
+    position: {
+      x: 67,
+      y: 62
+    },
     route: [
-      { division: 'lounge', x: 47, y: 18 },
-      { division: 'lounge', x: 45, y: 15 },
-      { division: 'lounge', x: 40, y: 15 },
+      { division: 'strategy', x: 67, y: 62 },
+      { division: 'operations', x: 32, y: 58 },
+      { division: 'strategy', x: 67, y: 62 }
     ]
-  }
+  },
 ];

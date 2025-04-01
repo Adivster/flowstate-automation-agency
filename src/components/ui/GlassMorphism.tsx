@@ -1,19 +1,19 @@
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 interface GlassMorphismProps {
   children: ReactNode;
   className?: string;
   intensity?: 'low' | 'medium' | 'high';
-  onClick?: () => void; // Added onClick prop
+  onClick?: () => void; // Keeping the onClick prop
 }
 
 export const GlassMorphism: React.FC<GlassMorphismProps> = ({
   children,
   className,
   intensity = 'medium',
-  onClick, // Include in component props
+  onClick,
 }) => {
   const intensityClasses = {
     low: 'bg-white/5 backdrop-blur-sm border border-white/10',
@@ -28,7 +28,7 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
         intensityClasses[intensity],
         className
       )}
-      onClick={onClick} // Apply the onClick handler
+      onClick={onClick}
     >
       {children}
     </div>

@@ -8,7 +8,8 @@ import {
   DollarSign, 
   Users, 
   Share2, 
-  MessagesSquare
+  MessagesSquare,
+  FlaskConical
 } from 'lucide-react';
 import { TransitionWrapper } from '../ui/TransitionWrapper';
 import StatsOverview from './StatsOverview';
@@ -89,6 +90,14 @@ const AgencyDashboard: React.FC = () => {
       activeAgents: 3,
       taskStatus: { completed: 45, total: 60 },
       type: 'knowledge' as const,
+    },
+    {
+      title: 'Research Division',
+      description: 'Explores new technologies, market trends, and innovation opportunities.',
+      icon: FlaskConical,
+      activeAgents: 4,
+      taskStatus: { completed: 22, total: 30 },
+      type: 'research' as const,
     },
   ];
 

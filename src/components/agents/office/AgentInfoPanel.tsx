@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Activity, Clock, Zap, BarChart3 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -23,6 +23,8 @@ const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({
   onClose 
 }) => {
   const { t } = useLanguage();
+  const panelRef = useRef<HTMLDivElement>(null);
+  
   // Pass agent ID to get consistent performance data
   const performanceData = usePerformanceData(agent.id);
   
@@ -35,9 +37,25 @@ const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({
     { name: "May", value: performanceData.taskCompletion },
   ];
   
+  // Handle click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
+  
   return (
     <motion.div 
-      className="absolute bottom-4 left-4 right-4 bg-black/80 backdrop-blur-sm rounded-md border border-flow-accent/30 p-4 z-50"
+      ref={panelRef}
+      className="absolute bottom-4 left-4 max-w-[calc(100%-2rem)] right-4 bg-black/80 backdrop-blur-sm rounded-md border border-flow-accent/30 p-4 z-50 overflow-auto"
+      style={{ maxHeight: 'calc(100% - 8rem)' }}
       initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 50, opacity: 0 }}
@@ -122,11 +140,9 @@ const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({
       <div className="grid grid-cols-2 gap-3 mb-3">
         <button className="text-xs bg-flow-accent/90 text-white px-3 py-1.5 rounded hover:bg-flow-accent flex items-center justify-center">
           <Activity className="h-3 w-3 mr-1" />
-          {/* Fixed translation key issue by using a key that exists in the language context */}
-          {t('agents')} 
+          {t('agents')}
         </button>
         <button className="text-xs bg-flow-muted/30 text-white/90 px-3 py-1.5 rounded hover:bg-flow-muted/50 flex items-center justify-center">
-          {/* Using a different key that exists in the language context */}
           {t('analytics')}
         </button>
       </div>

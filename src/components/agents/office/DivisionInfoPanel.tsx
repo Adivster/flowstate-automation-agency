@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Users, Activity, BarChart, PieChart as PieChartIcon, ArrowRightCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -29,6 +29,8 @@ const DivisionInfoPanel: React.FC<DivisionInfoPanelProps> = ({
   onClose 
 }) => {
   const { t } = useLanguage();
+  const panelRef = useRef<HTMLDivElement>(null);
+  
   // Pass division ID to get consistent performance data
   const performanceData = usePerformanceData(division.id);
   
@@ -40,9 +42,25 @@ const DivisionInfoPanel: React.FC<DivisionInfoPanelProps> = ({
   
   const agentsInDivision = agents.filter(a => a.division === division.id);
   
+  // Handle click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
+  
   return (
     <motion.div 
-      className="absolute bottom-4 left-4 right-4 bg-black/80 backdrop-blur-sm rounded-md border border-flow-accent/30 p-4 z-50"
+      ref={panelRef}
+      className="absolute bottom-4 left-4 max-w-[calc(100%-2rem)] right-4 bg-black/80 backdrop-blur-sm rounded-md border border-flow-accent/30 p-4 z-50 overflow-auto"
+      style={{ maxHeight: 'calc(100% - 8rem)' }}
       initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 50, opacity: 0 }}
