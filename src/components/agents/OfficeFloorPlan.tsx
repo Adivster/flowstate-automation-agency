@@ -331,7 +331,7 @@ const OfficeFloorPlan: React.FC = () => {
           {selectedDivisionObject && showInfoPanel && (
             <DivisionInfoPanel
               division={selectedDivisionObject}
-              agents={agents}
+              agents={agents.filter(a => a.division === selectedDivisionObject.id)}
               onClose={handleCloseInfoPanel}
             />
           )}
