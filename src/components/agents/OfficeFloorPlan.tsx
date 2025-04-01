@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
@@ -32,8 +33,8 @@ interface Notification {
 
 interface DataTransmission {
   id: string | number;
-  start: { x: number; y: number };
-  end: { x: number; y: number };
+  start: { x: number | string; y: number | string };
+  end: { x: number | string; y: number | string };
   color: string;
   temporary?: boolean;
   pulseSpeed?: number;
