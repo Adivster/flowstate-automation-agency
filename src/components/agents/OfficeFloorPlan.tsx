@@ -1,19 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
-import { MessageCircle } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import AgentCharacter from './AgentCharacter';
-import Workstation from './office/Workstation';
-import DecorativeElement from './office/DecorativeElement';
-import HolographicElement from './office/HolographicElement';
-import Division from './office/Division';
-import DataTransmissionPath from './office/DataTransmissionPath';
-import NotificationPopup from './office/NotificationPopup';
-import CentralServer from './office/CentralServer';
-import CommunicationHub from './office/CommunicationHub';
-import DivisionInfoPanel from './office/DivisionInfoPanel';
-import AgentInfoPanel from './office/AgentInfoPanel';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   getDivisions, 
@@ -22,23 +9,11 @@ import {
   holograms, 
   agents
 } from './office/officeData';
-
-interface Notification {
-  id: number;
-  x: number;
-  y: number;
-  message: string;
-  type: 'success' | 'info' | 'warning' | 'error';
-}
-
-interface DataTransmission {
-  id: string | number;
-  start: { x: number | string; y: number | string };
-  end: { x: number | string; y: number | string };
-  color: string;
-  temporary?: boolean;
-  pulseSpeed?: number;
-}
+import DataTransmissionManager, { DataTransmission } from './office/DataTransmissionManager';
+import NotificationManager, { Notification } from './office/NotificationManager';
+import OfficeElements from './office/OfficeElements';
+import OfficeControls from './office/OfficeControls';
+import InfoPanelManager from './office/InfoPanelManager';
 
 const OfficeFloorPlan: React.FC = () => {
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
@@ -240,121 +215,34 @@ const OfficeFloorPlan: React.FC = () => {
           }}
         />
         
-        {dataTransmissions.map(transmission => (
-          <DataTransmissionPath 
-            key={transmission.id}
-            start={transmission.start}
-            end={transmission.end}
-            color={transmission.color}
-            pulseSpeed={transmission.pulseSpeed || 3 + Math.random() * 3}
-          />
-        ))}
+        <DataTransmissionManager transmissions={dataTransmissions} />
         
-        <AnimatePresence>
-          {notifications.map(notification => (
-            <NotificationPopup
-              key={notification.id}
-              x={notification.x}
-              y={notification.y}
-              message={notification.message}
-              type={notification.type}
-              onComplete={() => {}}
-            />
-          ))}
-        </AnimatePresence>
+        <NotificationManager notifications={notifications} />
         
-        <CentralServer />
+        <OfficeElements 
+          divisions={divisions}
+          workstations={workstations}
+          decorations={decorations}
+          holograms={holograms}
+          agents={agents}
+          selectedDivision={selectedDivision}
+          selectedAgent={selectedAgent}
+          pulsing={pulsing}
+          onDivisionClick={handleDivisionClick}
+          onAgentClick={handleAgentClick}
+        />
         
-        <CommunicationHub />
+        <OfficeControls translationFunction={t} />
         
-        {workstations.map((station, index) => (
-          <Workstation
-            key={`station-${index}`}
-            x={station.x}
-            y={station.y}
-            width={station.width}
-            height={station.height}
-            rotation={station.rotation || 0}
-            type={station.type}
-          />
-        ))}
-        
-        {decorations.map((item, index) => (
-          <DecorativeElement
-            key={`decor-${index}`}
-            type={item.type}
-            x={item.x}
-            y={item.y}
-            size={item.size}
-          />
-        ))}
-        
-        {holograms.map((item, index) => (
-          <HolographicElement
-            key={`holo-${index}`}
-            type={item.type}
-            x={item.x}
-            y={item.y}
-            size={item.size}
-          />
-        ))}
-        
-        {divisions.map((division) => (
-          <Division
-            key={division.id}
-            division={division}
-            isSelected={selectedDivision === division.id}
-            isPulsing={pulsing[division.id]}
-            onDivisionClick={handleDivisionClick}
-            agents={agents}
-          />
-        ))}
-        
-        {agents.map(agent => (
-          <AgentCharacter 
-            key={agent.id} 
-            agent={{
-              ...agent,
-              status: agent.status as 'working' | 'idle' | 'paused' | 'error'
-            }}
-            routePath={agent.route}
-            isSelected={selectedAgent === agent.id}
-            onAgentClick={handleAgentClick}
-          />
-        ))}
-        
-        <div className="absolute top-2 left-2 p-1 bg-gray-300/50 dark:bg-gray-700/50 backdrop-blur-sm rounded text-xs z-30">Floor Plan v3.0</div>
-        <div className="absolute bottom-3 right-2 p-1 bg-gray-300/50 dark:bg-gray-700/50 backdrop-blur-sm rounded text-xs z-30">FlowState Agency</div>
-        
-        <AnimatePresence>
-          {selectedDivisionObject && showInfoPanel && (
-            <DivisionInfoPanel
-              division={selectedDivisionObject}
-              agents={agents.filter(a => a.division === selectedDivisionObject.id)}
-              onClose={handleCloseInfoPanel}
-            />
-          )}
-          
-          {selectedAgentObject && showInfoPanel && (
-            <AgentInfoPanel
-              agent={{
-                ...selectedAgentObject,
-                status: selectedAgentObject.status as 'working' | 'idle' | 'paused' | 'error'
-              }}
-              onClose={handleCloseInfoPanel}
-            />
-          )}
-        </AnimatePresence>
-        
-        <div className="flex justify-end items-center absolute bottom-3 left-2 z-30">
-          <button 
-            className="text-xs flex items-center gap-1 px-2 py-1 rounded-full bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 transition-colors"
-            onClick={() => window.dispatchEvent(new CustomEvent('openCommunicationTerminal'))}
-          >
-            <MessageCircle className="h-3 w-3" />
-            {t('openChat')}
-          </button>
-        </div>
+        <InfoPanelManager 
+          selectedDivision={selectedDivision}
+          selectedDivisionObject={selectedDivisionObject}
+          selectedAgent={selectedAgent}
+          selectedAgentObject={selectedAgentObject}
+          showInfoPanel={showInfoPanel}
+          agents={agents}
+          onClose={handleCloseInfoPanel}
+        />
       </div>
     </Card>
   );
