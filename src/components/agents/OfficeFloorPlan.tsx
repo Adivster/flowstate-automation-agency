@@ -8,7 +8,7 @@ import {
   decorations, 
   holograms, 
   agents
-} from './office/officeData';
+} from './office/data';
 import DataTransmissionManager, { DataTransmission } from './office/DataTransmissionManager';
 import NotificationManager, { Notification } from './office/NotificationManager';
 import OfficeElements from './office/OfficeElements';
