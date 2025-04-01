@@ -2,8 +2,8 @@
 import React from 'react';
 
 interface DataTransmissionPathProps {
-  start: { x: number; y: number };
-  end: { x: number; y: number };
+  start: { x: number | string; y: number | string };
+  end: { x: number | string; y: number | string };
   color: string;
   pulseSpeed?: number;
 }
@@ -14,14 +14,20 @@ const DataTransmissionPath: React.FC<DataTransmissionPathProps> = ({
   color, 
   pulseSpeed = 3 
 }) => {
+  // Ensure we're working with string values for SVG attributes
+  const startX = typeof start.x === 'number' ? `${start.x}%` : start.x;
+  const startY = typeof start.y === 'number' ? `${start.y}%` : start.y;
+  const endX = typeof end.x === 'number' ? `${end.x}%` : end.x;
+  const endY = typeof end.y === 'number' ? `${end.y}%` : end.y;
+
   return (
     <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-10">
       <svg width="100%" height="100%" className="absolute top-0 left-0">
         <line 
-          x1={`${start.x}%`} 
-          y1={`${start.y}%`} 
-          x2={`${end.x}%`} 
-          y2={`${end.y}%`} 
+          x1={startX}
+          y1={startY}
+          x2={endX}
+          y2={endY}
           stroke={color} 
           strokeWidth="1" 
           strokeDasharray="3,3" 
@@ -33,7 +39,7 @@ const DataTransmissionPath: React.FC<DataTransmissionPathProps> = ({
           <animateMotion
             dur={`${pulseSpeed}s`}
             repeatCount="indefinite"
-            path={`M${start.x},${start.y} L${end.x},${end.y}`}
+            path={`M${typeof start.x === 'number' ? start.x : parseFloat(start.x)},${typeof start.y === 'number' ? start.y : parseFloat(start.y)} L${typeof end.x === 'number' ? end.x : parseFloat(end.x)},${typeof end.y === 'number' ? end.y : parseFloat(end.y)}`}
           />
         </circle>
       </svg>

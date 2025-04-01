@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
@@ -195,9 +194,7 @@ const OfficeFloorPlan: React.FC = () => {
     setSelectedAgent(null);
   };
   
-  // Background click handler to close panels
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Check if the click was directly on the background
     if (e.currentTarget === e.target) {
       setShowInfoPanel(false);
       setSelectedDivision(null);
