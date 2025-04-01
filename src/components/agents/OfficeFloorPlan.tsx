@@ -109,7 +109,8 @@ const OfficeFloorPlan: React.FC = () => {
             y: division2.position.y + (division2.position.height / 2)
           },
           color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`,
-          temporary: true
+          temporary: true,
+          pulseSpeed: 1.5
         };
         
         setDataTransmissions(prev => [...prev, newTransmission]);
@@ -244,7 +245,7 @@ const OfficeFloorPlan: React.FC = () => {
             start={transmission.start}
             end={transmission.end}
             color={transmission.color}
-            pulseSpeed={transmission.temporary ? 1.5 : 3 + Math.random() * 3}
+            pulseSpeed={transmission.pulseSpeed || 3 + Math.random() * 3}
           />
         ))}
         
