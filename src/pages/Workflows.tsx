@@ -1,4 +1,5 @@
 
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -17,7 +18,6 @@ import {
   Play, Pause, Wrench, Zap, Sparkles, BrainCircuit
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useState, useEffect } from 'react';
 import { LineChart } from '@/components/ui/chart';
 import GlassMorphism from '@/components/ui/GlassMorphism';
 

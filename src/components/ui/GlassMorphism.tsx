@@ -9,6 +9,7 @@ interface GlassMorphismProps {
   onClick?: () => void;
   variant?: 'default' | 'accent' | 'muted';
   hoverEffect?: boolean;
+  style?: React.CSSProperties;
 }
 
 export const GlassMorphism: React.FC<GlassMorphismProps> = ({
@@ -18,6 +19,7 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
   onClick,
   variant = 'default',
   hoverEffect = false,
+  style,
 }) => {
   const intensityClasses = {
     low: 'bg-white/5 backdrop-blur-sm border border-white/10',
@@ -45,6 +47,7 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
         className
       )}
       onClick={onClick}
+      style={style}
     >
       {children}
     </div>
