@@ -1,5 +1,5 @@
 
-import { BookOpen, Shield, BarChart, LayoutGrid, Activity } from 'lucide-react';
+import { BookOpen, Shield, BarChart, LayoutGrid, Activity, Database, Laptop, Zap, Search, FileText } from 'lucide-react';
 import { AgentData } from '../types/officeTypes';
 
 export const agents: AgentData[] = [
@@ -17,7 +17,7 @@ export const agents: AgentData[] = [
     route: [
       { division: 'kb', x: 30, y: 25 },
       { division: 'analytics', x: 60, y: 25 },
-      { division: 'operations', x: 35, y: 60 },
+      { division: 'research', x: 45, y: 42 },
       { division: 'kb', x: 30, y: 25 }
     ]
   },
@@ -25,7 +25,7 @@ export const agents: AgentData[] = [
     id: 2,
     name: 'Bob Williams',
     role: 'Security Analyst',
-    status: 'idle',
+    status: 'working',
     icon: Shield,
     division: 'strategy',
     position: {
@@ -52,6 +52,7 @@ export const agents: AgentData[] = [
     route: [
       { division: 'analytics', x: 60, y: 25 },
       { division: 'kb', x: 30, y: 25 },
+      { division: 'research', x: 45, y: 42 },
       { division: 'analytics', x: 60, y: 25 }
     ]
   },
@@ -59,7 +60,7 @@ export const agents: AgentData[] = [
     id: 4,
     name: 'Diana Miller',
     role: 'Integration Specialist',
-    status: 'paused',
+    status: 'working',
     icon: LayoutGrid,
     division: 'operations',
     position: {
@@ -69,28 +70,30 @@ export const agents: AgentData[] = [
     route: [
       { division: 'operations', x: 35, y: 60 },
       { division: 'strategy', x: 65, y: 65 },
+      { division: 'operations', x: 35, y: 60 }
     ]
   },
   {
     id: 5,
     name: 'Eva Garcia',
-    role: 'Financial Analyst',
+    role: 'Strategy Consultant',
     status: 'working',
     icon: Shield,
     division: 'strategy',
     position: {
-      x: 70,
+      x: 67,
       y: 70
     },
     route: [
-      { division: 'strategy', x: 70, y: 70 },
+      { division: 'strategy', x: 67, y: 70 },
       { division: 'analytics', x: 60, y: 25 },
+      { division: 'strategy', x: 67, y: 70 }
     ]
   },
   {
     id: 6,
-    name: 'Data Scientist',
-    role: 'Research Division',
+    name: 'Frank Morris',
+    role: 'Data Scientist',
     status: 'working',
     icon: Activity,
     division: 'research',
@@ -110,7 +113,7 @@ export const agents: AgentData[] = [
     name: 'Linda Carter',
     role: 'Data Architect',
     status: 'working',
-    icon: BarChart,
+    icon: Database,
     division: 'analytics',
     position: {
       x: 58,
@@ -119,6 +122,7 @@ export const agents: AgentData[] = [
     route: [
       { division: 'analytics', x: 58, y: 28 },
       { division: 'kb', x: 32, y: 22 },
+      { division: 'research', x: 45, y: 42 },
       { division: 'analytics', x: 58, y: 28 }
     ]
   },
@@ -126,8 +130,8 @@ export const agents: AgentData[] = [
     id: 8,
     name: 'Kevin ONeil',
     role: 'Operations Manager',
-    status: 'idle',
-    icon: LayoutGrid,
+    status: 'working',
+    icon: Laptop,
     division: 'operations',
     position: {
       x: 32,
@@ -136,6 +140,7 @@ export const agents: AgentData[] = [
     route: [
       { division: 'operations', x: 32, y: 57 },
       { division: 'strategy', x: 67, y: 68 },
+      { division: 'operations', x: 32, y: 57 }
     ]
   },
   {
@@ -143,7 +148,7 @@ export const agents: AgentData[] = [
     name: 'Brian Smith',
     role: 'Knowledge Analyst',
     status: 'working',
-    icon: BookOpen,
+    icon: Search,
     division: 'kb',
     position: {
       x: 28,
@@ -152,7 +157,6 @@ export const agents: AgentData[] = [
     route: [
       { division: 'kb', x: 28, y: 27 },
       { division: 'analytics', x: 62, y: 22 },
-      { division: 'operations', x: 37, y: 58 },
       { division: 'kb', x: 28, y: 27 }
     ]
   },
@@ -160,17 +164,17 @@ export const agents: AgentData[] = [
     id: 10,
     name: 'Laura Diaz',
     role: 'Strategy Consultant',
-    status: 'paused',
-    icon: Shield,
+    status: 'working',
+    icon: FileText,
     division: 'strategy',
     position: {
-      x: 67,
+      x: 63,
       y: 62
     },
     route: [
-      { division: 'strategy', x: 67, y: 62 },
+      { division: 'strategy', x: 63, y: 62 },
       { division: 'operations', x: 32, y: 58 },
-      { division: 'strategy', x: 67, y: 62 }
+      { division: 'strategy', x: 63, y: 62 }
     ]
   },
 ];

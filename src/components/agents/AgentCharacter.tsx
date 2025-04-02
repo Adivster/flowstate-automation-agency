@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 interface RoutePoint {
   division: string;
@@ -37,7 +38,20 @@ const AgentCharacter: React.FC<AgentProps> = ({
   const [position, setPosition] = useState(agent.position);
   const [currentRouteIndex, setCurrentRouteIndex] = useState(0);
   const [taskProgress, setTaskProgress] = useState(Math.floor(Math.random() * 30) + 70); // 70-100% initial progress
+  const [isMoving, setIsMoving] = useState(false);
   const { t } = useLanguage();
+  
+  // Division-based color schemes
+  const divisionColors = {
+    kb: { bg: 'bg-indigo-500', text: 'text-indigo-500', border: 'border-indigo-500', avatarBg: 'bg-indigo-100', shadow: '#6366f1' },
+    analytics: { bg: 'bg-yellow-500', text: 'text-yellow-500', border: 'border-yellow-500', avatarBg: 'bg-yellow-100', shadow: '#eab308' },
+    operations: { bg: 'bg-purple-500', text: 'text-purple-500', border: 'border-purple-500', avatarBg: 'bg-purple-100', shadow: '#a855f7' },
+    strategy: { bg: 'bg-blue-500', text: 'text-blue-500', border: 'border-blue-500', avatarBg: 'bg-blue-100', shadow: '#3b82f6' },
+    research: { bg: 'bg-green-500', text: 'text-green-500', border: 'border-green-500', avatarBg: 'bg-green-100', shadow: '#22c55e' },
+    lounge: { bg: 'bg-amber-500', text: 'text-amber-500', border: 'border-amber-500', avatarBg: 'bg-amber-100', shadow: '#f59e0b' }
+  };
+  
+  const colors = divisionColors[agent.division] || divisionColors.kb;
   
   // Simulate task progress changes
   useEffect(() => {
@@ -58,7 +72,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
     // For other statuses (paused, error), keep current progress
   }, [agent.status]);
   
-  // Movement between route points or random movement within division area
+  // Movement between route points with smooth transitions
   useEffect(() => {
     let interval;
     
@@ -68,19 +82,28 @@ const AgentCharacter: React.FC<AgentProps> = ({
         const nextIndex = (currentRouteIndex + 1) % routePath.length;
         const nextPoint = routePath[nextIndex];
         
+        setIsMoving(true);
+        
+        // Move to next point
         setPosition({
           x: nextPoint.x,
           y: nextPoint.y
         });
         
         setCurrentRouteIndex(nextIndex);
-      }, 10000 + (agent.id * 5000)); // Move every 10-35 seconds
+        
+        // Set isMoving to false after the transition completes
+        setTimeout(() => {
+          setIsMoving(false);
+        }, 1000);
+        
+      }, 10000 + (agent.id * 3000)); // Varied movement timing to avoid synchronization
     } else if (agent.status === 'working') {
-      // Random movement within division area
+      // Random small movements within division area for more natural appearance
       interval = setInterval(() => {
         // Create small random movements around the original position
-        const newX = agent.position.x + (Math.random() * 6 - 3);
-        const newY = agent.position.y + (Math.random() * 6 - 3);
+        const newX = agent.position.x + (Math.random() * 3 - 1.5);
+        const newY = agent.position.y + (Math.random() * 3 - 1.5);
         
         setPosition({
           x: Math.max(5, Math.min(95, newX)),
@@ -94,7 +117,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
     };
   }, [agent, currentRouteIndex, routePath]);
   
-  // Determine colors based on status
+  // Determine colors based on status and division
   const statusColors = {
     working: 'bg-green-500',
     idle: 'bg-gray-500',
@@ -109,10 +132,20 @@ const AgentCharacter: React.FC<AgentProps> = ({
     if (agent.status === 'error') return 'bg-red-500';
     if (taskProgress > 80) return 'bg-green-500';
     if (taskProgress > 50) return 'bg-amber-500';
-    return 'bg-indigo-500';
+    return colors.bg;
   };
   
   const Icon = agent.icon;
+  
+  // Get initials for avatar fallback
+  const getInitials = (name) => {
+    return name
+      .split(' ')
+      .map(part => part[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  };
   
   return (
     <motion.div
@@ -120,6 +153,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
       style={{
         left: `${position.x}%`,
         top: `${position.y}%`,
+        transition: isMoving ? 'all 1s cubic-bezier(0.4, 0.0, 0.2, 1)' : 'all 0.3s ease'
       }}
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ 
@@ -137,22 +171,37 @@ const AgentCharacter: React.FC<AgentProps> = ({
       }}
       onClick={() => onAgentClick && onAgentClick(agent.id)}
     >
-      {/* Agent avatar and task progress bar */}
+      {/* Agent avatar with color coding by division */}
       <div className="flex flex-col items-center">
         {/* Avatar */}
         <div className="relative mb-1">
           <div 
-            className={`rounded-full p-2 ${
+            className={`rounded-full p-1.5 ${
               agent.status === 'working' 
-                ? 'bg-flow-accent/30 border border-flow-accent/40 shadow-md' 
-                : 'bg-flow-muted/50'
+                ? `${colors.avatarBg} border ${colors.border} shadow-md` 
+                : 'bg-gray-200 dark:bg-gray-800'
             } ${isSelected ? 'ring-2 ring-white shadow-lg' : ''}`}
+            style={{
+              boxShadow: isSelected || isMoving ? `0 0 8px ${colors.shadow}` : 'none'
+            }}
           >
-            <Icon className={`h-4 w-4 ${agent.status === 'working' ? 'text-flow-accent animate-pulse-subtle' : 'text-flow-foreground'}`} />
+            <Avatar className="h-6 w-6">
+              <AvatarFallback className={`text-[0.6rem] font-semibold ${colors.bg} text-white`}>
+                {getInitials(agent.name)}
+              </AvatarFallback>
+            </Avatar>
           </div>
           
           {/* Status indicator */}
-          <div className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${statusColors[agent.status]} ${agent.status === 'working' ? 'animate-pulse-subtle' : ''}`}></div>
+          <div 
+            className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${statusColors[agent.status]} 
+            ${agent.status === 'working' ? 'animate-pulse' : ''}`}
+          ></div>
+          
+          {/* Division icon indicator */}
+          <div className={`absolute -bottom-1 -left-1 w-4 h-4 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center`}>
+            <Icon className={`h-2.5 w-2.5 ${colors.text}`} />
+          </div>
         </div>
         
         {/* Task progress bar */}
@@ -171,9 +220,22 @@ const AgentCharacter: React.FC<AgentProps> = ({
         </div>
         
         {/* Name tooltip */}
-        <div className={`px-1.5 py-0.5 bg-black/80 backdrop-blur-sm border border-flow-border/30 rounded text-[0.6rem] whitespace-nowrap shadow-lg ${isSelected ? 'bg-flow-accent/30 text-white border-flow-accent/50' : 'text-white'}`}>
+        <div 
+          className={`
+            px-1.5 py-0.5 
+            ${isSelected ? `${colors.avatarBg} ${colors.text} border-${colors.border}/50` : 'bg-black/80 text-white border-gray-700/30'}
+            backdrop-blur-sm border rounded text-[0.6rem] whitespace-nowrap shadow-lg
+          `}
+        >
           {agent.name}
         </div>
+        
+        {/* Only show role when selected */}
+        {isSelected && (
+          <div className="px-1.5 py-0.5 mt-0.5 bg-black/60 backdrop-blur-sm border border-gray-700/30 rounded text-[0.6rem] whitespace-nowrap text-white shadow-lg">
+            {agent.role}
+          </div>
+        )}
       </div>
     </motion.div>
   );
