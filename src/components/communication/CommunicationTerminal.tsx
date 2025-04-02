@@ -13,7 +13,7 @@ const CommunicationTerminal = () => {
   // Command terminal state
   const [command, setCommand] = useState('');
   const [commandHistory, setCommandHistory] = useState<Array<{type: 'input' | 'output', content: string}>>([
-    { type: 'output', content: 'Welcome to the Agency Command Interface v2.0' },
+    { type: 'output', content: 'Welcome to the Agency Command Interface v3.0' },
     { type: 'output', content: 'Type "help" for available commands' },
   ]);
   
@@ -33,10 +33,17 @@ const CommunicationTerminal = () => {
       setIsOpen(true);
     };
     
+    const handleOpenCommandTerminal = () => {
+      setIsOpen(true);
+      setActiveTab('command');
+    };
+    
     window.addEventListener('openCommunicationTerminal', handleOpenTerminal);
+    window.addEventListener('openCommandTerminal', handleOpenCommandTerminal);
     
     return () => {
       window.removeEventListener('openCommunicationTerminal', handleOpenTerminal);
+      window.removeEventListener('openCommandTerminal', handleOpenCommandTerminal);
     };
   }, []);
 
@@ -90,7 +97,7 @@ const CommunicationTerminal = () => {
     } else if (command.toLowerCase() === 'status') {
       response = 'System Status: 24 agents active, 18 tasks in progress, all systems operational.';
     } else if (command.toLowerCase() === 'list agents') {
-      response = 'Active Agents: Data Agent, Sec Agent, Dev Agent, Researcher, PM Agent, AI Agent...';
+      response = 'Active Agents: Knowledge Agent, Data Analysis Agent, Security Agent, Development Agent, Research Agent...';
     } else if (command.toLowerCase() === 'clear') {
       setCommandHistory([]);
       setCommand('');
@@ -174,8 +181,8 @@ const CommunicationTerminal = () => {
 
   return (
     <>
-      {/* Terminal toggle button positioned higher */}
-      <div className="terminal-button">
+      {/* Terminal toggle button positioned in bottom right */}
+      <div className="fixed bottom-4 right-4 z-50">
         <Button
           size="icon"
           variant="outline"
@@ -222,8 +229,8 @@ const CommunicationTerminal = () => {
                 </div>
               </div>
               
+              {/* Terminal Tab */}
               <TabsContent value="command" className="h-[295px] m-0">
-                {/* Terminal output */}
                 <div 
                   ref={terminalRef}
                   className="p-4 h-[235px] overflow-y-auto scan-lines font-mono"
@@ -232,7 +239,6 @@ const CommunicationTerminal = () => {
                   {commandHistory.map((item, index) => renderCommandOutput(item, index))}
                 </div>
                 
-                {/* Command input with fixed layout to prevent button overlap */}
                 <form onSubmit={handleCommand} className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex items-center">
                   <Input
                     type="text"
@@ -253,8 +259,8 @@ const CommunicationTerminal = () => {
                 </form>
               </TabsContent>
               
+              {/* Chat Tab */}
               <TabsContent value="chat" className="h-[295px] m-0">
-                {/* Chat messages */}
                 <div 
                   ref={chatRef}
                   className="p-4 h-[235px] overflow-y-auto bg-gray-900/80"
@@ -267,6 +273,11 @@ const CommunicationTerminal = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
                     >
+                      {message.sender === 'bot' && (
+                        <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center mr-2">
+                          <Bot className="h-4 w-4 text-indigo-400" />
+                        </div>
+                      )}
                       <div 
                         className={`max-w-[80%] px-3 py-2 rounded-lg ${
                           message.sender === 'user' 
@@ -283,7 +294,6 @@ const CommunicationTerminal = () => {
                   ))}
                 </div>
                 
-                {/* Chat input with fixed layout to prevent button overlap */}
                 <div className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex items-center">
                   <Input
                     type="text"

@@ -66,7 +66,7 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
               className="p-2 rounded-full text-flow-foreground/70 hover:text-flow-foreground hover:bg-flow-muted transition-colors"
               aria-label="Command"
               onClick={() => {
-                // Dispatch a custom event to open the communication terminal
+                // This will open the combined terminal that handles both command and chat
                 window.dispatchEvent(new CustomEvent('openCommunicationTerminal'));
               }}
             >

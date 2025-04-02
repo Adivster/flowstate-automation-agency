@@ -1,4 +1,3 @@
-
 import { Helmet } from 'react-helmet-async';
 import { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
@@ -6,7 +5,7 @@ import Footer from '@/components/layout/Footer';
 import AgentGrid from '@/components/agents/AgentGrid';
 import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Cpu, Users, Briefcase, BookOpen, MessageCircle, Filter, SortDesc } from 'lucide-react';
+import { Cpu, Users, Briefcase, Filter, SortDesc } from 'lucide-react';
 import OfficeFloorPlan from '@/components/agents/OfficeFloorPlan';
 import AgencyMetrics from '@/components/agents/AgencyMetrics';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -128,17 +127,10 @@ const Agents = () => {
               
               <OfficeFloorPlan />
               
-              <div className="flex justify-between items-center mt-2">
+              <div className="flex justify-end items-center mt-2">
                 <div className="text-xs text-flow-foreground/60">
                   <span className="text-flow-accent">{t('proTip')}</span> {t('openTerminal')}
                 </div>
-                <button 
-                  className="text-xs flex items-center gap-1 px-2 py-1 rounded-full bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 transition-colors"
-                  onClick={() => window.dispatchEvent(new CustomEvent('openCommunicationTerminal'))}
-                >
-                  <MessageCircle className="h-3 w-3" />
-                  Open Chat
-                </button>
               </div>
             </TabsContent>
             
