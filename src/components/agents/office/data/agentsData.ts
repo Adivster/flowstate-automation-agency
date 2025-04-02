@@ -5,26 +5,26 @@ import { AgentData } from '../types/officeTypes';
 export const agents: AgentData[] = [
   {
     id: 1,
-    name: 'Alice Johnson',
-    role: 'Knowledge Engineer',
+    name: 'Knowledge Engineer',
+    role: 'Information Architect',
     status: 'working',
     icon: BookOpen,
     division: 'kb',
     position: {
-      x: 30,
+      x: 25,
       y: 25
     },
     route: [
-      { division: 'kb', x: 30, y: 25 },
-      { division: 'analytics', x: 60, y: 25 },
+      { division: 'kb', x: 25, y: 25 },
+      { division: 'analytics', x: 65, y: 25 },
       { division: 'research', x: 45, y: 42 },
-      { division: 'kb', x: 30, y: 25 }
+      { division: 'kb', x: 25, y: 25 }
     ]
   },
   {
     id: 2,
-    name: 'Bob Williams',
-    role: 'Security Analyst',
+    name: 'Security Analyst',
+    role: 'Threat Detector',
     status: 'working',
     icon: Shield,
     division: 'strategy',
@@ -34,49 +34,49 @@ export const agents: AgentData[] = [
     },
     route: [
       { division: 'strategy', x: 65, y: 65 },
-      { division: 'operations', x: 35, y: 60 },
+      { division: 'operations', x: 25, y: 60 },
       { division: 'strategy', x: 65, y: 65 }
     ]
   },
   {
     id: 3,
-    name: 'Charlie Brown',
-    role: 'Data Analyst',
+    name: 'Data Analyst',
+    role: 'Pattern Recognition',
     status: 'working',
     icon: BarChart,
     division: 'analytics',
     position: {
-      x: 60,
+      x: 65,
       y: 25
     },
     route: [
-      { division: 'analytics', x: 60, y: 25 },
-      { division: 'kb', x: 30, y: 25 },
+      { division: 'analytics', x: 65, y: 25 },
+      { division: 'kb', x: 25, y: 25 },
       { division: 'research', x: 45, y: 42 },
-      { division: 'analytics', x: 60, y: 25 }
+      { division: 'analytics', x: 65, y: 25 }
     ]
   },
   {
     id: 4,
-    name: 'Diana Miller',
-    role: 'Integration Specialist',
+    name: 'Operations Manager',
+    role: 'Process Coordinator',
     status: 'working',
     icon: LayoutGrid,
     division: 'operations',
     position: {
-      x: 35,
+      x: 25,
       y: 60
     },
     route: [
-      { division: 'operations', x: 35, y: 60 },
+      { division: 'operations', x: 25, y: 60 },
       { division: 'strategy', x: 65, y: 65 },
-      { division: 'operations', x: 35, y: 60 }
+      { division: 'operations', x: 25, y: 60 }
     ]
   },
   {
     id: 5,
-    name: 'Eva Garcia',
-    role: 'Strategy Consultant',
+    name: 'Strategy Consultant',
+    role: 'Decision Support',
     status: 'working',
     icon: Shield,
     division: 'strategy',
@@ -86,14 +86,14 @@ export const agents: AgentData[] = [
     },
     route: [
       { division: 'strategy', x: 67, y: 70 },
-      { division: 'analytics', x: 60, y: 25 },
+      { division: 'analytics', x: 65, y: 25 },
       { division: 'strategy', x: 67, y: 70 }
     ]
   },
   {
     id: 6,
-    name: 'Frank Morris',
-    role: 'Data Scientist',
+    name: 'Research Scientist',
+    role: 'Innovation Leader',
     status: 'working',
     icon: Activity,
     division: 'research',
@@ -103,67 +103,67 @@ export const agents: AgentData[] = [
     },
     route: [
       { division: 'research', x: 45, y: 42 },
-      { division: 'analytics', x: 60, y: 25 },
-      { division: 'kb', x: 30, y: 25 },
+      { division: 'analytics', x: 65, y: 25 },
+      { division: 'kb', x: 25, y: 25 },
       { division: 'research', x: 45, y: 42 }
     ]
   },
   {
     id: 7,
-    name: 'Linda Carter',
-    role: 'Data Architect',
+    name: 'Data Architect',
+    role: 'System Designer',
     status: 'working',
     icon: Database,
     division: 'analytics',
     position: {
-      x: 58,
+      x: 63,
       y: 28
     },
     route: [
-      { division: 'analytics', x: 58, y: 28 },
-      { division: 'kb', x: 32, y: 22 },
+      { division: 'analytics', x: 63, y: 28 },
+      { division: 'kb', x: 23, y: 27 },
       { division: 'research', x: 45, y: 42 },
-      { division: 'analytics', x: 58, y: 28 }
+      { division: 'analytics', x: 63, y: 28 }
     ]
   },
   {
     id: 8,
-    name: 'Kevin ONeil',
-    role: 'Operations Manager',
+    name: 'Infrastructure Specialist',
+    role: 'System Maintainer',
     status: 'working',
     icon: Laptop,
     division: 'operations',
     position: {
-      x: 32,
+      x: 22,
       y: 57
     },
     route: [
-      { division: 'operations', x: 32, y: 57 },
+      { division: 'operations', x: 22, y: 57 },
       { division: 'strategy', x: 67, y: 68 },
-      { division: 'operations', x: 32, y: 57 }
+      { division: 'operations', x: 22, y: 57 }
     ]
   },
   {
     id: 9,
-    name: 'Brian Smith',
-    role: 'Knowledge Analyst',
+    name: 'Information Specialist',
+    role: 'Knowledge Curator',
     status: 'working',
     icon: Search,
     division: 'kb',
     position: {
-      x: 28,
+      x: 23,
       y: 27
     },
     route: [
-      { division: 'kb', x: 28, y: 27 },
-      { division: 'analytics', x: 62, y: 22 },
-      { division: 'kb', x: 28, y: 27 }
+      { division: 'kb', x: 23, y: 27 },
+      { division: 'analytics', x: 63, y: 28 },
+      { division: 'kb', x: 23, y: 27 }
     ]
   },
   {
     id: 10,
-    name: 'Laura Diaz',
-    role: 'Strategy Consultant',
+    name: 'Strategic Planner',
+    role: 'Future Forecaster',
     status: 'working',
     icon: FileText,
     division: 'strategy',
@@ -173,7 +173,7 @@ export const agents: AgentData[] = [
     },
     route: [
       { division: 'strategy', x: 63, y: 62 },
-      { division: 'operations', x: 32, y: 58 },
+      { division: 'operations', x: 22, y: 58 },
       { division: 'strategy', x: 63, y: 62 }
     ]
   },

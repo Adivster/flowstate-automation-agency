@@ -10,7 +10,7 @@ export const getDivisions = (t: (key: string) => string): DivisionData[] => [
     color: 'bg-indigo-500',
     icon: BookOpen,
     position: {
-      x: 25, 
+      x: 20, 
       y: 20, 
       width: 20, 
       height: 25
@@ -31,7 +31,7 @@ export const getDivisions = (t: (key: string) => string): DivisionData[] => [
     color: 'bg-yellow-500',
     icon: BarChart,
     position: {
-      x: 55, 
+      x: 60, 
       y: 20, 
       width: 20, 
       height: 25
@@ -52,7 +52,7 @@ export const getDivisions = (t: (key: string) => string): DivisionData[] => [
     color: 'bg-purple-500',
     icon: LayoutGrid,
     position: {
-      x: 25, 
+      x: 20, 
       y: 55, 
       width: 20, 
       height: 25
@@ -73,7 +73,7 @@ export const getDivisions = (t: (key: string) => string): DivisionData[] => [
     color: 'bg-blue-500',
     icon: Shield,
     position: {
-      x: 55, 
+      x: 60, 
       y: 55, 
       width: 20, 
       height: 25
@@ -88,7 +88,7 @@ export const getDivisions = (t: (key: string) => string): DivisionData[] => [
       { type: 'meeting', x: 65, y: 60 },
     ]
   },
-  // Add the Research division to the floor plan
+  // Repositioned Research division to avoid overlaps
   {
     id: 'research',
     name: t('researchDivision'),
@@ -96,9 +96,9 @@ export const getDivisions = (t: (key: string) => string): DivisionData[] => [
     icon: FlaskConical,
     position: {
       x: 40, 
-      y: 37, 
+      y: 35, 
       width: 20, 
-      height: 15
+      height: 20
     },
     description: t('researchDescription'),
     agents: 4,
