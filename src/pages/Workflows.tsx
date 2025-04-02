@@ -13,7 +13,8 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   ArrowRight, CheckCircle, Clock, Code, FileText, Search, 
-  Filter, ZoomIn, BarChart2, Link, Users, RefreshCw 
+  Filter, ZoomIn, BarChart2, Link, Users, RefreshCw,
+  Play, Pause, Wrench, Zap, Sparkles, BrainCircuit
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useState, useEffect } from 'react';
@@ -27,6 +28,7 @@ const Workflows = () => {
   const [workflows, setWorkflows] = useState([]);
   const [selectedWorkflow, setSelectedWorkflow] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [hoveredWorkflow, setHoveredWorkflow] = useState<string | null>(null);
 
   // Sample workflow data
   const allWorkflows = [
@@ -39,6 +41,8 @@ const Workflows = () => {
       steps: 5,
       completion: 78,
       division: 'Content',
+      color: '#d946ef',
+      icon: Sparkles,
       connected_agents: [1, 4, 5],
       performance: [
         { name: "Mon", value: 65 },
@@ -57,6 +61,8 @@ const Workflows = () => {
       steps: 8,
       completion: 100,
       division: 'Research',
+      color: '#0ea5e9',
+      icon: BrainCircuit,
       connected_agents: [2, 6],
       performance: [
         { name: "Mon", value: 92 },
@@ -75,6 +81,8 @@ const Workflows = () => {
       steps: 6,
       completion: 0,
       division: 'Marketing',
+      color: '#f97316',
+      icon: BarChart2,
       connected_agents: [3, 7],
       performance: [
         { name: "Mon", value: 0 },
@@ -93,6 +101,8 @@ const Workflows = () => {
       steps: 4,
       completion: 25,
       division: 'Social',
+      color: '#8b5cf6',
+      icon: Users,
       connected_agents: [1, 8],
       performance: [
         { name: "Mon", value: 15 },
@@ -111,6 +121,8 @@ const Workflows = () => {
       steps: 7,
       completion: 45,
       division: 'Support',
+      color: '#22c55e',
+      icon: Wrench,
       connected_agents: [9, 10],
       performance: [
         { name: "Mon", value: 30 },
@@ -129,6 +141,8 @@ const Workflows = () => {
       steps: 5,
       completion: 0,
       division: 'Marketing',
+      color: '#f97316',
+      icon: Zap,
       connected_agents: [3, 11],
       performance: [
         { name: "Mon", value: 0 },
@@ -162,13 +176,26 @@ const Workflows = () => {
   const getStatusClasses = (status) => {
     switch (status) {
       case 'active':
-        return 'text-green-500 bg-green-500/10';
+        return 'text-green-500 bg-green-500/20 border border-green-500/30';
       case 'paused':
-        return 'text-amber-500 bg-amber-500/10';
+        return 'text-amber-500 bg-amber-500/20 border border-amber-500/30';
       case 'scheduled':
-        return 'text-blue-500 bg-blue-500/10';
+        return 'text-blue-500 bg-blue-500/20 border border-blue-500/30';
       default:
-        return 'text-gray-500 bg-gray-500/10';
+        return 'text-gray-500 bg-gray-500/20 border border-gray-500/30';
+    }
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'active':
+        return <Play className="w-3 h-3 mr-1" />;
+      case 'paused':
+        return <Pause className="w-3 h-3 mr-1" />;
+      case 'scheduled':
+        return <Clock className="w-3 h-3 mr-1" />;
+      default:
+        return null;
     }
   };
 
@@ -188,44 +215,47 @@ const Workflows = () => {
       <main className="flex-1 container mx-auto px-4 py-24">
         <TransitionWrapper>
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-1 neon-text">{t('workflows')}</h1>
+            <h1 className="text-3xl font-bold mb-1 neon-text">
+              <Zap className="inline-block mr-2 h-8 w-8 text-flow-accent" />
+              {t('workflows')}
+            </h1>
             <p className="text-flow-foreground/70">
               Automated workflows connect AI agents to accomplish complex tasks. 
               Monitor, adjust, and deploy new workflows from this dashboard.
             </p>
           </div>
           
-          {/* Search and Filter Section */}
+          {/* Search and Filter Section - enhanced with cyberpunk styling */}
           <div className="mb-8 flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-flow-foreground/50" />
               <Input 
                 placeholder="Search workflows..." 
-                className="pl-10 bg-flow-background border-flow-border focus:border-flow-accent"
+                className="pl-10 bg-flow-background/30 border-flow-border focus:border-flow-accent"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button 
                 variant="outline" 
-                className={`border-flow-border ${!selectedStatus ? 'bg-flow-accent/20' : ''}`}
+                className={`border-flow-border ${!selectedStatus ? 'bg-flow-accent/20 text-flow-accent border-flow-accent/50' : ''}`}
                 onClick={() => setSelectedStatus(null)}
               >
                 All
               </Button>
               <Button 
                 variant="outline" 
-                className={`border-flow-border ${selectedStatus === 'active' ? 'bg-green-500/20 text-green-400' : ''}`}
+                className={`border-flow-border ${selectedStatus === 'active' ? 'bg-green-500/20 text-green-400 border-green-400/50' : ''}`}
                 onClick={() => setSelectedStatus(selectedStatus === 'active' ? null : 'active')}
               >
-                <CheckCircle className="w-4 h-4 mr-1" />
+                <Play className="w-4 h-4 mr-1" />
                 Active
               </Button>
               <Button 
                 variant="outline" 
-                className={`border-flow-border ${selectedStatus === 'scheduled' ? 'bg-blue-500/20 text-blue-400' : ''}`}
+                className={`border-flow-border ${selectedStatus === 'scheduled' ? 'bg-blue-500/20 text-blue-400 border-blue-400/50' : ''}`}
                 onClick={() => setSelectedStatus(selectedStatus === 'scheduled' ? null : 'scheduled')}
               >
                 <Clock className="w-4 h-4 mr-1" />
@@ -233,27 +263,46 @@ const Workflows = () => {
               </Button>
               <Button 
                 variant="outline" 
-                className={`border-flow-border ${selectedStatus === 'paused' ? 'bg-amber-500/20 text-amber-400' : ''}`}
+                className={`border-flow-border ${selectedStatus === 'paused' ? 'bg-amber-500/20 text-amber-400 border-amber-400/50' : ''}`}
                 onClick={() => setSelectedStatus(selectedStatus === 'paused' ? null : 'paused')}
               >
-                <RefreshCw className="w-4 h-4 mr-1" />
+                <Pause className="w-4 h-4 mr-1" />
                 Paused
               </Button>
             </div>
           </div>
           
-          {/* Workflow Grid */}
+          {/* Workflow Grid - cyberpunk style cards with neon effects */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {workflows.map((workflow) => (
-              <Card key={workflow.id} className="overflow-hidden border border-flow-border transition-all hover:shadow-md hover:border-flow-accent/50">
+              <Card 
+                key={workflow.id} 
+                className={`overflow-hidden border border-flow-border transition-all duration-300 group hover:shadow-md hover:border-[${workflow.color}]/50 
+                ${hoveredWorkflow === workflow.id ? 'shadow-[0_0_15px_rgba(0,0,0,0.3)]' : ''}`}
+                style={{
+                  background: `linear-gradient(135deg, rgba(30,30,35,0.8) 0%, rgba(15,15,20,0.9) 100%)`,
+                  boxShadow: hoveredWorkflow === workflow.id ? `0 0 15px ${workflow.color}40` : 'none'
+                }}
+                onMouseEnter={() => setHoveredWorkflow(workflow.id)}
+                onMouseLeave={() => setHoveredWorkflow(null)}
+              >
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
-                    <CardTitle className="text-xl font-semibold">{workflow.name}</CardTitle>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClasses(workflow.status)}`}>
+                    <div className="flex items-center">
+                      <div className="p-2 rounded-full mr-3" style={{ backgroundColor: `${workflow.color}20` }}>
+                        {React.createElement(workflow.icon, { 
+                          className: 'h-5 w-5', 
+                          style: { color: workflow.color } 
+                        })}
+                      </div>
+                      <CardTitle className="text-xl font-semibold">{workflow.name}</CardTitle>
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center ${getStatusClasses(workflow.status)}`}>
+                      {getStatusIcon(workflow.status)}
                       {workflow.status.charAt(0).toUpperCase() + workflow.status.slice(1)}
                     </span>
                   </div>
-                  <CardDescription>{workflow.description}</CardDescription>
+                  <CardDescription className="mt-2">{workflow.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between text-sm text-flow-foreground/70 mb-3">
@@ -273,23 +322,39 @@ const Workflows = () => {
                     </div>
                   </div>
                   
-                  {/* Mini Performance Chart */}
-                  <div className="h-[80px] mb-3 bg-flow-background/40 p-2 rounded-md">
-                    <LineChart data={workflow.performance} />
+                  {/* Mini Performance Chart - Enhanced with cyberpunk style */}
+                  <div className="h-[80px] mb-3 bg-flow-background/10 p-2 rounded-md border border-flow-border/30 overflow-hidden scan-lines">
+                    <LineChart 
+                      data={workflow.performance} 
+                      lineColor={workflow.color}
+                    />
                   </div>
                   
-                  {/* Progress Bar */}
+                  {/* Progress Bar - Custom styling */}
                   <div className="mb-2">
                     <div className="flex justify-between text-xs mb-1">
                       <span>Completion</span>
-                      <span>{workflow.completion}%</span>
+                      <span className="font-mono">{workflow.completion}%</span>
                     </div>
-                    <Progress value={workflow.completion} className="h-2" />
+                    <div className="w-full bg-flow-background/20 rounded-full h-2 overflow-hidden">
+                      <div 
+                        className="h-2 transition-all duration-700 ease-out"
+                        style={{ 
+                          width: `${workflow.completion}%`, 
+                          backgroundColor: workflow.color,
+                          boxShadow: `0 0 8px ${workflow.color}`
+                        }}
+                      />
+                    </div>
                   </div>
                   
-                  {/* Tag for division */}
+                  {/* Division Tag */}
                   <div className="mt-3 mb-2">
-                    <Badge variant="outline" className="bg-flow-muted/30">
+                    <Badge 
+                      variant="outline" 
+                      className="bg-flow-muted/20 border border-flow-border/50"
+                      style={{ color: workflow.color }}
+                    >
                       <Link className="w-3 h-3 mr-1" />
                       {workflow.division}
                     </Badge>
@@ -299,14 +364,19 @@ const Workflows = () => {
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    className="text-flow-foreground/60 hover:text-flow-foreground"
+                    className="text-flow-foreground/60 hover:text-flow-foreground group-hover:text-flow-accent/80"
                   >
-                    Edit Workflow
+                    <Wrench className="w-4 h-4 mr-1" />
+                    Edit
                   </Button>
                   <Button 
                     size="sm"
-                    className="text-flow-accent hover:text-flow-accent/80 flex items-center"
+                    className="text-flow-accent hover:text-flow-accent/80 flex items-center transition-all duration-300 bg-flow-background/20 hover:bg-flow-background/40 border border-flow-accent/30"
                     onClick={() => handleViewDetails(workflow)}
+                    style={{
+                      boxShadow: hoveredWorkflow === workflow.id ? `0 0 10px ${workflow.color}30` : 'none',
+                      color: workflow.color
+                    }}
                   >
                     <ZoomIn className="w-4 h-4 mr-1" />
                     View Details
@@ -316,51 +386,89 @@ const Workflows = () => {
             ))}
           </div>
           
-          {/* Workflow Details Dialog */}
+          {/* Enhanced Workflow Details Dialog */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent className="max-w-4xl bg-flow-background border-flow-border">
               {selectedWorkflow && (
                 <>
                   <DialogHeader>
-                    <DialogTitle className="text-2xl flex items-center gap-2">
-                      {selectedWorkflow.name}
-                      <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${getStatusClasses(selectedWorkflow.status)}`}>
-                        {selectedWorkflow.status.charAt(0).toUpperCase() + selectedWorkflow.status.slice(1)}
-                      </span>
-                    </DialogTitle>
-                    <DialogDescription>{selectedWorkflow.description}</DialogDescription>
+                    <div className="flex items-center">
+                      <div 
+                        className="p-2 rounded-full mr-3" 
+                        style={{ 
+                          backgroundColor: `${selectedWorkflow.color}20`,
+                          boxShadow: `0 0 10px ${selectedWorkflow.color}30`
+                        }}
+                      >
+                        {React.createElement(selectedWorkflow.icon, { 
+                          className: 'h-6 w-6', 
+                          style: { color: selectedWorkflow.color } 
+                        })}
+                      </div>
+                      <DialogTitle className="text-2xl flex items-center gap-2">
+                        {selectedWorkflow.name}
+                        <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium flex items-center ${getStatusClasses(selectedWorkflow.status)}`}>
+                          {getStatusIcon(selectedWorkflow.status)}
+                          {selectedWorkflow.status.charAt(0).toUpperCase() + selectedWorkflow.status.slice(1)}
+                        </span>
+                      </DialogTitle>
+                    </div>
+                    <DialogDescription className="mt-2">{selectedWorkflow.description}</DialogDescription>
                   </DialogHeader>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                     {/* Performance Chart */}
                     <div>
-                      <h3 className="text-lg font-semibold mb-2">Performance Trend</h3>
-                      <div className="bg-flow-muted/10 p-4 rounded-lg h-[200px] border border-flow-border">
-                        <LineChart data={selectedWorkflow.performance} />
+                      <h3 className="text-lg font-semibold mb-2 flex items-center">
+                        <BarChart2 className="w-5 h-5 mr-2" style={{ color: selectedWorkflow.color }} />
+                        Performance Trend
+                      </h3>
+                      <div className="bg-flow-muted/10 p-4 rounded-lg h-[200px] border border-flow-border scan-lines">
+                        <LineChart 
+                          data={selectedWorkflow.performance} 
+                          lineColor={selectedWorkflow.color}
+                        />
                       </div>
                     </div>
                     
                     {/* Connected Agents */}
                     <div>
-                      <h3 className="text-lg font-semibold mb-2">Connected Agents</h3>
+                      <h3 className="text-lg font-semibold mb-2 flex items-center">
+                        <Users className="w-5 h-5 mr-2" style={{ color: selectedWorkflow.color }} />
+                        Connected Agents
+                      </h3>
                       <div className="bg-flow-muted/10 p-4 rounded-lg border border-flow-border">
                         <div className="space-y-3">
                           {selectedWorkflow.connected_agents.map((agentId) => (
                             <GlassMorphism 
                               key={agentId} 
                               intensity="low" 
-                              className="p-3 flex items-center justify-between"
+                              className="p-3 flex items-center justify-between group cursor-pointer hover:border-flow-accent/50 transition-all duration-300"
                             >
                               <div className="flex items-center">
-                                <div className="w-8 h-8 rounded-full bg-flow-accent/20 flex items-center justify-center mr-3">
-                                  <Users className="w-4 h-4 text-flow-accent" />
+                                <div 
+                                  className="w-8 h-8 rounded-full flex items-center justify-center mr-3"
+                                  style={{ 
+                                    backgroundColor: `${selectedWorkflow.color}20`,
+                                    borderColor: `${selectedWorkflow.color}40`,
+                                    borderWidth: '1px'
+                                  }}
+                                >
+                                  <Users 
+                                    className="w-4 h-4" 
+                                    style={{ color: selectedWorkflow.color }} 
+                                  />
                                 </div>
                                 <div>
                                   <div className="font-medium">Agent #{agentId}</div>
                                   <div className="text-xs text-flow-foreground/60">Division: {selectedWorkflow.division}</div>
                                 </div>
                               </div>
-                              <Button variant="ghost" size="sm">
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                              >
                                 <ArrowRight className="w-4 h-4" />
                               </Button>
                             </GlassMorphism>
@@ -370,58 +478,110 @@ const Workflows = () => {
                     </div>
                   </div>
                   
-                  {/* Workflow Steps */}
+                  {/* Workflow Steps - Enhanced version */}
                   <div className="mt-6">
-                    <h3 className="text-lg font-semibold mb-2">Workflow Steps</h3>
+                    <h3 className="text-lg font-semibold mb-2 flex items-center">
+                      <Code className="w-5 h-5 mr-2" style={{ color: selectedWorkflow.color }} />
+                      Workflow Steps
+                    </h3>
                     <div className="bg-flow-muted/10 p-4 rounded-lg border border-flow-border">
                       <div className="space-y-3">
-                        {Array.from({ length: selectedWorkflow.steps }).map((_, index) => (
-                          <div 
-                            key={index} 
-                            className="flex items-center p-2 border border-flow-border/30 rounded-md"
-                          >
-                            <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-3 ${
-                              index < selectedWorkflow.completion / (100 / selectedWorkflow.steps)
-                                ? 'bg-green-500/20 text-green-400'
-                                : 'bg-flow-muted/20 text-flow-foreground/40'
-                            }`}>
-                              {index < selectedWorkflow.completion / (100 / selectedWorkflow.steps)
-                                ? <CheckCircle className="w-4 h-4" />
-                                : <Clock className="w-4 h-4" />
-                              }
-                            </div>
-                            <div>
-                              <div className="font-medium">Step {index + 1}</div>
-                              <div className="text-xs text-flow-foreground/60">
-                                {index < selectedWorkflow.completion / (100 / selectedWorkflow.steps)
-                                  ? 'Completed'
-                                  : index === Math.floor(selectedWorkflow.completion / (100 / selectedWorkflow.steps))
-                                    ? 'In Progress'
-                                    : 'Pending'
+                        {Array.from({ length: selectedWorkflow.steps }).map((_, index) => {
+                          const isCompleted = index < selectedWorkflow.completion / (100 / selectedWorkflow.steps);
+                          const isInProgress = index === Math.floor(selectedWorkflow.completion / (100 / selectedWorkflow.steps));
+                          
+                          return (
+                            <div 
+                              key={index} 
+                              className="flex items-center p-3 border border-flow-border/30 rounded-md transition-all duration-300 hover:border-flow-accent/30"
+                              style={{
+                                background: isCompleted 
+                                  ? `linear-gradient(90deg, ${selectedWorkflow.color}10, rgba(30,30,35,0.2))` 
+                                  : isInProgress 
+                                    ? `linear-gradient(90deg, ${selectedWorkflow.color}05, rgba(30,30,35,0.2))`
+                                    : 'rgba(30,30,35,0.2)'
+                              }}
+                            >
+                              <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-3 ${
+                                isCompleted
+                                  ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                  : isInProgress
+                                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 animate-pulse-subtle'
+                                    : 'bg-flow-muted/20 text-flow-foreground/40 border border-flow-border/30'
+                              }`}>
+                                {isCompleted
+                                  ? <CheckCircle className="w-4 h-4" />
+                                  : isInProgress
+                                    ? <RefreshCw className="w-4 h-4" />
+                                    : <Clock className="w-4 h-4" />
+                                }
+                              </div>
+                              <div className="flex-1">
+                                <div className="font-medium">Step {index + 1}</div>
+                                <div className="text-xs text-flow-foreground/60">
+                                  {isCompleted
+                                    ? 'Completed'
+                                    : isInProgress
+                                      ? 'In Progress'
+                                      : 'Pending'
+                                  }
+                                </div>
+                              </div>
+                              <div className="text-xs font-mono text-flow-foreground/60 px-2 py-1 bg-flow-background/30 rounded border border-flow-border/20">
+                                {isCompleted 
+                                  ? '100%' 
+                                  : isInProgress 
+                                    ? `${Math.round((selectedWorkflow.completion % (100 / selectedWorkflow.steps)) / (100 / selectedWorkflow.steps) * 100)}%`
+                                    : '0%'
                                 }
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   </div>
                   
-                  {/* Action Buttons */}
+                  {/* Action Buttons - Cyberpunk styled */}
                   <div className="flex justify-end gap-3 mt-6">
-                    <Button variant="outline">
+                    <Button 
+                      variant="outline"
+                      className="border-flow-border/50 hover:border-flow-accent/50"
+                    >
+                      <Wrench className="w-4 h-4 mr-2" />
                       Edit Workflow
                     </Button>
                     {selectedWorkflow.status === 'active' ? (
-                      <Button variant="default" className="bg-amber-500 hover:bg-amber-600">
+                      <Button 
+                        variant="default" 
+                        className="bg-amber-500/80 hover:bg-amber-600/80 border border-amber-400"
+                        style={{
+                          boxShadow: '0 0 10px rgba(245, 158, 11, 0.3)'
+                        }}
+                      >
+                        <Pause className="w-4 h-4 mr-2" />
                         Pause Workflow
                       </Button>
                     ) : selectedWorkflow.status === 'paused' ? (
-                      <Button variant="default" className="bg-green-500 hover:bg-green-600">
+                      <Button 
+                        variant="default" 
+                        className="bg-green-500/80 hover:bg-green-600/80 border border-green-400"
+                        style={{
+                          boxShadow: '0 0 10px rgba(34, 197, 94, 0.3)'
+                        }}
+                      >
+                        <Play className="w-4 h-4 mr-2" />
                         Resume Workflow
                       </Button>
                     ) : (
-                      <Button variant="default" className="bg-flow-accent hover:bg-flow-accent/80">
+                      <Button 
+                        variant="default" 
+                        className="bg-flow-accent/80 hover:bg-flow-accent border border-flow-accent/50"
+                        style={{
+                          boxShadow: '0 0 10px rgba(217, 70, 239, 0.3)'
+                        }}
+                      >
+                        <Zap className="w-4 h-4 mr-2" />
                         Run Now
                       </Button>
                     )}

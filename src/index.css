@@ -148,6 +148,31 @@
                  0 0 8px #d946ef;
   }
   
+  /* Cyberpunk neon text variations */
+  .neon-text-blue {
+    @apply text-white;
+    text-shadow: 0 0 5px #0ea5e9, 
+                 0 0 8px #0ea5e9;
+  }
+  
+  .neon-text-green {
+    @apply text-white;
+    text-shadow: 0 0 5px #22c55e, 
+                 0 0 8px #22c55e;
+  }
+  
+  .neon-text-orange {
+    @apply text-white;
+    text-shadow: 0 0 5px #f97316, 
+                 0 0 8px #f97316;
+  }
+  
+  .neon-text-pink {
+    @apply text-white;
+    text-shadow: 0 0 5px #ec4899, 
+                 0 0 8px #ec4899;
+  }
+  
   /* Section headers */
   .section-header {
     @apply text-xl font-medium mb-2;
@@ -188,6 +213,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
 
 /* Add Hebrew font support */
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap');
@@ -202,10 +228,71 @@
   direction: ltr;
 }
 
-/* Cyberpunk UI elements */
+/* Enhanced Cyberpunk UI elements */
 .neon-border {
   box-shadow: 0 0 5px theme('colors.flow.accent'), 
               0 0 10px theme('colors.flow.accent');
+  border: 1px solid theme('colors.flow.accent');
+}
+
+.neon-border-blue {
+  box-shadow: 0 0 5px #0ea5e9, 
+              0 0 10px #0ea5e9;
+  border: 1px solid rgba(14, 165, 233, 0.5);
+}
+
+.neon-border-green {
+  box-shadow: 0 0 5px #22c55e, 
+              0 0 10px #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.5);
+}
+
+.neon-border-orange {
+  box-shadow: 0 0 5px #f97316, 
+              0 0 10px #f97316;
+  border: 1px solid rgba(249, 115, 22, 0.5);
+}
+
+.neon-border-purple {
+  box-shadow: 0 0 5px #8b5cf6, 
+              0 0 10px #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.5);
+}
+
+/* Cyberpunk button styles */
+.cyber-button {
+  position: relative;
+  background: linear-gradient(135deg, rgba(20, 20, 25, 0.8), rgba(30, 30, 40, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s;
+  outline: none;
+  overflow: hidden;
+}
+
+.cyber-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.6s;
+}
+
+.cyber-button:hover::before {
+  left: 100%;
+}
+
+.cyber-button:hover {
+  box-shadow: 0 0 10px rgba(217, 70, 239, 0.6);
+  border-color: rgba(217, 70, 239, 0.5);
 }
 
 .terminal-button {
@@ -215,7 +302,7 @@
   z-index: 50;
 }
 
-/* Scan line effect for monitors */
+/* Enhanced scan line effect for monitors */
 .scan-lines {
   position: relative;
   overflow: hidden;
@@ -228,13 +315,34 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: repeating-linear-gradient(
-    transparent 0px,
-    rgba(0, 0, 0, 0.05) 1px,
-    transparent 2px
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(0, 0, 0, 0.03) 50%
   );
+  background-size: 100% 4px;
   pointer-events: none;
   z-index: 1;
+}
+
+.scan-lines::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    rgba(16, 16, 20, 0),
+    rgba(16, 16, 20, 0.1)
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Cyberpunk font classes */
+.font-cyber {
+  font-family: 'Orbitron', sans-serif;
 }
 
 /* Hebrew typography adjustments */
@@ -257,6 +365,40 @@
 
 .animate-pulse-subtle {
   animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Cyberpunk glow animations */
+@keyframes glow-pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(217, 70, 239, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(217, 70, 239, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(217, 70, 239, 0.5);
+  }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes text-glow-pulse {
+  0% {
+    text-shadow: 0 0 4px rgba(217, 70, 239, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 8px rgba(217, 70, 239, 0.8),
+                0 0 12px rgba(217, 70, 239, 0.3);
+  }
+  100% {
+    text-shadow: 0 0 4px rgba(217, 70, 239, 0.5);
+  }
+}
+
+.animate-text-glow {
+  animation: text-glow-pulse 3s ease-in-out infinite;
 }
 
 /* Task progress bar animation */
@@ -283,4 +425,20 @@
 .animated-path {
   stroke-dasharray: 5, 5;
   animation: dash 1s linear infinite;
+}
+
+/* Flowing digital circuit animation */
+@keyframes flow-circuit {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+.circuit-background {
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='rgba(134, 70, 255, 0.1)' stroke-width='1'/%3E%3Cpath d='M30 10v80M50 10v80M70 10v80M10 30h80M10 50h80M10 70h80' stroke='rgba(134, 70, 255, 0.05)' stroke-width='0.5'/%3E%3C/svg%3E");
+  background-size: 40px 40px;
+  animation: flow-circuit 30s linear infinite;
 }
