@@ -9,7 +9,10 @@ import {
   Users, 
   Share2, 
   MessagesSquare,
-  FlaskConical
+  FlaskConical,
+  Zap,
+  ChevronRight,
+  ArrowRight
 } from 'lucide-react';
 import { TransitionWrapper } from '../ui/TransitionWrapper';
 import StatsOverview from './StatsOverview';
@@ -17,6 +20,9 @@ import DivisionCard from './DivisionCard';
 import AgentGrid from '../agents/AgentGrid';
 import TaskManagement from './TaskManagement';
 import { useLanguage } from '@/contexts/LanguageContext';
+import GlassMorphism from '../ui/GlassMorphism';
+import { Button } from '../ui/button';
+import { PieChart } from '../ui/chart';
 
 const AgencyDashboard: React.FC = () => {
   const { t } = useLanguage();
@@ -103,35 +109,120 @@ const AgencyDashboard: React.FC = () => {
 
   // Combine all divisions for display
   const allDivisions = [...coreDivisions, ...additionalDivisions];
+  
+  // Resource usage data for pie chart
+  const resourceData = [
+    { name: 'Knowledge Base', value: 32, description: 'Content management and retrieval systems' },
+    { name: 'Marketing', value: 25, description: 'Campaign automation and analytics' },
+    { name: 'Operations', value: 20, description: 'Workflow optimization and task management' },
+    { name: 'Strategy', value: 15, description: 'Planning and market intelligence' },
+    { name: 'Support', value: 8, description: 'Customer ticketing and feedback analysis' },
+  ];
 
   return (
     <div className="space-y-10 py-6">
       <TransitionWrapper>
-        <div className="space-y-2">
-          <h2 className="text-3xl font-bold mb-1 neon-text">FlowState Business Agency</h2>
-          <p className="text-flow-foreground/70">
-            AI-powered automation for your growing business
-          </p>
-        </div>
+        <GlassMorphism className="p-6 rounded-xl border-flow-accent/30 animate-glow-pulse mb-6">
+          <div className="space-y-2">
+            <h2 className="text-3xl font-bold mb-1 neon-text">FlowState Business Agency</h2>
+            <p className="text-flow-foreground/70">
+              AI-powered automation for your growing business
+            </p>
+            <div className="flex flex-wrap gap-3 mt-4">
+              <Button className="bg-flow-accent/80 hover:bg-flow-accent text-flow-accent-foreground rounded-md border border-flow-accent/50 shadow-[0_0_10px_rgba(217,70,239,0.3)]">
+                <Zap className="w-4 h-4 mr-2" />
+                Create New Workflow
+              </Button>
+              <Button variant="outline" className="border-flow-border/50 hover:border-flow-accent/50">
+                <Users className="w-4 h-4 mr-2" />
+                Manage Agents
+              </Button>
+            </div>
+          </div>
+        </GlassMorphism>
       </TransitionWrapper>
       
       <section className="space-y-6">
         <TransitionWrapper delay={50}>
-          <h3 className="text-xl font-medium neon-text">Performance Overview</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-medium neon-text">Performance Overview</h3>
+            <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent">
+              View Details <ChevronRight className="ml-1 h-3 w-3" />
+            </Button>
+          </div>
         </TransitionWrapper>
         <StatsOverview />
       </section>
       
       <section className="space-y-6">
         <TransitionWrapper delay={100}>
-          <h3 className="text-xl font-medium neon-text">Task Overview</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-medium neon-text">Task Overview</h3>
+            <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent">
+              View All Tasks <ChevronRight className="ml-1 h-3 w-3" />
+            </Button>
+          </div>
         </TransitionWrapper>
         <TaskManagement />
       </section>
       
+      {/* New Resource Usage Section */}
+      <section className="space-y-6">
+        <TransitionWrapper delay={130}>
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-medium neon-text">Resource Usage</h3>
+            <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent">
+              View Analytics <ChevronRight className="ml-1 h-3 w-3" />
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <GlassMorphism className="p-6 rounded-xl">
+              <h4 className="text-lg font-medium mb-4">Division Resource Allocation</h4>
+              <div className="h-[260px]">
+                <PieChart 
+                  data={resourceData} 
+                  donut={true} 
+                  gradient={true}
+                  interactive={true}
+                  colors={['#6366f1', '#f97316', '#0ea5e9', '#8b5cf6', '#22c55e']}
+                />
+              </div>
+            </GlassMorphism>
+            <GlassMorphism className="p-6 rounded-xl">
+              <h4 className="text-lg font-medium mb-4">Key Performance Indicators</h4>
+              <div className="space-y-4">
+                {['Workflow Efficiency', 'Agent Productivity', 'Task Completion Rate', 'System Reliability'].map((metric, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>{metric}</span>
+                      <span className="font-mono">{75 + index * 5}%</span>
+                    </div>
+                    <div className="w-full bg-flow-muted/20 rounded-full h-2 overflow-hidden">
+                      <div 
+                        className="h-2 rounded-full transition-all duration-500"
+                        style={{ 
+                          width: `${75 + index * 5}%`,
+                          background: `linear-gradient(90deg, #8b5cf670, ${['#6366f1', '#f97316', '#0ea5e9', '#8b5cf6'][index % 4]})`,
+                          boxShadow: `0 0 8px ${['#6366f1', '#f97316', '#0ea5e9', '#8b5cf6'][index % 4]}`
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </GlassMorphism>
+          </div>
+        </TransitionWrapper>
+      </section>
+      
       <section className="space-y-6">
         <TransitionWrapper delay={150}>
-          <h3 className="text-xl font-medium neon-text">Core Divisions</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-medium neon-text">Core Divisions</h3>
+            <Button variant="ghost" className="text-flow-foreground/70 hover:text-flow-accent">
+              <ArrowRight className="ml-1 h-4 w-4" />
+            </Button>
+          </div>
           <p className="text-sm text-flow-foreground/70">
             Essential divisions included in our Basic Plan ($49/month)
           </p>
@@ -149,7 +240,12 @@ const AgencyDashboard: React.FC = () => {
 
       <section className="space-y-6">
         <TransitionWrapper delay={250}>
-          <h3 className="text-xl font-medium neon-text">Additional Divisions</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-medium neon-text">Additional Divisions</h3>
+            <Button variant="ghost" className="text-flow-foreground/70 hover:text-flow-accent">
+              <ArrowRight className="ml-1 h-4 w-4" />
+            </Button>
+          </div>
           <p className="text-sm text-flow-foreground/70">
             Unlock more capabilities with our Pro Plan ($199/month) or Premium Plan (Contact Sales)
           </p>
@@ -167,17 +263,22 @@ const AgencyDashboard: React.FC = () => {
       
       <section className="space-y-6">
         <TransitionWrapper delay={350}>
-          <h3 className="text-xl font-medium neon-text">Top Performing Agents</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-medium neon-text">Top Performing Agents</h3>
+            <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent">
+              View All Agents <ChevronRight className="ml-1 h-3 w-3" />
+            </Button>
+          </div>
         </TransitionWrapper>
         <AgentGrid />
       </section>
 
       <section className="space-y-6">
         <TransitionWrapper delay={400}>
-          <div className="bg-flow-muted/30 p-6 rounded-xl border border-flow-border">
+          <GlassMorphism className="p-6 rounded-xl backdrop-blur-sm">
             <h3 className="text-xl font-medium mb-4 neon-text">Pricing Plans</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="p-6 bg-flow-background border border-flow-border rounded-xl">
+              <GlassMorphism intensity="low" className="p-6 rounded-xl transition-all duration-300 hover:shadow-md hover:border-flow-border/50">
                 <h4 className="text-lg font-medium">Basic Plan</h4>
                 <div className="text-2xl font-bold my-3">$49<span className="text-sm font-normal text-flow-foreground/70">/month</span></div>
                 <div className="text-sm text-flow-foreground/70 mb-4">Core divisions and basic workflows</div>
@@ -195,10 +296,12 @@ const AgencyDashboard: React.FC = () => {
                     Operations Division
                   </li>
                 </ul>
-                <button className="w-full px-4 py-2 bg-flow-accent text-flow-accent-foreground rounded-md">Get Started</button>
-              </div>
+                <Button className="w-full px-4 py-2 bg-flow-accent/80 hover:bg-flow-accent text-flow-accent-foreground rounded-md border border-flow-accent/50">
+                  Get Started
+                </Button>
+              </GlassMorphism>
               
-              <div className="p-6 bg-flow-accent/10 border border-flow-accent rounded-xl relative">
+              <GlassMorphism className="p-6 rounded-xl bg-flow-accent/5 border-flow-accent shadow-[0_0_15px_rgba(217,70,239,0.2)] relative transition-all duration-300 hover:shadow-[0_0_20px_rgba(217,70,239,0.3)]">
                 <div className="absolute -top-3 right-4 bg-flow-accent text-xs text-flow-accent-foreground px-3 py-1 rounded-full">Popular</div>
                 <h4 className="text-lg font-medium">Pro Plan</h4>
                 <div className="text-2xl font-bold my-3">$199<span className="text-sm font-normal text-flow-foreground/70">/month</span></div>
@@ -217,10 +320,12 @@ const AgencyDashboard: React.FC = () => {
                     Marketing Division
                   </li>
                 </ul>
-                <button className="w-full px-4 py-2 bg-flow-accent text-flow-accent-foreground rounded-md">Upgrade Now</button>
-              </div>
+                <Button className="w-full px-4 py-2 bg-flow-accent text-flow-accent-foreground shadow-[0_0_10px_rgba(217,70,239,0.3)] rounded-md border border-flow-accent/80">
+                  Upgrade Now
+                </Button>
+              </GlassMorphism>
               
-              <div className="p-6 bg-flow-background border border-flow-border rounded-xl">
+              <GlassMorphism intensity="low" className="p-6 rounded-xl transition-all duration-300 hover:shadow-md hover:border-flow-border/50">
                 <h4 className="text-lg font-medium">Premium Plan</h4>
                 <div className="text-2xl font-bold my-3">Custom<span className="text-sm font-normal text-flow-foreground/70">/month</span></div>
                 <div className="text-sm text-flow-foreground/70 mb-4">All divisions with custom workflows</div>
@@ -238,10 +343,12 @@ const AgencyDashboard: React.FC = () => {
                     Custom workflows & agents
                   </li>
                 </ul>
-                <button className="w-full px-4 py-2 bg-flow-background border border-flow-border text-flow-foreground rounded-md">Contact Sales</button>
-              </div>
+                <Button variant="outline" className="w-full px-4 py-2 border-flow-border hover:border-flow-accent/50 rounded-md">
+                  Contact Sales
+                </Button>
+              </GlassMorphism>
             </div>
-          </div>
+          </GlassMorphism>
         </TransitionWrapper>
       </section>
     </div>
