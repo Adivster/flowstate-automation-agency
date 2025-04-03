@@ -34,10 +34,20 @@ const DivisionInfoPanel: React.FC<DivisionInfoPanelProps> = ({
   // Pass division ID to get consistent performance data
   const performanceData = usePerformanceData(division.id);
   
-  // Format performance data for chart visualization
+  // Format performance data for chart visualization with enhanced colors and descriptions
   const resourceData = [
-    { name: "Used", value: performanceData.resourceUtilization },
-    { name: "Available", value: 100 - performanceData.resourceUtilization },
+    { 
+      name: "Used", 
+      value: performanceData.resourceUtilization,
+      description: "Currently utilized resources for this division's operations.",
+      color: "#8b5cf6"
+    },
+    { 
+      name: "Available", 
+      value: 100 - performanceData.resourceUtilization,
+      description: "Resources still available for allocation to this division.",
+      color: "#22c55e"
+    },
   ];
   
   const agentsInDivision = agents.filter(a => a.division === division.id);
@@ -131,7 +141,16 @@ const DivisionInfoPanel: React.FC<DivisionInfoPanelProps> = ({
             Resource Utilization
           </h4>
           <div className="h-[150px]">
-            <PieChart data={resourceData} />
+            <PieChart 
+              data={resourceData} 
+              colors={resourceData.map(item => item.color)}
+              donut={true} 
+              gradient={true}
+              interactive={true}
+              height={150}
+              outerRadius={50}
+              legendPosition="bottom"
+            />
           </div>
         </div>
         

@@ -15,7 +15,10 @@ import {
   Database, 
   Activity,
   BarChart2,
-  AlertTriangle
+  AlertTriangle,
+  FileText,
+  Cpu,
+  Layers
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Progress } from '@/components/ui/progress';
@@ -54,22 +57,79 @@ const Analytics = () => {
     { name: 'Jun', value: 87 },
   ];
   
-  // Agent performance
+  // Enhanced agent performance data with descriptions
   const agentPerformance = [
-    { name: 'KB Division', value: 35 },
-    { name: 'Operations', value: 40 },
-    { name: 'Analytics', value: 15 },
-    { name: 'Marketing', value: 10 },
+    { 
+      name: 'KB Division', 
+      value: 35, 
+      description: 'Knowledge Base Division handles documentation and content organization.',
+      color: '#9b87f5'
+    },
+    { 
+      name: 'Operations', 
+      value: 40, 
+      description: 'Operations Division manages day-to-day workflows and processes.',
+      color: '#22c55e'
+    },
+    { 
+      name: 'Analytics', 
+      value: 15, 
+      description: 'Analytics Division focuses on metrics, reporting, and insights.',
+      color: '#0ea5e9'
+    },
+    { 
+      name: 'Marketing', 
+      value: 10, 
+      description: 'Marketing Division handles brand awareness and promotion.',
+      color: '#f97316'
+    },
   ];
   
-  // Task distribution data
+  // Enhanced task distribution data
   const taskDistribution = [
-    { name: 'Content Creation', value: 120 },
-    { name: 'Research Tasks', value: 87 },
-    { name: 'Development', value: 142 },
+    { 
+      name: 'Content Creation', 
+      value: 120, 
+      description: 'Tasks related to creating and publishing content across platforms.',
+      color: '#0088FE'
+    },
+    { 
+      name: 'Research Tasks', 
+      value: 87, 
+      description: 'Information gathering, market research, and competitor analysis.',
+      color: '#00C49F'
+    },
+    { 
+      name: 'Development', 
+      value: 142, 
+      description: 'Coding, implementation, and technical development work.',
+      color: '#FFBB28'
+    },
   ];
   
-  // Database operations
+  // Enhanced resource allocation data
+  const resourceAllocation = [
+    {
+      name: 'Server Resources',
+      value: 45,
+      description: 'CPU, memory, and storage resources allocated to servers.',
+      color: '#8884d8'
+    },
+    {
+      name: 'API Credits',
+      value: 30,
+      description: 'External API usage and quotas for third-party services.',
+      color: '#d946ef'
+    },
+    {
+      name: 'Data Storage',
+      value: 25,
+      description: 'Database and file storage resources.',
+      color: '#0ea5e9'
+    }
+  ];
+  
+  // Enhanced database operations data
   const databaseOperations = [
     { name: 'Mon', value: 350 },
     { name: 'Tue', value: 420 },
@@ -78,6 +138,34 @@ const Analytics = () => {
     { name: 'Fri', value: 470 },
     { name: 'Sat', value: 180 },
     { name: 'Sun', value: 90 },
+  ];
+  
+  // New data for system metrics by component
+  const systemComponentUsage = [
+    {
+      name: 'Database',
+      value: 42,
+      description: 'Relational database infrastructure and document stores.',
+      color: '#6E59A5'
+    },
+    {
+      name: 'API Services',
+      value: 28,
+      description: 'REST and GraphQL API endpoints and services.',
+      color: '#F97316'
+    },
+    {
+      name: 'ML Models',
+      value: 18,
+      description: 'Machine learning and AI model processing.',
+      color: '#22C55E'
+    },
+    {
+      name: 'CDN',
+      value: 12,
+      description: 'Content delivery network and asset caching.',
+      color: '#0EA5E9'
+    }
   ];
   
   return (
@@ -227,7 +315,7 @@ const Analytics = () => {
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
                             <span className="sr-only">Open menu</span>
-                            <Activity className="h-4 w-4" />
+                            <FileText className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -237,11 +325,21 @@ const Analytics = () => {
                       </DropdownMenu>
                     </CardHeader>
                     <CardDescription className="px-6">Breakdown of current task types</CardDescription>
-                    <CardContent>
-                      <PieChart data={taskDistribution} className="aspect-[4/3]" />
+                    <CardContent className="px-2">
+                      <PieChart 
+                        data={taskDistribution} 
+                        colors={taskDistribution.map(item => item.color)}
+                        height={280}
+                        donut={true}
+                        interactive={true}
+                        gradient={true}
+                      />
                     </CardContent>
-                    <CardFooter className="text-xs text-flow-foreground/60 justify-end">
-                      Updated 2 hours ago
+                    <CardFooter className="text-xs text-flow-foreground/60 justify-between">
+                      <div className="flex items-center">
+                        <span className="text-sm">Total: {taskDistribution.reduce((sum, item) => sum + item.value, 0)} tasks</span>
+                      </div>
+                      <span>Updated 2 hours ago</span>
                     </CardFooter>
                   </GlassMorphism>
                 </div>
@@ -256,7 +354,7 @@ const Analytics = () => {
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
                             <span className="sr-only">Open menu</span>
-                            <Activity className="h-4 w-4" />
+                            <Layers className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -266,11 +364,21 @@ const Analytics = () => {
                       </DropdownMenu>
                     </CardHeader>
                     <CardDescription className="px-6">Contribution by division</CardDescription>
-                    <CardContent>
-                      <PieChart data={agentPerformance} className="aspect-[4/3]" />
+                    <CardContent className="px-2">
+                      <PieChart 
+                        data={agentPerformance} 
+                        colors={agentPerformance.map(item => item.color)}
+                        height={280}
+                        donut={true}
+                        interactive={true}
+                        gradient={true}
+                      />
                     </CardContent>
-                    <CardFooter className="text-xs text-flow-foreground/60 justify-end">
-                      Updated 3 hours ago
+                    <CardFooter className="text-xs text-flow-foreground/60 justify-between">
+                      <div className="flex items-center">
+                        <span className="text-sm">Hover segments for details</span>
+                      </div>
+                      <span>Updated 3 hours ago</span>
                     </CardFooter>
                   </GlassMorphism>
                   
@@ -292,10 +400,14 @@ const Analytics = () => {
                     </CardHeader>
                     <CardDescription className="px-6">Task completion percentage over time</CardDescription>
                     <CardContent>
-                      <LineChart data={completionRate} className="aspect-[4/3]" />
+                      <LineChart data={completionRate} lineColor="#D946EF" className="aspect-[4/3]" />
                     </CardContent>
-                    <CardFooter className="text-xs text-flow-foreground/60 justify-end">
-                      Updated 3 hours ago
+                    <CardFooter className="text-xs text-flow-foreground/60 justify-between">
+                      <div className="flex items-center">
+                        <span className="text-sm font-medium text-green-500">+14% improvement</span>
+                        <span className="text-xs text-flow-foreground/60 ml-2">compared to Q1</span>
+                      </div>
+                      <span>Updated 3 hours ago</span>
                     </CardFooter>
                   </GlassMorphism>
                 </div>
@@ -323,19 +435,23 @@ const Analytics = () => {
                     <CardContent>
                       <BarChart data={databaseOperations} className="aspect-[4/3]" />
                     </CardContent>
-                    <CardFooter className="text-xs text-flow-foreground/60 justify-end">
-                      Updated 1 hour ago
+                    <CardFooter className="text-xs text-flow-foreground/60 justify-between">
+                      <div className="flex items-center">
+                        <span className="text-sm font-medium">Peak: 510 operations</span>
+                        <span className="text-xs text-flow-foreground/60 ml-2">on Thursday</span>
+                      </div>
+                      <span>Updated 1 hour ago</span>
                     </CardFooter>
                   </GlassMorphism>
                   
                   <GlassMorphism className="rounded-xl" intensity="low">
                     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                      <CardTitle className="text-xl font-semibold text-flow-accent">System Performance</CardTitle>
+                      <CardTitle className="text-xl font-semibold text-flow-accent">Resource Allocation</CardTitle>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
                             <span className="sr-only">Open menu</span>
-                            <AlertTriangle className="h-4 w-4" />
+                            <Cpu className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -344,49 +460,105 @@ const Analytics = () => {
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </CardHeader>
-                    <CardDescription className="px-6">System resource utilization</CardDescription>
-                    <CardContent className="space-y-6">
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>CPU Usage</span>
-                          <span className="font-medium">{systemPerformance.resourceAllocation.cpu}%</span>
-                        </div>
-                        <Progress value={systemPerformance.resourceAllocation.cpu} indicatorColor="#8b5cf6" className="h-1.5" />
-                      </div>
-                      
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Memory Usage</span>
-                          <span className="font-medium">{systemPerformance.resourceAllocation.memory}%</span>
-                        </div>
-                        <Progress value={systemPerformance.resourceAllocation.memory} indicatorColor="#06b6d4" className="h-1.5" />
-                      </div>
-                      
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Network Bandwidth</span>
-                          <span className="font-medium">{systemPerformance.resourceAllocation.network}%</span>
-                        </div>
-                        <Progress value={systemPerformance.resourceAllocation.network} indicatorColor="#10b981" className="h-1.5" />
-                      </div>
-                      
-                      <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Storage</span>
-                          <span className="font-medium">{systemPerformance.resourceAllocation.storage}%</span>
-                        </div>
-                        <Progress value={systemPerformance.resourceAllocation.storage} indicatorColor="#f97316" className="h-1.5" />
-                      </div>
+                    <CardDescription className="px-6">How resources are currently allocated</CardDescription>
+                    <CardContent className="px-2">
+                      <PieChart 
+                        data={resourceAllocation} 
+                        colors={resourceAllocation.map(item => item.color)}
+                        height={280}
+                        donut={true}
+                        interactive={true}
+                        gradient={true}
+                      />
                     </CardContent>
                     <CardFooter className="text-xs text-flow-foreground/60 justify-between">
-                      <span className="flex items-center">
-                        <Zap className="h-3 w-3 mr-1 text-green-500" />
-                        System stable
-                      </span>
-                      <span>Updated just now</span>
+                      <div className="flex items-center">
+                        <span className="text-sm">Hover segments for details</span>
+                      </div>
+                      <span>Updated 1 hour ago</span>
                     </CardFooter>
                   </GlassMorphism>
                 </div>
+                
+                <GlassMorphism className="rounded-xl" intensity="low">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                    <CardTitle className="text-xl font-semibold text-flow-accent">System Performance</CardTitle>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <AlertTriangle className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>View details</DropdownMenuItem>
+                        <DropdownMenuItem>Export data</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </CardHeader>
+                  <CardDescription className="px-6">System resource utilization</CardDescription>
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <h3 className="text-base font-medium mb-3">Resource Usage</h3>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>CPU Usage</span>
+                              <span className="font-medium">{systemPerformance.resourceAllocation.cpu}%</span>
+                            </div>
+                            <Progress value={systemPerformance.resourceAllocation.cpu} indicatorColor="#8b5cf6" className="h-1.5" />
+                          </div>
+                          
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Memory Usage</span>
+                              <span className="font-medium">{systemPerformance.resourceAllocation.memory}%</span>
+                            </div>
+                            <Progress value={systemPerformance.resourceAllocation.memory} indicatorColor="#06b6d4" className="h-1.5" />
+                          </div>
+                          
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Network Bandwidth</span>
+                              <span className="font-medium">{systemPerformance.resourceAllocation.network}%</span>
+                            </div>
+                            <Progress value={systemPerformance.resourceAllocation.network} indicatorColor="#10b981" className="h-1.5" />
+                          </div>
+                          
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Storage</span>
+                              <span className="font-medium">{systemPerformance.resourceAllocation.storage}%</span>
+                            </div>
+                            <Progress value={systemPerformance.resourceAllocation.storage} indicatorColor="#f97316" className="h-1.5" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-base font-medium mb-3">Usage by Component</h3>
+                        <PieChart 
+                          data={systemComponentUsage} 
+                          colors={systemComponentUsage.map(item => item.color)}
+                          height={220}
+                          donut={true}
+                          interactive={true}
+                          gradient={true}
+                          paddingAngle={4}
+                          outerRadius={70}
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="text-xs text-flow-foreground/60 justify-between">
+                    <span className="flex items-center">
+                      <Zap className="h-3 w-3 mr-1 text-green-500" />
+                      System stable
+                    </span>
+                    <span>Updated just now</span>
+                  </CardFooter>
+                </GlassMorphism>
               </TabsContent>
             </Tabs>
           </GlassMorphism>
