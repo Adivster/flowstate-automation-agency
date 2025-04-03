@@ -199,7 +199,19 @@ const renderActiveShape = (props) => {
   );
 };
 
-const CustomPieTooltip = ({ active, payload }) => {
+interface CustomPieTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    payload: {
+      name: string;
+      value: number;
+      percent: number;
+      description?: string;
+    };
+  }>;
+}
+
+const CustomPieTooltip: React.FC<CustomPieTooltipProps> = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
