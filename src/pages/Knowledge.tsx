@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -14,7 +14,6 @@ import {
   Calendar, Eye, Filter, ArrowUpDown, ExternalLink, 
   ThumbsUp, BookOpen, CheckCircle, PenLine
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
@@ -26,6 +25,11 @@ import {
   CommandItem, 
   CommandList 
 } from '@/components/ui/command';
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import GlassMorphism from '@/components/ui/GlassMorphism';
 
 const Knowledge = () => {
@@ -336,81 +340,79 @@ const Knowledge = () => {
               </div>
               
               <div className="flex gap-2">
-                {/* Tag Filter */}
-                <div className="relative">
-                  <Button 
-                    variant="outline" 
-                    className={`border-flow-border hover:border-flow-accent transition-all duration-300 h-11 ${selectedTags.length > 0 ? 'bg-flow-accent/20 border-flow-accent/50' : ''}`}
-                    onClick={() => setOpenTagMenu(!openTagMenu)}
-                  >
-                    <Tag className="w-4 h-4 mr-2" />
-                    Tags {selectedTags.length > 0 && `(${selectedTags.length})`}
-                  </Button>
-                  {openTagMenu && (
-                    <div className="absolute z-10 mt-2 w-56 p-2 bg-[rgba(11,15,25,0.9)] border border-flow-border rounded-md shadow-[0_0_15px_rgba(85,120,255,0.2)] backdrop-blur-md">
-                      <Command className="rounded-lg bg-transparent">
-                        <CommandInput placeholder="Search tags..." className="border-b border-flow-border/30 h-9" />
-                        <CommandList>
-                          <CommandEmpty>No tags found.</CommandEmpty>
-                          <CommandGroup>
-                            {allTags.map((tag) => (
-                              <CommandItem 
-                                key={tag}
-                                onSelect={() => toggleTagFilter(tag)}
-                                className="flex items-center cursor-pointer hover:bg-flow-accent/10 transition-colors duration-300"
-                              >
-                                <div className={`mr-2 h-4 w-4 rounded-sm border flex items-center justify-center transition-colors duration-300 ${
-                                  selectedTags.includes(tag) ? 'bg-flow-accent border-flow-accent shadow-[0_0_8px_rgba(85,120,255,0.5)]' : 'border-flow-border'
-                                }`}>
-                                  {selectedTags.includes(tag) && <CheckCircle className="h-3 w-3 text-white" />}
-                                </div>
-                                {tag}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </div>
-                  )}
-                </div>
+                {/* Tag Filter - Now using Popover for better positioning */}
+                <Popover open={openTagMenu} onOpenChange={setOpenTagMenu}>
+                  <PopoverTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className={`border-flow-border hover:border-flow-accent transition-all duration-300 h-11 ${selectedTags.length > 0 ? 'bg-flow-accent/20 border-flow-accent/50' : ''}`}
+                    >
+                      <Tag className="w-4 h-4 mr-2" />
+                      Tags {selectedTags.length > 0 && `(${selectedTags.length})`}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-56 p-2 bg-[rgba(11,15,25,0.9)] border border-flow-border rounded-md shadow-[0_0_15px_rgba(85,120,255,0.2)] backdrop-blur-md z-50">
+                    <Command className="rounded-lg bg-transparent">
+                      <CommandInput placeholder="Search tags..." className="border-b border-flow-border/30 h-9" />
+                      <CommandList className="max-h-60 overflow-auto">
+                        <CommandEmpty>No tags found.</CommandEmpty>
+                        <CommandGroup>
+                          {allTags.map((tag) => (
+                            <CommandItem 
+                              key={tag}
+                              onSelect={() => toggleTagFilter(tag)}
+                              className="flex items-center cursor-pointer hover:bg-flow-accent/10 transition-colors duration-300"
+                            >
+                              <div className={`mr-2 h-4 w-4 rounded-sm border flex items-center justify-center transition-colors duration-300 ${
+                                selectedTags.includes(tag) ? 'bg-flow-accent border-flow-accent shadow-[0_0_8px_rgba(85,120,255,0.5)]' : 'border-flow-border'
+                              }`}>
+                                {selectedTags.includes(tag) && <CheckCircle className="h-3 w-3 text-white" />}
+                              </div>
+                              {tag}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
                 
-                {/* Type Filter */}
-                <div className="relative">
-                  <Button 
-                    variant="outline" 
-                    className={`border-flow-border hover:border-flow-accent transition-all duration-300 h-11 ${selectedTypes.length > 0 ? 'bg-flow-accent/20 border-flow-accent/50' : ''}`}
-                    onClick={() => setOpenTypeMenu(!openTypeMenu)}
-                  >
-                    <FileText className="w-4 h-4 mr-2" />
-                    Types {selectedTypes.length > 0 && `(${selectedTypes.length})`}
-                  </Button>
-                  {openTypeMenu && (
-                    <div className="absolute z-10 mt-2 w-56 p-2 bg-[rgba(11,15,25,0.9)] border border-flow-border rounded-md shadow-[0_0_15px_rgba(85,120,255,0.2)] backdrop-blur-md">
-                      <Command className="rounded-lg bg-transparent">
-                        <CommandInput placeholder="Search types..." className="border-b border-flow-border/30 h-9" />
-                        <CommandList>
-                          <CommandEmpty>No types found.</CommandEmpty>
-                          <CommandGroup>
-                            {allTypes.map((type) => (
-                              <CommandItem 
-                                key={type}
-                                onSelect={() => toggleTypeFilter(type)}
-                                className="flex items-center cursor-pointer hover:bg-flow-accent/10 transition-colors duration-300"
-                              >
-                                <div className={`mr-2 h-4 w-4 rounded-sm border flex items-center justify-center transition-colors duration-300 ${
-                                  selectedTypes.includes(type) ? 'bg-flow-accent border-flow-accent shadow-[0_0_8px_rgba(85,120,255,0.5)]' : 'border-flow-border'
-                                }`}>
-                                  {selectedTypes.includes(type) && <CheckCircle className="h-3 w-3 text-white" />}
-                                </div>
-                                <span className="capitalize">{type}</span>
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </div>
-                  )}
-                </div>
+                {/* Type Filter - Now using Popover for better positioning */}
+                <Popover open={openTypeMenu} onOpenChange={setOpenTypeMenu}>
+                  <PopoverTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className={`border-flow-border hover:border-flow-accent transition-all duration-300 h-11 ${selectedTypes.length > 0 ? 'bg-flow-accent/20 border-flow-accent/50' : ''}`}
+                    >
+                      <FileText className="w-4 h-4 mr-2" />
+                      Types {selectedTypes.length > 0 && `(${selectedTypes.length})`}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-56 p-2 bg-[rgba(11,15,25,0.9)] border border-flow-border rounded-md shadow-[0_0_15px_rgba(85,120,255,0.2)] backdrop-blur-md z-50">
+                    <Command className="rounded-lg bg-transparent">
+                      <CommandInput placeholder="Search types..." className="border-b border-flow-border/30 h-9" />
+                      <CommandList className="max-h-60 overflow-auto">
+                        <CommandEmpty>No types found.</CommandEmpty>
+                        <CommandGroup>
+                          {allTypes.map((type) => (
+                            <CommandItem 
+                              key={type}
+                              onSelect={() => toggleTypeFilter(type)}
+                              className="flex items-center cursor-pointer hover:bg-flow-accent/10 transition-colors duration-300"
+                            >
+                              <div className={`mr-2 h-4 w-4 rounded-sm border flex items-center justify-center transition-colors duration-300 ${
+                                selectedTypes.includes(type) ? 'bg-flow-accent border-flow-accent shadow-[0_0_8px_rgba(85,120,255,0.5)]' : 'border-flow-border'
+                              }`}>
+                                {selectedTypes.includes(type) && <CheckCircle className="h-3 w-3 text-white" />}
+                              </div>
+                              <span className="capitalize">{type}</span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
                 
                 {/* Sort Button */}
                 <Button 
