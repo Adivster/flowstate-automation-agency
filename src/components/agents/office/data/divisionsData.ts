@@ -23,6 +23,8 @@ export const getDivisions = (t: (key: string) => string): DivisionData[] => [
       { type: 'computer', x: 30, y: 20 },
       { type: 'desk', x: 25, y: 25 },
       { type: 'computer', x: 20, y: 25 },
+      { type: 'bookshelf', x: 20, y: 30 },
+      { type: 'terminal', x: 30, y: 30 },
     ]
   },
   {
@@ -44,6 +46,8 @@ export const getDivisions = (t: (key: string) => string): DivisionData[] => [
       { type: 'computer', x: 75, y: 25 },
       { type: 'desk', x: 70, y: 30 },
       { type: 'computer', x: 75, y: 20 },
+      { type: 'dashboard', x: 65, y: 25 },
+      { type: 'datawall', x: 75, y: 30 },
     ]
   },
   {
@@ -65,6 +69,8 @@ export const getDivisions = (t: (key: string) => string): DivisionData[] => [
       { type: 'desk', x: 30, y: 75 },
       { type: 'monitor', x: 25, y: 75 },
       { type: 'computer', x: 20, y: 70 },
+      { type: 'hardware', x: 20, y: 80 },
+      { type: 'controlpanel', x: 25, y: 80 },
     ]
   },
   {
@@ -86,6 +92,8 @@ export const getDivisions = (t: (key: string) => string): DivisionData[] => [
       { type: 'desk', x: 75, y: 75 },
       { type: 'computer', x: 70, y: 75 },
       { type: 'meeting', x: 75, y: 70 },
+      { type: 'projection', x: 70, y: 80 },
+      { type: 'holotable', x: 75, y: 80 },
     ]
   },
   // Moved Research division to the center with more space
@@ -108,6 +116,8 @@ export const getDivisions = (t: (key: string) => string): DivisionData[] => [
       { type: 'computer', x: 50, y: 50 },
       { type: 'desk', x: 45, y: 50 },
       { type: 'server', x: 50, y: 45 },
+      { type: 'library', x: 40, y: 45 },
+      { type: 'laboratory', x: 45, y: 40 },
     ]
   },
   {
@@ -116,19 +126,21 @@ export const getDivisions = (t: (key: string) => string): DivisionData[] => [
     color: 'bg-amber-500',
     icon: Coffee,
     position: {
-      x: 80, 
+      x: 65, 
       y: 40, 
-      width: 15, 
-      height: 20
+      width: 20, 
+      height: 15
     },
     description: t('loungeDescription'),
     agents: 0,
     tasks: 0,
     decoration: [
-      { type: 'sofa', x: 85, y: 45 },
-      { type: 'coffee', x: 85, y: 50 },
-      { type: 'plant', x: 88, y: 45 },
-      { type: 'plant', x: 82, y: 45 },
+      { type: 'sofa', x: 70, y: 45 },
+      { type: 'coffee', x: 75, y: 45 },
+      { type: 'plant', x: 70, y: 40 },
+      { type: 'plant', x: 75, y: 40 },
+      { type: 'coffeebar', x: 80, y: 43 },
+      { type: 'relaxarea', x: 65, y: 47 },
     ]
   }
 ];

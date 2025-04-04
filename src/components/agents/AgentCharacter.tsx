@@ -1,9 +1,12 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, MessageCircle, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 
 interface RoutePoint {
   division: string;
@@ -39,7 +42,14 @@ const AgentCharacter: React.FC<AgentProps> = ({
   const [currentRouteIndex, setCurrentRouteIndex] = useState(0);
   const [taskProgress, setTaskProgress] = useState(Math.floor(Math.random() * 30) + 70); // 70-100% initial progress
   const [isMoving, setIsMoving] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatInput, setChatInput] = useState('');
+  const [chatMessages, setChatMessages] = useState<Array<{sender: 'user' | 'agent', text: string}>>([
+    {sender: 'agent', text: `Hello, I'm ${agent.name}. How can I assist you with my ${agent.role} expertise?`}
+  ]);
   const { t } = useLanguage();
+  const { toast } = useToast();
+  const chatRef = useRef<HTMLDivElement>(null);
   
   // Division-based color schemes
   const divisionColors = {
@@ -52,6 +62,13 @@ const AgentCharacter: React.FC<AgentProps> = ({
   };
   
   const colors = divisionColors[agent.division] || divisionColors.kb;
+  
+  // Scroll chat to bottom when new messages arrive
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    }
+  }, [chatMessages]);
   
   // Simulate task progress changes
   useEffect(() => {
@@ -147,6 +164,65 @@ const AgentCharacter: React.FC<AgentProps> = ({
       .substring(0, 2);
   };
   
+  // Handle opening the chat dialog
+  const handleOpenChat = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setChatOpen(true);
+  };
+  
+  // Handle sending a chat message
+  const handleSendMessage = () => {
+    if (!chatInput.trim()) return;
+    
+    // Add user message to chat
+    setChatMessages([...chatMessages, { sender: 'user', text: chatInput }]);
+    
+    // Clear input
+    setChatInput('');
+    
+    // Show a notification
+    toast({
+      title: `Message sent to ${agent.name}`,
+      description: chatInput,
+      duration: 3000,
+    });
+    
+    // Simulate agent response after a delay
+    setTimeout(() => {
+      let response = "";
+      
+      // Generate response based on division and role
+      switch (agent.division) {
+        case 'kb':
+          response = "I've accessed our knowledge base. The information you've requested is being processed. Would you like me to compile a report?";
+          break;
+        case 'analytics':
+          response = "Analyzing your request. I can generate insights based on our data patterns. Would you like me to run predictive models?";
+          break;
+        case 'operations':
+          response = "Your task has been logged. I'll optimize resource allocation to complete this efficiently. Can I help with anything else?";
+          break;
+        case 'strategy':
+          response = "I'm evaluating strategic implications of your request. This aligns with our long-term objectives. Shall I prepare a strategy brief?";
+          break;
+        case 'research':
+          response = "Interesting question. I'll explore potential innovations in this area. Would you like me to schedule a research session?";
+          break;
+        default:
+          response = "I've received your message and will process it according to protocol. Is there anything else you need assistance with?";
+      }
+      
+      setChatMessages(prev => [...prev, { sender: 'agent', text: response }]);
+    }, 1000);
+  };
+  
+  // Handle key press in input field
+  const handleInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
+  
   return (
     <motion.div
       className={`absolute cursor-pointer ${isSelected ? 'z-50' : 'z-40'}`}
@@ -173,8 +249,8 @@ const AgentCharacter: React.FC<AgentProps> = ({
     >
       {/* Agent avatar with color coding by division */}
       <div className="flex flex-col items-center">
-        {/* Avatar */}
-        <div className="relative mb-1">
+        {/* Avatar with improved cyberpunk styling */}
+        <div className="relative mb-1 group">
           <div 
             className={`rounded-full p-1.5 ${
               agent.status === 'working' 
@@ -192,20 +268,37 @@ const AgentCharacter: React.FC<AgentProps> = ({
             </Avatar>
           </div>
           
-          {/* Status indicator */}
+          {/* Status indicator with enhanced cyberpunk glow */}
           <div 
             className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${statusColors[agent.status]} 
             ${agent.status === 'working' ? 'animate-pulse' : ''}`}
+            style={{
+              boxShadow: agent.status === 'working' ? `0 0 5px ${statusColors[agent.status]}` : 'none'
+            }}
           ></div>
           
-          {/* Division icon indicator */}
-          <div className={`absolute -bottom-1 -left-1 w-4 h-4 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center`}>
+          {/* Division icon indicator with enhanced styling */}
+          <div className={`absolute -bottom-1 -left-1 w-4 h-4 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center border border-white/20`}
+               style={{
+                 boxShadow: `0 0 4px ${colors.shadow}40`
+               }}
+          >
             <Icon className={`h-2.5 w-2.5 ${colors.text}`} />
           </div>
+          
+          {/* Message button - visible on hover or when selected */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className={`absolute -right-6 top-0 h-5 w-5 rounded-full bg-gray-800/80 backdrop-blur-sm border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isSelected ? 'opacity-100' : ''}`}
+            onClick={handleOpenChat}
+          >
+            <MessageCircle className="h-3 w-3 text-white" />
+          </Button>
         </div>
         
-        {/* Task progress bar */}
-        <div className="w-12 h-1.5 mb-1 rounded-full overflow-hidden bg-black/60 backdrop-blur-sm">
+        {/* Task progress bar with enhanced cyberpunk style */}
+        <div className="w-12 h-1.5 mb-1 rounded-full overflow-hidden bg-black/60 backdrop-blur-sm border border-white/10">
           {agent.status === 'idle' ? (
             <div className="h-full bg-gray-500/30 w-full"></div>
           ) : (
@@ -213,30 +306,123 @@ const AgentCharacter: React.FC<AgentProps> = ({
               className={`h-full ${getTaskProgressColor()} transition-all duration-500`}
               style={{ 
                 width: `${taskProgress}%`, 
-                opacity: agent.status === 'working' ? '1' : '0.7' 
+                opacity: agent.status === 'working' ? '1' : '0.7',
+                boxShadow: agent.status === 'working' ? `0 0 10px ${getTaskProgressColor()}` : 'none'
               }}
             ></div>
           )}
         </div>
         
-        {/* Name tooltip */}
+        {/* Name with enhanced cyberpunk styling */}
         <div 
           className={`
             px-1.5 py-0.5 
             ${isSelected ? `${colors.avatarBg} ${colors.text} border-${colors.border}/50` : 'bg-black/80 text-white border-gray-700/30'}
             backdrop-blur-sm border rounded text-[0.6rem] whitespace-nowrap shadow-lg
           `}
+          style={{
+            textShadow: isSelected ? `0 0 5px ${colors.shadow}` : 'none',
+            boxShadow: isSelected ? `0 0 5px ${colors.shadow}40` : 'none'
+          }}
         >
           {agent.name}
         </div>
         
-        {/* Only show role when selected */}
+        {/* Only show role when selected with enhanced styling */}
         {isSelected && (
-          <div className="px-1.5 py-0.5 mt-0.5 bg-black/60 backdrop-blur-sm border border-gray-700/30 rounded text-[0.6rem] whitespace-nowrap text-white shadow-lg">
+          <div 
+            className="px-1.5 py-0.5 mt-0.5 bg-black/60 backdrop-blur-sm border border-gray-700/30 rounded text-[0.6rem] whitespace-nowrap text-white shadow-lg"
+            style={{
+              textShadow: `0 0 3px ${colors.shadow}80`
+            }}
+          >
             {agent.role}
           </div>
         )}
       </div>
+      
+      {/* Chat dialog - displays when chat is open */}
+      {chatOpen && (
+        <div 
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-gray-900/90 backdrop-blur-md rounded-lg border border-gray-700 shadow-xl z-50 overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            boxShadow: `0 0 15px ${colors.shadow}50, 0 5px 20px rgba(0,0,0,0.5)`
+          }}
+        >
+          {/* Chat header with agent info */}
+          <div 
+            className={`flex items-center justify-between p-2 border-b ${colors.border}`}
+            style={{
+              background: `linear-gradient(to right, ${colors.shadow}20, transparent)`
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <Avatar className="h-6 w-6">
+                <AvatarFallback className={`text-[0.6rem] font-semibold ${colors.bg} text-white`}>
+                  {getInitials(agent.name)}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <div className="text-xs font-semibold text-white">{agent.name}</div>
+                <div className="text-[0.6rem] text-gray-400">{agent.role}</div>
+              </div>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-6 w-6 rounded-full hover:bg-gray-800"
+              onClick={() => setChatOpen(false)}
+            >
+              <X className="h-3 w-3 text-gray-400" />
+            </Button>
+          </div>
+          
+          {/* Chat messages */}
+          <div 
+            ref={chatRef}
+            className="p-2 h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent"
+          >
+            {chatMessages.map((message, index) => (
+              <div 
+                key={index}
+                className={`mb-2 flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div 
+                  className={`max-w-[80%] px-2 py-1.5 rounded-lg text-[0.65rem] ${
+                    message.sender === 'user' 
+                      ? `bg-indigo-600/80 text-white` 
+                      : `bg-gray-800/90 text-gray-200 border border-${colors.border}/30`
+                  }`}
+                  style={{
+                    boxShadow: message.sender === 'agent' ? `0 0 5px ${colors.shadow}30` : 'none'
+                  }}
+                >
+                  {message.text}
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Chat input */}
+          <div className="p-2 border-t border-gray-800 flex gap-2">
+            <Input
+              className="h-7 text-xs bg-gray-800 border-gray-700 focus:border-gray-600 text-white"
+              placeholder="Type your message..."
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyPress={handleInputKeyPress}
+            />
+            <Button 
+              size="sm"
+              className={`h-7 px-2 ${colors.bg}`}
+              onClick={handleSendMessage}
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };
