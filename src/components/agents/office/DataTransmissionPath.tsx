@@ -27,7 +27,7 @@ const DataTransmissionPath: React.FC<DataTransmissionPathProps> = ({
   const endYNum = typeof end.y === 'number' ? end.y : parseFloat(end.y);
 
   return (
-    <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-10">
+    <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-10 will-change-transform">
       <svg width="100%" height="100%" className="absolute top-0 left-0">
         <line 
           x1={startX}

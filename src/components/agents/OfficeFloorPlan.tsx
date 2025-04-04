@@ -204,11 +204,11 @@ const OfficeFloorPlan: React.FC = () => {
   return (
     <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-gray-100 dark:bg-gray-900 neon-border">
       <div 
-        className="absolute inset-0 bg-gray-200 dark:bg-gray-800"
+        className="absolute inset-0 bg-gray-200 dark:bg-gray-800 select-none"
         onClick={handleBackgroundClick}
       >
         <div 
-          className="absolute inset-0" 
+          className="absolute inset-0 will-change-transform" 
           style={{ 
             backgroundImage: 'linear-gradient(to right, rgba(156, 163, 175, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(156, 163, 175, 0.1) 1px, transparent 1px)',
             backgroundSize: '20px 20px'

@@ -34,7 +34,7 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
   onAgentClick
 }) => {
   return (
-    <>
+    <div className="absolute inset-0 overflow-hidden">
       <CentralServer />
       <CommunicationHub />
       
@@ -93,7 +93,7 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
           onAgentClick={onAgentClick}
         />
       ))}
-    </>
+    </div>
   );
 };
 
