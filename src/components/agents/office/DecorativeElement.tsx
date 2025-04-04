@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Coffee, Activity, BookOpen, Server, Monitor, Database, Cpu, Tv, Zap, Box, ArrowUpDown, Sofa, Leaf, ChefHat, Pizza, Briefcase, Beaker, Flask } from 'lucide-react';
+import { Coffee, Activity, BookOpen, Server, Monitor, Database, Cpu, Tv, Zap, Box, ArrowUpDown, Sofa, Leaf, ChefHat, Pizza, Briefcase, Beaker, TestTube } from 'lucide-react';
 
 interface DecorativeElementProps {
   type: string;
@@ -115,7 +115,7 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         return (
           <div className="w-full h-full flex items-center justify-center bg-green-900/30 backdrop-blur-sm rounded border border-green-500/30 shadow-[0_0_5px_rgba(34,197,94,0.4)]">
             <Beaker className="w-1/2 h-1/2 text-green-400" />
-            <Flask className="w-1/3 h-1/3 text-green-300 ml-1" />
+            <TestTube className="w-1/3 h-1/3 text-green-300 ml-1" />
           </div>
         );
       case 'hardware':
