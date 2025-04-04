@@ -22,6 +22,20 @@ export interface DivisionData {
   }>;
 }
 
+export interface Division {
+  id: string;
+  name: string;
+  icon: LucideIcon;
+  position: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  backgroundColor: string;
+  borderColor: string;
+}
+
 export interface WorkstationData {
   x: number;
   y: number;
@@ -31,18 +45,18 @@ export interface WorkstationData {
   type: string;
 }
 
-export interface DecorationData {
+export interface DecorativeElement {
   type: string;
   x: number;
   y: number;
-  size: string;
+  size: number;
 }
 
 export interface HologramData {
   type: string;
   x: number;
   y: number;
-  size: string;
+  size: number | string;
 }
 
 export interface AgentData {

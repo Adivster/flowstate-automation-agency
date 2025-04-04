@@ -1,5 +1,5 @@
 
-import { Cpu, Database, Book, BarChart3, Coffee, Flask } from 'lucide-react';
+import { Cpu, Database, Book, BarChart3, Coffee, TestTube } from 'lucide-react';
 import { Division } from '../types/officeTypes';
 
 export const getDivisions = (t): Division[] => [
@@ -58,7 +58,7 @@ export const getDivisions = (t): Division[] => [
   {
     id: 'research',
     name: t('researchDivision'),
-    icon: Flask,
+    icon: TestTube,
     position: {
       x: 40,
       y: 37.5,

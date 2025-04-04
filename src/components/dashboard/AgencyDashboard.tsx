@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   BookOpen, 
@@ -9,7 +8,7 @@ import {
   Users, 
   Share2, 
   MessagesSquare,
-  FlaskConical,
+  TestTube,
   Zap,
   ChevronRight,
   ArrowRight
@@ -100,7 +99,7 @@ const AgencyDashboard: React.FC = () => {
     {
       title: 'Research Division',
       description: 'Explores new technologies, market trends, and innovation opportunities.',
-      icon: FlaskConical,
+      icon: TestTube,
       activeAgents: 4,
       taskStatus: { completed: 22, total: 30 },
       type: 'research' as const,

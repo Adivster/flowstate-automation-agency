@@ -7,12 +7,13 @@ import CentralServer from './CentralServer';
 import CommunicationHub from './CommunicationHub';
 import Division from './Division';
 import AgentCharacter from '../AgentCharacter';
+import { Division as DivisionType, DecorativeElement as DecorativeElementType } from './types/officeTypes';
 
 interface OfficeElementsProps {
-  divisions: any[];
+  divisions: DivisionType[];
   workstations: any[];
-  decorations: any[];
-  holograms: any[];
+  decorations: DecorativeElementType[];
+  holograms: DecorativeElementType[];
   agents: any[];
   selectedDivision: string | null;
   selectedAgent: number | null;

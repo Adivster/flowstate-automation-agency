@@ -122,3 +122,25 @@ export const decorations: DecorativeElement[] = [
     size: 2
   }
 ];
+
+// Create separate hologram data
+export const holograms: DecorativeElement[] = [
+  {
+    type: 'dataFlow',
+    x: 45,
+    y: 25,
+    size: 2.5
+  },
+  {
+    type: 'analytics',
+    x: 75,
+    y: 45,
+    size: 2
+  },
+  {
+    type: 'network',
+    x: 35,
+    y: 65,
+    size: 2.5
+  }
+];
