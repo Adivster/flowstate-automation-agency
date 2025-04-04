@@ -1,10 +1,14 @@
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
-// Translation dictionary
-export const translations = {
+interface LanguageContextType {
+  language: string;
+  setLanguage: (lang: string) => void;
+  t: (key: string) => string;
+}
+
+const translations = {
   en: {
-    // Common
     agency: 'FlowState Agency',
     dashboard: 'Dashboard',
     agents: 'Agents',
@@ -15,114 +19,74 @@ export const translations = {
     darkMode: 'Dark Mode',
     lightMode: 'Light Mode',
     courses: 'Courses',
-    
-    // Dashboard sections
     flowStateBusinessAgency: 'FlowState Business Agency',
     performanceOverview: 'Performance Overview',
-    taskOverview: 'Task Overview',
-    coreDivisions: 'Core Divisions',
-    additionalDivisions: 'Additional Divisions',
-    topPerformingAgents: 'Top Performing Agents',
-    pricingPlans: 'Pricing Plans',
-    
-    // Agents page
-    agencyHQ: 'Agency HQ',
-    monitorAgents: 'Monitor agent activities and manage divisions in your virtual office',
+    agencyPerformance: 'Agency Performance',
+    agencyAchievements: 'Agency Achievements',
+    divisionDistribution: 'Division Distribution',
+    taskCompletion: 'Task Completion',
+    weeklyTaskOverview: 'Weekly Task Overview',
+    systemStatus: 'System Status',
+    serverLoad: 'Server Load',
+    uptime: 'Uptime',
     activeAgents: 'Active Agents',
+    efficiency: 'Efficiency',
+    tasksCompleted: 'Tasks Completed',
+    knowledgeBase: 'Knowledge Base',
+    analyticsDivision: 'Analytics Division',
+    operationsDivision: 'Operations Division',
+    strategyDivision: 'Strategy Division',
+    researchDivision: 'Research Division',
+    agentLounge: 'Agent Lounge',
+    monitorAgents: 'Monitor and manage your agency\'s AI agents',
+    agencyHQ: 'Agency HQ',
     officeView: 'Office View',
     agentList: 'Agent List',
     systemMetrics: 'System Metrics',
-    interactiveOffice: 'Interactive office floor plan - click on divisions to view details',
-    proTip: 'Pro tip:',
+    interactiveOffice: 'Interactive Office Map - Click on divisions and agents to learn more',
+    proTip: 'PRO TIP:',
     openTerminal: 'Open the terminal with the button in the bottom right to run agency commands',
-    openChat: 'Open Chat',
-    allActiveAgents: 'All active agents within your agency',
-    performanceMetrics: 'Performance metrics and agency achievements',
-    courseDescription: 'Master AI agency management with our comprehensive courses',
-    viewDetails: 'View Details',
-    
-    // Communication bot
-    communicationBot: 'Communication Bot',
-    online: 'Online',
-    typeMessage: 'Type your message...',
-    startConversation: 'Start a conversation',
-    messagePlaceholder: 'What can I help you with?',
-    
-    // Divisions
-    researchDivision: 'Research Division',
-    researchDesc: 'Specialized in data collection and analysis',
-    developmentDivision: 'Development Division',
-    developmentDesc: 'Builds and deploys AI solutions',
-    strategyDivision: 'Strategy Division',
-    strategyDesc: 'Plans and coordinates agency efforts',
-    securityDivision: 'Security Division',
-    securityDesc: 'Ensures data privacy and security compliance',
-    knowledgeBase: 'Knowledge Base',
-    knowledgeBaseDesc: 'Manages and organizes information resources',
-    analyticsDivision: 'Analytics Division',
-    analyticsDesc: 'Processes data and generates insights',
-    operationsDivision: 'Operations Division',
-    operationsDesc: 'Oversees day-to-day functioning of the agency',
-    loungeName: 'Agents Lounge',
-    loungeDesc: 'Relaxation area for idle agents',
-    
-    // Agent statuses
+    allActiveAgents: 'All active agents in your organization',
+    performanceMetrics: 'Performance Metrics',
+    division: 'Division',
     working: 'Working',
     idle: 'Idle',
     paused: 'Paused',
     error: 'Error',
-    
-    // Terminal
-    commandTerminal: 'Command Terminal',
-    enterCommand: 'Enter command...',
-    execute: 'Execute',
-    terminalWelcome: 'Welcome to the Agency Command Interface',
-    availableCommands: 'Available commands:',
-    
-    // Metrics
-    completedTasks: 'Completed Tasks',
-    pendingTasks: 'Pending Tasks',
-    activeTasks: 'Active Tasks',
-    systemHealth: 'System Health',
-    
-    // Division performance
-    divisionPerformance: 'Division Performance',
-    taskCompletion: 'Task Completion Rate',
-    resourceUtilization: 'Resource Utilization',
-    efficiency: 'Efficiency',
-    
-    // Agent performance
-    agentPerformance: 'Agent Performance',
-    tasksCompleted: 'Tasks Completed',
-    averageResponseTime: 'Average Response Time',
-    errorRate: 'Error Rate',
-    uptime: 'Uptime',
+    lastActive: 'Last Active',
+    pause: 'Pause',
+    resume: 'Resume',
+    activate: 'Activate',
+    message: 'Message',
+    details: 'Details',
+    restart: 'Restart',
+    searchAgents: 'Search agents...',
+    noAgentsFound: 'No agents found matching your search criteria',
+    clearSearch: 'Clear Search',
+    agentActivity: 'Recent Activity',
+    currentTasks: 'Current Tasks',
+    agentDetails: 'Agent Details',
+    version: 'Version',
+    memory: 'Memory',
   }
 };
 
-// Context type
-type LanguageContextType = {
-  t: (key: keyof typeof translations.en) => string;
-};
-
-// Create context
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-// Provider component
-export const LanguageProvider: React.FC<{children: ReactNode}> = ({ children }) => {
-  // Translation function
-  const t = (key: keyof typeof translations.en): string => {
-    return translations.en[key] || key;
+export const LanguageProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
+  const [language, setLanguage] = useState('en');
+
+  const t = (key: string): string => {
+    return translations[language]?.[key] || key;
   };
-  
+
   return (
-    <LanguageContext.Provider value={{ t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );
 };
 
-// Custom hook to use the language context
 export const useLanguage = (): LanguageContextType => {
   const context = useContext(LanguageContext);
   if (context === undefined) {

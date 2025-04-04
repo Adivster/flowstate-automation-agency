@@ -8,6 +8,22 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 
+// Global state for managing open chat windows
+const globalChatState = {
+  openChatId: null,
+  setOpenChatId: (id: number | null) => {
+    globalChatState.openChatId = id;
+    globalChatState.listeners.forEach(listener => listener(id));
+  },
+  listeners: [] as ((id: number | null) => void)[],
+  subscribe: (listener: (id: number | null) => void) => {
+    globalChatState.listeners.push(listener);
+    return () => {
+      globalChatState.listeners = globalChatState.listeners.filter(l => l !== listener);
+    };
+  }
+};
+
 interface RoutePoint {
   division: string;
   x: number;
@@ -50,6 +66,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
   const { t } = useLanguage();
   const { toast } = useToast();
   const chatRef = useRef<HTMLDivElement>(null);
+  const chatWindowRef = useRef<HTMLDivElement>(null);
   
   // Division-based color schemes
   const divisionColors = {
@@ -62,6 +79,39 @@ const AgentCharacter: React.FC<AgentProps> = ({
   };
   
   const colors = divisionColors[agent.division] || divisionColors.kb;
+  
+  // Subscribe to global chat state
+  useEffect(() => {
+    const unsubscribe = globalChatState.subscribe((openId) => {
+      if (openId !== agent.id) {
+        setChatOpen(false);
+      }
+    });
+    
+    return () => unsubscribe();
+  }, [agent.id]);
+  
+  // Handle clicks outside the chat window
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        chatOpen && 
+        chatWindowRef.current && 
+        !chatWindowRef.current.contains(event.target as Node) &&
+        !(event.target as Element).closest(`.chat-trigger-${agent.id}`)
+      ) {
+        setChatOpen(false);
+      }
+    };
+    
+    if (chatOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [chatOpen, agent.id]);
   
   // Scroll chat to bottom when new messages arrive
   useEffect(() => {
@@ -168,6 +218,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
   const handleOpenChat = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     setChatOpen(true);
+    globalChatState.setOpenChatId(agent.id);
   };
   
   // Handle sending a chat message
@@ -225,7 +276,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
   
   return (
     <motion.div
-      className={`absolute cursor-pointer ${isSelected ? 'z-50' : 'z-40'}`}
+      className={`absolute cursor-pointer ${isSelected ? 'z-30' : 'z-20'}`}
       style={{
         left: `${position.x}%`,
         top: `${position.y}%`,
@@ -290,7 +341,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
           <Button
             variant="ghost"
             size="icon"
-            className={`absolute -right-6 top-0 h-5 w-5 rounded-full bg-gray-800/80 backdrop-blur-sm border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isSelected ? 'opacity-100' : ''}`}
+            className={`chat-trigger-${agent.id} absolute -right-6 top-0 h-5 w-5 rounded-full bg-gray-800/80 backdrop-blur-sm border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${isSelected ? 'opacity-100' : ''}`}
             onClick={handleOpenChat}
           >
             <MessageCircle className="h-3 w-3 text-white" />
@@ -344,7 +395,8 @@ const AgentCharacter: React.FC<AgentProps> = ({
       {/* Chat dialog - displays when chat is open */}
       {chatOpen && (
         <div 
-          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-gray-900/90 backdrop-blur-md rounded-lg border border-gray-700 shadow-xl z-50 overflow-hidden"
+          ref={chatWindowRef}
+          className="fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-64 bg-gray-900/90 backdrop-blur-md rounded-lg border border-gray-700 shadow-xl z-[100] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
           style={{
             boxShadow: `0 0 15px ${colors.shadow}50, 0 5px 20px rgba(0,0,0,0.5)`

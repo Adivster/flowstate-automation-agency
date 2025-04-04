@@ -1,32 +1,124 @@
 
-import { DecorationData, HologramData } from '../types/officeTypes';
+import { DecorativeElement } from '../types/officeTypes';
 
-export const decorations: DecorationData[] = [
-  // Plants for decoration
-  { type: 'plant', x: 15, y: 30, size: 'small' },
-  { type: 'plant', x: 85, y: 70, size: 'medium' },
-  { type: 'plant', x: 20, y: 80, size: 'large' },
-  { type: 'plant', x: 80, y: 20, size: 'small' },
+export const decorations: DecorativeElement[] = [
+  // Knowledge Base Division
+  {
+    type: 'bookshelf',
+    x: 20,
+    y: 25,
+    size: 3
+  },
+  {
+    type: 'terminal',
+    x: 25,
+    y: 30,
+    size: 2
+  },
+  {
+    type: 'server',
+    x: 30,
+    y: 28,
+    size: 2.5
+  },
   
-  // Sculptures and art
-  { type: 'sculpture', x: 85, y: 50, size: 'medium' },
-  { type: 'painting', x: 50, y: 10, size: 'large' },
-  { type: 'painting', x: 15, y: 45, size: 'medium' },
+  // Analytics Division
+  {
+    type: 'hologram',
+    x: 70,
+    y: 25,
+    size: 3
+  },
+  {
+    type: 'chart',
+    x: 75,
+    y: 30,
+    size: 2.5
+  },
+  {
+    type: 'dashboard',
+    x: 80,
+    y: 28,
+    size: 2.5
+  },
   
-  // Lounge furniture
-  { type: 'sofa', x: 83, y: 45, size: 'large' },
-  { type: 'coffee-table', x: 83, y: 48, size: 'medium' },
+  // Operations Division
+  {
+    type: 'drone',
+    x: 20,
+    y: 60,
+    size: 2
+  },
+  {
+    type: 'robot',
+    x: 25,
+    y: 65,
+    size: 2.5
+  },
+  {
+    type: 'securityPanel',
+    x: 30,
+    y: 62,
+    size: 2
+  },
   
-  // Meeting areas
-  { type: 'meeting-pod', x: 75, y: 80, size: 'large' },
-  { type: 'meeting-pod', x: 25, y: 10, size: 'large' },
-];
-
-export const holograms: HologramData[] = [
-  { type: 'earth', x: 75, y: 25, size: 'medium' },
-  { type: 'circuit', x: 15, y: 70, size: 'small' },
-  { type: 'data-stream', x: 50, y: 75, size: 'large' },
-  { type: 'code', x: 25, y: 45, size: 'small' },
-  { type: 'network', x: 60, y: 15, size: 'medium' },
-  { type: 'brain', x: 40, y: 30, size: 'medium' },
+  // Strategy Division
+  {
+    type: 'map',
+    x: 70,
+    y: 60,
+    size: 3
+  },
+  {
+    type: 'holomap',
+    x: 75,
+    y: 65,
+    size: 2.5
+  },
+  {
+    type: 'board',
+    x: 80,
+    y: 62,
+    size: 2.5
+  },
+  
+  // Research Division
+  {
+    type: 'lab',
+    x: 45,
+    y: 42,
+    size: 3
+  },
+  {
+    type: 'microscope',
+    x: 50,
+    y: 47,
+    size: 2
+  },
+  {
+    type: 'prototype',
+    x: 42,
+    y: 45,
+    size: 2.5
+  },
+  
+  // Lounge Division
+  {
+    type: 'coffeeBar',
+    x: 87,
+    y: 42,
+    size: 3
+  },
+  {
+    type: 'lounge',
+    x: 90,
+    y: 45,
+    size: 2.5
+  },
+  {
+    type: 'arcade',
+    x: 88,
+    y: 48,
+    size: 2
+  }
 ];
