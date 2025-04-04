@@ -4,28 +4,10 @@ import { motion } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Division as DivisionType } from './types/officeTypes';
 
 interface DivisionProps {
-  division: {
-    id: string;
-    name: string;
-    color: string;
-    icon: LucideIcon;
-    position: {
-      x: number;
-      y: number;
-      width: number;
-      height: number;
-    };
-    description: string;
-    agents: number;
-    tasks: number;
-    decoration: Array<{
-      type: string;
-      x: number;
-      y: number;
-    }>;
-  };
+  division: DivisionType;
   isSelected: boolean;
   isPulsing?: boolean;
   onDivisionClick: (id: string) => void;
@@ -91,6 +73,47 @@ const Division: React.FC<DivisionProps> = ({
   };
   
   const style = divisionStyles[division.id] || divisionStyles.kb;
+  
+  // Generate default decorations for divisions based on their ID
+  const getDefaultDecorations = (divisionId: string) => {
+    switch(divisionId) {
+      case 'kb':
+        return [
+          { type: 'boards', x: 30, y: 40 },
+          { type: 'computer', x: 70, y: 60 }
+        ];
+      case 'analytics':
+        return [
+          { type: 'chart', x: 30, y: 40 },
+          { type: 'computer', x: 70, y: 60 }
+        ];
+      case 'operations':
+        return [
+          { type: 'server', x: 30, y: 40 },
+          { type: 'monitor', x: 70, y: 60 }
+        ];
+      case 'strategy':
+        return [
+          { type: 'boards', x: 30, y: 40 },
+          { type: 'desk', x: 70, y: 60 }
+        ];
+      case 'research':
+        return [
+          { type: 'monitor', x: 30, y: 40 },
+          { type: 'plant', x: 70, y: 60 }
+        ];
+      case 'lounge':
+        return [
+          { type: 'coffee', x: 30, y: 40 },
+          { type: 'sofa', x: 70, y: 60 }
+        ];
+      default:
+        return [];
+    }
+  };
+  
+  // Get default decorations for this division
+  const decorations = getDefaultDecorations(division.id);
   
   // Render decoration items inside division with improved cyberpunk visual style
   const renderDecoration = (item: any) => {
@@ -169,11 +192,11 @@ const Division: React.FC<DivisionProps> = ({
         top: `${division.position.y}%`,
         width: `${division.position.width}%`,
         height: `${division.position.height}%`,
-        backgroundColor: style.bg,
+        backgroundColor: division.backgroundColor || style.bg,
         backgroundImage: style.pattern,
         borderWidth: '2px',
         borderStyle: 'solid',
-        borderColor: isSelected ? '#ffffff' : style.border,
+        borderColor: isSelected ? '#ffffff' : division.borderColor || style.border,
         boxShadow: isSelected ? style.shadow : isPulsing ? `0 0 15px ${style.border}60` : 'none',
         zIndex: isSelected ? 30 : 20,
         cursor: 'pointer'
@@ -233,7 +256,7 @@ const Division: React.FC<DivisionProps> = ({
       </div>
       
       {/* Division decoration items with improved spacing */}
-      {division.decoration.map(item => renderDecoration(item))}
+      {decorations.map(item => renderDecoration(item))}
       
       {/* Activity indicators - enhanced visibility */}
       {isPulsing && (

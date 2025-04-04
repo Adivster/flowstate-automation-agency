@@ -1,6 +1,6 @@
-
 import { DecorativeElement } from '../types/officeTypes';
 
+// Office decoration elements (plants, furniture, etc.)
 export const decorations: DecorativeElement[] = [
   // Knowledge Base Division
   {
@@ -123,7 +123,7 @@ export const decorations: DecorativeElement[] = [
   }
 ];
 
-// Create separate hologram data
+// Holographic elements for the office
 export const holograms: DecorativeElement[] = [
   {
     type: 'dataFlow',
