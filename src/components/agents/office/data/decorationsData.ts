@@ -1,3 +1,4 @@
+
 import { DecorativeElement } from '../types/officeTypes';
 
 // Office decoration elements (plants, furniture, etc.)
@@ -5,19 +6,19 @@ export const decorations: DecorativeElement[] = [
   // Knowledge Base Division
   {
     type: 'bookshelf',
-    x: 20,
+    x: 18,
     y: 25,
     size: 3
   },
   {
     type: 'terminal',
-    x: 25,
+    x: 22,
     y: 30,
     size: 2
   },
   {
     type: 'server',
-    x: 30,
+    x: 26,
     y: 28,
     size: 2.5
   },
@@ -25,19 +26,19 @@ export const decorations: DecorativeElement[] = [
   // Analytics Division
   {
     type: 'hologram',
-    x: 70,
+    x: 58,
     y: 25,
     size: 3
   },
   {
     type: 'chart',
-    x: 75,
+    x: 62,
     y: 30,
     size: 2.5
   },
   {
     type: 'dashboard',
-    x: 80,
+    x: 66,
     y: 28,
     size: 2.5
   },
@@ -45,19 +46,19 @@ export const decorations: DecorativeElement[] = [
   // Operations Division
   {
     type: 'drone',
-    x: 20,
+    x: 18,
     y: 60,
     size: 2
   },
   {
     type: 'robot',
-    x: 25,
+    x: 22,
     y: 65,
     size: 2.5
   },
   {
     type: 'securityPanel',
-    x: 30,
+    x: 26,
     y: 62,
     size: 2
   },
@@ -65,19 +66,19 @@ export const decorations: DecorativeElement[] = [
   // Strategy Division
   {
     type: 'map',
-    x: 70,
+    x: 58,
     y: 60,
     size: 3
   },
   {
     type: 'holomap',
-    x: 75,
+    x: 62,
     y: 65,
     size: 2.5
   },
   {
     type: 'board',
-    x: 80,
+    x: 66,
     y: 62,
     size: 2.5
   },
@@ -85,14 +86,14 @@ export const decorations: DecorativeElement[] = [
   // Research Division
   {
     type: 'lab',
-    x: 45,
+    x: 40,
     y: 42,
     size: 3
   },
   {
     type: 'microscope',
-    x: 50,
-    y: 47,
+    x: 38,
+    y: 45,
     size: 2
   },
   {
@@ -102,22 +103,22 @@ export const decorations: DecorativeElement[] = [
     size: 2.5
   },
   
-  // Lounge Division
+  // Lounge Division - moved further right
   {
     type: 'coffeeBar',
-    x: 87,
+    x: 90,
     y: 42,
     size: 3
   },
   {
     type: 'lounge',
-    x: 90,
+    x: 92,
     y: 45,
     size: 2.5
   },
   {
     type: 'arcade',
-    x: 88,
+    x: 91,
     y: 48,
     size: 2
   }

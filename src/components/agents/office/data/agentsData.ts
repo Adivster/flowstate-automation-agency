@@ -11,14 +11,14 @@ export const agents: AgentData[] = [
     icon: BookOpen,
     division: 'kb',
     position: {
-      x: 25,
+      x: 22,
       y: 25
     },
     route: [
-      { division: 'kb', x: 25, y: 25 },
-      { division: 'analytics', x: 65, y: 25 },
-      { division: 'research', x: 45, y: 42 },
-      { division: 'kb', x: 25, y: 25 }
+      { division: 'kb', x: 22, y: 25 },
+      { division: 'analytics', x: 58, y: 25 },
+      { division: 'research', x: 40, y: 42 },
+      { division: 'kb', x: 22, y: 25 }
     ]
   },
   {
@@ -29,13 +29,13 @@ export const agents: AgentData[] = [
     icon: Shield,
     division: 'strategy',
     position: {
-      x: 65,
+      x: 62,
       y: 65
     },
     route: [
-      { division: 'strategy', x: 65, y: 65 },
-      { division: 'operations', x: 25, y: 60 },
-      { division: 'strategy', x: 65, y: 65 }
+      { division: 'strategy', x: 62, y: 65 },
+      { division: 'operations', x: 22, y: 60 },
+      { division: 'strategy', x: 62, y: 65 }
     ]
   },
   {
@@ -46,14 +46,14 @@ export const agents: AgentData[] = [
     icon: BarChart,
     division: 'analytics',
     position: {
-      x: 65,
+      x: 62,
       y: 25
     },
     route: [
-      { division: 'analytics', x: 65, y: 25 },
-      { division: 'kb', x: 25, y: 25 },
-      { division: 'research', x: 45, y: 42 },
-      { division: 'analytics', x: 65, y: 25 }
+      { division: 'analytics', x: 62, y: 25 },
+      { division: 'kb', x: 22, y: 25 },
+      { division: 'research', x: 40, y: 42 },
+      { division: 'analytics', x: 62, y: 25 }
     ]
   },
   {
@@ -64,13 +64,13 @@ export const agents: AgentData[] = [
     icon: LayoutGrid,
     division: 'operations',
     position: {
-      x: 25,
+      x: 22,
       y: 60
     },
     route: [
-      { division: 'operations', x: 25, y: 60 },
-      { division: 'strategy', x: 65, y: 65 },
-      { division: 'operations', x: 25, y: 60 }
+      { division: 'operations', x: 22, y: 60 },
+      { division: 'strategy', x: 62, y: 65 },
+      { division: 'operations', x: 22, y: 60 }
     ]
   },
   {
@@ -81,13 +81,13 @@ export const agents: AgentData[] = [
     icon: Shield,
     division: 'strategy',
     position: {
-      x: 67,
+      x: 64,
       y: 70
     },
     route: [
-      { division: 'strategy', x: 67, y: 70 },
-      { division: 'analytics', x: 65, y: 25 },
-      { division: 'strategy', x: 67, y: 70 }
+      { division: 'strategy', x: 64, y: 70 },
+      { division: 'analytics', x: 62, y: 25 },
+      { division: 'strategy', x: 64, y: 70 }
     ]
   },
   {
@@ -98,14 +98,14 @@ export const agents: AgentData[] = [
     icon: Activity,
     division: 'research',
     position: {
-      x: 45,
+      x: 40,
       y: 42
     },
     route: [
-      { division: 'research', x: 45, y: 42 },
-      { division: 'analytics', x: 65, y: 25 },
-      { division: 'kb', x: 25, y: 25 },
-      { division: 'research', x: 45, y: 42 }
+      { division: 'research', x: 40, y: 42 },
+      { division: 'analytics', x: 62, y: 25 },
+      { division: 'kb', x: 22, y: 25 },
+      { division: 'research', x: 40, y: 42 }
     ]
   },
   {
@@ -116,14 +116,14 @@ export const agents: AgentData[] = [
     icon: Database,
     division: 'analytics',
     position: {
-      x: 63,
+      x: 60,
       y: 28
     },
     route: [
-      { division: 'analytics', x: 63, y: 28 },
-      { division: 'kb', x: 23, y: 27 },
-      { division: 'research', x: 45, y: 42 },
-      { division: 'analytics', x: 63, y: 28 }
+      { division: 'analytics', x: 60, y: 28 },
+      { division: 'kb', x: 20, y: 27 },
+      { division: 'research', x: 40, y: 42 },
+      { division: 'analytics', x: 60, y: 28 }
     ]
   },
   {
@@ -134,13 +134,13 @@ export const agents: AgentData[] = [
     icon: Laptop,
     division: 'operations',
     position: {
-      x: 22,
+      x: 20,
       y: 57
     },
     route: [
-      { division: 'operations', x: 22, y: 57 },
-      { division: 'strategy', x: 67, y: 68 },
-      { division: 'operations', x: 22, y: 57 }
+      { division: 'operations', x: 20, y: 57 },
+      { division: 'strategy', x: 62, y: 68 },
+      { division: 'operations', x: 20, y: 57 }
     ]
   },
   {
@@ -151,13 +151,13 @@ export const agents: AgentData[] = [
     icon: Search,
     division: 'kb',
     position: {
-      x: 23,
+      x: 20,
       y: 27
     },
     route: [
-      { division: 'kb', x: 23, y: 27 },
-      { division: 'analytics', x: 63, y: 28 },
-      { division: 'kb', x: 23, y: 27 }
+      { division: 'kb', x: 20, y: 27 },
+      { division: 'analytics', x: 60, y: 28 },
+      { division: 'kb', x: 20, y: 27 }
     ]
   },
   {
@@ -168,13 +168,13 @@ export const agents: AgentData[] = [
     icon: FileText,
     division: 'strategy',
     position: {
-      x: 63,
+      x: 60,
       y: 62
     },
     route: [
-      { division: 'strategy', x: 63, y: 62 },
-      { division: 'operations', x: 22, y: 58 },
-      { division: 'strategy', x: 63, y: 62 }
+      { division: 'strategy', x: 60, y: 62 },
+      { division: 'operations', x: 20, y: 58 },
+      { division: 'strategy', x: 60, y: 62 }
     ]
   },
 ];

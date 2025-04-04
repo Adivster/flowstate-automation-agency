@@ -1,5 +1,5 @@
 
-import { Cpu, Database, Book, BarChart3, Coffee, TestTube } from 'lucide-react';
+import { Book, Database, BarChart3, Coffee, TestTube, Cpu } from 'lucide-react';
 import { Division } from '../types/officeTypes';
 
 export const getDivisions = (t): Division[] => [
@@ -10,7 +10,7 @@ export const getDivisions = (t): Division[] => [
     position: {
       x: 15,
       y: 20,
-      width: 30,
+      width: 28,
       height: 25
     },
     backgroundColor: 'rgba(99, 102, 241, 0.1)',
@@ -21,9 +21,9 @@ export const getDivisions = (t): Division[] => [
     name: t('analyticsDivision'),
     icon: BarChart3,
     position: {
-      x: 65,
+      x: 55,
       y: 20,
-      width: 30,
+      width: 28,
       height: 25
     },
     backgroundColor: 'rgba(234, 179, 8, 0.1)',
@@ -36,7 +36,7 @@ export const getDivisions = (t): Division[] => [
     position: {
       x: 15,
       y: 55,
-      width: 30,
+      width: 28,
       height: 25
     },
     backgroundColor: 'rgba(168, 85, 247, 0.1)',
@@ -47,9 +47,9 @@ export const getDivisions = (t): Division[] => [
     name: t('strategyDivision'),
     icon: Database,
     position: {
-      x: 65,
+      x: 55,
       y: 55,
-      width: 30,
+      width: 28,
       height: 25
     },
     backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -60,9 +60,9 @@ export const getDivisions = (t): Division[] => [
     name: t('researchDivision'),
     icon: TestTube,
     position: {
-      x: 40,
+      x: 35,
       y: 37.5,
-      width: 25,
+      width: 20,
       height: 25
     },
     backgroundColor: 'rgba(34, 197, 94, 0.1)',
@@ -73,9 +73,9 @@ export const getDivisions = (t): Division[] => [
     name: t('agentLounge'),
     icon: Coffee,
     position: {
-      x: 85,
+      x: 87,
       y: 37.5,
-      width: 15,
+      width: 13,
       height: 25
     },
     backgroundColor: 'rgba(245, 158, 11, 0.1)',

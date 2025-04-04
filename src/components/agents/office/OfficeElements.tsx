@@ -36,9 +36,23 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
 }) => {
   return (
     <div className="absolute inset-0 overflow-hidden">
+      {/* Render divisions first (lowest z-index) */}
+      {divisions.map((division) => (
+        <Division
+          key={division.id}
+          division={division}
+          isSelected={selectedDivision === division.id}
+          isPulsing={pulsing[division.id]}
+          onDivisionClick={onDivisionClick}
+          agents={agents}
+        />
+      ))}
+      
+      {/* Render server and communication hub */}
       <CentralServer />
       <CommunicationHub />
       
+      {/* Render workstations above divisions */}
       {workstations.map((station, index) => (
         <Workstation
           key={`station-${index}`}
@@ -51,6 +65,7 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
         />
       ))}
       
+      {/* Render decorative elements above workstations */}
       {decorations.map((item, index) => (
         <DecorativeElement
           key={`decor-${index}`}
@@ -61,6 +76,7 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
         />
       ))}
       
+      {/* Render holographic elements */}
       {holograms.map((item, index) => (
         <HolographicElement
           key={`holo-${index}`}
@@ -71,17 +87,7 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
         />
       ))}
       
-      {divisions.map((division) => (
-        <Division
-          key={division.id}
-          division={division}
-          isSelected={selectedDivision === division.id}
-          isPulsing={pulsing[division.id]}
-          onDivisionClick={onDivisionClick}
-          agents={agents}
-        />
-      ))}
-      
+      {/* Render agents on top of everything */}
       {agents.map(agent => (
         <AgentCharacter 
           key={agent.id} 
