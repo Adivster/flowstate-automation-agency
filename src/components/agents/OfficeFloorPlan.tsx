@@ -10,88 +10,18 @@ import {
   holograms, 
   agents
 } from './office/data';
+import { fixOverlaps, optimizeLayout } from './office/utils/layoutUtils';
 import DataTransmissionManager, { DataTransmission } from './office/DataTransmissionManager';
 import NotificationManager, { Notification } from './office/NotificationManager';
 import OfficeElements from './office/OfficeElements';
 import OfficeControls from './office/OfficeControls';
 import InfoPanelManager from './office/InfoPanelManager';
 import { Button } from '@/components/ui/button';
-import { Pencil, Save, RotateCcw, X } from 'lucide-react';
+import { Pencil, Save, RotateCcw, X, ZoomIn, ZoomOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// More accurate and improved overlap detection function
-const checkOverlap = (div1, div2, positions) => {
-  const div1Pos = positions[div1.id] || { x: div1.position.x, y: div1.position.y };
-  const div2Pos = positions[div2.id] || { x: div2.position.x, y: div2.position.y };
-  
-  // Calculate edges with padding for cleaner placement
-  const div1Left = div1Pos.x - 2;
-  const div1Right = div1Pos.x + div1.position.width + 2;
-  const div1Top = div1Pos.y - 2;
-  const div1Bottom = div1Pos.y + div1.position.height + 2;
-  
-  const div2Left = div2Pos.x - 2;
-  const div2Right = div2Pos.x + div2.position.width + 2;
-  const div2Top = div2Pos.y - 2;
-  const div2Bottom = div2Pos.y + div2.position.height + 2;
-  
-  // Calculate overlap with a slimmer buffer to allow closer positioning
-  const buffer = 0.5;
-  
-  return (
-    div1Left < div2Right - buffer && 
-    div1Right > div2Left + buffer && 
-    div1Top < div2Bottom - buffer && 
-    div1Bottom > div2Top + buffer
-  );
-};
-
-const fixInitialOverlaps = (divisions, positions) => {
-  const fixedPositions = {...positions};
-  let overlapsExist = true;
-  let iterationCount = 0;
-  const maxIterations = 50;
-  
-  while (overlapsExist && iterationCount < maxIterations) {
-    overlapsExist = false;
-    iterationCount++;
-    
-    for (let i = 0; i < divisions.length; i++) {
-      for (let j = i + 1; j < divisions.length; j++) {
-        const div1 = divisions[i];
-        const div2 = divisions[j];
-        
-        if (checkOverlap(div1, div2, fixedPositions)) {
-          overlapsExist = true;
-          
-          const div1Pos = fixedPositions[div1.id] || { x: div1.position.x, y: div1.position.y };
-          const div2Pos = fixedPositions[div2.id] || { x: div2.position.x, y: div2.position.y };
-          
-          const moveRight = 10;
-          const moveDown = 10;
-          
-          if (div2Pos.x < div1Pos.x) {
-            fixedPositions[div2.id] = { x: Math.max(5, div2Pos.x - moveRight), y: div2Pos.y };
-          } else {
-            fixedPositions[div2.id] = { x: Math.min(95 - div2.position.width, div2Pos.x + moveRight), y: div2Pos.y };
-          }
-          
-          if (checkOverlap(div1, div2, fixedPositions)) {
-            if (div2Pos.y < div1Pos.y) {
-              fixedPositions[div2.id] = { x: div2Pos.x, y: Math.max(5, div2Pos.y - moveDown) };
-            } else {
-              fixedPositions[div2.id] = { x: div2Pos.x, y: Math.min(85 - div2.position.height, div2Pos.y + moveDown) };
-            }
-          }
-        }
-      }
-    }
-  }
-  
-  return fixedPositions;
-};
-
 const OfficeFloorPlan: React.FC = () => {
+  // Component state
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<number | null>(null);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
@@ -100,36 +30,45 @@ const OfficeFloorPlan: React.FC = () => {
   const [pulsing, setPulsing] = useState<Record<string, boolean>>({});
   const [editMode, setEditMode] = useState(false);
   const [divisionPositions, setDivisionPositions] = useState<Record<string, {x: number, y: number}>>({});
-  const [loaded, setLoaded] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState<number>(1);
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  // Hooks
   const { t } = useLanguage();
   const { toast } = useToast();
-  
   const divisions = getDivisions(t);
-  const contentLoaded = useRef(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const isInitialMount = useRef(true);
   
-  // Use this to prevent flickering - load state only once
+  // Handle initial load to prevent flickering
   useEffect(() => {
-    // Load positions from localStorage immediately without any delay
-    try {
-      const savedPositions = localStorage.getItem('officeDivisionPositions');
+    // Immediately set loaded state to avoid flash
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
       
-      if (savedPositions) {
-        setDivisionPositions(JSON.parse(savedPositions));
-      } else {
-        setDivisionPositions(fixInitialOverlaps(divisions, defaultDivisionPositions));
+      // Load positions from localStorage or use optimized positions
+      try {
+        const savedPositions = localStorage.getItem('officeDivisionPositions');
+        
+        if (savedPositions) {
+          setDivisionPositions(JSON.parse(savedPositions));
+        } else {
+          // Use optimized layout instead of just fixing overlaps
+          setDivisionPositions(optimizeLayout(divisions, defaultDivisionPositions));
+        }
+      } catch (error) {
+        console.error('Error loading saved division positions:', error);
+        setDivisionPositions(optimizeLayout(divisions, defaultDivisionPositions));
       }
-    } catch (error) {
-      console.error('Error loading saved division positions:', error);
-      setDivisionPositions(fixInitialOverlaps(divisions, defaultDivisionPositions));
+      
+      // Signal that loading is complete
+      setIsLoaded(true);
     }
-    
-    // Once positions are set, indicate loading is complete
-    setLoaded(true);
-    contentLoaded.current = true;
-  }, []);
+  }, [divisions]);
   
+  // Setup data transmissions once loaded
   useEffect(() => {
-    if (!loaded) return;
+    if (!isLoaded) return;
     
     const initialTransmissions: DataTransmission[] = [
       { 
@@ -163,10 +102,11 @@ const OfficeFloorPlan: React.FC = () => {
     return () => {
       setDataTransmissions([]);
     };
-  }, [loaded]);
+  }, [isLoaded]);
   
+  // Handle random data transmissions
   useEffect(() => {
-    if (!loaded) return;
+    if (!isLoaded) return;
     
     const interval = setInterval(() => {
       const divs = ['kb', 'analytics', 'operations', 'strategy', 'lounge', 'research'];
@@ -225,10 +165,11 @@ const OfficeFloorPlan: React.FC = () => {
     }, 8000);
     
     return () => clearInterval(interval);
-  }, [divisions, loaded]);
+  }, [divisions, isLoaded]);
   
+  // Handle division pulsing effect
   useEffect(() => {
-    if (!loaded) return;
+    if (!isLoaded) return;
     
     const interval = setInterval(() => {
       const randomDivId = divisions[Math.floor(Math.random() * divisions.length)].id;
@@ -247,8 +188,9 @@ const OfficeFloorPlan: React.FC = () => {
     }, 5000);
     
     return () => clearInterval(interval);
-  }, [divisions, loaded]);
+  }, [divisions, isLoaded]);
   
+  // Handle division click
   const handleDivisionClick = (divisionId: string) => {
     if (editMode) return;
     
@@ -269,6 +211,7 @@ const OfficeFloorPlan: React.FC = () => {
     }, 2000);
   };
   
+  // Handle agent click
   const handleAgentClick = (agentId: number) => {
     if (editMode) return;
     
@@ -277,12 +220,14 @@ const OfficeFloorPlan: React.FC = () => {
     setShowInfoPanel(true);
   };
 
+  // Handle closing the info panel
   const handleCloseInfoPanel = () => {
     setShowInfoPanel(false);
     setSelectedDivision(null);
     setSelectedAgent(null);
   };
   
+  // Handle background click to deselect
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.currentTarget === e.target) {
       setShowInfoPanel(false);
@@ -291,14 +236,15 @@ const OfficeFloorPlan: React.FC = () => {
     }
   };
   
+  // Handle escape key to exit edit mode or close panels
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setSelectedDivision(null);
-        setSelectedAgent(null);
-        setShowInfoPanel(false);
-        
-        if (editMode) {
+        if (showInfoPanel) {
+          setSelectedDivision(null);
+          setSelectedAgent(null);
+          setShowInfoPanel(false);
+        } else if (editMode) {
           setEditMode(false);
         }
       }
@@ -307,7 +253,7 @@ const OfficeFloorPlan: React.FC = () => {
     return () => {
       window.removeEventListener('keydown', handleEsc);
     };
-  }, [editMode]);
+  }, [editMode, showInfoPanel]);
   
   const selectedDivisionObject = selectedDivision 
     ? divisions.find(d => d.id === selectedDivision) 
@@ -317,6 +263,7 @@ const OfficeFloorPlan: React.FC = () => {
     ? agents.find(a => a.id === selectedAgent) 
     : null;
   
+  // Toggle edit mode
   const toggleEditMode = () => {
     setEditMode(!editMode);
     if (editMode) {
@@ -334,50 +281,20 @@ const OfficeFloorPlan: React.FC = () => {
     }
   };
   
+  // Handle division drag end
   const handleDivisionDragEnd = (divisionId: string, x: number, y: number) => {
     // Create a safety buffer from edges
     const boundedX = Math.max(5, Math.min(95 - 20, x));
     const boundedY = Math.max(5, Math.min(85 - 20, y));
     
-    // Test positions with our new coordinates
-    const testPositions = {
-      ...divisionPositions,
-      [divisionId]: { x: boundedX, y: boundedY }
-    };
-    
-    const currentDivision = divisions.find(d => d.id === divisionId);
-    
-    if (!currentDivision) return;
-    
-    // Check for overlaps with a more lenient overlap check
-    let hasOverlap = false;
-    
-    for (const division of divisions) {
-      if (division.id !== divisionId) {
-        if (checkOverlap(currentDivision, division, testPositions)) {
-          hasOverlap = true;
-          break;
-        }
-      }
-    }
-    
-    if (hasOverlap) {
-      toast({
-        title: t('overlapDetected'),
-        description: t('cantPlaceDivisionHere'),
-        variant: 'destructive',
-        duration: 2000,
-      });
-      return;
-    }
-    
-    // If we reach here, update the position
+    // Update position without overlap check - we'll provide visual feedback instead
     setDivisionPositions(prev => ({
       ...prev,
       [divisionId]: { x: boundedX, y: boundedY }
     }));
   };
   
+  // Save division positions
   const savePositions = () => {
     try {
       localStorage.setItem('officeDivisionPositions', JSON.stringify(divisionPositions));
@@ -397,11 +314,12 @@ const OfficeFloorPlan: React.FC = () => {
     }
   };
   
+  // Reset division positions
   const resetPositions = () => {
-    const fixedPositions = fixInitialOverlaps(divisions, defaultDivisionPositions);
+    const optimizedPositions = optimizeLayout(divisions, defaultDivisionPositions);
     
-    setDivisionPositions(fixedPositions);
-    localStorage.setItem('officeDivisionPositions', JSON.stringify(fixedPositions));
+    setDivisionPositions(optimizedPositions);
+    localStorage.setItem('officeDivisionPositions', JSON.stringify(optimizedPositions));
     
     toast({
       title: t('layoutReset'),
@@ -410,11 +328,22 @@ const OfficeFloorPlan: React.FC = () => {
     });
   };
   
-  if (!loaded) {
+  // Handle zoom in
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + 0.1, 1.5));
+  };
+  
+  // Handle zoom out
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - 0.1, 0.8));
+  };
+  
+  // Loading placeholder
+  if (!isLoaded) {
     return (
       <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-gray-100 dark:bg-gray-900 neon-border">
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="loader"></div>
+          <div className="w-12 h-12 border-4 border-flow-accent border-t-transparent rounded-full animate-spin"></div>
         </div>
       </Card>
     );
@@ -423,36 +352,49 @@ const OfficeFloorPlan: React.FC = () => {
   return (
     <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-gray-100 dark:bg-gray-900 neon-border">
       <div 
-        className="absolute inset-0 bg-gray-200 dark:bg-gray-800 select-none"
+        ref={contentRef}
+        className="absolute inset-0 bg-gray-200 dark:bg-gray-800 select-none overflow-hidden"
         onClick={handleBackgroundClick}
+        style={{
+          transformOrigin: 'center center',
+        }}
       >
         <div 
           className="absolute inset-0 will-change-transform" 
           style={{ 
             backgroundImage: 'linear-gradient(to right, rgba(156, 163, 175, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(156, 163, 175, 0.1) 1px, transparent 1px)',
-            backgroundSize: '20px 20px'
+            backgroundSize: '20px 20px',
+            transform: `scale(${zoomLevel})`,
+            transformOrigin: 'center'
           }}
         />
         
-        <DataTransmissionManager transmissions={dataTransmissions} />
-        
-        <NotificationManager notifications={notifications} />
-        
-        <OfficeElements 
-          divisions={divisions}
-          workstations={workstations}
-          decorations={decorations}
-          holograms={holograms}
-          agents={agents}
-          selectedDivision={selectedDivision}
-          selectedAgent={selectedAgent}
-          pulsing={pulsing}
-          onDivisionClick={handleDivisionClick}
-          onAgentClick={handleAgentClick}
-          editMode={editMode}
-          onDivisionDragEnd={handleDivisionDragEnd}
-          divisionPositions={divisionPositions}
-        />
+        <div
+          style={{
+            transform: `scale(${zoomLevel})`,
+            transformOrigin: 'center'
+          }}
+          className="absolute inset-0"
+        >
+          <DataTransmissionManager transmissions={dataTransmissions} />
+          <NotificationManager notifications={notifications} />
+          
+          <OfficeElements 
+            divisions={divisions}
+            workstations={workstations}
+            decorations={decorations}
+            holograms={holograms}
+            agents={agents}
+            selectedDivision={selectedDivision}
+            selectedAgent={selectedAgent}
+            pulsing={pulsing}
+            onDivisionClick={handleDivisionClick}
+            onAgentClick={handleAgentClick}
+            editMode={editMode}
+            onDivisionDragEnd={handleDivisionDragEnd}
+            divisionPositions={divisionPositions}
+          />
+        </div>
         
         <OfficeControls translationFunction={t} />
         
@@ -466,6 +408,7 @@ const OfficeFloorPlan: React.FC = () => {
           onClose={handleCloseInfoPanel}
         />
         
+        {/* Editing Controls */}
         <div className="absolute top-3 right-3 flex items-center gap-2 z-40">
           {editMode ? (
             <>
@@ -510,6 +453,36 @@ const OfficeFloorPlan: React.FC = () => {
               {t('customize')}
             </Button>
           )}
+        </div>
+        
+        {/* Zoom Controls */}
+        <div className="absolute bottom-3 right-3 flex items-center gap-2 z-40">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 w-8 p-0 bg-gray-800/70 backdrop-blur-sm text-white border-gray-600 hover:bg-gray-700/80"
+            onClick={handleZoomOut}
+          >
+            <ZoomOut className="h-3.5 w-3.5" />
+          </Button>
+          
+          <Button 
+            size="sm"
+            variant="outline"
+            className="h-8 bg-gray-800/70 backdrop-blur-sm text-white border-gray-600 hover:bg-gray-700/80 px-2"
+            onClick={() => setZoomLevel(1)}
+          >
+            {Math.round(zoomLevel * 100)}%
+          </Button>
+          
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 w-8 p-0 bg-gray-800/70 backdrop-blur-sm text-white border-gray-600 hover:bg-gray-700/80"
+            onClick={handleZoomIn}
+          >
+            <ZoomIn className="h-3.5 w-3.5" />
+          </Button>
         </div>
       </div>
       

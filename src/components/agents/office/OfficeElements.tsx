@@ -40,79 +40,96 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
   onDivisionDragEnd,
   divisionPositions
 }) => {
-  return (
-    <div className="absolute inset-0 overflow-hidden">
-      {/* Render divisions first (lowest z-index) */}
-      {divisions.map((division) => (
-        <Division
-          key={division.id}
-          division={division}
-          isSelected={selectedDivision === division.id}
-          isPulsing={pulsing[division.id]}
-          onDivisionClick={onDivisionClick}
-          agents={agents}
-          isDraggable={editMode}
-          onDragEnd={onDivisionDragEnd}
-          customPosition={divisionPositions?.[division.id]}
-        />
-      ))}
-      
-      {/* Render server and communication hub */}
+  // Group elements by type for better organization and z-index control
+  const renderDivisions = () => (
+    divisions.map((division) => (
+      <Division
+        key={division.id}
+        division={division}
+        isSelected={selectedDivision === division.id}
+        isPulsing={pulsing[division.id]}
+        onDivisionClick={onDivisionClick}
+        agents={agents}
+        isDraggable={editMode}
+        onDragEnd={onDivisionDragEnd}
+        customPosition={divisionPositions?.[division.id]}
+      />
+    ))
+  );
+  
+  const renderInfrastructure = () => (
+    <>
       <CentralServer />
       <CommunicationHub />
-      
-      {/* Render workstations above divisions */}
-      {workstations.map((station, index) => (
-        <Workstation
-          key={`station-${index}`}
-          x={station.x}
-          y={station.y}
-          width={station.width}
-          height={station.height}
-          rotation={station.rotation || 0}
-          type={station.type}
-        />
-      ))}
-      
-      {/* Render decorative elements above workstations */}
-      {decorations.map((item, index) => (
-        <DecorativeElement
-          key={`decor-${index}`}
-          type={item.type}
-          x={item.x}
-          y={item.y}
-          size={item.size}
-        />
-      ))}
-      
-      {/* Render holographic elements */}
-      {holograms.map((item, index) => (
-        <HolographicElement
-          key={`holo-${index}`}
-          type={item.type}
-          x={item.x}
-          y={item.y}
-          size={item.size}
-        />
-      ))}
-      
-      {/* Render agents on top of everything */}
-      {agents.map(agent => (
-        <AgentCharacter 
-          key={agent.id} 
-          agent={{
-            ...agent,
-            status: agent.status as 'working' | 'idle' | 'paused' | 'error'
-          }}
-          routePath={agent.route}
-          isSelected={selectedAgent === agent.id}
-          onAgentClick={onAgentClick}
-        />
-      ))}
+    </>
+  );
+  
+  const renderWorkstations = () => (
+    workstations.map((station, index) => (
+      <Workstation
+        key={`station-${index}`}
+        x={station.x}
+        y={station.y}
+        width={station.width}
+        height={station.height}
+        rotation={station.rotation || 0}
+        type={station.type}
+      />
+    ))
+  );
+  
+  const renderDecorations = () => (
+    decorations.map((item, index) => (
+      <DecorativeElement
+        key={`decor-${index}`}
+        type={item.type}
+        x={item.x}
+        y={item.y}
+        size={item.size}
+      />
+    ))
+  );
+  
+  const renderHolograms = () => (
+    holograms.map((item, index) => (
+      <HolographicElement
+        key={`holo-${index}`}
+        type={item.type}
+        x={item.x}
+        y={item.y}
+        size={item.size}
+      />
+    ))
+  );
+  
+  const renderAgents = () => (
+    agents.map(agent => (
+      <AgentCharacter 
+        key={agent.id} 
+        agent={{
+          ...agent,
+          status: agent.status as 'working' | 'idle' | 'paused' | 'error'
+        }}
+        routePath={agent.route}
+        isSelected={selectedAgent === agent.id}
+        onAgentClick={onAgentClick}
+      />
+    ))
+  );
+  
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      {/* Render elements in layers based on their logical z-index */}
+      {renderDivisions()}
+      {renderInfrastructure()}
+      {renderWorkstations()}
+      {renderDecorations()}
+      {renderHolograms()}
+      {renderAgents()}
       
       {/* Edit mode indicator */}
       {editMode && (
-        <div className="absolute top-4 left-4 px-3 py-1 bg-amber-500/80 text-white text-xs font-medium rounded-full flex items-center gap-1.5 animate-pulse-subtle">
+        <div className="absolute top-4 left-4 px-3 py-1 bg-amber-500/80 text-white text-xs font-medium rounded-full flex items-center gap-1.5 animate-pulse-subtle z-50">
           <span className="h-2 w-2 bg-white rounded-full"></span>
           Edit Mode
         </div>
