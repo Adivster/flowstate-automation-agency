@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
@@ -15,7 +16,7 @@ import {
   ArrowRight, CheckCircle, Clock, Code, FileText, Search, 
   Filter, ZoomIn, BarChart2, Link, Users, RefreshCw,
   Play, Pause, Wrench, Zap, Sparkles, BrainCircuit,
-  Git, GitBranch, GitFork
+  GitBranch, GitFork
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { LineChart } from '@/components/ui/chart';

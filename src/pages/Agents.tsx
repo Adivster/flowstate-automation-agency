@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer';
 import AgentGrid from '@/components/agents/AgentGrid';
 import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Cpu, Users, Briefcase, Filter, SortDesc, Terminal, Shield } from 'lucide-react';
+import { Cpu, Users, Briefcase, Filter, SortDesc, Terminal, Shield, Zap } from 'lucide-react';
 import OfficeFloorPlan from '@/components/agents/OfficeFloorPlan';
 import AgencyMetrics from '@/components/agents/AgencyMetrics';
 import { useLanguage } from '@/contexts/LanguageContext';
