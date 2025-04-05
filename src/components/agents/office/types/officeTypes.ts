@@ -76,3 +76,8 @@ export interface AgentData {
     y: number;
   }>;
 }
+
+export interface DivisionPosition {
+  x: number;
+  y: number;
+}

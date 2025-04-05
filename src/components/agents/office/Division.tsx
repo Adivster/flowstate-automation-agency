@@ -1,10 +1,11 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useDragControls } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Division as DivisionType } from './types/officeTypes';
+import { GripVertical } from 'lucide-react';
 
 interface DivisionProps {
   division: DivisionType;
@@ -12,6 +13,9 @@ interface DivisionProps {
   isPulsing?: boolean;
   onDivisionClick: (id: string) => void;
   agents: Array<any>;
+  isDraggable?: boolean;
+  onDragEnd?: (divisionId: string, x: number, y: number) => void;
+  customPosition?: { x: number, y: number };
 }
 
 const Division: React.FC<DivisionProps> = ({ 
@@ -19,12 +23,20 @@ const Division: React.FC<DivisionProps> = ({
   isSelected, 
   isPulsing = false,
   onDivisionClick, 
-  agents 
+  agents,
+  isDraggable = false,
+  onDragEnd,
+  customPosition
 }) => {
   const { t } = useLanguage();
   const Icon = division.icon;
   const agentsInDivision = agents.filter(agent => agent.division === division.id);
   const activeAgents = agentsInDivision.filter(agent => agent.status === 'working');
+  const dragControls = useDragControls();
+  
+  // Use custom position if provided, otherwise use the default position from division data
+  const positionX = customPosition ? customPosition.x : division.position.x;
+  const positionY = customPosition ? customPosition.y : division.position.y;
   
   // Division color schemes with enhanced cyberpunk look
   const divisionStyles = {
@@ -115,6 +127,26 @@ const Division: React.FC<DivisionProps> = ({
   // Get default decorations for this division
   const decorations = getDefaultDecorations(division.id);
   
+  // Handle division drag end
+  const handleDragEnd = (event, info) => {
+    if (onDragEnd) {
+      // Convert drag delta to percentage of parent container
+      const parentWidth = event.target.parentElement.clientWidth;
+      const parentHeight = event.target.parentElement.clientHeight;
+      
+      // Calculate new position as percentage
+      const newX = positionX + (info.delta.x / parentWidth * 100);
+      const newY = positionY + (info.delta.y / parentHeight * 100);
+      
+      onDragEnd(division.id, newX, newY);
+    }
+  };
+  
+  // Function to start drag only from the drag handle
+  const startDrag = (event) => {
+    dragControls.start(event);
+  };
+  
   // Render decoration items inside division with improved cyberpunk visual style
   const renderDecoration = (item: any) => {
     const getIcon = () => {
@@ -186,10 +218,10 @@ const Division: React.FC<DivisionProps> = ({
   return (
     <motion.div
       key={division.id}
-      className={`absolute rounded-lg overflow-hidden transition-all duration-300 backdrop-blur-sm`}
+      className={`absolute rounded-lg overflow-hidden transition-all duration-300 backdrop-blur-sm ${isDraggable ? 'cursor-move' : 'cursor-pointer'}`}
       style={{
-        left: `${division.position.x}%`,
-        top: `${division.position.y}%`,
+        left: `${positionX}%`,
+        top: `${positionY}%`,
         width: `${division.position.width}%`,
         height: `${division.position.height}%`,
         backgroundColor: division.backgroundColor || style.bg,
@@ -199,10 +231,9 @@ const Division: React.FC<DivisionProps> = ({
         borderColor: isSelected ? '#ffffff' : division.borderColor || style.border,
         boxShadow: isSelected ? style.shadow : isPulsing ? `0 0 15px ${style.border}60` : 'none',
         zIndex: isSelected ? 30 : 20,
-        cursor: 'pointer'
       }}
-      onClick={() => onDivisionClick(division.id)}
-      whileHover={{ scale: 1.01 }}
+      onClick={() => !isDraggable && onDivisionClick(division.id)}
+      whileHover={!isDraggable ? { scale: 1.01 } : {}}
       animate={
         isSelected ? { 
           scale: 1.03,
@@ -217,6 +248,11 @@ const Division: React.FC<DivisionProps> = ({
           scale: 1
         }
       }
+      drag={isDraggable}
+      dragControls={dragControls}
+      dragMomentum={false}
+      dragElastic={0}
+      onDragEnd={handleDragEnd}
       transition={{
         boxShadow: {
           duration: 1.8,
@@ -238,6 +274,16 @@ const Division: React.FC<DivisionProps> = ({
             {division.name}
           </div>
         </div>
+        
+        {/* Drag handle - only visible in edit mode */}
+        {isDraggable && (
+          <div 
+            className="p-1 rounded hover:bg-white/10 cursor-grab active:cursor-grabbing"
+            onPointerDown={startDrag}
+          >
+            <GripVertical className="h-4 w-4 text-white/70" />
+          </div>
+        )}
       </div>
       
       {/* Active Agents Count */}

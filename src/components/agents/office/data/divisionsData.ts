@@ -82,3 +82,13 @@ export const getDivisions = (t): Division[] => [
     borderColor: 'rgba(245, 158, 11, 0.5)'
   }
 ];
+
+// Default/initial positions for divisions to allow reset functionality
+export const defaultDivisionPositions = {
+  kb: { x: 15, y: 20 },
+  analytics: { x: 55, y: 20 },
+  operations: { x: 15, y: 55 },
+  strategy: { x: 55, y: 55 },
+  research: { x: 35, y: 37.5 },
+  lounge: { x: 87, y: 37.5 }
+};

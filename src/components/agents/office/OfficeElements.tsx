@@ -20,6 +20,9 @@ interface OfficeElementsProps {
   pulsing: Record<string, boolean>;
   onDivisionClick: (divisionId: string) => void;
   onAgentClick: (agentId: number) => void;
+  editMode: boolean;
+  onDivisionDragEnd?: (divisionId: string, x: number, y: number) => void;
+  divisionPositions?: Record<string, {x: number, y: number}>;
 }
 
 const OfficeElements: React.FC<OfficeElementsProps> = ({
@@ -32,7 +35,10 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
   selectedAgent,
   pulsing,
   onDivisionClick,
-  onAgentClick
+  onAgentClick,
+  editMode = false,
+  onDivisionDragEnd,
+  divisionPositions
 }) => {
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -45,6 +51,9 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
           isPulsing={pulsing[division.id]}
           onDivisionClick={onDivisionClick}
           agents={agents}
+          isDraggable={editMode}
+          onDragEnd={onDivisionDragEnd}
+          customPosition={divisionPositions?.[division.id]}
         />
       ))}
       
@@ -100,6 +109,14 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
           onAgentClick={onAgentClick}
         />
       ))}
+      
+      {/* Edit mode indicator */}
+      {editMode && (
+        <div className="absolute top-4 left-4 px-3 py-1 bg-amber-500/80 text-white text-xs font-medium rounded-full flex items-center gap-1.5 animate-pulse-subtle">
+          <span className="h-2 w-2 bg-white rounded-full"></span>
+          Edit Mode
+        </div>
+      )}
     </div>
   );
 };

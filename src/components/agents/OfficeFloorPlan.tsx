@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   getDivisions, 
+  defaultDivisionPositions,
   workstations, 
   decorations, 
   holograms, 
@@ -14,6 +14,9 @@ import NotificationManager, { Notification } from './office/NotificationManager'
 import OfficeElements from './office/OfficeElements';
 import OfficeControls from './office/OfficeControls';
 import InfoPanelManager from './office/InfoPanelManager';
+import { Button } from '@/components/ui/button';
+import { Pencil, Save, RotateCcw, X } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const OfficeFloorPlan: React.FC = () => {
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
@@ -22,9 +25,23 @@ const OfficeFloorPlan: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [dataTransmissions, setDataTransmissions] = useState<DataTransmission[]>([]);
   const [pulsing, setPulsing] = useState<Record<string, boolean>>({});
+  const [editMode, setEditMode] = useState(false);
+  const [divisionPositions, setDivisionPositions] = useState<Record<string, {x: number, y: number}>>({});
   const { t } = useLanguage();
+  const { toast } = useToast();
   
   const divisions = getDivisions(t);
+  
+  useEffect(() => {
+    const savedPositions = localStorage.getItem('officeDivisionPositions');
+    if (savedPositions) {
+      try {
+        setDivisionPositions(JSON.parse(savedPositions));
+      } catch (error) {
+        console.error('Error loading saved division positions:', error);
+      }
+    }
+  }, []);
   
   useEffect(() => {
     const initialTransmissions: DataTransmission[] = [
@@ -142,6 +159,8 @@ const OfficeFloorPlan: React.FC = () => {
   }, [divisions]);
   
   const handleDivisionClick = (divisionId: string) => {
+    if (editMode) return;
+    
     setSelectedDivision(divisionId);
     setSelectedAgent(null);
     setShowInfoPanel(true);
@@ -160,6 +179,8 @@ const OfficeFloorPlan: React.FC = () => {
   };
   
   const handleAgentClick = (agentId: number) => {
+    if (editMode) return;
+    
     setSelectedAgent(agentId);
     setSelectedDivision(null);
     setShowInfoPanel(true);
@@ -185,13 +206,17 @@ const OfficeFloorPlan: React.FC = () => {
         setSelectedDivision(null);
         setSelectedAgent(null);
         setShowInfoPanel(false);
+        
+        if (editMode) {
+          setEditMode(false);
+        }
       }
     };
     window.addEventListener('keydown', handleEsc);
     return () => {
       window.removeEventListener('keydown', handleEsc);
     };
-  }, []);
+  }, [editMode]);
   
   const selectedDivisionObject = selectedDivision 
     ? divisions.find(d => d.id === selectedDivision) 
@@ -200,6 +225,62 @@ const OfficeFloorPlan: React.FC = () => {
   const selectedAgentObject = selectedAgent 
     ? agents.find(a => a.id === selectedAgent) 
     : null;
+  
+  const toggleEditMode = () => {
+    setEditMode(!editMode);
+    if (editMode) {
+      savePositions();
+    } else {
+      setSelectedDivision(null);
+      setSelectedAgent(null);
+      setShowInfoPanel(false);
+      
+      toast({
+        title: t('editModeEnabled'),
+        description: t('dragDivisionsToReposition'),
+        duration: 3000,
+      });
+    }
+  };
+  
+  const handleDivisionDragEnd = (divisionId: string, x: number, y: number) => {
+    const boundedX = Math.max(5, Math.min(95, x));
+    const boundedY = Math.max(5, Math.min(85, y));
+    
+    setDivisionPositions(prev => ({
+      ...prev,
+      [divisionId]: { x: boundedX, y: boundedY }
+    }));
+  };
+  
+  const savePositions = () => {
+    try {
+      localStorage.setItem('officeDivisionPositions', JSON.stringify(divisionPositions));
+      toast({
+        title: t('layoutSaved'),
+        description: t('officeLayoutSaved'),
+        duration: 2000,
+      });
+    } catch (error) {
+      console.error('Error saving division positions:', error);
+      toast({
+        title: t('error'),
+        description: t('errorSavingLayout'),
+        variant: 'destructive',
+        duration: 3000,
+      });
+    }
+  };
+  
+  const resetPositions = () => {
+    setDivisionPositions({});
+    localStorage.removeItem('officeDivisionPositions');
+    toast({
+      title: t('layoutReset'),
+      description: t('officeLayoutReset'),
+      duration: 2000,
+    });
+  };
   
   return (
     <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-gray-100 dark:bg-gray-900 neon-border">
@@ -230,6 +311,9 @@ const OfficeFloorPlan: React.FC = () => {
           pulsing={pulsing}
           onDivisionClick={handleDivisionClick}
           onAgentClick={handleAgentClick}
+          editMode={editMode}
+          onDivisionDragEnd={handleDivisionDragEnd}
+          divisionPositions={divisionPositions}
         />
         
         <OfficeControls translationFunction={t} />
@@ -243,6 +327,52 @@ const OfficeFloorPlan: React.FC = () => {
           agents={agents}
           onClose={handleCloseInfoPanel}
         />
+        
+        <div className="absolute top-3 right-3 flex items-center gap-2 z-40">
+          {editMode ? (
+            <>
+              <Button 
+                size="sm" 
+                variant="outline"
+                className="h-8 px-2.5 bg-gray-800/70 backdrop-blur-sm text-white border-gray-600 hover:bg-gray-700/80"
+                onClick={resetPositions}
+              >
+                <RotateCcw className="h-3.5 w-3.5 mr-1" />
+                {t('reset')}
+              </Button>
+              
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="h-8 px-2.5 bg-green-600/70 backdrop-blur-sm text-white border-green-500 hover:bg-green-700/80"
+                onClick={savePositions}
+              >
+                <Save className="h-3.5 w-3.5 mr-1" />
+                {t('save')}
+              </Button>
+              
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="h-8 px-2.5 bg-red-600/70 backdrop-blur-sm text-white border-red-500 hover:bg-red-700/80"
+                onClick={toggleEditMode}
+              >
+                <X className="h-3.5 w-3.5 mr-1" />
+                {t('exit')}
+              </Button>
+            </>
+          ) : (
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="h-8 px-2.5 bg-gray-800/70 backdrop-blur-sm text-white border-gray-600 hover:bg-gray-700/80"
+              onClick={toggleEditMode}
+            >
+              <Pencil className="h-3.5 w-3.5 mr-1" />
+              {t('customize')}
+            </Button>
+          )}
+        </div>
       </div>
     </Card>
   );
