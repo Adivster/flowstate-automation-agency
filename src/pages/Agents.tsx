@@ -1,3 +1,4 @@
+
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
@@ -285,7 +286,8 @@ const Agents = () => {
       
       <Footer />
       
-      <style jsx>{`
+      <style>
+        {`
         .animate-pulse-subtle {
           animation: pulse-subtle 3s infinite ease-in-out;
         }
@@ -293,7 +295,8 @@ const Agents = () => {
           0%, 100% { opacity: 0.7; }
           50% { opacity: 1; }
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };

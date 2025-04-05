@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
@@ -31,9 +30,12 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import GlassMorphism from '@/components/ui/GlassMorphism';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useToast } from '@/hooks/use-toast';
 
 const Knowledge = () => {
-  // States for filtering and sorting
+  const { t } = useLanguage();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
@@ -45,8 +47,16 @@ const Knowledge = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Sample knowledge base data - in a real app, this would come from an API
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   const allKnowledgeItems = [
     {
       id: 'kb-1',
@@ -154,17 +164,13 @@ const Knowledge = () => {
     }
   ];
 
-  // All unique tags from knowledge items
   const allTags = [...new Set(allKnowledgeItems.flatMap(item => item.tags))];
   
-  // All unique document types
   const allTypes = [...new Set(allKnowledgeItems.map(item => item.type))];
 
-  // Filter and sort items based on search term, filters, and sorting options
   useEffect(() => {
     let filtered = [...allKnowledgeItems];
     
-    // Apply search filter
     if (searchTerm) {
       filtered = filtered.filter(item => 
         item.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -174,21 +180,18 @@ const Knowledge = () => {
       );
     }
     
-    // Apply tag filters
     if (selectedTags.length > 0) {
       filtered = filtered.filter(item => 
         selectedTags.some(tag => item.tags.includes(tag))
       );
     }
     
-    // Apply type filters
     if (selectedTypes.length > 0) {
       filtered = filtered.filter(item => 
         selectedTypes.includes(item.type)
       );
     }
     
-    // Apply sorting
     filtered.sort((a, b) => {
       if (sortBy === 'title') {
         return sortOrder === 'asc' 
@@ -203,8 +206,6 @@ const Knowledge = () => {
           ? a.likes - b.likes 
           : b.likes - a.likes;
       } else {
-        // Default sort by lastUpdated
-        // Simple string-based comparison for demo
         if (a.lastUpdated.includes('day') && b.lastUpdated.includes('week')) return sortOrder === 'desc' ? -1 : 1;
         if (a.lastUpdated.includes('week') && b.lastUpdated.includes('day')) return sortOrder === 'desc' ? 1 : -1;
         if (a.lastUpdated.includes('day') && b.lastUpdated.includes('month')) return sortOrder === 'desc' ? -1 : 1;
@@ -212,7 +213,6 @@ const Knowledge = () => {
         if (a.lastUpdated.includes('week') && b.lastUpdated.includes('month')) return sortOrder === 'desc' ? -1 : 1;
         if (a.lastUpdated.includes('month') && b.lastUpdated.includes('week')) return sortOrder === 'desc' ? 1 : -1;
         
-        // If same unit, compare numbers
         const aNumber = parseInt(a.lastUpdated.split(' ')[0]);
         const bNumber = parseInt(b.lastUpdated.split(' ')[0]);
         return sortOrder === 'asc' ? aNumber - bNumber : bNumber - aNumber;
@@ -293,17 +293,64 @@ const Knowledge = () => {
     setSortOrder('desc');
   };
 
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-flow-background flex flex-col items-center justify-center">
+        <div className="w-12 h-12 border-4 border-flow-accent border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-flow-background text-flow-foreground flex flex-col bg-[#0c0e16] bg-[radial-gradient(circle_at_center,rgba(30,41,59,0.4)_0,rgba(12,14,22,0.8)_50%)]">
       <Helmet>
         <title>Knowledge Base | FlowState Agency</title>
-        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </Helmet>
       
       <Navbar />
       
       <main className="flex-1 container mx-auto px-4 py-24">
         <TransitionWrapper>
+          <GlassMorphism intensity="low" className="p-6 rounded-xl border-flow-accent/30 animate-glow-pulse mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-start">
+              <div>
+                <div className="flex items-center mb-4">
+                  <div className="mr-4 bg-purple-500/20 p-3 rounded-xl backdrop-blur-sm border border-purple-500/30">
+                    <Book className="h-8 w-8 text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+                  </div>
+                  <h1 className="text-3xl font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">
+                    Knowledge Base
+                  </h1>
+                </div>
+                <p className="text-flow-foreground/70">
+                  Access and manage the collective intelligence of FlowState Agency. 
+                  Our knowledge base automatically updates with new insights and best practices.
+                </p>
+              </div>
+              
+              <div className="mt-4 md:mt-0 flex items-center gap-2">
+                <div className="text-xs bg-flow-muted/50 px-3 py-1.5 rounded-full flex items-center backdrop-blur-sm border border-flow-border/30">
+                  <span className="inline-block h-2 w-2 rounded-full bg-purple-500 animate-pulse mr-2"></span>
+                  8 Categories
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs bg-flow-muted/30 hover:bg-flow-muted/50 border-flow-border"
+                  onClick={() => toast({
+                    title: "Knowledge Actions",
+                    description: "Quick knowledge base actions panel",
+                    duration: 3000,
+                  })}
+                >
+                  <FileText className="h-3 w-3 mr-1" />
+                  Quick Access
+                </Button>
+              </div>
+            </div>
+          </GlassMorphism>
+          
           <div className="mb-8">
             <h1 className="text-3xl font-orbitron font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-flow-accent to-blue-400 animate-pulse">Knowledge Base</h1>
             <p className="text-flow-foreground/80 max-w-3xl font-light">
@@ -313,7 +360,6 @@ const Knowledge = () => {
             <div className="w-32 h-1 mt-3 mb-6 bg-gradient-to-r from-flow-accent via-blue-400 to-flow-accent rounded-full"></div>
           </div>
           
-          {/* Enhanced Search and Filter Section */}
           <GlassMorphism 
             intensity="medium" 
             variant="default" 
@@ -340,7 +386,6 @@ const Knowledge = () => {
               </div>
               
               <div className="flex gap-2">
-                {/* Tag Filter - Now using Popover for better positioning */}
                 <Popover open={openTagMenu} onOpenChange={setOpenTagMenu}>
                   <PopoverTrigger asChild>
                     <Button 
@@ -377,7 +422,6 @@ const Knowledge = () => {
                   </PopoverContent>
                 </Popover>
                 
-                {/* Type Filter - Now using Popover for better positioning */}
                 <Popover open={openTypeMenu} onOpenChange={setOpenTypeMenu}>
                   <PopoverTrigger asChild>
                     <Button 
@@ -414,7 +458,6 @@ const Knowledge = () => {
                   </PopoverContent>
                 </Popover>
                 
-                {/* Sort Button */}
                 <Button 
                   variant="outline" 
                   className="border-flow-border hover:border-flow-accent transition-all duration-300 h-11"
@@ -427,7 +470,6 @@ const Knowledge = () => {
                 </Button>
               </div>
               
-              {/* Sort Options */}
               <div className="flex">
                 <Button 
                   variant="ghost"
@@ -468,46 +510,42 @@ const Knowledge = () => {
               </div>
             </div>
             
-            {/* Active Filters */}
-            {(selectedTags.length > 0 || selectedTypes.length > 0 || searchTerm) && (
-              <div className="flex flex-wrap gap-2 items-center mt-2">
-                <span className="text-sm text-flow-foreground/60">Active filters:</span>
-                
-                {selectedTags.map(tag => (
-                  <Badge 
-                    key={tag} 
-                    className="bg-flow-accent/20 text-flow-accent border-flow-accent/30 cursor-pointer hover:bg-flow-accent/30 transition-colors duration-300"
-                    onClick={() => toggleTagFilter(tag)}
-                  >
-                    {tag} ×
-                  </Badge>
-                ))}
-                
-                {selectedTypes.map(type => (
-                  <Badge 
-                    key={type} 
-                    className="bg-flow-muted/30 text-flow-foreground/80 border-flow-border cursor-pointer hover:bg-flow-muted/50 transition-colors duration-300"
-                    onClick={() => toggleTypeFilter(type)}
-                  >
-                    {type} ×
-                  </Badge>
-                ))}
-                
-                {(selectedTags.length > 0 || selectedTypes.length > 0 || searchTerm) && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="text-flow-foreground/60 hover:text-flow-accent h-7 transition-colors duration-300"
-                    onClick={resetFilters}
-                  >
-                    Clear all
-                  </Button>
-                )}
-              </div>
-            )}
+            <div className="flex flex-wrap gap-2 items-center mt-2">
+              <span className="text-sm text-flow-foreground/60">Active filters:</span>
+              
+              {selectedTags.map(tag => (
+                <Badge 
+                  key={tag} 
+                  className="bg-flow-accent/20 text-flow-accent border-flow-accent/30 cursor-pointer hover:bg-flow-accent/30 transition-colors duration-300"
+                  onClick={() => toggleTagFilter(tag)}
+                >
+                  {tag} ×
+                </Badge>
+              ))}
+              
+              {selectedTypes.map(type => (
+                <Badge 
+                  key={type} 
+                  className="bg-flow-muted/30 text-flow-foreground/80 border-flow-border cursor-pointer hover:bg-flow-muted/50 transition-colors duration-300"
+                  onClick={() => toggleTypeFilter(type)}
+                >
+                  {type} ×
+                </Badge>
+              ))}
+              
+              {(selectedTags.length > 0 || selectedTypes.length > 0 || searchTerm) && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-flow-foreground/60 hover:text-flow-accent h-7 transition-colors duration-300"
+                  onClick={resetFilters}
+                >
+                  Clear all
+                </Button>
+              )}
+            </div>
           </GlassMorphism>
           
-          {/* Tabs for Category Filtering */}
           <Tabs defaultValue="all" className="mb-6">
             <TabsList className="w-full max-w-md mb-8 bg-[rgba(11,15,25,0.5)] border border-flow-border/30 p-1">
               <TabsTrigger value="all" className="flex-1 data-[state=active]:bg-flow-accent/20 data-[state=active]:text-flow-accent data-[state=active]:shadow-[0_0_10px_rgba(85,120,255,0.3)] transition-all duration-300">All</TabsTrigger>
@@ -565,12 +603,10 @@ const Knowledge = () => {
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="flex-grow">
-                        {/* Content Preview */}
                         <div className="mt-3 mb-4 text-sm text-flow-foreground/80 bg-[rgba(11,15,25,0.5)] p-3 rounded-md border border-flow-border/30 transition-all duration-300 group-hover:border-flow-border/50 line-clamp-3">
                           {item.preview}
                         </div>
                         
-                        {/* Progress bar */}
                         <div className="mb-4 px-1">
                           <div className="flex justify-between text-xs text-flow-foreground/60 mb-1">
                             <span>Completion</span>
@@ -694,12 +730,10 @@ const Knowledge = () => {
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="flex-grow">
-                          {/* Content Preview */}
                           <div className="mt-3 mb-4 text-sm text-flow-foreground/80 bg-[rgba(11,15,25,0.5)] p-3 rounded-md border border-flow-border/30 transition-all duration-300 group-hover:border-flow-border/50 line-clamp-3">
                             {item.preview}
                           </div>
                           
-                          {/* Progress bar */}
                           <div className="mb-4 px-1">
                             <div className="flex justify-between text-xs text-flow-foreground/60 mb-1">
                               <span>Completion</span>
@@ -823,12 +857,10 @@ const Knowledge = () => {
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="flex-grow">
-                          {/* Content Preview */}
                           <div className="mt-3 mb-4 text-sm text-flow-foreground/80 bg-[rgba(11,15,25,0.5)] p-3 rounded-md border border-flow-border/30 transition-all duration-300 group-hover:border-flow-border/50 line-clamp-3">
                             {item.preview}
                           </div>
                           
-                          {/* Progress bar */}
                           <div className="mb-4 px-1">
                             <div className="flex justify-between text-xs text-flow-foreground/60 mb-1">
                               <span>Completion</span>
@@ -901,7 +933,6 @@ const Knowledge = () => {
             </TabsContent>
           </Tabs>
           
-          {/* Document Preview Dialog */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent className="max-w-4xl bg-[rgba(11,15,25,0.9)] border-flow-border/50 shadow-[0_0_30px_rgba(85,120,255,0.2)] backdrop-blur-lg rounded-xl">
               {selectedItem && (
@@ -948,7 +979,6 @@ const Knowledge = () => {
                   </DialogHeader>
                   
                   <div className="mt-4">
-                    {/* Progress indicator */}
                     <div className="mb-4">
                       <div className="flex justify-between text-xs text-flow-foreground/60 mb-1">
                         <span>Document Completion</span>
@@ -961,7 +991,6 @@ const Knowledge = () => {
                       />
                     </div>
                     
-                    {/* Full Content Preview */}
                     <GlassMorphism 
                       intensity="low" 
                       className="p-5 mb-6 text-flow-foreground/90 relative overflow-hidden"
@@ -984,7 +1013,6 @@ const Knowledge = () => {
                       </p>
                     </GlassMorphism>
                     
-                    {/* Related Data */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                       <div>
                         <h3 className="text-lg font-semibold font-orbitron mb-3 text-flow-accent">Related Documents</h3>
@@ -1054,7 +1082,6 @@ const Knowledge = () => {
                       </div>
                     </div>
                     
-                    {/* Tags Section */}
                     <div className="mb-6">
                       <h3 className="text-lg font-semibold font-orbitron mb-3 text-flow-accent">Tags</h3>
                       <div className="flex flex-wrap gap-2">
@@ -1077,7 +1104,6 @@ const Knowledge = () => {
                     </div>
                   </div>
                   
-                  {/* Action Buttons */}
                   <div className="flex justify-end gap-3 mt-6">
                     <Button 
                       variant="outline"
