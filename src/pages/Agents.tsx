@@ -1,12 +1,12 @@
 
 import { Helmet } from 'react-helmet-async';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AgentGrid from '@/components/agents/AgentGrid';
 import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Cpu, Users, Briefcase, Filter, SortDesc, Terminal, Shield, Zap } from 'lucide-react';
+import { Cpu, Users, Briefcase, Filter, SortDesc, Terminal, Zap } from 'lucide-react';
 import OfficeFloorPlan from '@/components/agents/OfficeFloorPlan';
 import AgencyMetrics from '@/components/agents/AgencyMetrics';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -24,13 +24,20 @@ const Agents = () => {
     sortBy: 'name'
   });
   const [isLoaded, setIsLoaded] = useState(false);
+  const isMounted = useRef(true);
   
+  // Use consistent loading approach to prevent flickering
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsLoaded(true);
-    }, 100);
+      if (isMounted.current) {
+        setIsLoaded(true);
+      }
+    }, 300);
     
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      isMounted.current = false;
+    };
   }, []);
   
   const handleFilterChange = (key: string, value: string) => {
@@ -48,7 +55,7 @@ const Agents = () => {
   
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-flow-background flex flex-col items-center justify-center">
+      <div className="fixed inset-0 bg-flow-background flex flex-col items-center justify-center z-50">
         <div className="w-12 h-12 border-4 border-flow-accent border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -155,7 +162,8 @@ const Agents = () => {
                 </div>
               </div>
               
-              <div className="min-h-[550px]">
+              {/* Fixed height container to avoid content shift/jump */}
+              <div className="min-h-[550px] h-[550px] relative">
                 <OfficeFloorPlan />
               </div>
               
@@ -228,7 +236,8 @@ const Agents = () => {
                 </div>
               </GlassMorphism>
               
-              <div className="min-h-[550px]">
+              {/* Fixed height container to avoid content shift/jump */}
+              <div className="min-h-[550px] h-[550px] relative">
                 <AgentGrid />
               </div>
               
@@ -276,7 +285,8 @@ const Agents = () => {
                 </div>
               </GlassMorphism>
               
-              <div className="min-h-[550px]">
+              {/* Fixed height container to avoid content shift/jump */}
+              <div className="min-h-[550px] h-[550px] relative">
                 <AgencyMetrics />
               </div>
             </TabsContent>
@@ -286,8 +296,7 @@ const Agents = () => {
       
       <Footer />
       
-      <style>
-        {`
+      <style>{`
         .animate-pulse-subtle {
           animation: pulse-subtle 3s infinite ease-in-out;
         }
@@ -295,8 +304,11 @@ const Agents = () => {
           0%, 100% { opacity: 0.7; }
           50% { opacity: 1; }
         }
-        `}
-      </style>
+        @keyframes scan {
+          0%, 100% { transform: translateY(-100%); }
+          50% { transform: translateY(100%); }
+        }
+      `}</style>
     </div>
   );
 };
