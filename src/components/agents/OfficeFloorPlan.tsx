@@ -18,6 +18,75 @@ import { Button } from '@/components/ui/button';
 import { Pencil, Save, RotateCcw, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+const checkOverlap = (div1, div2, positions) => {
+  const div1Pos = positions[div1.id] || { x: div1.position.x, y: div1.position.y };
+  const div2Pos = positions[div2.id] || { x: div2.position.x, y: div2.position.y };
+  
+  const div1Left = div1Pos.x;
+  const div1Right = div1Pos.x + div1.position.width;
+  const div1Top = div1Pos.y;
+  const div1Bottom = div1Pos.y + div1.position.height;
+  
+  const div2Left = div2Pos.x;
+  const div2Right = div2Pos.x + div2.position.width;
+  const div2Top = div2Pos.y;
+  const div2Bottom = div2Pos.y + div2.position.height;
+  
+  const buffer = 2;
+  
+  return (
+    div1Left < div2Right + buffer && 
+    div1Right > div2Left - buffer && 
+    div1Top < div2Bottom + buffer && 
+    div1Bottom > div2Top - buffer
+  );
+};
+
+const fixInitialOverlaps = (divisions, positions) => {
+  const fixedPositions = {...positions};
+  let overlapsExist = true;
+  let iterationCount = 0;
+  const maxIterations = 50;
+  
+  while (overlapsExist && iterationCount < maxIterations) {
+    overlapsExist = false;
+    iterationCount++;
+    
+    for (let i = 0; i < divisions.length; i++) {
+      for (let j = i + 1; j < divisions.length; j++) {
+        const div1 = divisions[i];
+        const div2 = divisions[j];
+        
+        if (checkOverlap(div1, div2, fixedPositions)) {
+          overlapsExist = true;
+          
+          const div1Pos = fixedPositions[div1.id] || { x: div1.position.x, y: div1.position.y };
+          const div2Pos = fixedPositions[div2.id] || { x: div2.position.x, y: div2.position.y };
+          
+          const moveRight = 10;
+          const moveDown = 10;
+          
+          if (div2Pos.x < div1Pos.x) {
+            fixedPositions[div2.id] = { x: Math.max(5, div2Pos.x - moveRight), y: div2Pos.y };
+          } else {
+            fixedPositions[div2.id] = { x: Math.min(95 - div2.position.width, div2Pos.x + moveRight), y: div2Pos.y };
+          }
+          
+          if (checkOverlap(div1, div2, fixedPositions)) {
+            if (div2Pos.y < div1Pos.y) {
+              fixedPositions[div2.id] = { x: div2Pos.x, y: Math.max(5, div2Pos.y - moveDown) };
+            } else {
+              fixedPositions[div2.id] = { x: div2Pos.x, y: Math.min(85 - div2.position.height, div2Pos.y + moveDown) };
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  return fixedPositions;
+};
+
 const OfficeFloorPlan: React.FC = () => {
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<number | null>(null);
@@ -27,23 +96,35 @@ const OfficeFloorPlan: React.FC = () => {
   const [pulsing, setPulsing] = useState<Record<string, boolean>>({});
   const [editMode, setEditMode] = useState(false);
   const [divisionPositions, setDivisionPositions] = useState<Record<string, {x: number, y: number}>>({});
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const { t } = useLanguage();
   const { toast } = useToast();
   
   const divisions = getDivisions(t);
   
   useEffect(() => {
-    const savedPositions = localStorage.getItem('officeDivisionPositions');
-    if (savedPositions) {
-      try {
-        setDivisionPositions(JSON.parse(savedPositions));
-      } catch (error) {
-        console.error('Error loading saved division positions:', error);
+    try {
+      const savedPositions = localStorage.getItem('officeDivisionPositions');
+      
+      if (savedPositions) {
+        const parsedPositions = JSON.parse(savedPositions);
+        setDivisionPositions(parsedPositions);
+      } else {
+        const fixedPositions = fixInitialOverlaps(divisions, defaultDivisionPositions);
+        setDivisionPositions(fixedPositions);
       }
+    } catch (error) {
+      console.error('Error loading saved division positions:', error);
+      const fixedPositions = fixInitialOverlaps(divisions, defaultDivisionPositions);
+      setDivisionPositions(fixedPositions);
     }
+    
+    setInitialLoadComplete(true);
   }, []);
   
   useEffect(() => {
+    if (!initialLoadComplete) return;
+    
     const initialTransmissions: DataTransmission[] = [
       { 
         id: 1, 
@@ -76,7 +157,7 @@ const OfficeFloorPlan: React.FC = () => {
     return () => {
       setDataTransmissions([]);
     };
-  }, []);
+  }, [initialLoadComplete]);
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -244,8 +325,38 @@ const OfficeFloorPlan: React.FC = () => {
   };
   
   const handleDivisionDragEnd = (divisionId: string, x: number, y: number) => {
-    const boundedX = Math.max(5, Math.min(95, x));
-    const boundedY = Math.max(5, Math.min(85, y));
+    const boundedX = Math.max(5, Math.min(95 - 20, x));
+    const boundedY = Math.max(5, Math.min(85 - 20, y));
+    
+    const testPositions = {
+      ...divisionPositions,
+      [divisionId]: { x: boundedX, y: boundedY }
+    };
+    
+    const currentDivision = divisions.find(d => d.id === divisionId);
+    
+    if (!currentDivision) return;
+    
+    let hasOverlap = false;
+    
+    for (const division of divisions) {
+      if (division.id !== divisionId) {
+        if (checkOverlap(currentDivision, division, testPositions)) {
+          hasOverlap = true;
+          break;
+        }
+      }
+    }
+    
+    if (hasOverlap) {
+      toast({
+        title: t('overlapDetected'),
+        description: t('cantPlaceDivisionHere'),
+        variant: 'destructive',
+        duration: 2000,
+      });
+      return;
+    }
     
     setDivisionPositions(prev => ({
       ...prev,
@@ -273,14 +384,27 @@ const OfficeFloorPlan: React.FC = () => {
   };
   
   const resetPositions = () => {
-    setDivisionPositions({});
-    localStorage.removeItem('officeDivisionPositions');
+    const fixedPositions = fixInitialOverlaps(divisions, defaultDivisionPositions);
+    
+    setDivisionPositions(fixedPositions);
+    localStorage.setItem('officeDivisionPositions', JSON.stringify(fixedPositions));
+    
     toast({
       title: t('layoutReset'),
       description: t('officeLayoutReset'),
       duration: 2000,
     });
   };
+  
+  if (!initialLoadComplete) {
+    return (
+      <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-gray-100 dark:bg-gray-900 neon-border">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="loader"></div>
+        </div>
+      </Card>
+    );
+  }
   
   return (
     <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-gray-100 dark:bg-gray-900 neon-border">
@@ -374,6 +498,24 @@ const OfficeFloorPlan: React.FC = () => {
           )}
         </div>
       </div>
+      
+      <style jsx>{`
+        @keyframes pulse-opacity {
+          0%, 100% { opacity: 0.7; }
+          50% { opacity: 0.9; }
+        }
+        .loader {
+          width: 40px;
+          height: 40px;
+          border: 3px solid rgba(99, 102, 241, 0.3);
+          border-top-color: rgba(99, 102, 241, 0.9);
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </Card>
   );
 };

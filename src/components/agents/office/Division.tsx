@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion, useDragControls } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
@@ -127,7 +126,7 @@ const Division: React.FC<DivisionProps> = ({
   // Get default decorations for this division
   const decorations = getDefaultDecorations(division.id);
   
-  // Handle division drag end
+  // Handle division drag end with improved position calculation
   const handleDragEnd = (event, info) => {
     if (onDragEnd) {
       // Convert drag delta to percentage of parent container
@@ -231,6 +230,7 @@ const Division: React.FC<DivisionProps> = ({
         borderColor: isSelected ? '#ffffff' : division.borderColor || style.border,
         boxShadow: isSelected ? style.shadow : isPulsing ? `0 0 15px ${style.border}60` : 'none',
         zIndex: isSelected ? 30 : 20,
+        willChange: 'transform',
       }}
       onClick={() => !isDraggable && onDivisionClick(division.id)}
       whileHover={!isDraggable ? { scale: 1.01 } : {}}

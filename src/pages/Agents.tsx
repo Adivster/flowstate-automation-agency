@@ -1,6 +1,6 @@
 
 import { Helmet } from 'react-helmet-async';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AgentGrid from '@/components/agents/AgentGrid';
@@ -23,6 +23,17 @@ const Agents = () => {
     status: 'all',
     sortBy: 'name'
   });
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  // Prevent the blinking by ensuring content is only displayed once fully loaded
+  useEffect(() => {
+    // Short delay to ensure all components are mounted
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   const handleFilterChange = (key: string, value: string) => {
     setFilterOptions(prev => ({
@@ -36,6 +47,15 @@ const Agents = () => {
       duration: 3000,
     });
   };
+  
+  // Safely render content only after loading is complete
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-flow-background flex flex-col items-center justify-center">
+        <div className="w-12 h-12 border-4 border-flow-accent border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen bg-flow-background text-flow-foreground flex flex-col cyber-grid">
@@ -102,6 +122,7 @@ const Agents = () => {
               </TabsTrigger>
             </TabsList>
             
+            {/* Wrapped each TabsContent with a div that has a fixed height to prevent layout shifts */}
             <TabsContent value="office" className="space-y-6">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm text-flow-foreground/60 mb-4">
                 <div className="flex items-center">
@@ -138,7 +159,10 @@ const Agents = () => {
                 </div>
               </div>
               
-              <OfficeFloorPlan />
+              {/* Fixed height container for the floor plan */}
+              <div className="min-h-[550px]">
+                <OfficeFloorPlan />
+              </div>
               
               <div className="flex justify-end items-center mt-2">
                 <div className="text-xs text-flow-foreground/60 px-3 py-1.5 bg-flow-background/30 backdrop-blur-sm rounded-full border border-flow-border/30 animate-pulse-subtle">
@@ -209,7 +233,10 @@ const Agents = () => {
                 </div>
               </GlassMorphism>
               
-              <AgentGrid />
+              {/* Fixed height container for agent grid */}
+              <div className="min-h-[550px]">
+                <AgentGrid />
+              </div>
               
               <div className="flex justify-center mt-4">
                 <Button variant="outline" className="border-flow-accent/50 hover:bg-flow-accent/20 text-flow-accent">
@@ -255,13 +282,26 @@ const Agents = () => {
                 </div>
               </GlassMorphism>
               
-              <AgencyMetrics />
+              {/* Fixed height container for metrics */}
+              <div className="min-h-[550px]">
+                <AgencyMetrics />
+              </div>
             </TabsContent>
           </Tabs>
         </TransitionWrapper>
       </main>
       
       <Footer />
+      
+      <style jsx>{`
+        .animate-pulse-subtle {
+          animation: pulse-subtle 3s infinite ease-in-out;
+        }
+        @keyframes pulse-subtle {
+          0%, 100% { opacity: 0.7; }
+          50% { opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 };

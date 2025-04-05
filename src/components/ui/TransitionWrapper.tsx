@@ -15,8 +15,12 @@ export const TransitionWrapper: React.FC<TransitionWrapperProps> = ({
 }) => {
   return (
     <div
-      className={cn('animate-fade-in opacity-0', className)}
-      style={{ animationDelay: `${delay}ms`, animationFillMode: 'forwards' }}
+      className={cn('animate-fade-in will-change-transform', className)}
+      style={{ 
+        animationDelay: `${delay}ms`, 
+        animationFillMode: 'forwards',
+        animationDuration: '400ms'
+      }}
     >
       {children}
     </div>
