@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
@@ -657,3 +658,85 @@ const Knowledge = () => {
                         </Button>
                       </CardFooter>
                     </Card>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </TransitionWrapper>
+      </main>
+      
+      <Footer />
+      
+      {/* Item Details Dialog */}
+      {selectedItem && (
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="bg-[rgba(11,15,25,0.95)] border-flow-accent/20 max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-2xl flex items-center gap-3">
+                <div 
+                  className="p-2 rounded-md"
+                  style={{ backgroundColor: getTypeColor(selectedItem.type) }}
+                >
+                  {getTypeIcon(selectedItem.type)}
+                </div>
+                {selectedItem.title}
+              </DialogTitle>
+              <DialogDescription className="flex justify-between items-center">
+                <span>{selectedItem.author}</span>
+                <span>Last updated {selectedItem.lastUpdated}</span>
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              <div className="bg-[rgba(11,15,25,0.7)] p-4 rounded-lg border border-flow-border/30">
+                <p>{selectedItem.preview}</p>
+                <p className="mt-4">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam eget justo nec nisi efficitur tincidunt. 
+                  Mauris euismod, nisi id faucibus hendrerit, nisl nunc ultricies risus, eget ultricies nisl nunc id nisi.
+                </p>
+              </div>
+              
+              <div className="flex flex-wrap gap-2 mt-4">
+                {selectedItem.tags.map(tag => (
+                  <Badge 
+                    key={tag}
+                    variant="outline"
+                    className="bg-flow-accent/10 text-flow-accent/90 border-flow-accent/30"
+                  >
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+              
+              <div className="flex justify-between items-center text-sm text-flow-foreground/70">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center">
+                    <Eye className="w-4 h-4 mr-1" />
+                    {selectedItem.views} views
+                  </div>
+                  <div className="flex items-center">
+                    <ThumbsUp className="w-4 h-4 mr-1" />
+                    {selectedItem.likes} likes
+                  </div>
+                </div>
+                
+                <div className="flex items-center">
+                  <span className="mr-2">Completion:</span>
+                  <Progress 
+                    value={selectedItem.completion} 
+                    className="h-2 w-24"
+                    indicatorColor={getTypeColor(selectedItem.type)}
+                  />
+                  <span className="ml-2">{selectedItem.completion}%</span>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
+  );
+};
+
+export default Knowledge;
