@@ -499,7 +499,8 @@ const OfficeFloorPlan: React.FC = () => {
         </div>
       </div>
       
-      <style jsx>{`
+      <style>
+        {`
         @keyframes pulse-opacity {
           0%, 100% { opacity: 0.7; }
           50% { opacity: 0.9; }
@@ -515,7 +516,8 @@ const OfficeFloorPlan: React.FC = () => {
         @keyframes spin {
           to { transform: rotate(360deg); }
         }
-      `}</style>
+        `}
+      </style>
     </Card>
   );
 };

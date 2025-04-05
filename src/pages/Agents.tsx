@@ -1,4 +1,3 @@
-
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
@@ -25,9 +24,7 @@ const Agents = () => {
   });
   const [isLoaded, setIsLoaded] = useState(false);
   
-  // Prevent the blinking by ensuring content is only displayed once fully loaded
   useEffect(() => {
-    // Short delay to ensure all components are mounted
     const timer = setTimeout(() => {
       setIsLoaded(true);
     }, 100);
@@ -48,7 +45,6 @@ const Agents = () => {
     });
   };
   
-  // Safely render content only after loading is complete
   if (!isLoaded) {
     return (
       <div className="min-h-screen bg-flow-background flex flex-col items-center justify-center">
@@ -122,7 +118,6 @@ const Agents = () => {
               </TabsTrigger>
             </TabsList>
             
-            {/* Wrapped each TabsContent with a div that has a fixed height to prevent layout shifts */}
             <TabsContent value="office" className="space-y-6">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm text-flow-foreground/60 mb-4">
                 <div className="flex items-center">
@@ -159,7 +154,6 @@ const Agents = () => {
                 </div>
               </div>
               
-              {/* Fixed height container for the floor plan */}
               <div className="min-h-[550px]">
                 <OfficeFloorPlan />
               </div>
@@ -233,7 +227,6 @@ const Agents = () => {
                 </div>
               </GlassMorphism>
               
-              {/* Fixed height container for agent grid */}
               <div className="min-h-[550px]">
                 <AgentGrid />
               </div>
@@ -282,7 +275,6 @@ const Agents = () => {
                 </div>
               </GlassMorphism>
               
-              {/* Fixed height container for metrics */}
               <div className="min-h-[550px]">
                 <AgencyMetrics />
               </div>
