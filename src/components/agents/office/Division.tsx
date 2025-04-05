@@ -1,9 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, useDragControls } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Division as DivisionType } from './types/officeTypes';
+import { Division as DivisionType, ZIndexLayers } from './types/officeTypes';
 import { GripVertical } from 'lucide-react';
 import DivisionDecoration from './DivisionDecoration';
 import { getDivisionStyle, getDivisionGlow, getDefaultDecorations } from './styles/divisionStyles';
@@ -36,6 +36,7 @@ const Division: React.FC<DivisionProps> = ({
   const activeAgents = agentsInDivision.filter(agent => agent.status === 'working');
   const dragControls = useDragControls();
   const [isHovered, setIsHovered] = useState(false);
+  const divRef = useRef<HTMLDivElement>(null);
   
   // Use custom position if provided, otherwise use the default position from division data
   const positionX = customPosition ? customPosition.x : division.position.x;
@@ -69,11 +70,19 @@ const Division: React.FC<DivisionProps> = ({
 
   // Calculate box shadow based on selection and pulse states
   const boxShadow = getDivisionGlow(division.id, isSelected, isPulsing);
+  
+  // Calculate z-index based on state
+  const zIndex = isSelected 
+    ? ZIndexLayers.DIVISION_SELECTED 
+    : isHovered 
+      ? ZIndexLayers.DIVISION_HOVERED 
+      : division.zIndex || ZIndexLayers.DIVISION;
 
   return (
     <Tooltip delayDuration={300}>
       <TooltipTrigger asChild>
         <motion.div
+          ref={divRef}
           key={division.id}
           className={`absolute rounded-lg overflow-hidden transition-all duration-300 backdrop-blur-sm ${isDraggable ? 'cursor-move' : 'cursor-pointer'}`}
           style={{
@@ -87,7 +96,7 @@ const Division: React.FC<DivisionProps> = ({
             borderStyle: 'solid',
             borderColor: isSelected ? '#ffffff' : division.borderColor || style.border,
             boxShadow,
-            zIndex: isSelected ? 40 : isHovered ? 35 : 30,
+            zIndex,
             willChange: 'transform',
           }}
           onClick={() => !isDraggable && onDivisionClick(division.id)}
@@ -121,16 +130,18 @@ const Division: React.FC<DivisionProps> = ({
             }
           }}
         >
-          {/* Glass Reflection Effect */}
+          {/* Enhanced Glass Reflection Effect */}
           <div 
-            className="absolute inset-0 pointer-events-none z-10 opacity-40"
+            className="absolute inset-0 pointer-events-none opacity-40"
             style={{
-              background: `linear-gradient(135deg, ${style.border}20 0%, transparent 50%, ${style.border}10 100%)`
+              background: `linear-gradient(135deg, ${style.border}25 0%, transparent 50%, ${style.border}15 100%)`,
+              zIndex: 1
             }}
           ></div>
 
           {/* Division Header with enhanced cyberpunk styling */}
-          <div className="absolute top-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-1.5 flex items-center justify-between border-b z-40" style={{ borderColor: `${style.border}40` }}>
+          <div className="absolute top-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-1.5 flex items-center justify-between border-b" 
+               style={{ borderColor: `${style.border}40`, zIndex: 5 }}>
             <div className="flex items-center">
               <motion.div 
                 className="p-1 rounded-full mr-1.5" 
@@ -165,7 +176,7 @@ const Division: React.FC<DivisionProps> = ({
           </div>
           
           {/* Active Agents Count */}
-          <div className="absolute bottom-1 right-1 z-30">
+          <div className="absolute bottom-1 right-1" style={{ zIndex: 4 }}>
             <Badge 
               variant="outline" 
               className="text-[0.6rem] py-0 px-1.5 bg-black/50 backdrop-blur-sm text-white border-white/20 flex items-center gap-1"
@@ -198,7 +209,7 @@ const Division: React.FC<DivisionProps> = ({
           
           {/* Activity indicators - enhanced visibility */}
           {isPulsing && (
-            <div className="absolute right-2 top-9 flex items-center z-30">
+            <div className="absolute right-2 top-9 flex items-center" style={{ zIndex: 3 }}>
               <motion.span 
                 className="absolute h-2 w-2 rounded-full opacity-75" 
                 animate={{ scale: [1, 1.5, 1] }}
@@ -212,21 +223,37 @@ const Division: React.FC<DivisionProps> = ({
           {/* Division Border Glow Effect for selected state */}
           {isSelected && (
             <div 
-              className="absolute inset-0 rounded-lg pointer-events-none z-10" 
+              className="absolute inset-0 rounded-lg pointer-events-none" 
               style={{ 
                 boxShadow: `inset 0 0 15px ${style.border}40`,
-                border: `1px solid ${style.border}60`
+                border: `1px solid ${style.border}60`,
+                zIndex: 2
               }}
             />
           )}
           
-          {/* Scan Lines Effect */}
-          <div className="absolute inset-0 scan-lines pointer-events-none z-20 opacity-20"></div>
+          {/* Enhanced Scan Lines Effect */}
+          <div 
+            className="absolute inset-0 scan-lines pointer-events-none opacity-20"
+            style={{ backgroundSize: '3px 3px', zIndex: 3 }}
+          ></div>
+          
+          {/* Division Content Grid Pattern Overlay */}
+          <div 
+            className="absolute inset-0 pointer-events-none opacity-10"
+            style={{
+              backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), 
+                                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+              backgroundSize: '20px 20px',
+              zIndex: 1
+            }}
+          ></div>
         </motion.div>
       </TooltipTrigger>
       <TooltipContent 
         className="bg-black/80 border border-flow-accent/30 text-white text-xs p-2 backdrop-blur-sm"
         side="top"
+        style={{ zIndex: ZIndexLayers.UI_CONTROLS }}
       >
         <div className="font-medium" style={{ color: style.text }}>{division.name}</div>
         <div className="text-xs text-white/80">

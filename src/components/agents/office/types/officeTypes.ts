@@ -34,6 +34,7 @@ export interface Division {
   };
   backgroundColor: string;
   borderColor: string;
+  zIndex?: number;
 }
 
 export interface WorkstationData {
@@ -75,6 +76,7 @@ export interface AgentData {
     x: number;
     y: number;
   }>;
+  zIndex?: number;
 }
 
 export interface DivisionPosition {
@@ -97,4 +99,20 @@ export interface DivisionStyle {
   text: string;
   glow: string;
   pattern: string;
+}
+
+// Z-index layers for proper stacking
+export enum ZIndexLayers {
+  BACKGROUND = 5,
+  GRID = 10,
+  WORKSTATION = 20,
+  DIVISION = 30,
+  DIVISION_HOVERED = 35,
+  DIVISION_SELECTED = 40,
+  DECORATION = 45, 
+  AGENT = 50,
+  AGENT_SELECTED = 55,
+  DATA_PATH = 60,
+  NOTIFICATION = 70,
+  UI_CONTROLS = 100
 }

@@ -1,4 +1,5 @@
-import { Division } from '../types/officeTypes';
+
+import { Division, ZIndexLayers } from '../types/officeTypes';
 
 // Improved overlap detection with better precision
 export const checkOverlap = (div1: Division, div2: Division, positions: Record<string, {x: number, y: number}>) => {
@@ -7,7 +8,7 @@ export const checkOverlap = (div1: Division, div2: Division, positions: Record<s
   const div2Pos = positions[div2.id] || { x: div2.position.x, y: div2.position.y };
   
   // Use a smaller buffer for more precise placement
-  const buffer = 0.1;
+  const buffer = 1;
   
   // Calculate edges with buffer
   const div1Left = div1Pos.x - buffer;
@@ -34,7 +35,7 @@ export const fixOverlaps = (divisions: Division[], positions: Record<string, {x:
   const fixedPositions = {...positions};
   let overlapsExist = true;
   let iterationCount = 0;
-  const maxIterations = 50; // Increase max iterations for better results
+  const maxIterations = 100; // Increase max iterations for better results
   
   while (overlapsExist && iterationCount < maxIterations) {
     overlapsExist = false;
@@ -74,12 +75,12 @@ export const fixOverlaps = (divisions: Division[], positions: Record<string, {x:
           );
           
           // Use a larger push amount to ensure no overlaps remain
-          const pushAmount = 7;
+          const pushAmount = Math.max(overlapX, overlapY) + 10;
           
           // Adjust position along the axis with smaller overlap
           if (overlapX <= overlapY) {
             // Push horizontally
-            const moveAmount = overlapX + pushAmount;
+            const moveAmount = pushAmount;
             const newX = dirX > 0 
               ? Math.min(95 - div2.position.width, div2Pos.x + moveAmount)
               : Math.max(5, div2Pos.x - moveAmount);
@@ -87,7 +88,7 @@ export const fixOverlaps = (divisions: Division[], positions: Record<string, {x:
             fixedPositions[div2.id] = { x: newX, y: div2Pos.y };
           } else {
             // Push vertically
-            const moveAmount = overlapY + pushAmount;
+            const moveAmount = pushAmount;
             const newY = dirY > 0
               ? Math.min(85 - div2.position.height, div2Pos.y + moveAmount)
               : Math.max(5, div2Pos.y - moveAmount);
@@ -115,40 +116,27 @@ export const fixOverlaps = (divisions: Division[], positions: Record<string, {x:
 
 // Optimize layout for better visualization and organization
 export const optimizeLayout = (divisions: Division[], defaultPositions: Record<string, {x: number, y: number}>) => {
-  // Start with ideal positions from default
-  const optimizedPositions = {...defaultPositions};
+  // Start with the default positions
+  let optimizedPositions = {...defaultPositions};
   
-  // Define ideal positions for visual balance - similar to defaultPositions but can be tweaked
+  // Apply grid-based placement to ensure better distribution
+  const gridCellWidth = 30;
+  const gridCellHeight = 30;
+  
+  // Define ideal positions using a grid-based approach
   const idealPositions = {
-    kb: { x: 20, y: 20 },
-    analytics: { x: 60, y: 20 },
-    operations: { x: 20, y: 55 },
+    kb: { x: 10, y: 15 },
+    analytics: { x: 60, y: 15 },
+    operations: { x: 10, y: 55 },
     strategy: { x: 60, y: 55 },
-    research: { x: 40, y: 37 },
-    lounge: { x: 80, y: 37 }
+    research: { x: 35, y: 35 },
+    lounge: { x: 78, y: 35 }
   };
   
-  // Apply ideal positioning but maintain relative positions if they've been customized
-  for (const divId in idealPositions) {
-    if (optimizedPositions[divId]) {
-      // If the position is far from default, keep the user's custom position
-      // Otherwise, use the ideal position
-      const currentPos = optimizedPositions[divId];
-      const idealPos = idealPositions[divId];
-      const defaultPos = defaultPositions[divId];
-      
-      // If current position is significantly different from default, user likely moved it intentionally
-      const userMovedX = Math.abs(currentPos.x - defaultPos.x) > 10;
-      const userMovedY = Math.abs(currentPos.y - defaultPos.y) > 10;
-      
-      optimizedPositions[divId] = { 
-        x: userMovedX ? currentPos.x : idealPos.x,
-        y: userMovedY ? currentPos.y : idealPos.y
-      };
-    }
-  }
+  // Apply ideal positioning
+  optimizedPositions = {...idealPositions};
   
-  // Fix any overlaps that might exist
+  // Fix any remaining overlaps
   return fixOverlaps(divisions, optimizedPositions);
 };
 
