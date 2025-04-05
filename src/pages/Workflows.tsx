@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
@@ -15,7 +14,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   ArrowRight, CheckCircle, Clock, Code, FileText, Search, 
   Filter, ZoomIn, BarChart2, Link, Users, RefreshCw,
-  Play, Pause, Wrench, Zap, Sparkles, BrainCircuit
+  Play, Pause, Wrench, Zap, Sparkles, BrainCircuit,
+  Git, GitBranch, GitFork
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { LineChart } from '@/components/ui/chart';
@@ -30,7 +30,6 @@ const Workflows = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [hoveredWorkflow, setHoveredWorkflow] = useState<string | null>(null);
 
-  // Sample workflow data
   const allWorkflows = [
     {
       id: 'wf-1',
@@ -154,7 +153,6 @@ const Workflows = () => {
     }
   ];
 
-  // Filter workflows based on search term and selected status
   useEffect(() => {
     let filtered = [...allWorkflows];
     
@@ -215,17 +213,20 @@ const Workflows = () => {
       <main className="flex-1 container mx-auto px-4 py-24">
         <TransitionWrapper>
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-1 neon-text">
-              <Zap className="inline-block mr-2 h-8 w-8 text-flow-accent" />
-              {t('workflows')}
-            </h1>
+            <div className="flex items-center mb-4">
+              <div className="mr-4 bg-green-500/20 p-3 rounded-xl backdrop-blur-sm border border-green-500/30">
+                <GitBranch className="h-8 w-8 text-green-500 drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
+              </div>
+              <h1 className="text-3xl font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">
+                {t('workflows')}
+              </h1>
+            </div>
             <p className="text-flow-foreground/70">
               Automated workflows connect AI agents to accomplish complex tasks. 
               Monitor, adjust, and deploy new workflows from this dashboard.
             </p>
           </div>
           
-          {/* Search and Filter Section - enhanced with cyberpunk styling */}
           <div className="mb-8 flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-flow-foreground/50" />
@@ -272,7 +273,6 @@ const Workflows = () => {
             </div>
           </div>
           
-          {/* Workflow Grid - cyberpunk style cards with neon effects */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {workflows.map((workflow) => (
               <Card 
@@ -322,7 +322,6 @@ const Workflows = () => {
                     </div>
                   </div>
                   
-                  {/* Mini Performance Chart - Enhanced with cyberpunk style */}
                   <div className="h-[80px] mb-3 bg-flow-background/10 p-2 rounded-md border border-flow-border/30 overflow-hidden scan-lines">
                     <LineChart 
                       data={workflow.performance} 
@@ -330,7 +329,6 @@ const Workflows = () => {
                     />
                   </div>
                   
-                  {/* Progress Bar - Custom styling */}
                   <div className="mb-2">
                     <div className="flex justify-between text-xs mb-1">
                       <span>Completion</span>
@@ -348,7 +346,6 @@ const Workflows = () => {
                     </div>
                   </div>
                   
-                  {/* Division Tag */}
                   <div className="mt-3 mb-2">
                     <Badge 
                       variant="outline" 
@@ -386,7 +383,6 @@ const Workflows = () => {
             ))}
           </div>
           
-          {/* Enhanced Workflow Details Dialog */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent className="max-w-4xl bg-flow-background border-flow-border">
               {selectedWorkflow && (
@@ -417,7 +413,6 @@ const Workflows = () => {
                   </DialogHeader>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                    {/* Performance Chart */}
                     <div>
                       <h3 className="text-lg font-semibold mb-2 flex items-center">
                         <BarChart2 className="w-5 h-5 mr-2" style={{ color: selectedWorkflow.color }} />
@@ -431,7 +426,6 @@ const Workflows = () => {
                       </div>
                     </div>
                     
-                    {/* Connected Agents */}
                     <div>
                       <h3 className="text-lg font-semibold mb-2 flex items-center">
                         <Users className="w-5 h-5 mr-2" style={{ color: selectedWorkflow.color }} />
@@ -478,7 +472,6 @@ const Workflows = () => {
                     </div>
                   </div>
                   
-                  {/* Workflow Steps - Enhanced version */}
                   <div className="mt-6">
                     <h3 className="text-lg font-semibold mb-2 flex items-center">
                       <Code className="w-5 h-5 mr-2" style={{ color: selectedWorkflow.color }} />
@@ -542,7 +535,6 @@ const Workflows = () => {
                     </div>
                   </div>
                   
-                  {/* Action Buttons - Cyberpunk styled */}
                   <div className="flex justify-end gap-3 mt-6">
                     <Button 
                       variant="outline"

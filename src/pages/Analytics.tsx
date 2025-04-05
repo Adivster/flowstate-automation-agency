@@ -18,7 +18,8 @@ import {
   AlertTriangle,
   FileText,
   Cpu,
-  Layers
+  Layers,
+  LineChart as LineChartIcon
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Progress } from '@/components/ui/progress';
@@ -179,9 +180,14 @@ const Analytics = () => {
       <main className="flex-1 container mx-auto px-4 pt-24 pb-12">
         <TransitionWrapper>
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2 neon-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text">
-              {t('analytics')}
-            </h1>
+            <div className="flex items-center mb-4">
+              <div className="mr-4 bg-purple-500/20 p-3 rounded-xl backdrop-blur-sm border border-purple-500/30">
+                <LineChartIcon className="h-8 w-8 text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+              </div>
+              <h1 className="text-3xl font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">
+                {t('analytics')}
+              </h1>
+            </div>
             <p className="text-flow-foreground/70 max-w-2xl">
               Comprehensive metrics and insights into your AI agency's operations. Monitor performance, track key indicators, and optimize your workflows.
             </p>

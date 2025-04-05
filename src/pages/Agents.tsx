@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer';
 import AgentGrid from '@/components/agents/AgentGrid';
 import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Cpu, Users, Briefcase, Filter, SortDesc, Terminal, Zap, Shield } from 'lucide-react';
+import { Cpu, Users, Briefcase, Filter, SortDesc, Terminal, Shield } from 'lucide-react';
 import OfficeFloorPlan from '@/components/agents/OfficeFloorPlan';
 import AgencyMetrics from '@/components/agents/AgencyMetrics';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -50,10 +50,14 @@ const Agents = () => {
           <GlassMorphism intensity="low" className="p-6 rounded-xl border-flow-accent/30 animate-glow-pulse mb-8">
             <div className="flex flex-col md:flex-row justify-between items-start">
               <div>
-                <h1 className="text-3xl font-cyber mb-1 neon-text">
-                  <Shield className="inline-block mr-2 h-8 w-8 text-flow-accent" />
-                  {t('agencyHQ')}
-                </h1>
+                <div className="flex items-center mb-4">
+                  <div className="mr-4 bg-cyan-500/20 p-3 rounded-xl backdrop-blur-sm border border-cyan-500/30">
+                    <Users className="h-8 w-8 text-cyan-500 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+                  </div>
+                  <h1 className="text-3xl font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">
+                    {t('agencyHQ')}
+                  </h1>
+                </div>
                 <p className="text-flow-foreground/70">
                   {t('monitorAgents')}
                 </p>
