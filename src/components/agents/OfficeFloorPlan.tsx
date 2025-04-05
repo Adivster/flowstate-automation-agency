@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { 
@@ -18,27 +19,30 @@ import { Button } from '@/components/ui/button';
 import { Pencil, Save, RotateCcw, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+// More accurate and improved overlap detection function
 const checkOverlap = (div1, div2, positions) => {
   const div1Pos = positions[div1.id] || { x: div1.position.x, y: div1.position.y };
   const div2Pos = positions[div2.id] || { x: div2.position.x, y: div2.position.y };
   
-  const div1Left = div1Pos.x;
-  const div1Right = div1Pos.x + div1.position.width;
-  const div1Top = div1Pos.y;
-  const div1Bottom = div1Pos.y + div1.position.height;
+  // Calculate edges with padding for cleaner placement
+  const div1Left = div1Pos.x - 2;
+  const div1Right = div1Pos.x + div1.position.width + 2;
+  const div1Top = div1Pos.y - 2;
+  const div1Bottom = div1Pos.y + div1.position.height + 2;
   
-  const div2Left = div2Pos.x;
-  const div2Right = div2Pos.x + div2.position.width;
-  const div2Top = div2Pos.y;
-  const div2Bottom = div2Pos.y + div2.position.height;
+  const div2Left = div2Pos.x - 2;
+  const div2Right = div2Pos.x + div2.position.width + 2;
+  const div2Top = div2Pos.y - 2;
+  const div2Bottom = div2Pos.y + div2.position.height + 2;
   
-  const buffer = 2;
+  // Calculate overlap with a slimmer buffer to allow closer positioning
+  const buffer = 0.5;
   
   return (
-    div1Left < div2Right + buffer && 
-    div1Right > div2Left - buffer && 
-    div1Top < div2Bottom + buffer && 
-    div1Bottom > div2Top - buffer
+    div1Left < div2Right - buffer && 
+    div1Right > div2Left + buffer && 
+    div1Top < div2Bottom - buffer && 
+    div1Bottom > div2Top + buffer
   );
 };
 
@@ -96,34 +100,36 @@ const OfficeFloorPlan: React.FC = () => {
   const [pulsing, setPulsing] = useState<Record<string, boolean>>({});
   const [editMode, setEditMode] = useState(false);
   const [divisionPositions, setDivisionPositions] = useState<Record<string, {x: number, y: number}>>({});
-  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const { t } = useLanguage();
   const { toast } = useToast();
   
   const divisions = getDivisions(t);
+  const contentLoaded = useRef(false);
   
+  // Use this to prevent flickering - load state only once
   useEffect(() => {
+    // Load positions from localStorage immediately without any delay
     try {
       const savedPositions = localStorage.getItem('officeDivisionPositions');
       
       if (savedPositions) {
-        const parsedPositions = JSON.parse(savedPositions);
-        setDivisionPositions(parsedPositions);
+        setDivisionPositions(JSON.parse(savedPositions));
       } else {
-        const fixedPositions = fixInitialOverlaps(divisions, defaultDivisionPositions);
-        setDivisionPositions(fixedPositions);
+        setDivisionPositions(fixInitialOverlaps(divisions, defaultDivisionPositions));
       }
     } catch (error) {
       console.error('Error loading saved division positions:', error);
-      const fixedPositions = fixInitialOverlaps(divisions, defaultDivisionPositions);
-      setDivisionPositions(fixedPositions);
+      setDivisionPositions(fixInitialOverlaps(divisions, defaultDivisionPositions));
     }
     
-    setInitialLoadComplete(true);
+    // Once positions are set, indicate loading is complete
+    setLoaded(true);
+    contentLoaded.current = true;
   }, []);
   
   useEffect(() => {
-    if (!initialLoadComplete) return;
+    if (!loaded) return;
     
     const initialTransmissions: DataTransmission[] = [
       { 
@@ -157,9 +163,11 @@ const OfficeFloorPlan: React.FC = () => {
     return () => {
       setDataTransmissions([]);
     };
-  }, [initialLoadComplete]);
+  }, [loaded]);
   
   useEffect(() => {
+    if (!loaded) return;
+    
     const interval = setInterval(() => {
       const divs = ['kb', 'analytics', 'operations', 'strategy', 'lounge', 'research'];
       let div1 = divs[Math.floor(Math.random() * divs.length)];
@@ -217,9 +225,11 @@ const OfficeFloorPlan: React.FC = () => {
     }, 8000);
     
     return () => clearInterval(interval);
-  }, [divisions]);
+  }, [divisions, loaded]);
   
   useEffect(() => {
+    if (!loaded) return;
+    
     const interval = setInterval(() => {
       const randomDivId = divisions[Math.floor(Math.random() * divisions.length)].id;
       
@@ -237,7 +247,7 @@ const OfficeFloorPlan: React.FC = () => {
     }, 5000);
     
     return () => clearInterval(interval);
-  }, [divisions]);
+  }, [divisions, loaded]);
   
   const handleDivisionClick = (divisionId: string) => {
     if (editMode) return;
@@ -325,9 +335,11 @@ const OfficeFloorPlan: React.FC = () => {
   };
   
   const handleDivisionDragEnd = (divisionId: string, x: number, y: number) => {
+    // Create a safety buffer from edges
     const boundedX = Math.max(5, Math.min(95 - 20, x));
     const boundedY = Math.max(5, Math.min(85 - 20, y));
     
+    // Test positions with our new coordinates
     const testPositions = {
       ...divisionPositions,
       [divisionId]: { x: boundedX, y: boundedY }
@@ -337,6 +349,7 @@ const OfficeFloorPlan: React.FC = () => {
     
     if (!currentDivision) return;
     
+    // Check for overlaps with a more lenient overlap check
     let hasOverlap = false;
     
     for (const division of divisions) {
@@ -358,6 +371,7 @@ const OfficeFloorPlan: React.FC = () => {
       return;
     }
     
+    // If we reach here, update the position
     setDivisionPositions(prev => ({
       ...prev,
       [divisionId]: { x: boundedX, y: boundedY }
@@ -396,7 +410,7 @@ const OfficeFloorPlan: React.FC = () => {
     });
   };
   
-  if (!initialLoadComplete) {
+  if (!loaded) {
     return (
       <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-gray-100 dark:bg-gray-900 neon-border">
         <div className="absolute inset-0 flex items-center justify-center">

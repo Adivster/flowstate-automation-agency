@@ -23,20 +23,22 @@ const Agents = () => {
     status: 'all',
     sortBy: 'name'
   });
-  const [isLoaded, setIsLoaded] = useState(false);
-  const isMounted = useRef(true);
+  const [loaded, setLoaded] = useState(false);
+  const contentLoaded = useRef(false);
   
-  // Use consistent loading approach to prevent flickering
+  // Load only once to prevent blinking
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (isMounted.current) {
-        setIsLoaded(true);
-      }
-    }, 300);
+    // Skip re-render if already loaded
+    if (contentLoaded.current) return;
+    
+    // Set a timeout to allow for immediate rendering without perceived delay
+    setTimeout(() => {
+      contentLoaded.current = true;
+      setLoaded(true);
+    }, 10);
     
     return () => {
-      clearTimeout(timer);
-      isMounted.current = false;
+      contentLoaded.current = true;
     };
   }, []);
   
@@ -53,7 +55,8 @@ const Agents = () => {
     });
   };
   
-  if (!isLoaded) {
+  // Show loading placeholder only on initial load
+  if (!loaded) {
     return (
       <div className="fixed inset-0 bg-flow-background flex flex-col items-center justify-center z-50">
         <div className="w-12 h-12 border-4 border-flow-accent border-t-transparent rounded-full animate-spin"></div>
@@ -69,6 +72,7 @@ const Agents = () => {
       
       <Navbar />
       
+      {/* Add a required 24px padding-top to prevent the header from overlapping with the content */}
       <main className="flex-1 container mx-auto px-4 pt-28 pb-12">
         <TransitionWrapper>
           <GlassMorphism intensity="low" className="p-6 rounded-xl border-flow-accent/30 animate-glow-pulse mb-8">

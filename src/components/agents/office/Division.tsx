@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion, useDragControls } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
@@ -129,7 +130,7 @@ const Division: React.FC<DivisionProps> = ({
   // Handle division drag end with improved position calculation
   const handleDragEnd = (event, info) => {
     if (onDragEnd) {
-      // Convert drag delta to percentage of parent container
+      // Get the parent container dimensions
       const parentWidth = event.target.parentElement.clientWidth;
       const parentHeight = event.target.parentElement.clientHeight;
       
@@ -262,7 +263,7 @@ const Division: React.FC<DivisionProps> = ({
       }}
     >
       {/* Division Header with enhanced cyberpunk styling */}
-      <div className="absolute top-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-1.5 flex items-center justify-between border-b" style={{ borderColor: `${style.border}40` }}>
+      <div className="absolute top-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-1.5 flex items-center justify-between border-b z-40" style={{ borderColor: `${style.border}40` }}>
         <div className="flex items-center">
           <div className="p-1 rounded-full mr-1.5" style={{ 
             backgroundColor: `${style.border}20`,
@@ -287,7 +288,7 @@ const Division: React.FC<DivisionProps> = ({
       </div>
       
       {/* Active Agents Count */}
-      <div className="absolute bottom-1 right-1">
+      <div className="absolute bottom-1 right-1 z-30">
         <Badge 
           variant="outline" 
           className="text-[0.6rem] py-0 px-1.5 bg-black/50 backdrop-blur-sm text-white border-white/20 flex items-center gap-1"
@@ -306,7 +307,7 @@ const Division: React.FC<DivisionProps> = ({
       
       {/* Activity indicators - enhanced visibility */}
       {isPulsing && (
-        <div className="absolute right-2 top-9 flex items-center">
+        <div className="absolute right-2 top-9 flex items-center z-30">
           <span className="animate-ping absolute h-2 w-2 rounded-full opacity-75" style={{ backgroundColor: style.text }}></span>
           <span className="relative h-2 w-2 rounded-full" style={{ backgroundColor: style.text }}></span>
         </div>
@@ -315,7 +316,7 @@ const Division: React.FC<DivisionProps> = ({
       {/* Division Border Glow Effect for selected state */}
       {isSelected && (
         <div 
-          className="absolute inset-0 rounded-lg pointer-events-none" 
+          className="absolute inset-0 rounded-lg pointer-events-none z-10" 
           style={{ 
             boxShadow: `inset 0 0 15px ${style.border}40`,
             border: `1px solid ${style.border}60`
@@ -324,7 +325,7 @@ const Division: React.FC<DivisionProps> = ({
       )}
       
       {/* Scan Lines Effect */}
-      <div className="absolute inset-0 scan-lines pointer-events-none"></div>
+      <div className="absolute inset-0 scan-lines pointer-events-none z-20"></div>
     </motion.div>
   );
 };
