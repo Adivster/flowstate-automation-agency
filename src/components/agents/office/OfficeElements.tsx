@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Workstation from './Workstation';
 import DecorativeElement from './DecorativeElement';
 import HolographicElement from './HolographicElement';
@@ -8,6 +7,7 @@ import CommunicationHub from './CommunicationHub';
 import Division from './Division';
 import AgentCharacter from '../AgentCharacter';
 import { Division as DivisionType, DecorativeElement as DecorativeElementType } from './types/officeTypes';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface OfficeElementsProps {
   divisions: DivisionType[];
@@ -23,6 +23,7 @@ interface OfficeElementsProps {
   editMode: boolean;
   onDivisionDragEnd?: (divisionId: string, x: number, y: number) => void;
   divisionPositions?: Record<string, {x: number, y: number}>;
+  zoomLevel?: number;
 }
 
 const OfficeElements: React.FC<OfficeElementsProps> = ({
@@ -38,9 +39,37 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
   onAgentClick,
   editMode = false,
   onDivisionDragEnd,
-  divisionPositions
+  divisionPositions,
+  zoomLevel = 1
 }) => {
-  // Group elements by type for better organization and z-index control
+  const [adjustedAgentPositions, setAdjustedAgentPositions] = useState<Record<number, { x: number, y: number }>>({});
+  
+  useEffect(() => {
+    const newPositions: Record<number, { x: number, y: number }> = {};
+    
+    agents.forEach(agent => {
+      if (agent.division) {
+        const division = divisions.find(d => d.id === agent.division);
+        if (division) {
+          const divPos = divisionPositions?.[division.id] || { 
+            x: division.position.x, 
+            y: division.position.y 
+          };
+          
+          const relativeX = agent.position.x - division.position.x;
+          const relativeY = agent.position.y - division.position.y;
+          
+          newPositions[agent.id] = {
+            x: divPos.x + relativeX,
+            y: divPos.y + relativeY
+          };
+        }
+      }
+    });
+    
+    setAdjustedAgentPositions(newPositions);
+  }, [agents, divisions, divisionPositions]);
+  
   const renderDivisions = () => (
     divisions.map((division) => (
       <Division
@@ -103,37 +132,88 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
   );
   
   const renderAgents = () => (
-    agents.map(agent => (
-      <AgentCharacter 
-        key={agent.id} 
-        agent={{
-          ...agent,
-          status: agent.status as 'working' | 'idle' | 'paused' | 'error'
-        }}
-        routePath={agent.route}
-        isSelected={selectedAgent === agent.id}
-        onAgentClick={onAgentClick}
-      />
-    ))
+    agents.map(agent => {
+      const position = adjustedAgentPositions[agent.id] || agent.position;
+      
+      return (
+        <AgentCharacter 
+          key={agent.id} 
+          agent={{
+            ...agent,
+            position,
+            status: agent.status as 'working' | 'idle' | 'paused' | 'error'
+          }}
+          routePath={agent.route}
+          isSelected={selectedAgent === agent.id}
+          onAgentClick={onAgentClick}
+        />
+      );
+    })
   );
   
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* Render elements in layers based on their logical z-index */}
-      {renderDivisions()}
       {renderInfrastructure()}
       {renderWorkstations()}
       {renderDecorations()}
+      {renderDivisions()}
       {renderHolograms()}
       {renderAgents()}
       
-      {/* Edit mode indicator */}
-      {editMode && (
-        <div className="absolute top-4 left-4 px-3 py-1 bg-amber-500/80 text-white text-xs font-medium rounded-full flex items-center gap-1.5 animate-pulse-subtle z-50">
-          <span className="h-2 w-2 bg-white rounded-full"></span>
-          Edit Mode
-        </div>
-      )}
+      <AnimatePresence>
+        {editMode && (
+          <motion.div 
+            className="absolute top-4 left-4 px-3 py-1 bg-amber-500/80 text-white text-xs font-medium rounded-full flex items-center gap-1.5 z-50"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <span className="h-2 w-2 bg-white rounded-full animate-pulse"></span>
+            Edit Mode
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div 
+        className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${editMode ? 'opacity-20' : 'opacity-0'}`}
+        style={{
+          backgroundSize: `${20 * zoomLevel}px ${20 * zoomLevel}px`,
+          backgroundImage: 'linear-gradient(to right, rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.1) 1px, transparent 1px)',
+          zIndex: 5
+        }}
+      ></div>
+      
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
+        {divisions.map((division) => (
+          pulsing[division.id] && !selectedDivision && (
+            <motion.div 
+              key={`glow-${division.id}`}
+              className="absolute rounded-xl opacity-0"
+              style={{
+                left: `${(divisionPositions?.[division.id]?.x || division.position.x) - 1}%`,
+                top: `${(divisionPositions?.[division.id]?.y || division.position.y) - 1}%`,
+                width: `${division.position.width + 2}%`,
+                height: `${division.position.height + 2}%`,
+                boxShadow: `0 0 30px ${division.borderColor || '#ffffff'}50`,
+              }}
+              animate={{
+                opacity: [0, 0.3, 0]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                repeatType: "loop"
+              }}
+            />
+          )
+        ))}
+      </div>
+      
+      <div className="absolute inset-0 pointer-events-none" style={{ 
+        background: 'radial-gradient(circle at 50% 50%, rgba(20, 30, 50, 0) 0%, rgba(5, 10, 20, 0.4) 100%)',
+        zIndex: 2 
+      }}></div>
     </div>
   );
 };

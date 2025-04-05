@@ -1,15 +1,15 @@
-
 import { Division } from '../types/officeTypes';
 
-// Improved overlap detection function with a small buffer
+// Improved overlap detection with better precision
 export const checkOverlap = (div1: Division, div2: Division, positions: Record<string, {x: number, y: number}>) => {
   // Get positions from custom positions or default division positions
   const div1Pos = positions[div1.id] || { x: div1.position.x, y: div1.position.y };
   const div2Pos = positions[div2.id] || { x: div2.position.x, y: div2.position.y };
   
-  // Calculate edges with a smaller buffer for more precise placement
-  const buffer = 0.25;
+  // Use a smaller buffer for more precise placement
+  const buffer = 0.1;
   
+  // Calculate edges with buffer
   const div1Left = div1Pos.x - buffer;
   const div1Right = div1Pos.x + div1.position.width + buffer;
   const div1Top = div1Pos.y - buffer;
@@ -20,7 +20,7 @@ export const checkOverlap = (div1: Division, div2: Division, positions: Record<s
   const div2Top = div2Pos.y - buffer;
   const div2Bottom = div2Pos.y + div2.position.height + buffer;
   
-  // Check if the divisions overlap
+  // Check for overlap with improved precision
   return (
     div1Left < div2Right && 
     div1Right > div2Left && 
@@ -34,7 +34,7 @@ export const fixOverlaps = (divisions: Division[], positions: Record<string, {x:
   const fixedPositions = {...positions};
   let overlapsExist = true;
   let iterationCount = 0;
-  const maxIterations = 30;
+  const maxIterations = 50; // Increase max iterations for better results
   
   while (overlapsExist && iterationCount < maxIterations) {
     overlapsExist = false;
@@ -62,7 +62,7 @@ export const fixOverlaps = (divisions: Division[], positions: Record<string, {x:
           const dirX = div2CenterX - div1CenterX;
           const dirY = div2CenterY - div1CenterY;
           
-          // Determine which axis has the smaller overlap
+          // Determine which axis has the smaller overlap and use that for movement
           const overlapX = Math.min(
             Math.abs(div1Pos.x + div1.position.width - div2Pos.x),
             Math.abs(div2Pos.x + div2.position.width - div1Pos.x)
@@ -73,10 +73,13 @@ export const fixOverlaps = (divisions: Division[], positions: Record<string, {x:
             Math.abs(div2Pos.y + div2.position.height - div1Pos.y)
           );
           
+          // Use a larger push amount to ensure no overlaps remain
+          const pushAmount = 7;
+          
           // Adjust position along the axis with smaller overlap
           if (overlapX <= overlapY) {
             // Push horizontally
-            const moveAmount = overlapX + 5; // Add a buffer
+            const moveAmount = overlapX + pushAmount;
             const newX = dirX > 0 
               ? Math.min(95 - div2.position.width, div2Pos.x + moveAmount)
               : Math.max(5, div2Pos.x - moveAmount);
@@ -84,7 +87,7 @@ export const fixOverlaps = (divisions: Division[], positions: Record<string, {x:
             fixedPositions[div2.id] = { x: newX, y: div2Pos.y };
           } else {
             // Push vertically
-            const moveAmount = overlapY + 5; // Add a buffer
+            const moveAmount = overlapY + pushAmount;
             const newY = dirY > 0
               ? Math.min(85 - div2.position.height, div2Pos.y + moveAmount)
               : Math.max(5, div2Pos.y - moveAmount);
@@ -96,32 +99,56 @@ export const fixOverlaps = (divisions: Division[], positions: Record<string, {x:
     }
   }
   
+  // Add a final pass to ensure divisions are within boundaries
+  for (const divId in fixedPositions) {
+    const division = divisions.find(d => d.id === divId);
+    if (!division) continue;
+    
+    fixedPositions[divId] = {
+      x: Math.max(0, Math.min(100 - division.position.width, fixedPositions[divId].x)),
+      y: Math.max(0, Math.min(100 - division.position.height, fixedPositions[divId].y))
+    };
+  }
+  
   return fixedPositions;
 };
 
 // Optimize layout for better visualization and organization
 export const optimizeLayout = (divisions: Division[], defaultPositions: Record<string, {x: number, y: number}>) => {
-  // Clone default positions to avoid mutating the original
+  // Start with ideal positions from default
   const optimizedPositions = {...defaultPositions};
   
-  // Define logical groupings of divisions
-  const logicalGroups = {
-    strategy: { x: 15, y: 20 },
-    research: { x: 15, y: 55 },
-    operations: { x: 55, y: 20 },
-    analytics: { x: 55, y: 55 },
-    kb: { x: 35, y: 37.5 },
-    lounge: { x: 80, y: 37.5 }
+  // Define ideal positions for visual balance - similar to defaultPositions but can be tweaked
+  const idealPositions = {
+    kb: { x: 20, y: 20 },
+    analytics: { x: 60, y: 20 },
+    operations: { x: 20, y: 55 },
+    strategy: { x: 60, y: 55 },
+    research: { x: 40, y: 37 },
+    lounge: { x: 80, y: 37 }
   };
   
-  // Apply logical groupings
-  for (const divId in logicalGroups) {
+  // Apply ideal positioning but maintain relative positions if they've been customized
+  for (const divId in idealPositions) {
     if (optimizedPositions[divId]) {
-      optimizedPositions[divId] = { ...logicalGroups[divId] };
+      // If the position is far from default, keep the user's custom position
+      // Otherwise, use the ideal position
+      const currentPos = optimizedPositions[divId];
+      const idealPos = idealPositions[divId];
+      const defaultPos = defaultPositions[divId];
+      
+      // If current position is significantly different from default, user likely moved it intentionally
+      const userMovedX = Math.abs(currentPos.x - defaultPos.x) > 10;
+      const userMovedY = Math.abs(currentPos.y - defaultPos.y) > 10;
+      
+      optimizedPositions[divId] = { 
+        x: userMovedX ? currentPos.x : idealPos.x,
+        y: userMovedY ? currentPos.y : idealPos.y
+      };
     }
   }
   
-  // Fix any overlaps that might have been created
+  // Fix any overlaps that might exist
   return fixOverlaps(divisions, optimizedPositions);
 };
 
@@ -145,9 +172,9 @@ export const calculateSafePosition = (
   // Try to find a position without overlaps
   let attempts = 0;
   let hasOverlap = true;
-  const gridSize = 10; // Grid size for positioning
+  const gridSize = 5; // Smaller grid for more precise placement
   
-  while (hasOverlap && attempts < 100) {
+  while (hasOverlap && attempts < 200) { // More attempts for better placement
     hasOverlap = false;
     attempts++;
     
@@ -158,10 +185,16 @@ export const calculateSafePosition = (
       })) {
         hasOverlap = true;
         
-        // Try a new position
+        // Try positions in a more structured way
+        // Start from center and spiral outward
+        const centerX = 50;
+        const centerY = 50;
+        const radius = Math.floor(attempts / 8) * 5; // Increase radius every 8 attempts
+        const angle = (attempts % 8) * Math.PI / 4; // 8 directions
+        
         safePosition = {
-          x: 10 + (Math.random() * 70),
-          y: 10 + (Math.random() * 70)
+          x: centerX + radius * Math.cos(angle),
+          y: centerY + radius * Math.sin(angle)
         };
         
         // Snap to grid
@@ -169,12 +202,58 @@ export const calculateSafePosition = (
         safePosition.y = Math.round(safePosition.y / gridSize) * gridSize;
         
         // Ensure within bounds
-        safePosition.x = Math.max(5, Math.min(90 - newDivision.position.width, safePosition.x));
-        safePosition.y = Math.max(5, Math.min(80 - newDivision.position.height, safePosition.y));
+        safePosition.x = Math.max(5, Math.min(95 - newDivision.position.width, safePosition.x));
+        safePosition.y = Math.max(5, Math.min(85 - newDivision.position.height, safePosition.y));
+        
         break;
       }
     }
   }
   
   return safePosition;
+};
+
+// Calculate optimal position for a new division, considering existing layout
+export const calculateOptimalPosition = (
+  divisions: Division[],
+  currentPositions: Record<string, {x: number, y: number}>
+) => {
+  // Define grid parameters
+  const gridCellWidth = 25;
+  const gridCellHeight = 25;
+  const gridCols = 4;
+  const gridRows = 4;
+  
+  // Create a grid representation
+  const grid = Array(gridRows).fill(0).map(() => Array(gridCols).fill(0));
+  
+  // Mark occupied grid cells
+  divisions.forEach(div => {
+    const pos = currentPositions[div.id] || { x: div.position.x, y: div.position.y };
+    const startCol = Math.floor(pos.x / gridCellWidth);
+    const endCol = Math.floor((pos.x + div.position.width) / gridCellWidth);
+    const startRow = Math.floor(pos.y / gridCellHeight);
+    const endRow = Math.floor((pos.y + div.position.height) / gridCellHeight);
+    
+    for (let row = startRow; row <= endRow && row < gridRows; row++) {
+      for (let col = startCol; col <= endCol && col < gridCols; col++) {
+        if (row >= 0 && col >= 0) grid[row][col] = 1;
+      }
+    }
+  });
+  
+  // Find the first empty cell
+  for (let row = 0; row < gridRows; row++) {
+    for (let col = 0; col < gridCols; col++) {
+      if (grid[row][col] === 0) {
+        return {
+          x: col * gridCellWidth + 5,
+          y: row * gridCellHeight + 5
+        };
+      }
+    }
+  }
+  
+  // If no empty cell, return a default position
+  return { x: 50, y: 50 };
 };

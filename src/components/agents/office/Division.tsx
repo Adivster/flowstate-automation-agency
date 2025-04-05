@@ -1,12 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, useDragControls } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Division as DivisionType } from './types/officeTypes';
 import { GripVertical } from 'lucide-react';
 import DivisionDecoration from './DivisionDecoration';
-import { getDivisionStyle, getDefaultDecorations } from './styles/divisionStyles';
+import { getDivisionStyle, getDivisionGlow, getDefaultDecorations } from './styles/divisionStyles';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface DivisionProps {
@@ -35,6 +35,7 @@ const Division: React.FC<DivisionProps> = ({
   const agentsInDivision = agents.filter(agent => agent.division === division.id);
   const activeAgents = agentsInDivision.filter(agent => agent.status === 'working');
   const dragControls = useDragControls();
+  const [isHovered, setIsHovered] = useState(false);
   
   // Use custom position if provided, otherwise use the default position from division data
   const positionX = customPosition ? customPosition.x : division.position.x;
@@ -66,6 +67,9 @@ const Division: React.FC<DivisionProps> = ({
     dragControls.start(event);
   };
 
+  // Calculate box shadow based on selection and pulse states
+  const boxShadow = getDivisionGlow(division.id, isSelected, isPulsing);
+
   return (
     <Tooltip delayDuration={300}>
       <TooltipTrigger asChild>
@@ -82,11 +86,13 @@ const Division: React.FC<DivisionProps> = ({
             borderWidth: '2px',
             borderStyle: 'solid',
             borderColor: isSelected ? '#ffffff' : division.borderColor || style.border,
-            boxShadow: isSelected ? style.shadow : isPulsing ? `0 0 15px ${style.border}60` : 'none',
-            zIndex: isSelected ? 30 : 20,
+            boxShadow,
+            zIndex: isSelected ? 40 : isHovered ? 35 : 30,
             willChange: 'transform',
           }}
           onClick={() => !isDraggable && onDivisionClick(division.id)}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           whileHover={!isDraggable ? { scale: 1.01 } : {}}
           animate={
             isSelected ? { 
@@ -105,7 +111,7 @@ const Division: React.FC<DivisionProps> = ({
           drag={isDraggable}
           dragControls={dragControls}
           dragMomentum={false}
-          dragElastic={0}
+          dragElastic={0.2}
           onDragEnd={handleDragEnd}
           transition={{
             boxShadow: {
@@ -115,15 +121,33 @@ const Division: React.FC<DivisionProps> = ({
             }
           }}
         >
+          {/* Glass Reflection Effect */}
+          <div 
+            className="absolute inset-0 pointer-events-none z-10 opacity-40"
+            style={{
+              background: `linear-gradient(135deg, ${style.border}20 0%, transparent 50%, ${style.border}10 100%)`
+            }}
+          ></div>
+
           {/* Division Header with enhanced cyberpunk styling */}
           <div className="absolute top-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-1.5 flex items-center justify-between border-b z-40" style={{ borderColor: `${style.border}40` }}>
             <div className="flex items-center">
-              <div className="p-1 rounded-full mr-1.5" style={{ 
-                backgroundColor: `${style.border}20`,
-                boxShadow: isSelected || isPulsing ? `0 0 5px ${style.border}` : 'none',
-              }}>
+              <motion.div 
+                className="p-1 rounded-full mr-1.5" 
+                animate={isPulsing || isSelected ? { 
+                  boxShadow: [
+                    `0 0 3px ${style.border}`, 
+                    `0 0 8px ${style.border}`, 
+                    `0 0 3px ${style.border}`
+                  ] 
+                } : {}}
+                transition={{ duration: 2, repeat: Infinity }}
+                style={{ 
+                  backgroundColor: `${style.border}20`,
+                }}
+              >
                 <Icon className="h-4 w-4" style={{ color: style.text }} />
-              </div>
+              </motion.div>
               <div className="text-xs font-semibold font-cyber" style={{ color: style.text }}>
                 {division.name}
               </div>
@@ -150,25 +174,37 @@ const Division: React.FC<DivisionProps> = ({
                 boxShadow: isSelected ? `0 0 5px ${style.border}80` : 'none' 
               }}
             >
-              <span className="inline-block w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: style.text }}></span>
+              <motion.span 
+                className="inline-block w-1.5 h-1.5 rounded-full" 
+                animate={{ opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                style={{ backgroundColor: style.text }}
+              ></motion.span>
               {activeAgents.length} {t('activeAgents')}
             </Badge>
           </div>
           
-          {/* Division decoration items */}
+          {/* Division decoration items - these move with the division */}
           {decorations.map(item => (
             <DivisionDecoration 
               key={`${item.type}-${item.x}-${item.y}`} 
               type={item.type} 
               x={item.x} 
-              y={item.y} 
+              y={item.y}
+              divisionColor={style.border}
+              isHovered={isHovered || isSelected}
             />
           ))}
           
           {/* Activity indicators - enhanced visibility */}
           {isPulsing && (
             <div className="absolute right-2 top-9 flex items-center z-30">
-              <span className="animate-ping absolute h-2 w-2 rounded-full opacity-75" style={{ backgroundColor: style.text }}></span>
+              <motion.span 
+                className="absolute h-2 w-2 rounded-full opacity-75" 
+                animate={{ scale: [1, 1.5, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                style={{ backgroundColor: style.text }}
+              ></motion.span>
               <span className="relative h-2 w-2 rounded-full" style={{ backgroundColor: style.text }}></span>
             </div>
           )}
@@ -185,14 +221,14 @@ const Division: React.FC<DivisionProps> = ({
           )}
           
           {/* Scan Lines Effect */}
-          <div className="absolute inset-0 scan-lines pointer-events-none z-20"></div>
+          <div className="absolute inset-0 scan-lines pointer-events-none z-20 opacity-20"></div>
         </motion.div>
       </TooltipTrigger>
       <TooltipContent 
         className="bg-black/80 border border-flow-accent/30 text-white text-xs p-2 backdrop-blur-sm"
         side="top"
       >
-        <div className="font-medium text-flow-accent">{division.name}</div>
+        <div className="font-medium" style={{ color: style.text }}>{division.name}</div>
         <div className="text-xs text-white/80">
           {agentsInDivision.length} agents ({activeAgents.length} active)
         </div>

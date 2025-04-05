@@ -81,3 +81,20 @@ export interface DivisionPosition {
   x: number;
   y: number;
 }
+
+export interface DivisionDecorationData {
+  type: string;
+  x: number;
+  y: number;
+  divisionId?: string;
+}
+
+// For division style types
+export interface DivisionStyle {
+  bg: string;
+  border: string;
+  shadow: string;
+  text: string;
+  glow: string;
+  pattern: string;
+}
