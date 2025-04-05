@@ -65,7 +65,7 @@ const Agents = () => {
   }
   
   return (
-    <div className="min-h-screen bg-flow-background text-flow-foreground flex flex-col cyber-grid">
+    <div className="min-h-screen flex flex-col bg-flow-background text-flow-foreground cyber-grid">
       <Helmet>
         <title>{t('agents')} | {t('agency')}</title>
       </Helmet>
@@ -240,8 +240,8 @@ const Agents = () => {
                 </div>
               </GlassMorphism>
               
-              {/* Fixed height container to avoid content shift/jump */}
-              <div className="min-h-[550px] h-[550px] relative">
+              {/* Set proper height for scrollable content */}
+              <div className="h-[60vh] overflow-y-auto pr-1 custom-scrollbar">
                 <AgentGrid />
               </div>
               
@@ -311,6 +311,20 @@ const Agents = () => {
         @keyframes scan {
           0%, 100% { transform: translateY(-100%); }
           50% { transform: translateY(100%); }
+        }
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: rgba(255, 255, 255, 0.1);
+          border-radius: 20px;
         }
       `}</style>
     </div>

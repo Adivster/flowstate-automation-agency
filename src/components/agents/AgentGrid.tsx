@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import GlassMorphism from '@/components/ui/GlassMorphism';
+import AgentCard from '../agents/AgentCard';
 
 // Sample data
 const agentsData = [
@@ -134,13 +135,6 @@ const AgentGrid: React.FC = () => {
   const { toast } = useToast();
   const { t } = useLanguage();
   
-  const statusColors = {
-    working: 'bg-green-500 text-green-50',
-    idle: 'bg-gray-500 text-gray-50',
-    paused: 'bg-amber-500 text-amber-50',
-    error: 'bg-red-500 text-red-50'
-  };
-  
   const divisionColors = {
     kb: { bg: 'bg-indigo-500/10', text: 'text-indigo-500', border: 'border-indigo-500/50', highlight: 'bg-indigo-500' },
     analytics: { bg: 'bg-yellow-500/10', text: 'text-yellow-500', border: 'border-yellow-500/50', highlight: 'bg-yellow-500' },
@@ -218,7 +212,7 @@ const AgentGrid: React.FC = () => {
         </Button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="flex flex-col space-y-4">
         {filteredAgents.map((agent) => {
           const colors = divisionColors[agent.division] || divisionColors.kb;
           const isExpanded = expandedAgent === agent.id;
@@ -231,198 +225,191 @@ const AgentGrid: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
-              className={`rounded-xl overflow-hidden transition-all ${isExpanded ? 'md:col-span-2 xl:col-span-3 row-span-2' : ''}`}
+              className="w-full"
             >
-              <GlassMorphism 
-                intensity="low" 
-                className={`h-full border ${colors.border} rounded-xl overflow-hidden ${agent.status === 'error' ? 'border-red-500/50 animate-pulse-subtle' : ''}`}
-              >
-                <div className="p-4 h-full flex flex-col">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <div className={`p-1.5 rounded-lg ${colors.bg}`}>
-                          <agent.icon className={`h-4 w-4 ${colors.text}`} />
+              {isExpanded ? (
+                <GlassMorphism 
+                  intensity="low" 
+                  className={`h-full border ${colors.border} rounded-xl overflow-hidden ${agent.status === 'error' ? 'border-red-500/50 animate-pulse-subtle' : ''}`}
+                >
+                  <div className="p-5">
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg ${colors.bg}`}>
+                          <agent.icon className={`h-5 w-5 ${colors.text}`} />
                         </div>
-                        <h3 className="font-semibold text-flow-foreground">{agent.name}</h3>
-                        <Badge className={`${statusColors[agent.status]} text-xs px-2 py-0.5`}>
-                          {t(agent.status)}
-                        </Badge>
-                      </div>
-                      <div className="text-xs text-flow-foreground/60 mt-1">{agent.role}</div>
-                    </div>
-                    
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 p-0 rounded-full"
-                      onClick={() => handleExpandAgent(agent.id)}
-                    >
-                      {isExpanded ? (
-                        <X className="h-4 w-4" />
-                      ) : (
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      )}
-                    </Button>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-xs text-flow-foreground/70">
-                      <span>{t('division')}</span>
-                      <span className={colors.text}>{getDivisionName(agent.division)}</span>
-                    </div>
-                    
-                    <div className="flex justify-between text-xs text-flow-foreground/70">
-                      <span>{t('efficiency')}</span>
-                      <div className="flex items-center gap-1.5">
-                        <Progress value={agent.efficiency} className="h-1.5 w-16" />
-                        <span className="text-flow-foreground">{agent.efficiency}%</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-between text-xs text-flow-foreground/70">
-                      <span>{t('lastActive')}</span>
-                      <span className="text-flow-foreground">{agent.lastActive}</span>
-                    </div>
-                  </div>
-                  
-                  {isExpanded && (
-                    <motion.div 
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="mt-5 pt-4 border-t border-flow-border/30"
-                    >
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <h4 className="text-sm font-medium mb-2">{t('agentActivity')}</h4>
-                          <div className="space-y-2 text-xs text-flow-foreground/70">
-                            <div className="flex items-center gap-2 p-2 rounded-md bg-flow-background/30">
-                              <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                              <span>Task processing completed at 14:32</span>
-                            </div>
-                            <div className="flex items-center gap-2 p-2 rounded-md bg-flow-background/30">
-                              <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-                              <span>Data synchronization with KB at 14:15</span>
-                            </div>
-                            <div className="flex items-center gap-2 p-2 rounded-md bg-flow-background/30">
-                              <div className="h-2 w-2 rounded-full bg-indigo-500"></div>
-                              <span>Resource allocation optimized at 13:45</span>
-                            </div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-flow-foreground">{agent.name}</h3>
+                            <Badge className={`${agent.status === 'working' ? 'bg-green-500 text-green-50' : agent.status === 'paused' ? 'bg-amber-500 text-amber-50' : agent.status === 'error' ? 'bg-red-500 text-red-50' : 'bg-gray-500 text-gray-50'} text-xs px-2 py-0.5`}>
+                              {t(agent.status)}
+                            </Badge>
                           </div>
-                        </div>
-                        
-                        <div>
-                          <h4 className="text-sm font-medium mb-2">{t('currentTasks')}</h4>
-                          <div className="space-y-2 text-xs">
-                            <div className="p-2 rounded-md bg-flow-background/30">
-                              <div className="flex justify-between mb-1">
-                                <span className="text-flow-foreground">Data Processing Task #4872</span>
-                                <span className="text-green-500">82%</span>
-                              </div>
-                              <Progress value={82} className="h-1"/>
-                            </div>
-                            <div className="p-2 rounded-md bg-flow-background/30">
-                              <div className="flex justify-between mb-1">
-                                <span className="text-flow-foreground">System Optimization #3391</span>
-                                <span className="text-amber-500">45%</span>
-                              </div>
-                              <Progress value={45} className="h-1"/>
-                            </div>
-                          </div>
+                          <div className="text-xs text-flow-foreground/60">{agent.role}</div>
                         </div>
                       </div>
                       
-                      <div className="mt-4 pt-4 border-t border-flow-border/30">
-                        <h4 className="text-sm font-medium mb-2">{t('agentDetails')}</h4>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                          <div className="flex flex-col p-2 rounded-md bg-flow-background/30">
-                            <span className="text-flow-foreground/70">{t('version')}</span>
-                            <span className="text-flow-foreground">v3.2.1</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 rounded-full"
+                        onClick={() => handleExpandAgent(agent.id)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-flow-foreground/70">{t('division')}</span>
+                          <span className={colors.text}>{getDivisionName(agent.division)}</span>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center text-sm">
+                            <span className="text-flow-foreground/70">{t('efficiency')}</span>
+                            <span className={agent.efficiency > 90 ? 'text-green-500' : agent.efficiency > 70 ? 'text-yellow-500' : 'text-flow-foreground/70'}>
+                              {agent.efficiency}%
+                            </span>
                           </div>
-                          <div className="flex flex-col p-2 rounded-md bg-flow-background/30">
-                            <span className="text-flow-foreground/70">{t('memory')}</span>
-                            <span className="text-flow-foreground">1.8 GB / 2.0 GB</span>
+                          <Progress value={agent.efficiency} className="h-2" />
+                        </div>
+                        
+                        <div className="flex justify-between text-sm">
+                          <span className="text-flow-foreground/70">{t('lastActive')}</span>
+                          <span className="text-flow-foreground">{agent.lastActive}</span>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="text-sm font-medium mb-3">{t('currentTasks')}</h4>
+                        <div className="space-y-3">
+                          <div className="p-3 rounded-md bg-flow-background/30">
+                            <div className="flex justify-between mb-2">
+                              <span className="text-sm text-flow-foreground">Data Processing Task #4872</span>
+                              <span className="text-sm text-green-500">82%</span>
+                            </div>
+                            <Progress value={82} className="h-1.5" />
                           </div>
-                          <div className="flex flex-col p-2 rounded-md bg-flow-background/30">
-                            <span className="text-flow-foreground/70">{t('uptime')}</span>
-                            <span className="text-flow-foreground">31 days, 4 hours</span>
-                          </div>
-                          <div className="flex flex-col p-2 rounded-md bg-flow-background/30">
-                            <span className="text-flow-foreground/70">{t('tasksCompleted')}</span>
-                            <span className="text-flow-foreground">1,452</span>
+                          <div className="p-3 rounded-md bg-flow-background/30">
+                            <div className="flex justify-between mb-2">
+                              <span className="text-sm text-flow-foreground">System Optimization #3391</span>
+                              <span className="text-sm text-amber-500">45%</span>
+                            </div>
+                            <Progress value={45} className="h-1.5" />
                           </div>
                         </div>
                       </div>
-                    </motion.div>
-                  )}
-                  
-                  <div className="mt-auto pt-3 flex flex-wrap gap-2">
-                    {agent.status === 'working' ? (
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="text-xs h-7 bg-flow-background/30 border-flow-border/50"
-                        onClick={() => handleAgentAction('pause', agent)}
-                      >
-                        <Pause className="h-3 w-3 mr-1" />
-                        {t('pause')}
-                      </Button>
-                    ) : agent.status === 'paused' ? (
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="text-xs h-7 bg-flow-background/30 border-flow-border/50"
-                        onClick={() => handleAgentAction('resume', agent)}
-                      >
-                        <Play className="h-3 w-3 mr-1" />
-                        {t('resume')}
-                      </Button>
-                    ) : agent.status === 'error' ? (
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="text-xs h-7 border-red-500/50 text-red-500 hover:bg-red-500/10"
-                        onClick={() => handleAgentAction('restart', agent)}
-                      >
-                        <AlertTriangle className="h-3 w-3 mr-1" />
-                        {t('restart')}
-                      </Button>
-                    ) : (
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="text-xs h-7 bg-flow-background/30 border-flow-border/50"
-                        onClick={() => handleAgentAction('activate', agent)}
-                      >
-                        <Play className="h-3 w-3 mr-1" />
-                        {t('activate')}
-                      </Button>
-                    )}
+                    </div>
                     
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="text-xs h-7 bg-flow-background/30 border-flow-border/50"
-                      onClick={() => handleAgentAction('message', agent)}
-                    >
-                      <MessageCircle className="h-3 w-3 mr-1" />
-                      {t('message')}
-                    </Button>
+                    <div className="mt-6 pt-4 border-t border-flow-border/30">
+                      <h4 className="text-sm font-medium mb-3">{t('agentActivity')}</h4>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 p-2 rounded-md bg-flow-background/30">
+                          <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                          <span className="text-sm">Task processing completed at 14:32</span>
+                        </div>
+                        <div className="flex items-center gap-2 p-2 rounded-md bg-flow-background/30">
+                          <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                          <span className="text-sm">Data synchronization with KB at 14:15</span>
+                        </div>
+                        <div className="flex items-center gap-2 p-2 rounded-md bg-flow-background/30">
+                          <div className="h-2 w-2 rounded-full bg-indigo-500"></div>
+                          <span className="text-sm">Resource allocation optimized at 13:45</span>
+                        </div>
+                      </div>
+                    </div>
                     
-                    {!isExpanded && (
+                    <div className="mt-6 pt-4 border-t border-flow-border/30">
+                      <h4 className="text-sm font-medium mb-3">{t('agentDetails')}</h4>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div className="flex flex-col p-2 rounded-md bg-flow-background/30">
+                          <span className="text-xs text-flow-foreground/70">{t('version')}</span>
+                          <span className="text-sm text-flow-foreground">v3.2.1</span>
+                        </div>
+                        <div className="flex flex-col p-2 rounded-md bg-flow-background/30">
+                          <span className="text-xs text-flow-foreground/70">{t('memory')}</span>
+                          <span className="text-sm text-flow-foreground">1.8 GB / 2.0 GB</span>
+                        </div>
+                        <div className="flex flex-col p-2 rounded-md bg-flow-background/30">
+                          <span className="text-xs text-flow-foreground/70">{t('uptime')}</span>
+                          <span className="text-sm text-flow-foreground">31 days, 4 hours</span>
+                        </div>
+                        <div className="flex flex-col p-2 rounded-md bg-flow-background/30">
+                          <span className="text-xs text-flow-foreground/70">{t('tasksCompleted')}</span>
+                          <span className="text-sm text-flow-foreground">1,452</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6 flex flex-wrap gap-3">
+                      {agent.status === 'working' ? (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="text-xs h-8 bg-flow-background/30 border-flow-border/50"
+                          onClick={() => handleAgentAction('pause', agent)}
+                        >
+                          <Pause className="h-3 w-3 mr-1" />
+                          {t('pause')}
+                        </Button>
+                      ) : agent.status === 'paused' ? (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="text-xs h-8 bg-flow-background/30 border-flow-border/50"
+                          onClick={() => handleAgentAction('resume', agent)}
+                        >
+                          <Play className="h-3 w-3 mr-1" />
+                          {t('resume')}
+                        </Button>
+                      ) : agent.status === 'error' ? (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="text-xs h-8 border-red-500/50 text-red-500 hover:bg-red-500/10"
+                          onClick={() => handleAgentAction('restart', agent)}
+                        >
+                          <AlertTriangle className="h-3 w-3 mr-1" />
+                          {t('restart')}
+                        </Button>
+                      ) : (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="text-xs h-8 bg-flow-background/30 border-flow-border/50"
+                          onClick={() => handleAgentAction('activate', agent)}
+                        >
+                          <Play className="h-3 w-3 mr-1" />
+                          {t('activate')}
+                        </Button>
+                      )}
+                      
                       <Button 
                         variant="outline" 
                         size="sm"
-                        className="text-xs h-7 bg-flow-background/30 border-flow-border/50"
-                        onClick={() => handleAgentAction('details', agent)}
+                        className="text-xs h-8 bg-flow-background/30 border-flow-border/50"
+                        onClick={() => handleAgentAction('message', agent)}
                       >
-                        <ExternalLink className="h-3 w-3 mr-1" />
-                        {t('details')}
+                        <MessageCircle className="h-3 w-3 mr-1" />
+                        {t('message')}
                       </Button>
-                    )}
+                    </div>
                   </div>
-                </div>
-              </GlassMorphism>
+                </GlassMorphism>
+              ) : (
+                <AgentCard 
+                  name={agent.name}
+                  role={agent.role}
+                  icon={agent.icon}
+                  status={agent.status}
+                  efficiency={agent.efficiency}
+                  lastActivity={agent.lastActive}
+                  className={`border-${agent.division}-500/30 hover:border-${agent.division}-500/50`}
+                  onClick={() => handleExpandAgent(agent.id)}
+                />
+              )}
             </motion.div>
           );
         })}
