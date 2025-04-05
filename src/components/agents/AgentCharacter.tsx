@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, CSSProperties } from 'react';
 import { motion } from 'framer-motion';
 import { LucideIcon, MessageCircle, X } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -46,13 +45,15 @@ interface AgentProps {
   routePath?: RoutePoint[];
   isSelected?: boolean;
   onAgentClick?: (id: number) => void;
+  style?: React.CSSProperties;
 }
 
 const AgentCharacter: React.FC<AgentProps> = ({ 
   agent, 
   routePath = [], 
   isSelected = false, 
-  onAgentClick 
+  onAgentClick,
+  style
 }) => {
   const [position, setPosition] = useState(agent.position);
   const [currentRouteIndex, setCurrentRouteIndex] = useState(0);
@@ -280,7 +281,8 @@ const AgentCharacter: React.FC<AgentProps> = ({
       style={{
         left: `${position.x}%`,
         top: `${position.y}%`,
-        transition: isMoving ? 'all 1s cubic-bezier(0.4, 0.0, 0.2, 1)' : 'all 0.3s ease'
+        transition: isMoving ? 'all 1s cubic-bezier(0.4, 0.0, 0.2, 1)' : 'all 0.3s ease',
+        ...style
       }}
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ 
