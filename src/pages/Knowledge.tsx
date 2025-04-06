@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
@@ -12,7 +11,8 @@ import { Separator } from '@/components/ui/separator';
 import { 
   Book, FileText, Search, Star, Tag, Users, 
   Calendar, Eye, Filter, ArrowUpDown, ExternalLink, 
-  ThumbsUp, BookOpen, CheckCircle, PenLine
+  ThumbsUp, BookOpen, CheckCircle, PenLine, 
+  Clock, TrendingUp, Bookmark, HelpCircle, Info
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -30,9 +30,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import GlassMorphism from '@/components/ui/GlassMorphism';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from '@/components/ui/navigation-menu';
 
 const Knowledge = () => {
   const { t } = useLanguage();
@@ -49,6 +52,8 @@ const Knowledge = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
 
   useEffect(() => {
     // Load content with a slight delay to prevent flash
@@ -71,7 +76,9 @@ const Knowledge = () => {
       preview: 'This documentation outlines how AI agents collaborate within our ecosystem to accomplish complex tasks. It includes communication protocols, task delegation rules, and conflict resolution strategies.',
       views: 145,
       likes: 23,
-      completion: 85
+      completion: 85,
+      isNew: true,
+      isBookmarked: false
     },
     {
       id: 'kb-2',
@@ -84,7 +91,9 @@ const Knowledge = () => {
       preview: 'A step-by-step guide on how to onboard new clients to our AI agency services. Includes questionnaire templates, kick-off meeting agenda, and initial configuration checklists.',
       views: 89,
       likes: 17,
-      completion: 92
+      completion: 92,
+      isNew: false,
+      isBookmarked: true
     },
     {
       id: 'kb-3',
@@ -97,7 +106,9 @@ const Knowledge = () => {
       preview: 'Guidelines for generating high-quality content using our AI agents. Covers tone adjustment, fact-checking procedures, and optimization techniques for different platforms.',
       views: 203,
       likes: 41,
-      completion: 78
+      completion: 78,
+      isNew: false,
+      isBookmarked: false
     },
     {
       id: 'kb-4',
@@ -110,7 +121,9 @@ const Knowledge = () => {
       preview: 'Comprehensive research on the latest SEO optimization techniques. Includes analysis of recent algorithm changes, ranking factors, and practical implementation strategies.',
       views: 176,
       likes: 32,
-      completion: 64
+      completion: 64,
+      isNew: false,
+      isBookmarked: false
     },
     {
       id: 'kb-5',
@@ -123,7 +136,9 @@ const Knowledge = () => {
       preview: 'Official security protocols for handling sensitive data within the agency. Includes access control policies, data encryption standards, and breach response procedures.',
       views: 82,
       likes: 9,
-      completion: 100
+      completion: 100,
+      isNew: false,
+      isBookmarked: false
     },
     {
       id: 'kb-6',
@@ -136,7 +151,9 @@ const Knowledge = () => {
       preview: 'Framework template for conducting comprehensive market analysis. Includes competitor research methods, market sizing calculations, and trend identification strategies.',
       views: 124,
       likes: 27,
-      completion: 88
+      completion: 88,
+      isNew: false,
+      isBookmarked: false
     },
     {
       id: 'kb-7',
@@ -149,7 +166,9 @@ const Knowledge = () => {
       preview: 'A comprehensive guide to developing consistent brand voice and tone. Includes exercises for brand personality definition, voice attribute selection, and application examples.',
       views: 67,
       likes: 15,
-      completion: 72
+      completion: 72,
+      isNew: false,
+      isBookmarked: false
     },
     {
       id: 'kb-8',
@@ -162,7 +181,9 @@ const Knowledge = () => {
       preview: 'Our agency\'s ethical guidelines for AI development and deployment. Covers data privacy, fairness, transparency, accountability, and responsible innovation practices.',
       views: 193,
       likes: 46,
-      completion: 95
+      completion: 95,
+      isNew: false,
+      isBookmarked: false
     }
   ];
 
@@ -173,6 +194,12 @@ const Knowledge = () => {
   useEffect(() => {
     let filtered = [...allKnowledgeItems];
     
+    // Filter by tab selection (category)
+    if (activeTab !== 'all') {
+      filtered = filtered.filter(item => item.category === activeTab);
+    }
+    
+    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(item => 
         item.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -182,18 +209,21 @@ const Knowledge = () => {
       );
     }
     
+    // Filter by tags
     if (selectedTags.length > 0) {
       filtered = filtered.filter(item => 
         selectedTags.some(tag => item.tags.includes(tag))
       );
     }
     
+    // Filter by types
     if (selectedTypes.length > 0) {
       filtered = filtered.filter(item => 
         selectedTypes.includes(item.type)
       );
     }
     
+    // Sort the filtered items
     filtered.sort((a, b) => {
       if (sortBy === 'title') {
         return sortOrder === 'asc' 
@@ -208,6 +238,7 @@ const Knowledge = () => {
           ? a.likes - b.likes 
           : b.likes - a.likes;
       } else {
+        // Sort by last updated
         if (a.lastUpdated.includes('day') && b.lastUpdated.includes('week')) return sortOrder === 'desc' ? -1 : 1;
         if (a.lastUpdated.includes('week') && b.lastUpdated.includes('day')) return sortOrder === 'desc' ? 1 : -1;
         if (a.lastUpdated.includes('day') && b.lastUpdated.includes('month')) return sortOrder === 'desc' ? -1 : 1;
@@ -222,7 +253,7 @@ const Knowledge = () => {
     });
     
     setFilteredItems(filtered);
-  }, [searchTerm, selectedTags, selectedTypes, sortBy, sortOrder]);
+  }, [searchTerm, selectedTags, selectedTypes, sortBy, sortOrder, activeTab]);
 
   const toggleTagFilter = (tag) => {
     if (selectedTags.includes(tag)) {
@@ -247,6 +278,15 @@ const Knowledge = () => {
   const handleViewItem = (item) => {
     setSelectedItem(item);
     setIsDialogOpen(true);
+  };
+  
+  const toggleBookmark = (itemId) => {
+    // In a real app, this would update the state and persist to a database
+    toast({
+      title: "Bookmark Updated",
+      description: "Article has been added to your bookmarks",
+      duration: 3000,
+    });
   };
 
   const getTypeIcon = (type) => {
@@ -295,6 +335,22 @@ const Knowledge = () => {
     setSortOrder('desc');
   };
 
+  const getTrendingArticles = () => {
+    // In a real app, this would fetch trending articles from an API
+    return allKnowledgeItems
+      .sort((a, b) => b.views - a.views)
+      .slice(0, 3);
+  };
+
+  const getRecentlyUpdated = () => {
+    // In a real app, this would fetch recently updated articles from an API
+    const now = new Date();
+    // Simulate some recent articles
+    return allKnowledgeItems
+      .filter(item => item.lastUpdated.includes('day'))
+      .slice(0, 3);
+  };
+
   if (!isLoaded) {
     return (
       <div className="min-h-screen bg-flow-background flex flex-col items-center justify-center">
@@ -311,55 +367,256 @@ const Knowledge = () => {
       
       <Navbar />
       
-      <main className="flex-1 container mx-auto px-4 py-24">
+      <main className="flex-1 container mx-auto px-4 py-16">
         <TransitionWrapper>
-          <GlassMorphism intensity="low" className="p-6 rounded-xl border-flow-accent/30 animate-glow-pulse mb-8">
-            <div className="flex flex-col md:flex-row justify-between items-start">
+          {/* Header Section */}
+          <GlassMorphism intensity="low" className="p-6 md:p-8 rounded-xl border border-flow-accent/20 mb-8 animate-fade-in">
+            <div className="flex flex-col md:flex-row justify-between items-start gap-6">
               <div>
                 <div className="flex items-center mb-4">
                   <div className="mr-4 bg-purple-500/20 p-3 rounded-xl backdrop-blur-sm border border-purple-500/30">
                     <Book className="h-8 w-8 text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
                   </div>
-                  <h1 className="text-3xl font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">
-                    Knowledge Base
-                  </h1>
+                  <div>
+                    <h1 className="text-3xl font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">
+                      Knowledge Base
+                    </h1>
+                    <p className="text-flow-foreground/70 mt-1">
+                      Access and manage the collective intelligence of FlowState Agency
+                    </p>
+                  </div>
                 </div>
-                <p className="text-flow-foreground/70">
-                  Access and manage the collective intelligence of FlowState Agency. 
-                  Our knowledge base automatically updates with new insights and best practices.
-                </p>
               </div>
               
-              <div className="mt-4 md:mt-0 flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-3">
                 <div className="text-xs bg-flow-muted/50 px-3 py-1.5 rounded-full flex items-center backdrop-blur-sm border border-flow-border/30">
                   <span className="inline-block h-2 w-2 rounded-full bg-purple-500 animate-pulse mr-2"></span>
-                  8 Categories
+                  {filteredItems.length} Items
                 </div>
                 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs bg-flow-muted/30 hover:bg-flow-muted/50 border-flow-border"
-                  onClick={() => toast({
-                    title: "Knowledge Actions",
-                    description: "Quick knowledge base actions panel",
-                    duration: 3000,
-                  })}
-                >
-                  <FileText className="h-3 w-3 mr-1" />
-                  Quick Access
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs bg-flow-muted/30 hover:bg-flow-muted/50 border-flow-border"
+                        onClick={() => toast({
+                          title: "New Knowledge Item",
+                          description: "Create a new knowledge base item",
+                          duration: 3000,
+                        })}
+                      >
+                        <PenLine className="h-3 w-3 mr-1" />
+                        New Item
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Create a new knowledge item
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs bg-flow-muted/30 hover:bg-flow-muted/50 border-flow-border"
+                        onClick={() => toast({
+                          title: "Import Knowledge",
+                          description: "Import knowledge from external sources",
+                          duration: 3000,
+                        })}
+                      >
+                        <FileText className="h-3 w-3 mr-1" />
+                        Import
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Import knowledge items from external sources
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
+                <NavigationMenu>
+                  <NavigationMenuList>
+                    <NavigationMenuItem>
+                      <NavigationMenuTrigger className="text-xs bg-flow-muted/30 hover:bg-flow-muted/50 border-flow-border h-9 px-3 py-2 rounded-md">
+                        <HelpCircle className="h-3 w-3 mr-1" />
+                        Help
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-2">
+                          <li className="row-span-3">
+                            <NavigationMenuLink asChild>
+                              <a
+                                className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-flow-muted/50 to-flow-muted p-6 no-underline outline-none focus:shadow-md"
+                                href="#"
+                              >
+                                <div className="mb-2 mt-4 text-lg font-medium text-flow-foreground">
+                                  Knowledge Base Guide
+                                </div>
+                                <p className="text-sm text-flow-foreground/70">
+                                  Learn how to effectively use and manage the knowledge base system.
+                                </p>
+                              </a>
+                            </NavigationMenuLink>
+                          </li>
+                          <li>
+                            <NavigationMenuLink asChild>
+                              <a
+                                href="#"
+                                className="block select-none space-y-1 rounded-md p-3 hover:bg-flow-muted/30 hover:text-flow-accent"
+                              >
+                                <div className="text-sm font-medium">Quick Start</div>
+                                <p className="text-xs text-flow-foreground/70">
+                                  Get started with the knowledge base in minutes
+                                </p>
+                              </a>
+                            </NavigationMenuLink>
+                          </li>
+                          <li>
+                            <NavigationMenuLink asChild>
+                              <a
+                                href="#"
+                                className="block select-none space-y-1 rounded-md p-3 hover:bg-flow-muted/30 hover:text-flow-accent"
+                              >
+                                <div className="text-sm font-medium">Search Tips</div>
+                                <p className="text-xs text-flow-foreground/70">
+                                  Learn advanced search techniques
+                                </p>
+                              </a>
+                            </NavigationMenuLink>
+                          </li>
+                          <li>
+                            <NavigationMenuLink asChild>
+                              <a
+                                href="#"
+                                className="block select-none space-y-1 rounded-md p-3 hover:bg-flow-muted/30 hover:text-flow-accent"
+                              >
+                                <div className="text-sm font-medium">Contact Support</div>
+                                <p className="text-xs text-flow-foreground/70">
+                                  Get help from our support team
+                                </p>
+                              </a>
+                            </NavigationMenuLink>
+                          </li>
+                        </ul>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+                  </NavigationMenuList>
+                </NavigationMenu>
               </div>
             </div>
           </GlassMorphism>
           
+          {/* Quick Access Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <GlassMorphism 
+              intensity="low" 
+              className="p-5 rounded-xl animate-fade-in" 
+              style={{ animationDelay: '100ms' }}
+            >
+              <div className="flex items-center mb-4">
+                <TrendingUp className="h-5 w-5 text-blue-400 mr-2" />
+                <h3 className="text-lg font-semibold">Trending</h3>
+              </div>
+              <div className="space-y-3">
+                {getTrendingArticles().map((item, index) => (
+                  <div 
+                    key={`trending-${item.id}`}
+                    className="flex items-center space-x-3 p-2 hover:bg-flow-muted/20 rounded-md transition-colors cursor-pointer"
+                    onClick={() => handleViewItem(item)}
+                  >
+                    <div className="flex-shrink-0 w-8 h-8 rounded-md flex items-center justify-center" style={{ backgroundColor: getTypeColor(item.type) }}>
+                      {getTypeIcon(item.type)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{item.title}</p>
+                      <div className="flex items-center text-xs text-flow-foreground/60">
+                        <Eye className="h-3 w-3 mr-1" /> {item.views}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </GlassMorphism>
+            
+            <GlassMorphism 
+              intensity="low" 
+              className="p-5 rounded-xl animate-fade-in" 
+              style={{ animationDelay: '200ms' }}
+            >
+              <div className="flex items-center mb-4">
+                <Clock className="h-5 w-5 text-green-400 mr-2" />
+                <h3 className="text-lg font-semibold">Recently Updated</h3>
+              </div>
+              <div className="space-y-3">
+                {getRecentlyUpdated().map((item, index) => (
+                  <div 
+                    key={`recent-${item.id}`}
+                    className="flex items-center space-x-3 p-2 hover:bg-flow-muted/20 rounded-md transition-colors cursor-pointer"
+                    onClick={() => handleViewItem(item)}
+                  >
+                    <div className="flex-shrink-0 w-8 h-8 rounded-md flex items-center justify-center" style={{ backgroundColor: getTypeColor(item.type) }}>
+                      {getTypeIcon(item.type)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{item.title}</p>
+                      <div className="flex items-center text-xs text-flow-foreground/60">
+                        <Calendar className="h-3 w-3 mr-1" /> {item.lastUpdated}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </GlassMorphism>
+            
+            <GlassMorphism 
+              intensity="low" 
+              className="p-5 rounded-xl animate-fade-in" 
+              style={{ animationDelay: '300ms' }}
+            >
+              <div className="flex items-center mb-4">
+                <Bookmark className="h-5 w-5 text-purple-400 mr-2" />
+                <h3 className="text-lg font-semibold">Bookmarked</h3>
+              </div>
+              <div className="space-y-3">
+                {allKnowledgeItems.filter(item => item.isBookmarked).map((item, index) => (
+                  <div 
+                    key={`bookmark-${item.id}`}
+                    className="flex items-center space-x-3 p-2 hover:bg-flow-muted/20 rounded-md transition-colors cursor-pointer"
+                    onClick={() => handleViewItem(item)}
+                  >
+                    <div className="flex-shrink-0 w-8 h-8 rounded-md flex items-center justify-center" style={{ backgroundColor: getTypeColor(item.type) }}>
+                      {getTypeIcon(item.type)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{item.title}</p>
+                      <div className="flex items-center text-xs text-flow-foreground/60">
+                        <Calendar className="h-3 w-3 mr-1" /> {item.lastUpdated}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {allKnowledgeItems.filter(item => item.isBookmarked).length === 0 && (
+                  <p className="text-sm text-flow-foreground/60 p-2">No bookmarked items yet. Click the bookmark icon on any knowledge item to save it for quick access.</p>
+                )}
+              </div>
+            </GlassMorphism>
+          </div>
+          
+          {/* Search & Filter Section */}
           <GlassMorphism 
             intensity="medium" 
             variant="default" 
-            className="mb-8 p-5 space-y-4 relative overflow-hidden"
+            className="mb-8 p-5 space-y-4 relative overflow-hidden animate-fade-in"
             style={{
               boxShadow: `0 0 15px rgba(85, 120, 255, 0.3)`,
-              borderColor: 'rgba(85, 120, 255, 0.3)'
+              borderColor: 'rgba(85, 120, 255, 0.3)',
+              animationDelay: '400ms'
             }}
           >
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-10">
@@ -380,15 +637,24 @@ const Knowledge = () => {
               
               <div className="flex gap-2">
                 <Popover open={openTagMenu} onOpenChange={setOpenTagMenu}>
-                  <PopoverTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className={`border-flow-border hover:border-flow-accent transition-all duration-300 h-11 ${selectedTags.length > 0 ? 'bg-flow-accent/20 border-flow-accent/50' : ''}`}
-                    >
-                      <Tag className="w-4 h-4 mr-2" />
-                      Tags {selectedTags.length > 0 && `(${selectedTags.length})`}
-                    </Button>
-                  </PopoverTrigger>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <PopoverTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            className={`border-flow-border hover:border-flow-accent transition-all duration-300 h-11 ${selectedTags.length > 0 ? 'bg-flow-accent/20 border-flow-accent/50' : ''}`}
+                          >
+                            <Tag className="w-4 h-4 mr-2" />
+                            Tags {selectedTags.length > 0 && `(${selectedTags.length})`}
+                          </Button>
+                        </PopoverTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Filter by tags
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   <PopoverContent className="w-56 p-2 bg-[rgba(11,15,25,0.9)] border border-flow-border rounded-md shadow-[0_0_15px_rgba(85,120,255,0.2)] backdrop-blur-md z-50">
                     <Command className="rounded-lg bg-transparent">
                       <CommandInput placeholder="Search tags..." className="border-b border-flow-border/30 h-9" />
@@ -416,15 +682,24 @@ const Knowledge = () => {
                 </Popover>
                 
                 <Popover open={openTypeMenu} onOpenChange={setOpenTypeMenu}>
-                  <PopoverTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className={`border-flow-border hover:border-flow-accent transition-all duration-300 h-11 ${selectedTypes.length > 0 ? 'bg-flow-accent/20 border-flow-accent/50' : ''}`}
-                    >
-                      <FileText className="w-4 h-4 mr-2" />
-                      Types {selectedTypes.length > 0 && `(${selectedTypes.length})`}
-                    </Button>
-                  </PopoverTrigger>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <PopoverTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            className={`border-flow-border hover:border-flow-accent transition-all duration-300 h-11 ${selectedTypes.length > 0 ? 'bg-flow-accent/20 border-flow-accent/50' : ''}`}
+                          >
+                            <FileText className="w-4 h-4 mr-2" />
+                            Types {selectedTypes.length > 0 && `(${selectedTypes.length})`}
+                          </Button>
+                        </PopoverTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Filter by content types
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   <PopoverContent className="w-56 p-2 bg-[rgba(11,15,25,0.9)] border border-flow-border rounded-md shadow-[0_0_15px_rgba(85,120,255,0.2)] backdrop-blur-md z-50">
                     <Command className="rounded-lg bg-transparent">
                       <CommandInput placeholder="Search types..." className="border-b border-flow-border/30 h-9" />
@@ -451,292 +726,9 @@ const Knowledge = () => {
                   </PopoverContent>
                 </Popover>
                 
-                <Button 
-                  variant="outline" 
-                  className="border-flow-border hover:border-flow-accent transition-all duration-300 h-11"
-                  onClick={toggleSortOrder}
-                >
-                  <ArrowUpDown className={`w-4 h-4 mr-2 transition-transform duration-300 ${sortOrder === 'desc' ? 'rotate-0' : 'rotate-180'}`} />
-                  {sortBy === 'lastUpdated' ? 'Date' : 
-                   sortBy === 'title' ? 'Title' :
-                   sortBy === 'views' ? 'Views' : 'Likes'}
-                </Button>
-              </div>
-              
-              <div className="flex">
-                <Button 
-                  variant="ghost"
-                  size="sm"
-                  className={`${sortBy === 'lastUpdated' ? 'text-flow-accent' : 'text-flow-foreground/60'} hover:text-flow-accent transition-colors duration-300`}
-                  onClick={() => setSortBy('lastUpdated')}
-                >
-                  <Calendar className="w-4 h-4 mr-1" />
-                  Date
-                </Button>
-                <Button 
-                  variant="ghost"
-                  size="sm"
-                  className={`${sortBy === 'title' ? 'text-flow-accent' : 'text-flow-foreground/60'} hover:text-flow-accent transition-colors duration-300`}
-                  onClick={() => setSortBy('title')}
-                >
-                  <BookOpen className="w-4 h-4 mr-1" />
-                  Title
-                </Button>
-                <Button 
-                  variant="ghost"
-                  size="sm"
-                  className={`${sortBy === 'views' ? 'text-flow-accent' : 'text-flow-foreground/60'} hover:text-flow-accent transition-colors duration-300`}
-                  onClick={() => setSortBy('views')}
-                >
-                  <Eye className="w-4 h-4 mr-1" />
-                  Views
-                </Button>
-                <Button 
-                  variant="ghost"
-                  size="sm"
-                  className={`${sortBy === 'likes' ? 'text-flow-accent' : 'text-flow-foreground/60'} hover:text-flow-accent transition-colors duration-300`}
-                  onClick={() => setSortBy('likes')}
-                >
-                  <ThumbsUp className="w-4 h-4 mr-1" />
-                  Likes
-                </Button>
-              </div>
-            </div>
-            
-            <div className="flex flex-wrap gap-2 items-center mt-2">
-              <span className="text-sm text-flow-foreground/60">Active filters:</span>
-              
-              {selectedTags.map(tag => (
-                <Badge 
-                  key={tag} 
-                  className="bg-flow-accent/20 text-flow-accent border-flow-accent/30 cursor-pointer hover:bg-flow-accent/30 transition-colors duration-300"
-                  onClick={() => toggleTagFilter(tag)}
-                >
-                  {tag} ×
-                </Badge>
-              ))}
-              
-              {selectedTypes.map(type => (
-                <Badge 
-                  key={type} 
-                  className="bg-flow-muted/30 text-flow-foreground/80 border-flow-border cursor-pointer hover:bg-flow-muted/50 transition-colors duration-300"
-                  onClick={() => toggleTypeFilter(type)}
-                >
-                  {type} ×
-                </Badge>
-              ))}
-              
-              {(selectedTags.length > 0 || selectedTypes.length > 0 || searchTerm) && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-flow-foreground/60 hover:text-flow-accent h-7 transition-colors duration-300"
-                  onClick={resetFilters}
-                >
-                  Clear all
-                </Button>
-              )}
-            </div>
-          </GlassMorphism>
-          
-          <Tabs defaultValue="all" className="mb-6">
-            <TabsList className="w-full max-w-md mb-8 bg-[rgba(11,15,25,0.5)] border border-flow-border/30 p-1">
-              <TabsTrigger value="all" className="flex-1 data-[state=active]:bg-flow-accent/20 data-[state=active]:text-flow-accent data-[state=active]:shadow-[0_0_10px_rgba(85,120,255,0.3)] transition-all duration-300">All</TabsTrigger>
-              <TabsTrigger value="internal" className="flex-1 data-[state=active]:bg-flow-accent/20 data-[state=active]:text-flow-accent data-[state=active]:shadow-[0_0_10px_rgba(85,120,255,0.3)] transition-all duration-300">Internal</TabsTrigger>
-              <TabsTrigger value="client-facing" className="flex-1 data-[state=active]:bg-flow-accent/20 data-[state=active]:text-flow-accent data-[state=active]:shadow-[0_0_10px_rgba(85,120,255,0.3)] transition-all duration-300">Client Facing</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="all" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredItems.map(item => (
-                  <div 
-                    key={item.id}
-                    className="group relative"
-                    onMouseEnter={() => setHoveredCard(item.id)}
-                    onMouseLeave={() => setHoveredCard(null)}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-flow-accent/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
-                    <Card 
-                      className="border border-flow-border bg-[rgba(11,15,25,0.7)] hover:border-flow-accent/50 transition-all h-full flex flex-col rounded-xl overflow-hidden relative"
-                    >
-                      <div className={`absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 overflow-hidden`}>
-                        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-flow-accent to-transparent"></div>
-                        <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-flow-accent to-transparent"></div>
-                        <div className="absolute left-0 top-0 h-full w-[1px] bg-gradient-to-b from-transparent via-flow-accent to-transparent"></div>
-                        <div className="absolute right-0 top-0 h-full w-[1px] bg-gradient-to-b from-transparent via-flow-accent to-transparent"></div>
-                      </div>
-                      
-                      <div className="absolute -top-[150%] -left-[50%] w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,rgba(85,120,255,0.15),transparent_20%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                      
-                      <CardHeader className="pb-2 relative">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div 
-                            className="p-1 rounded-md text-white transition-all duration-300"
-                            style={{ 
-                              backgroundColor: hoveredCard === item.id ? getTypeColor(item.type) : 'rgba(30, 41, 59, 0.7)',
-                              boxShadow: hoveredCard === item.id ? `0 0 10px ${getTypeColor(item.type)}` : 'none'
-                            }}
-                          >
-                            {getTypeIcon(item.type)}
-                          </div>
-                          <Badge 
-                            variant="outline" 
-                            className="text-xs capitalize border-flow-border/50 transition-colors duration-300"
-                            style={{
-                              borderColor: hoveredCard === item.id ? getTypeColor(item.type) : 'rgba(75, 85, 99, 0.5)'
-                            }}
-                          >
-                            {item.type}
-                          </Badge>
-                        </div>
-                        <CardTitle className="text-lg font-orbitron group-hover:text-flow-accent transition-colors duration-300">{item.title}</CardTitle>
-                        <CardDescription className="flex justify-between items-center mt-1">
-                          <span>{item.author}</span>
-                          <span className="text-xs">Updated {item.lastUpdated}</span>
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="flex-grow">
-                        <div className="mt-3 mb-4 text-sm text-flow-foreground/80 bg-[rgba(11,15,25,0.5)] p-3 rounded-md border border-flow-border/30 transition-all duration-300 group-hover:border-flow-border/50 line-clamp-3">
-                          {item.preview}
-                        </div>
-                        
-                        <div className="mb-4 px-1">
-                          <div className="flex justify-between text-xs text-flow-foreground/60 mb-1">
-                            <span>Completion</span>
-                            <span>{item.completion}%</span>
-                          </div>
-                          <Progress 
-                            value={item.completion} 
-                            className="h-1.5"
-                            indicatorColor={getTypeColor(item.type)}
-                          />
-                        </div>
-                        
-                        <div className="flex justify-between text-xs text-flow-foreground/60 mb-3">
-                          <div className="flex items-center">
-                            <Eye className="w-3 h-3 mr-1" />
-                            {item.views} views
-                          </div>
-                          <div className="flex items-center">
-                            <ThumbsUp className="w-3 h-3 mr-1" />
-                            {item.likes} likes
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {item.tags.map(tag => (
-                            <Badge 
-                              key={tag} 
-                              variant="secondary" 
-                              className="text-xs cursor-pointer hover:bg-flow-muted/30 transition-colors duration-300 bg-[rgba(30,41,59,0.3)]"
-                              onClick={() => toggleTagFilter(tag)}
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                      </CardContent>
-                      <CardFooter className="pt-0 flex justify-between">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="text-flow-foreground/60 hover:text-flow-accent transition-colors duration-300"
-                        >
-                          <PenLine className="w-4 h-4 mr-1" />
-                          Edit
-                        </Button>
-                        <Button 
-                          size="sm"
-                          className="text-flow-accent hover:text-white hover:bg-flow-accent/20 flex items-center transition-all duration-300 border border-flow-accent/20 hover:border-flow-accent/60 bg-transparent"
-                          onClick={() => handleViewItem(item)}
-                          style={{
-                            boxShadow: hoveredCard === item.id ? `0 0 15px rgba(85, 120, 255, 0.3)` : 'none'
-                          }}
-                        >
-                          View Details
-                          <ExternalLink className="w-4 h-4 ml-1" />
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
-        </TransitionWrapper>
-      </main>
-      
-      <Footer />
-      
-      {/* Item Details Dialog */}
-      {selectedItem && (
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="bg-[rgba(11,15,25,0.95)] border-flow-accent/20 max-w-4xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-2xl flex items-center gap-3">
-                <div 
-                  className="p-2 rounded-md"
-                  style={{ backgroundColor: getTypeColor(selectedItem.type) }}
-                >
-                  {getTypeIcon(selectedItem.type)}
-                </div>
-                {selectedItem.title}
-              </DialogTitle>
-              <DialogDescription className="flex justify-between items-center">
-                <span>{selectedItem.author}</span>
-                <span>Last updated {selectedItem.lastUpdated}</span>
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="space-y-4">
-              <div className="bg-[rgba(11,15,25,0.7)] p-4 rounded-lg border border-flow-border/30">
-                <p>{selectedItem.preview}</p>
-                <p className="mt-4">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam eget justo nec nisi efficitur tincidunt. 
-                  Mauris euismod, nisi id faucibus hendrerit, nisl nunc ultricies risus, eget ultricies nisl nunc id nisi.
-                </p>
-              </div>
-              
-              <div className="flex flex-wrap gap-2 mt-4">
-                {selectedItem.tags.map(tag => (
-                  <Badge 
-                    key={tag}
-                    variant="outline"
-                    className="bg-flow-accent/10 text-flow-accent/90 border-flow-accent/30"
-                  >
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-              
-              <div className="flex justify-between items-center text-sm text-flow-foreground/70">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center">
-                    <Eye className="w-4 h-4 mr-1" />
-                    {selectedItem.views} views
-                  </div>
-                  <div className="flex items-center">
-                    <ThumbsUp className="w-4 h-4 mr-1" />
-                    {selectedItem.likes} likes
-                  </div>
-                </div>
-                
-                <div className="flex items-center">
-                  <span className="mr-2">Completion:</span>
-                  <Progress 
-                    value={selectedItem.completion} 
-                    className="h-2 w-24"
-                    indicatorColor={getTypeColor(selectedItem.type)}
-                  />
-                  <span className="ml-2">{selectedItem.completion}%</span>
-                </div>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
-    </div>
-  );
-};
-
-export default Knowledge;
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        className="border-flow-border hover:border-flow

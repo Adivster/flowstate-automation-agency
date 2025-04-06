@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Heart } from 'lucide-react';
+import { Heart, Github, Twitter } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
@@ -34,6 +34,14 @@ const Footer: React.FC = () => {
             >
               Contact
             </Link>
+            <div className="flex items-center space-x-3">
+              <a href="https://github.com/flowstateagency" target="_blank" rel="noopener noreferrer" className="text-sm text-flow-foreground/70 hover:text-flow-foreground transition-colors">
+                <Github className="h-4 w-4" />
+              </a>
+              <a href="https://twitter.com/flowstateagency" target="_blank" rel="noopener noreferrer" className="text-sm text-flow-foreground/70 hover:text-flow-foreground transition-colors">
+                <Twitter className="h-4 w-4" />
+              </a>
+            </div>
             <span className="flex items-center text-sm text-flow-foreground/70">
               Made with <Heart className="h-3 w-3 mx-1 text-red-500 animate-pulse-subtle" /> by AI
             </span>
