@@ -13,11 +13,11 @@ const Index: React.FC = () => {
       <Navbar />
       
       {/* Main Content */}
-      <main className="flex-1 mt-20 px-6">
+      <main className="flex-1 mt-20 px-4 sm:px-6 pb-12">
         <TransitionWrapper>
-          <div className="max-w-7xl mx-auto mb-6">
+          <div className="max-w-7xl mx-auto mb-8">
             <div className="flex items-center mb-4">
-              <div className="mr-4 bg-flow-accent/20 p-3 rounded-xl backdrop-blur-sm border border-flow-accent/30">
+              <div className="mr-4 bg-flow-accent/20 p-3 rounded-xl backdrop-blur-sm border border-flow-accent/30 shadow-[0_0_15px_rgba(217,70,239,0.2)]">
                 <LayoutDashboard className="h-8 w-8 text-flow-accent drop-shadow-[0_0_8px_rgba(217,70,239,0.8)]" />
               </div>
               <h1 className="text-3xl font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">Dashboard</h1>
@@ -28,7 +28,7 @@ const Index: React.FC = () => {
           </div>
           
           <div className="max-w-7xl mx-auto">
-            <GlassMorphism className="rounded-2xl p-6 md:p-8 shadow-sm border-flow-border/30 scan-lines">
+            <GlassMorphism className="rounded-2xl p-5 md:p-8 shadow-md border-flow-border/30 scan-lines bg-flow-background/20 backdrop-blur-lg">
               <AgencyDashboard />
             </GlassMorphism>
           </div>

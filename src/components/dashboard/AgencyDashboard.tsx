@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   BookOpen, 
@@ -11,7 +12,8 @@ import {
   TestTube,
   Zap,
   ChevronRight,
-  ArrowRight
+  ArrowRight,
+  ExternalLink
 } from 'lucide-react';
 import { TransitionWrapper } from '../ui/TransitionWrapper';
 import StatsOverview from './StatsOverview';
@@ -19,9 +21,10 @@ import DivisionCard from './DivisionCard';
 import AgentGrid from '../agents/AgentGrid';
 import TaskManagement from './TaskManagement';
 import { useLanguage } from '@/contexts/LanguageContext';
-import GlassMorphism from '../ui/GlassMorphism';
+import { GlassMorphism } from '../ui/GlassMorphism';
 import { Button } from '../ui/button';
 import { PieChart } from '../ui/chart';
+import { Link } from 'react-router-dom';
 
 const AgencyDashboard: React.FC = () => {
   const { t } = useLanguage();
@@ -119,20 +122,20 @@ const AgencyDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-10 py-6">
+    <div className="space-y-10 py-4 md:py-6">
       <TransitionWrapper>
-        <GlassMorphism className="p-6 rounded-xl border-flow-accent/30 animate-glow-pulse mb-6">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold mb-1 neon-text">FlowState Business Agency</h2>
-            <p className="text-flow-foreground/70">
+        <GlassMorphism className="p-6 rounded-xl border-flow-accent/30 animate-glow-pulse mb-6 bg-gradient-to-br from-flow-background/20 to-flow-accent/5">
+          <div className="space-y-3">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-1 neon-text">FlowState Business Agency</h2>
+            <p className="text-flow-foreground/80">
               AI-powered automation for your growing business
             </p>
             <div className="flex flex-wrap gap-3 mt-4">
-              <Button className="bg-flow-accent/80 hover:bg-flow-accent text-flow-accent-foreground rounded-md border border-flow-accent/50 shadow-[0_0_10px_rgba(217,70,239,0.3)]">
+              <Button className="bg-flow-accent/80 hover:bg-flow-accent text-flow-accent-foreground rounded-md border border-flow-accent/50 shadow-[0_0_10px_rgba(217,70,239,0.3)] transition-all duration-300 hover:scale-105">
                 <Zap className="w-4 h-4 mr-2" />
                 Create New Workflow
               </Button>
-              <Button variant="outline" className="border-flow-border/50 hover:border-flow-accent/50">
+              <Button variant="outline" className="border-flow-border/50 hover:border-flow-accent/50 hover:text-flow-accent transition-all duration-300">
                 <Users className="w-4 h-4 mr-2" />
                 Manage Agents
               </Button>
@@ -141,42 +144,54 @@ const AgencyDashboard: React.FC = () => {
         </GlassMorphism>
       </TransitionWrapper>
       
-      <section className="space-y-6">
+      <section className="space-y-5">
         <TransitionWrapper delay={50}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-2">
             <h3 className="text-xl font-medium neon-text">Performance Overview</h3>
-            <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent">
-              View Details <ChevronRight className="ml-1 h-3 w-3" />
-            </Button>
+            <Link to="/performance">
+              <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
+                View Details <ChevronRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+              </Button>
+            </Link>
           </div>
+          <p className="text-sm text-flow-foreground/60 mb-4">Key metrics and performance indicators for your agency</p>
         </TransitionWrapper>
         <StatsOverview />
       </section>
       
-      <section className="space-y-6">
+      <section className="space-y-5">
         <TransitionWrapper delay={100}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-2">
             <h3 className="text-xl font-medium neon-text">Task Overview</h3>
-            <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent">
-              View All Tasks <ChevronRight className="ml-1 h-3 w-3" />
-            </Button>
+            <Link to="/tasks">
+              <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
+                View All Tasks <ChevronRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+              </Button>
+            </Link>
           </div>
+          <p className="text-sm text-flow-foreground/60 mb-4">Current tasks and their status across all divisions</p>
         </TransitionWrapper>
         <TaskManagement />
       </section>
       
-      {/* New Resource Usage Section */}
-      <section className="space-y-6">
+      {/* Resource Usage Section */}
+      <section className="space-y-5">
         <TransitionWrapper delay={130}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-2">
             <h3 className="text-xl font-medium neon-text">Resource Usage</h3>
-            <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent">
-              View Analytics <ChevronRight className="ml-1 h-3 w-3" />
-            </Button>
+            <Link to="/analytics">
+              <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
+                View Analytics <ChevronRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+              </Button>
+            </Link>
           </div>
+          <p className="text-sm text-flow-foreground/60 mb-4">Resource allocation and key performance indicators across divisions</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <GlassMorphism className="p-6 rounded-xl">
-              <h4 className="text-lg font-medium mb-4">Division Resource Allocation</h4>
+            <GlassMorphism className="p-5 sm:p-6 rounded-xl bg-flow-background/20 hover:bg-flow-background/30 transition-all duration-300">
+              <h4 className="text-lg font-medium mb-4 flex items-center">
+                <BarChart className="w-4 h-4 mr-2 text-flow-accent" />
+                Division Resource Allocation
+              </h4>
               <div className="h-[260px]">
                 <PieChart 
                   data={resourceData} 
@@ -187,8 +202,11 @@ const AgencyDashboard: React.FC = () => {
                 />
               </div>
             </GlassMorphism>
-            <GlassMorphism className="p-6 rounded-xl">
-              <h4 className="text-lg font-medium mb-4">Key Performance Indicators</h4>
+            <GlassMorphism className="p-5 sm:p-6 rounded-xl bg-flow-background/20 hover:bg-flow-background/30 transition-all duration-300">
+              <h4 className="text-lg font-medium mb-4 flex items-center">
+                <BarChart className="w-4 h-4 mr-2 text-flow-accent" />
+                Key Performance Indicators
+              </h4>
               <div className="space-y-4">
                 {['Workflow Efficiency', 'Agent Productivity', 'Task Completion Rate', 'System Reliability'].map((metric, index) => (
                   <div key={index} className="space-y-2">
@@ -198,7 +216,7 @@ const AgencyDashboard: React.FC = () => {
                     </div>
                     <div className="w-full bg-flow-muted/20 rounded-full h-2 overflow-hidden">
                       <div 
-                        className="h-2 rounded-full transition-all duration-500"
+                        className="h-2 rounded-full transition-all duration-500 animate-pulse-subtle"
                         style={{ 
                           width: `${75 + index * 5}%`,
                           background: `linear-gradient(90deg, #8b5cf670, ${['#6366f1', '#f97316', '#0ea5e9', '#8b5cf6'][index % 4]})`,
@@ -214,15 +232,18 @@ const AgencyDashboard: React.FC = () => {
         </TransitionWrapper>
       </section>
       
-      <section className="space-y-6">
+      <section className="space-y-5">
         <TransitionWrapper delay={150}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-2">
             <h3 className="text-xl font-medium neon-text">Core Divisions</h3>
-            <Button variant="ghost" className="text-flow-foreground/70 hover:text-flow-accent">
-              <ArrowRight className="ml-1 h-4 w-4" />
-            </Button>
+            <Link to="/divisions">
+              <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
+                <ExternalLink className="mr-1 h-4 w-4" />
+                Manage Divisions
+              </Button>
+            </Link>
           </div>
-          <p className="text-sm text-flow-foreground/70">
+          <p className="text-sm text-flow-foreground/60 mb-4">
             Essential divisions included in our Basic Plan ($49/month)
           </p>
         </TransitionWrapper>
@@ -237,15 +258,18 @@ const AgencyDashboard: React.FC = () => {
         </div>
       </section>
 
-      <section className="space-y-6">
+      <section className="space-y-5">
         <TransitionWrapper delay={250}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-2">
             <h3 className="text-xl font-medium neon-text">Additional Divisions</h3>
-            <Button variant="ghost" className="text-flow-foreground/70 hover:text-flow-accent">
-              <ArrowRight className="ml-1 h-4 w-4" />
-            </Button>
+            <Link to="/divisions/premium">
+              <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
+                <ExternalLink className="mr-1 h-4 w-4" />
+                Explore Premium Divisions
+              </Button>
+            </Link>
           </div>
-          <p className="text-sm text-flow-foreground/70">
+          <p className="text-sm text-flow-foreground/60 mb-4">
             Unlock more capabilities with our Pro Plan ($199/month) or Premium Plan (Contact Sales)
           </p>
         </TransitionWrapper>
@@ -260,91 +284,103 @@ const AgencyDashboard: React.FC = () => {
         </div>
       </section>
       
-      <section className="space-y-6">
+      <section className="space-y-5">
         <TransitionWrapper delay={350}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-2">
             <h3 className="text-xl font-medium neon-text">Top Performing Agents</h3>
-            <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent">
-              View All Agents <ChevronRight className="ml-1 h-3 w-3" />
-            </Button>
+            <Link to="/agents">
+              <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
+                View All Agents <ChevronRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+              </Button>
+            </Link>
           </div>
+          <p className="text-sm text-flow-foreground/60 mb-4">Agents with the highest efficiency and task completion rates</p>
         </TransitionWrapper>
-        <AgentGrid />
+        <AgentGrid maxAgents={3} showAsGrid={false} />
       </section>
 
       <section className="space-y-6">
         <TransitionWrapper delay={400}>
-          <GlassMorphism className="p-6 rounded-xl backdrop-blur-sm">
+          <GlassMorphism className="p-6 rounded-xl backdrop-blur-lg bg-flow-background/20">
             <h3 className="text-xl font-medium mb-4 neon-text">Pricing Plans</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <GlassMorphism intensity="low" className="p-6 rounded-xl transition-all duration-300 hover:shadow-md hover:border-flow-border/50">
-                <h4 className="text-lg font-medium">Basic Plan</h4>
-                <div className="text-2xl font-bold my-3">$49<span className="text-sm font-normal text-flow-foreground/70">/month</span></div>
-                <div className="text-sm text-flow-foreground/70 mb-4">Core divisions and basic workflows</div>
-                <ul className="space-y-2 text-sm mb-6">
-                  <li className="flex items-center">
-                    <span className="mr-2 text-green-500">✓</span>
-                    Knowledge Base Division
-                  </li>
-                  <li className="flex items-center">
-                    <span className="mr-2 text-green-500">✓</span>
-                    Analytics Division
-                  </li>
-                  <li className="flex items-center">
-                    <span className="mr-2 text-green-500">✓</span>
-                    Operations Division
-                  </li>
-                </ul>
-                <Button className="w-full px-4 py-2 bg-flow-accent/80 hover:bg-flow-accent text-flow-accent-foreground rounded-md border border-flow-accent/50">
-                  Get Started
-                </Button>
+              <GlassMorphism intensity="low" className="p-6 rounded-xl transition-all duration-300 hover:shadow-md hover:border-flow-border/50 relative overflow-hidden">
+                <div className="relative z-10">
+                  <h4 className="text-lg font-medium">Basic Plan</h4>
+                  <div className="text-2xl font-bold my-3">$49<span className="text-sm font-normal text-flow-foreground/70">/month</span></div>
+                  <div className="text-sm text-flow-foreground/70 mb-4">Core divisions and basic workflows</div>
+                  <ul className="space-y-2 text-sm mb-6">
+                    <li className="flex items-center">
+                      <span className="mr-2 text-green-500">✓</span>
+                      Knowledge Base Division
+                    </li>
+                    <li className="flex items-center">
+                      <span className="mr-2 text-green-500">✓</span>
+                      Analytics Division
+                    </li>
+                    <li className="flex items-center">
+                      <span className="mr-2 text-green-500">✓</span>
+                      Operations Division
+                    </li>
+                  </ul>
+                  <Button className="w-full px-4 py-2 bg-flow-accent/80 hover:bg-flow-accent text-flow-accent-foreground rounded-md border border-flow-accent/50 transition-all duration-300 hover:scale-105">
+                    Get Started
+                  </Button>
+                </div>
+                <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-transparent to-flow-background/30 pointer-events-none"></div>
               </GlassMorphism>
               
               <GlassMorphism className="p-6 rounded-xl bg-flow-accent/5 border-flow-accent shadow-[0_0_15px_rgba(217,70,239,0.2)] relative transition-all duration-300 hover:shadow-[0_0_20px_rgba(217,70,239,0.3)]">
                 <div className="absolute -top-3 right-4 bg-flow-accent text-xs text-flow-accent-foreground px-3 py-1 rounded-full">Popular</div>
-                <h4 className="text-lg font-medium">Pro Plan</h4>
-                <div className="text-2xl font-bold my-3">$199<span className="text-sm font-normal text-flow-foreground/70">/month</span></div>
-                <div className="text-sm text-flow-foreground/70 mb-4">Core divisions plus Strategy & Marketing</div>
-                <ul className="space-y-2 text-sm mb-6">
-                  <li className="flex items-center">
-                    <span className="mr-2 text-green-500">✓</span>
-                    All Basic Plan features
-                  </li>
-                  <li className="flex items-center">
-                    <span className="mr-2 text-green-500">✓</span>
-                    Strategy Division
-                  </li>
-                  <li className="flex items-center">
-                    <span className="mr-2 text-green-500">✓</span>
-                    Marketing Division
-                  </li>
-                </ul>
-                <Button className="w-full px-4 py-2 bg-flow-accent text-flow-accent-foreground shadow-[0_0_10px_rgba(217,70,239,0.3)] rounded-md border border-flow-accent/80">
-                  Upgrade Now
-                </Button>
+                <div className="relative z-10">
+                  <h4 className="text-lg font-medium">Pro Plan</h4>
+                  <div className="text-2xl font-bold my-3">$199<span className="text-sm font-normal text-flow-foreground/70">/month</span></div>
+                  <div className="text-sm text-flow-foreground/70 mb-4">Core divisions plus Strategy & Marketing</div>
+                  <ul className="space-y-2 text-sm mb-6">
+                    <li className="flex items-center">
+                      <span className="mr-2 text-green-500">✓</span>
+                      All Basic Plan features
+                    </li>
+                    <li className="flex items-center">
+                      <span className="mr-2 text-green-500">✓</span>
+                      Strategy Division
+                    </li>
+                    <li className="flex items-center">
+                      <span className="mr-2 text-green-500">✓</span>
+                      Marketing Division
+                    </li>
+                  </ul>
+                  <Button className="w-full px-4 py-2 bg-flow-accent text-flow-accent-foreground shadow-[0_0_10px_rgba(217,70,239,0.3)] rounded-md border border-flow-accent/80 transition-all duration-300 hover:scale-105">
+                    Upgrade Now
+                  </Button>
+                </div>
+                <div className="absolute -top-5 -right-5 w-40 h-40 bg-flow-accent/10 rounded-full blur-3xl pointer-events-none"></div>
               </GlassMorphism>
               
-              <GlassMorphism intensity="low" className="p-6 rounded-xl transition-all duration-300 hover:shadow-md hover:border-flow-border/50">
-                <h4 className="text-lg font-medium">Premium Plan</h4>
-                <div className="text-2xl font-bold my-3">Custom<span className="text-sm font-normal text-flow-foreground/70">/month</span></div>
-                <div className="text-sm text-flow-foreground/70 mb-4">All divisions with custom workflows</div>
-                <ul className="space-y-2 text-sm mb-6">
-                  <li className="flex items-center">
-                    <span className="mr-2 text-green-500">✓</span>
-                    All Pro Plan features
-                  </li>
-                  <li className="flex items-center">
-                    <span className="mr-2 text-green-500">✓</span>
-                    Finance Division
-                  </li>
-                  <li className="flex items-center">
-                    <span className="mr-2 text-green-500">✓</span>
-                    Custom workflows & agents
-                  </li>
-                </ul>
-                <Button variant="outline" className="w-full px-4 py-2 border-flow-border hover:border-flow-accent/50 rounded-md">
-                  Contact Sales
-                </Button>
+              <GlassMorphism intensity="low" className="p-6 rounded-xl transition-all duration-300 hover:shadow-md hover:border-flow-border/50 relative overflow-hidden">
+                <div className="relative z-10">
+                  <h4 className="text-lg font-medium">Premium Plan</h4>
+                  <div className="text-2xl font-bold my-3">Custom<span className="text-sm font-normal text-flow-foreground/70">/month</span></div>
+                  <div className="text-sm text-flow-foreground/70 mb-4">All divisions with custom workflows</div>
+                  <ul className="space-y-2 text-sm mb-6">
+                    <li className="flex items-center">
+                      <span className="mr-2 text-green-500">✓</span>
+                      All Pro Plan features
+                    </li>
+                    <li className="flex items-center">
+                      <span className="mr-2 text-green-500">✓</span>
+                      Finance Division
+                    </li>
+                    <li className="flex items-center">
+                      <span className="mr-2 text-green-500">✓</span>
+                      Custom workflows & agents
+                    </li>
+                  </ul>
+                  <Button variant="outline" className="w-full px-4 py-2 border-flow-border hover:border-flow-accent/50 rounded-md transition-all duration-300 hover:text-flow-accent">
+                    Contact Sales
+                  </Button>
+                </div>
+                <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-transparent to-flow-background/30 pointer-events-none"></div>
               </GlassMorphism>
             </div>
           </GlassMorphism>
