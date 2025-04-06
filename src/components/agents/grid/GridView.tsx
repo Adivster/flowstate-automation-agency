@@ -22,7 +22,7 @@ const GridView: React.FC<GridViewProps> = ({
   getDivisionName
 }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       {filteredAgents.map((agent) => {
         const isExpanded = expandedAgent === agent.id;
         
@@ -35,6 +35,7 @@ const GridView: React.FC<GridViewProps> = ({
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.3 }}
             className="w-full"
+            layoutId={`agent-card-${agent.id}`}
           >
             {isExpanded ? (
               <ExpandedAgentCard

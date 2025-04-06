@@ -25,6 +25,8 @@ const ListView: React.FC<ListViewProps> = ({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.2 }}
+          className="w-full"
+          layoutId={`agent-${agent.id}`}
         >
           <AgentListItem
             agent={agent}
