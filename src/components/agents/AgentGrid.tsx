@@ -403,7 +403,7 @@ const AgentGrid: React.FC = () => {
                   name={agent.name}
                   role={agent.role}
                   icon={agent.icon}
-                  status={agent.status}
+                  status={agent.status as 'idle' | 'working' | 'paused' | 'error'}
                   efficiency={agent.efficiency}
                   lastActivity={agent.lastActive}
                   className={`border-${agent.division}-500/30 hover:border-${agent.division}-500/50`}
