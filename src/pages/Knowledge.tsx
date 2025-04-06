@@ -12,7 +12,8 @@ import {
   Book, FileText, Search, Star, Tag, Users, 
   Calendar, Eye, Filter, ArrowUpDown, ExternalLink, 
   ThumbsUp, BookOpen, CheckCircle, PenLine, 
-  Clock, TrendingUp, Bookmark, HelpCircle, Info
+  Clock, TrendingUp, Bookmark, HelpCircle, Info,
+  Grid, List, MoreHorizontal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -53,10 +54,9 @@ const Knowledge = () => {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  const [viewMode, setViewMode] = useState('grid');
 
   useEffect(() => {
-    // Load content with a slight delay to prevent flash
     const timer = setTimeout(() => {
       setIsLoaded(true);
     }, 100);
@@ -194,12 +194,10 @@ const Knowledge = () => {
   useEffect(() => {
     let filtered = [...allKnowledgeItems];
     
-    // Filter by tab selection (category)
     if (activeTab !== 'all') {
       filtered = filtered.filter(item => item.category === activeTab);
     }
     
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(item => 
         item.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -209,21 +207,18 @@ const Knowledge = () => {
       );
     }
     
-    // Filter by tags
     if (selectedTags.length > 0) {
       filtered = filtered.filter(item => 
         selectedTags.some(tag => item.tags.includes(tag))
       );
     }
     
-    // Filter by types
     if (selectedTypes.length > 0) {
       filtered = filtered.filter(item => 
         selectedTypes.includes(item.type)
       );
     }
     
-    // Sort the filtered items
     filtered.sort((a, b) => {
       if (sortBy === 'title') {
         return sortOrder === 'asc' 
@@ -238,7 +233,6 @@ const Knowledge = () => {
           ? a.likes - b.likes 
           : b.likes - a.likes;
       } else {
-        // Sort by last updated
         if (a.lastUpdated.includes('day') && b.lastUpdated.includes('week')) return sortOrder === 'desc' ? -1 : 1;
         if (a.lastUpdated.includes('week') && b.lastUpdated.includes('day')) return sortOrder === 'desc' ? 1 : -1;
         if (a.lastUpdated.includes('day') && b.lastUpdated.includes('month')) return sortOrder === 'desc' ? -1 : 1;
@@ -281,7 +275,6 @@ const Knowledge = () => {
   };
   
   const toggleBookmark = (itemId) => {
-    // In a real app, this would update the state and persist to a database
     toast({
       title: "Bookmark Updated",
       description: "Article has been added to your bookmarks",
@@ -336,16 +329,13 @@ const Knowledge = () => {
   };
 
   const getTrendingArticles = () => {
-    // In a real app, this would fetch trending articles from an API
     return allKnowledgeItems
       .sort((a, b) => b.views - a.views)
       .slice(0, 3);
   };
 
   const getRecentlyUpdated = () => {
-    // In a real app, this would fetch recently updated articles from an API
     const now = new Date();
-    // Simulate some recent articles
     return allKnowledgeItems
       .filter(item => item.lastUpdated.includes('day'))
       .slice(0, 3);
@@ -369,7 +359,6 @@ const Knowledge = () => {
       
       <main className="flex-1 container mx-auto px-4 py-16">
         <TransitionWrapper>
-          {/* Header Section */}
           <GlassMorphism intensity="low" className="p-6 md:p-8 rounded-xl border border-flow-accent/20 mb-8 animate-fade-in">
             <div className="flex flex-col md:flex-row justify-between items-start gap-6">
               <div>
@@ -512,7 +501,6 @@ const Knowledge = () => {
             </div>
           </GlassMorphism>
           
-          {/* Quick Access Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <GlassMorphism 
               intensity="low" 
@@ -608,7 +596,6 @@ const Knowledge = () => {
             </GlassMorphism>
           </div>
           
-          {/* Search & Filter Section */}
           <GlassMorphism 
             intensity="medium" 
             variant="default" 
@@ -765,10 +752,527 @@ const Knowledge = () => {
             </div>
           </GlassMorphism>
           
-          {/* Rest of the component would go here */}
+          <div className="flex justify-between items-center mb-6 animate-fade-in" style={{ animationDelay: '500ms' }}>
+            <Tabs 
+              value={activeTab} 
+              onValueChange={setActiveTab}
+              className="w-full md:w-auto"
+            >
+              <TabsList className="bg-flow-background/40 border border-flow-border/30 p-1">
+                <TabsTrigger 
+                  value="all" 
+                  className="data-[state=active]:bg-flow-accent/20 data-[state=active]:text-flow-accent"
+                >
+                  All
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="internal" 
+                  className="data-[state=active]:bg-flow-accent/20 data-[state=active]:text-flow-accent"
+                >
+                  Internal
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="client-facing" 
+                  className="data-[state=active]:bg-flow-accent/20 data-[state=active]:text-flow-accent"
+                >
+                  Client Facing
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            
+            <div className="hidden md:flex items-center space-x-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant={viewMode === 'grid' ? 'accent' : 'outline'}
+                      size="sm" 
+                      className="h-9 w-9 p-0"
+                      onClick={() => setViewMode('grid')}
+                    >
+                      <Grid className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Grid view
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant={viewMode === 'list' ? 'accent' : 'outline'}
+                      size="sm" 
+                      className="h-9 w-9 p-0"
+                      onClick={() => setViewMode('list')}
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    List view
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </div>
+          
+          <div className={cn(
+            "animate-fade-in",
+            viewMode === 'grid' ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "flex flex-col space-y-4"
+          )} style={{ animationDelay: '600ms' }}>
+            {filteredItems.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 animate-fade-in" style={{ animationDelay: '600ms' }}>
+                <div className="bg-flow-background/30 p-6 rounded-full mb-4 border border-flow-border/30">
+                  <Search className="h-10 w-10 text-flow-foreground/40" />
+                </div>
+                <h3 className="text-xl font-medium mb-2">No knowledge items found</h3>
+                <p className="text-flow-foreground/70 text-center max-w-md mb-6">
+                  Try adjusting your search or filter criteria, or add new knowledge items.
+                </p>
+                <Button 
+                  variant="outline" 
+                  onClick={resetFilters}
+                  className="border-flow-accent/50 hover:bg-flow-accent/10"
+                >
+                  Reset Filters
+                </Button>
+              </div>
+            ) : (
+              filteredItems.map((item) => (
+                viewMode === 'grid' ? (
+                  <GlassMorphism
+                    key={item.id}
+                    intensity="low"
+                    className={cn(
+                      "h-full border transition-all duration-300 hover:shadow-lg hover:border-flow-accent/30",
+                      hoveredCard === item.id ? "border-flow-accent/30 shadow-[0_0_15px_rgba(85,120,255,0.2)]" : "border-flow-border/20"
+                    )}
+                    onMouseEnter={() => setHoveredCard(item.id)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                  >
+                    <div className="p-5 h-full flex flex-col">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center">
+                          <div className="h-10 w-10 rounded-md flex items-center justify-center mr-3" style={{ backgroundColor: getTypeColor(item.type) }}>
+                            {getTypeIcon(item.type)}
+                          </div>
+                          <div>
+                            <h3 className="font-medium line-clamp-1">{item.title}</h3>
+                            <p className="text-xs text-flow-foreground/60 capitalize">{item.type}</p>
+                          </div>
+                        </div>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 rounded-full"
+                                onClick={() => toggleBookmark(item.id)}
+                              >
+                                <Bookmark className={cn(
+                                  "h-4 w-4",
+                                  item.isBookmarked ? "fill-flow-accent text-flow-accent" : "text-flow-foreground/50"
+                                )} />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="left">
+                              {item.isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                      
+                      <p className="text-sm text-flow-foreground/70 line-clamp-3 mb-4 flex-grow">
+                        {item.preview}
+                      </p>
+                      
+                      <div className="space-y-3 mb-4">
+                        <div className="flex justify-between text-xs">
+                          <span className="text-flow-foreground/60">Completion</span>
+                          <span className={cn(
+                            item.completion >= 90 ? "text-green-500" :
+                            item.completion >= 70 ? "text-amber-500" :
+                            "text-flow-foreground/60"
+                          )}>{item.completion}%</span>
+                        </div>
+                        <Progress 
+                          value={item.completion} 
+                          className="h-1.5" 
+                          indicatorClassName={cn(
+                            item.completion >= 90 ? "bg-green-500" :
+                            item.completion >= 70 ? "bg-amber-500" :
+                            "bg-flow-accent"
+                          )} 
+                        />
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {item.tags.slice(0, 3).map((tag) => (
+                          <Badge 
+                            key={`${item.id}-${tag}`} 
+                            variant="outline"
+                            className="bg-flow-background/40 text-xs py-0 px-2 h-5"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                        {item.tags.length > 3 && (
+                          <Badge 
+                            variant="outline" 
+                            className="bg-flow-background/40 text-xs py-0 px-2 h-5"
+                          >
+                            +{item.tags.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-xs text-flow-foreground/60 pt-3 border-t border-flow-border/20">
+                        <div className="flex items-center">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          {item.lastUpdated}
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <div className="flex items-center">
+                            <Eye className="h-3 w-3 mr-1" />
+                            {item.views}
+                          </div>
+                          <div className="flex items-center">
+                            <ThumbsUp className="h-3 w-3 mr-1" />
+                            {item.likes}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <Button
+                        variant="ghost"
+                        className="absolute inset-0 w-full h-full opacity-0"
+                        onClick={() => handleViewItem(item)}
+                      >
+                        <span className="sr-only">View {item.title}</span>
+                      </Button>
+                    </div>
+                  </GlassMorphism>
+                ) : (
+                  <GlassMorphism
+                    key={item.id}
+                    intensity="low"
+                    className={cn(
+                      "border transition-all duration-300 hover:shadow-lg hover:border-flow-accent/30",
+                      hoveredCard === item.id ? "border-flow-accent/30 shadow-[0_0_15px_rgba(85,120,255,0.2)]" : "border-flow-border/20"
+                    )}
+                    onMouseEnter={() => setHoveredCard(item.id)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                  >
+                    <div className="p-4 sm:p-5">
+                      <div className="flex items-start">
+                        <div 
+                          className="h-10 w-10 rounded-md flex items-center justify-center" 
+                          style={{ backgroundColor: getTypeColor(item.type) }}
+                        >
+                          {getTypeIcon(item.type)}
+                        </div>
+                        
+                        <div className="flex-grow">
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
+                            <h3 className="font-medium">{item.title}</h3>
+                            
+                            <div className="flex items-center space-x-1">
+                              <Badge 
+                                variant="outline" 
+                                className="bg-flow-background/40 text-xs py-0 px-2 h-6 capitalize border-flow-border/30"
+                              >
+                                {item.type}
+                              </Badge>
+                              
+                              {item.isNew && (
+                                <Badge className="bg-green-500/20 text-green-400 text-xs py-0 px-2 h-6 border-green-500/30">
+                                  New
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <p className="text-sm text-flow-foreground/70 line-clamp-2 mb-3">
+                            {item.preview}
+                          </p>
+                          
+                          <div className="flex flex-wrap gap-2 mb-3">
+                            {item.tags.map((tag) => (
+                              <Badge 
+                                key={`${item.id}-${tag}`}
+                                variant="outline"
+                                className="bg-flow-background/40 text-xs py-0 px-2 h-5"
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                          
+                          <div className="flex justify-between items-center text-xs text-flow-foreground/60">
+                            <div className="flex items-center space-x-4">
+                              <div className="flex items-center">
+                                <Calendar className="h-3 w-3 mr-1" />
+                                {item.lastUpdated}
+                              </div>
+                              <div className="flex items-center">
+                                <Eye className="h-3 w-3 mr-1" />
+                                {item.views}
+                              </div>
+                              <div className="flex items-center">
+                                <ThumbsUp className="h-3 w-3 mr-1" />
+                                {item.likes}
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-7 w-7 p-0 rounded-full"
+                                      onClick={() => toggleBookmark(item.id)}
+                                    >
+                                      <Bookmark className={cn(
+                                        "h-4 w-4",
+                                        item.isBookmarked ? "fill-flow-accent text-flow-accent" : "text-flow-foreground/50"
+                                      )} />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="left">
+                                    {item.isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 w-7 p-0 rounded-full"
+                                onClick={() => handleViewItem(item)}
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </GlassMorphism>
+                )
+              ))}
+            )}
+          </div>
         </TransitionWrapper>
       </main>
       
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="bg-flow-background border-flow-border sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+          {selectedItem && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <div 
+                    className="h-10 w-10 rounded-md flex items-center justify-center" 
+                    style={{ backgroundColor: getTypeColor(selectedItem.type) }}
+                  >
+                    {getTypeIcon(selectedItem.type)}
+                  </div>
+                  <DialogTitle className="text-xl">{selectedItem.title}</DialogTitle>
+                </div>
+                <DialogDescription className="flex flex-wrap gap-2 items-center">
+                  <Badge variant="outline" className="capitalize">{selectedItem.type}</Badge>
+                  <span className="text-xs text-flow-foreground/60">·</span>
+                  <span className="text-xs text-flow-foreground/60">Last updated: {selectedItem.lastUpdated}</span>
+                  <span className="text-xs text-flow-foreground/60">·</span>
+                  <span className="text-xs text-flow-foreground/60">By {selectedItem.author}</span>
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="mt-4 mb-6">
+                <Tabs defaultValue="overview">
+                  <TabsList className="w-full bg-flow-background border-b border-flow-border rounded-none">
+                    <TabsTrigger value="overview" className="flex-1 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-flow-accent rounded-none">
+                      Overview
+                    </TabsTrigger>
+                    <TabsTrigger value="details" className="flex-1 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-flow-accent rounded-none">
+                      Details
+                    </TabsTrigger>
+                    <TabsTrigger value="related" className="flex-1 data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-flow-accent rounded-none">
+                      Related
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="overview" className="pt-4">
+                    <div className="prose prose-invert max-w-none">
+                      <p>{selectedItem.preview}</p>
+                      <p>This is expanded content that would be fetched from the database in a real application. The overview provides a comprehensive summary of the knowledge item, its purpose, and key information.</p>
+                      <h3>Key Points</h3>
+                      <ul>
+                        <li>First important point about this knowledge item</li>
+                        <li>Second important consideration for users</li>
+                        <li>Implementation guidelines and best practices</li>
+                        <li>Related processes and workflows</li>
+                      </ul>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="details" className="pt-4">
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="text-lg font-medium mb-3">Specifications</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-flow-background/30 p-3 rounded-md border border-flow-border/30">
+                            <div className="text-xs text-flow-foreground/60 mb-1">Category</div>
+                            <div className="text-sm capitalize">{selectedItem.category}</div>
+                          </div>
+                          <div className="bg-flow-background/30 p-3 rounded-md border border-flow-border/30">
+                            <div className="text-xs text-flow-foreground/60 mb-1">Version</div>
+                            <div className="text-sm">2.3.1</div>
+                          </div>
+                          <div className="bg-flow-background/30 p-3 rounded-md border border-flow-border/30">
+                            <div className="text-xs text-flow-foreground/60 mb-1">Creator</div>
+                            <div className="text-sm">{selectedItem.author}</div>
+                          </div>
+                          <div className="bg-flow-background/30 p-3 rounded-md border border-flow-border/30">
+                            <div className="text-xs text-flow-foreground/60 mb-1">Created Date</div>
+                            <div className="text-sm">June 12, 2023</div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-lg font-medium mb-3">Usage Statistics</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="bg-flow-background/30 p-3 rounded-md border border-flow-border/30">
+                            <div className="text-2xl font-semibold mb-1">{selectedItem.views}</div>
+                            <div className="text-xs text-flow-foreground/60">Total Views</div>
+                          </div>
+                          <div className="bg-flow-background/30 p-3 rounded-md border border-flow-border/30">
+                            <div className="text-2xl font-semibold mb-1">{selectedItem.likes}</div>
+                            <div className="text-xs text-flow-foreground/60">Likes</div>
+                          </div>
+                          <div className="bg-flow-background/30 p-3 rounded-md border border-flow-border/30">
+                            <div className="text-2xl font-semibold mb-1">17</div>
+                            <div className="text-xs text-flow-foreground/60">Comments</div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-lg font-medium mb-3">Tags</h3>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedItem.tags.map((tag) => (
+                            <Badge 
+                              key={`detail-${selectedItem.id}-${tag}`}
+                              variant="outline"
+                              className="bg-flow-background/40 border-flow-border/30"
+                            >
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="related" className="pt-4">
+                    <div className="space-y-4">
+                      <p className="text-flow-foreground/70">Related knowledge items that might be useful:</p>
+                      
+                      {allKnowledgeItems.filter(item => 
+                        item.id !== selectedItem.id && 
+                        (item.category === selectedItem.category || 
+                         item.tags.some(tag => selectedItem.tags.includes(tag)))
+                      ).slice(0, 3).map(item => (
+                        <div 
+                          key={`related-${item.id}`}
+                          className="flex items-center space-x-3 p-3 hover:bg-flow-muted/20 rounded-md transition-colors cursor-pointer border border-flow-border/20"
+                          onClick={() => {
+                            setSelectedItem(item);
+                          }}
+                        >
+                          <div className="flex-shrink-0 w-8 h-8 rounded-md flex items-center justify-center" style={{ backgroundColor: getTypeColor(item.type) }}>
+                            {getTypeIcon(item.type)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium">{item.title}</p>
+                            <div className="flex items-center text-xs text-flow-foreground/60">
+                              <Calendar className="h-3 w-3 mr-1" /> {item.lastUpdated}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {allKnowledgeItems.filter(item => 
+                        item.id !== selectedItem.id && 
+                        (item.category === selectedItem.category || 
+                         item.tags.some(tag => selectedItem.tags.includes(tag)))
+                      ).length === 0 && (
+                        <div className="text-center p-6 text-flow-foreground/60">
+                          <p>No related items found.</p>
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </div>
+              
+              <div className="flex justify-between items-center pt-4 border-t border-flow-border/20">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="text-xs border-flow-accent/30 hover:bg-flow-accent/10"
+                  onClick={() => toggleBookmark(selectedItem.id)}
+                >
+                  <Bookmark className={cn(
+                    "h-3 w-3 mr-2",
+                    selectedItem.isBookmarked ? "fill-flow-accent text-flow-accent" : ""
+                  )} />
+                  {selectedItem.isBookmarked ? 'Bookmarked' : 'Add to Bookmarks'}
+                </Button>
+                
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    className="text-xs"
+                    onClick={() => {
+                      toast({
+                        title: "Share",
+                        description: "Share link copied to clipboard",
+                        duration: 3000,
+                      });
+                    }}
+                  >
+                    Share
+                  </Button>
+                  <Button 
+                    variant="default"
+                    size="sm"
+                    className="text-xs"
+                    onClick={() => {
+                      toast({
+                        title: "Opening Editor",
+                        description: "Opening knowledge item in editor",
+                        duration: 3000,
+                      });
+                    }}
+                  >
+                    Edit
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );
