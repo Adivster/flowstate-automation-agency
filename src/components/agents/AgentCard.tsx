@@ -1,17 +1,19 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { LucideIcon, MoreHorizontal, ArrowUpRight, Zap } from 'lucide-react';
+import { LucideIcon, MoreHorizontal, ArrowUpRight, Zap, Activity } from 'lucide-react';
 import GlassMorphism from '../ui/GlassMorphism';
 import InfoChip from '../ui/InfoChip';
 import { 
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 interface AgentCardProps {
   name: string;
@@ -39,13 +41,45 @@ const AgentCard: React.FC<AgentCardProps> = ({
   const { toast } = useToast();
   
   const statusConfig = {
-    idle: { label: 'Idle', color: 'bg-gray-200 text-gray-800' },
-    working: { label: 'Working', color: 'bg-green-100 text-green-800 animate-pulse-subtle' },
-    paused: { label: 'Paused', color: 'bg-yellow-100 text-yellow-800' },
-    error: { label: 'Error', color: 'bg-red-100 text-red-800' },
+    idle: { 
+      label: 'Idle', 
+      color: 'bg-gray-200 text-gray-800',
+      background: 'bg-gray-500/10',
+      indicator: <div className="h-2 w-2 rounded-full bg-gray-400"></div>
+    },
+    working: { 
+      label: 'Working', 
+      color: 'bg-green-100 text-green-800', 
+      background: 'bg-green-500/10',
+      indicator: <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+    },
+    paused: { 
+      label: 'Paused', 
+      color: 'bg-yellow-100 text-yellow-800',
+      background: 'bg-yellow-500/10',
+      indicator: <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
+    },
+    error: { 
+      label: 'Error', 
+      color: 'bg-red-100 text-red-800',
+      background: 'bg-red-500/10',
+      indicator: <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse"></div>
+    },
   };
 
-  const { label, color } = statusConfig[status];
+  const { label, color, background, indicator } = statusConfig[status];
+  
+  const getEfficiencyColor = (value: number) => {
+    if (value > 90) return 'text-green-500';
+    if (value > 70) return 'text-yellow-500';
+    return 'text-red-500';
+  };
+
+  const getEfficiencyBarColor = (value: number) => {
+    if (value > 90) return 'bg-green-500';
+    if (value > 70) return 'bg-yellow-500';
+    return 'bg-red-500';
+  };
   
   const handleAction = (action: string) => {
     toast({
@@ -58,7 +92,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
   return (
     <GlassMorphism 
       className={cn(
-        'rounded-xl overflow-hidden transition-all duration-300 border border-flow-border/50 hover:border-flow-border w-full',
+        'rounded-xl overflow-hidden transition-all duration-300 border border-flow-border/50 hover:border-flow-accent hover:shadow-[0_0_20px_rgba(85,120,255,0.2)] hover:-translate-y-1',
         className
       )}
       onClick={onClick}
@@ -66,16 +100,28 @@ const AgentCard: React.FC<AgentCardProps> = ({
       <div className="p-5">
         <div className="flex justify-between items-start">
           <div className="flex items-center space-x-3">
-            <div className={`p-2 rounded-lg ${status === 'working' ? 'bg-flow-accent/20' : 'bg-flow-muted/50'}`}>
+            <div className={`p-2 rounded-lg ${status === 'working' ? 'bg-flow-accent/20' : background}`}>
               <Icon className={`h-5 w-5 ${status === 'working' ? 'text-flow-accent animate-pulse-subtle' : 'text-flow-foreground'}`} />
             </div>
             <div>
               <div className="flex items-center space-x-2">
                 <h3 className="font-medium text-flow-foreground">{name}</h3>
-                <InfoChip 
-                  label={label} 
-                  className={color}
-                />
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="inline-flex">
+                      <InfoChip 
+                        label={label} 
+                        className={color}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <div className="flex items-center gap-2">
+                        {indicator}
+                        <span>{label} status</span>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <p className="text-xs text-flow-foreground/70">{role}</p>
             </div>
@@ -84,22 +130,49 @@ const AgentCard: React.FC<AgentCardProps> = ({
           <div className="flex items-center space-x-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-flow-muted/50">
+                <button className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-flow-muted/50 transition-colors">
                   <MoreHorizontal className="h-4 w-4 text-flow-foreground/70" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleAction('Assign Task')}>
+              <DropdownMenuContent align="end" className="w-56 bg-flow-background/80 backdrop-blur-md border-flow-border">
+                <DropdownMenuItem 
+                  onClick={() => handleAction('View Details')}
+                  className="flex items-center cursor-pointer"
+                >
+                  <ArrowUpRight className="h-4 w-4 mr-2" />
+                  View Details
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => handleAction('Assign Task')}
+                  className="flex items-center cursor-pointer"
+                >
+                  <Activity className="h-4 w-4 mr-2" />
                   Assign Task
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAction('Pause')}>
-                  {status === 'paused' ? 'Resume' : 'Pause'}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAction('Configure')}>
+                <DropdownMenuSeparator />
+                {status === 'paused' ? (
+                  <DropdownMenuItem 
+                    onClick={() => handleAction('Resume')}
+                    className="flex items-center cursor-pointer"
+                  >
+                    <Zap className="h-4 w-4 mr-2" />
+                    Resume Agent
+                  </DropdownMenuItem>
+                ) : status === 'working' ? (
+                  <DropdownMenuItem 
+                    onClick={() => handleAction('Pause')}
+                    className="flex items-center cursor-pointer"
+                  >
+                    <Zap className="h-4 w-4 mr-2" />
+                    Pause Agent
+                  </DropdownMenuItem>
+                ) : null}
+                <DropdownMenuItem 
+                  onClick={() => handleAction('Configure')}
+                  className="flex items-center cursor-pointer"
+                >
+                  <Zap className="h-4 w-4 mr-2" />
                   Configure
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAction('View Logs')}>
-                  View Logs
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -110,19 +183,13 @@ const AgentCard: React.FC<AgentCardProps> = ({
           <div className="space-y-2">
             <div className="flex justify-between items-center text-xs">
               <span className="text-flow-foreground/70">Efficiency</span>
-              <span className={`font-medium ${
-                efficiency > 90 ? 'text-green-500' : 
-                efficiency > 70 ? 'text-yellow-500' : 
-                'text-flow-foreground/70'
-              }`}>{efficiency}%</span>
+              <span className={`font-medium ${getEfficiencyColor(efficiency)}`}>
+                {efficiency}%
+              </span>
             </div>
             <div className="w-full bg-flow-muted rounded-full h-1.5 overflow-hidden">
               <div 
-                className={`h-1.5 rounded-full ${
-                  efficiency > 90 ? 'bg-green-500' : 
-                  efficiency > 70 ? 'bg-yellow-500' : 
-                  'bg-flow-accent'
-                }`}
+                className={`h-1.5 rounded-full ${getEfficiencyBarColor(efficiency)}`}
                 style={{ width: `${efficiency}%` }}
               />
             </div>
@@ -135,7 +202,7 @@ const AgentCard: React.FC<AgentCardProps> = ({
           
           <div className="flex justify-end">
             <button 
-              className="text-xs flex items-center text-flow-accent hover:underline"
+              className="text-xs flex items-center text-flow-accent hover:text-flow-accent/80 transition-colors hover:underline"
               onClick={(e) => {
                 e.stopPropagation();
                 handleAction('View Details');
