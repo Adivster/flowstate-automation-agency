@@ -731,4 +731,47 @@ const Knowledge = () => {
                     <TooltipTrigger asChild>
                       <Button 
                         variant="outline" 
-                        className="border-flow-border hover:border-flow
+                        className="border-flow-border hover:border-flow-accent transition-all duration-300 h-11"
+                        onClick={toggleSortOrder}
+                      >
+                        <ArrowUpDown className="w-4 h-4 mr-2" />
+                        {sortOrder === 'asc' ? 'Asc' : 'Desc'}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Toggle sort direction
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="border-flow-border hover:border-flow-accent transition-all duration-300 h-11 w-11"
+                        onClick={resetFilters}
+                      >
+                        <Filter className="w-4 h-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Reset all filters
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </div>
+          </GlassMorphism>
+          
+          {/* Rest of the component would go here */}
+        </TransitionWrapper>
+      </main>
+      
+      <Footer />
+    </div>
+  );
+};
+
+export default Knowledge;
