@@ -59,7 +59,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   }
 
   return (
-    <div className={cn("mb-6 container-lg", className)}>
+    <div className={cn("mb-6 px-4 sm:px-6", className)}>
       <HeaderContent />
     </div>
   );

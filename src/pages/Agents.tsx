@@ -1,4 +1,3 @@
-
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect, useRef } from 'react';
 import Navbar from '@/components/layout/Navbar';
@@ -17,6 +16,7 @@ import GlassMorphism from '@/components/ui/GlassMorphism';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { useMemo } from 'react';
+import PageHeader from '@/components/ui/design-system/PageHeader';
 
 const Agents = () => {
   const { t } = useLanguage();
@@ -88,44 +88,36 @@ const Agents = () => {
       
       <main className="flex-1 container mx-auto px-4 pt-28 pb-12">
         <TransitionWrapper>
-          <GlassMorphism intensity="low" className="p-6 rounded-xl border-flow-accent/30 animate-glow-pulse mb-8">
-            <div className="flex flex-col md:flex-row justify-between items-start gap-6">
-              <div>
-                <div className="flex items-center mb-4">
-                  <div className="mr-4 bg-cyan-500/20 p-3 rounded-xl backdrop-blur-sm border border-cyan-500/30">
-                    <Users className="h-8 w-8 text-cyan-500 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+          <div className="max-w-7xl mx-auto">
+            <PageHeader 
+              title={t('agencyHQ')}
+              description={t('monitorAgents')}
+              icon={<Users className="h-8 w-8 text-cyan-500 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]" />}
+              glassEffect={true}
+              actions={
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="text-xs bg-flow-muted/50 px-3 py-1.5 rounded-full flex items-center backdrop-blur-sm border border-flow-border/30">
+                    <span className="inline-block h-2 w-2 rounded-full bg-green-500 animate-pulse mr-2"></span>
+                    <span className="font-medium">{agentStats.active}</span> / {agentStats.total} {t('activeAgents')}
                   </div>
-                  <h1 className="text-3xl font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">
-                    {t('agencyHQ')}
-                  </h1>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs bg-flow-muted/30 hover:bg-flow-muted/50 border-flow-border"
+                    onClick={() => toast({
+                      title: "Terminal",
+                      description: "Opening agent command terminal",
+                      duration: 3000,
+                    })}
+                  >
+                    <Terminal className="h-3 w-3 mr-1" />
+                    Terminal
+                  </Button>
                 </div>
-                <p className="text-flow-foreground/70">
-                  {t('monitorAgents')}
-                </p>
-              </div>
-              
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="text-xs bg-flow-muted/50 px-3 py-1.5 rounded-full flex items-center backdrop-blur-sm border border-flow-border/30">
-                  <span className="inline-block h-2 w-2 rounded-full bg-green-500 animate-pulse mr-2"></span>
-                  <span className="font-medium">{agentStats.active}</span> / {agentStats.total} {t('activeAgents')}
-                </div>
-                
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs bg-flow-muted/30 hover:bg-flow-muted/50 border-flow-border"
-                  onClick={() => toast({
-                    title: "Terminal",
-                    description: "Opening agent command terminal",
-                    duration: 3000,
-                  })}
-                >
-                  <Terminal className="h-3 w-3 mr-1" />
-                  Terminal
-                </Button>
-              </div>
-            </div>
-          </GlassMorphism>
+              }
+            />
+          </div>
           
           {/* Agent Status Summary Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

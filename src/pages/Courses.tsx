@@ -8,6 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import CoursesList from '@/components/courses/CoursesList';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { BookOpen } from 'lucide-react';
+import PageHeader from '@/components/ui/design-system/PageHeader';
 
 const Courses = () => {
   const { t } = useLanguage();
@@ -22,21 +23,18 @@ const Courses = () => {
       
       <main className="flex-1 container mx-auto px-4 pt-28 pb-12">
         <TransitionWrapper>
-          <div className="max-w-7xl mx-auto mb-6">
-            <div className="flex items-center mb-4">
-              <div className="mr-4 bg-pink-600/20 p-3 rounded-xl backdrop-blur-sm border border-pink-600/30">
-                <BookOpen className="h-8 w-8 text-pink-600 drop-shadow-[0_0_8px_rgba(236,72,153,0.8)]" />
-              </div>
-              <h1 className="text-3xl font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">{t('courses')}</h1>
-            </div>
-            <p className="text-flow-foreground/70 max-w-2xl">
-              Master AI agency management with our comprehensive professional training programs.
-            </p>
+          <div className="max-w-7xl mx-auto">
+            <PageHeader 
+              title={t('courses')}
+              description="Master AI agency management with our comprehensive professional training programs."
+              icon={<BookOpen className="h-8 w-8 text-pink-600 drop-shadow-[0_0_8px_rgba(236,72,153,0.8)]" />}
+              glassEffect={false}
+            />
+            
+            <GlassMorphism className="rounded-2xl p-6 md:p-8 shadow-sm border-flow-border/30 scan-lines">
+              <CoursesList />
+            </GlassMorphism>
           </div>
-          
-          <GlassMorphism className="rounded-2xl p-6 md:p-8 shadow-sm border-flow-border/30 scan-lines">
-            <CoursesList />
-          </GlassMorphism>
         </TransitionWrapper>
       </main>
       

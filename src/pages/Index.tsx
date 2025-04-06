@@ -6,6 +6,7 @@ import AgencyDashboard from '@/components/dashboard/AgencyDashboard';
 import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { LayoutDashboard } from 'lucide-react';
+import PageHeader from '@/components/ui/design-system/PageHeader';
 
 const Index: React.FC = () => {
   return (
@@ -15,19 +16,13 @@ const Index: React.FC = () => {
       {/* Main Content */}
       <main className="flex-1 mt-20 px-4 sm:px-6 pb-12">
         <TransitionWrapper>
-          <div className="max-w-7xl mx-auto mb-8">
-            <div className="flex items-center mb-4">
-              <div className="mr-4 bg-flow-accent/20 p-3 rounded-xl backdrop-blur-sm border border-flow-accent/30 shadow-[0_0_15px_rgba(217,70,239,0.2)]">
-                <LayoutDashboard className="h-8 w-8 text-flow-accent drop-shadow-[0_0_8px_rgba(217,70,239,0.8)]" />
-              </div>
-              <h1 className="text-3xl font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">Dashboard</h1>
-            </div>
-            <p className="text-flow-foreground/70 max-w-2xl">
-              Welcome to your Agency HQ. Monitor performance, manage divisions, and optimize workflows from this central command center.
-            </p>
-          </div>
-          
           <div className="max-w-7xl mx-auto">
+            <PageHeader 
+              title="Dashboard"
+              description="Welcome to your Agency HQ. Monitor performance, manage divisions, and optimize workflows from this central command center."
+              icon={<LayoutDashboard className="h-8 w-8 text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]" />}
+            />
+            
             <GlassMorphism className="rounded-2xl p-5 md:p-8 shadow-md border-flow-border/30 scan-lines bg-flow-background/20 backdrop-blur-lg">
               <AgencyDashboard />
             </GlassMorphism>
