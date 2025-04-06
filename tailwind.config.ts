@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -22,6 +23,20 @@ export default {
 				sans: ['Inter var', 'sans-serif'],
 				mono: ['JetBrains Mono', 'monospace'],
 				pixel: ['Press Start 2P', 'cursive', 'sans-serif'],
+				cyber: ['Orbitron', 'sans-serif'],
+				heebo: ['Heebo', 'sans-serif'],
+			},
+			fontSize: {
+				'xs': ['0.75rem', { lineHeight: '1rem' }],
+				'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+				'base': ['1rem', { lineHeight: '1.5rem' }],
+				'lg': ['1.125rem', { lineHeight: '1.75rem' }],
+				'xl': ['1.25rem', { lineHeight: '1.75rem' }],
+				'2xl': ['1.5rem', { lineHeight: '2rem' }],
+				'3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+				'4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+				'5xl': ['3rem', { lineHeight: '1' }],
+				'6xl': ['3.75rem', { lineHeight: '1' }],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -77,6 +92,10 @@ export default {
 					muted: 'hsl(var(--flow-muted))',
 					'muted-foreground': 'hsl(var(--flow-muted-foreground))',
 					border: 'hsl(var(--flow-border))',
+					success: 'hsl(var(--flow-success))',
+					warning: 'hsl(var(--flow-warning))',
+					error: 'hsl(var(--flow-error))',
+					info: 'hsl(var(--flow-info))',
 				}
 			},
 			borderRadius: {
@@ -89,6 +108,22 @@ export default {
 			},
 			gridTemplateRows: {
 				'10': 'repeat(10, minmax(0, 1fr))',
+			},
+			spacing: {
+				'xs': '0.25rem',
+				'sm': '0.5rem',
+				'md': '1rem',
+				'lg': '1.5rem',
+				'xl': '2rem',
+				'2xl': '3rem',
+			},
+			boxShadow: {
+				'cyber-sm': '0 0 5px rgba(217, 70, 239, 0.2)',
+				'cyber': '0 0 10px rgba(217, 70, 239, 0.4)',
+				'cyber-lg': '0 0 15px rgba(217, 70, 239, 0.6)',
+				'neo-subtle': '0 2px 10px rgba(0, 0, 0, 0.1)',
+				'neo': '0 4px 20px rgba(0, 0, 0, 0.15)',
+				'neo-lg': '0 8px 30px rgba(0, 0, 0, 0.2)',
 			},
 			keyframes: {
 				'accordion-down': {
@@ -134,6 +169,11 @@ export default {
 				'pixelate-in': {
 					'0%': { filter: 'blur(10px)' },
 					'100%': { filter: 'blur(0)' }
+				},
+				'glow-pulse': {
+					'0%': { boxShadow: '0 0 5px rgba(217, 70, 239, 0.5)' },
+					'50%': { boxShadow: '0 0 15px rgba(217, 70, 239, 0.8)' },
+					'100%': { boxShadow: '0 0 5px rgba(217, 70, 239, 0.5)' }
 				}
 			},
 			animation: {
@@ -149,11 +189,14 @@ export default {
 				'exit': 'fade-out 0.3s ease-out, scale-out 0.2s ease-out',
 				'pulse-subtle': 'pulse-subtle 3s infinite ease-in-out',
 				'float': 'float 3s infinite ease-in-out',
-				'pixelate-in': 'pixelate-in 0.5s ease-out'
+				'pixelate-in': 'pixelate-in 0.5s ease-out',
+				'glow-pulse': 'glow-pulse 3s infinite ease-in-out'
 			},
 			backdropFilter: {
 				'none': 'none',
 				'blur': 'blur(20px)',
+				'blur-sm': 'blur(8px)',
+				'blur-lg': 'blur(30px)',
 			},
 		}
 	},

@@ -45,6 +45,25 @@
     --flow-muted: 210 40% 96.1%; 
     --flow-muted-foreground: 215.4 16.3% 46.9%;
     --flow-border: 214.3 31.8% 91.4%;
+    
+    /* Status colors */
+    --flow-success: 142 71% 45%;
+    --flow-warning: 45 93% 47%;
+    --flow-error: 0 84% 60%;
+    --flow-info: 210 100% 50%;
+    
+    /* Standardized spacing */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    
+    /* Animation timing */
+    --transition-fast: 150ms;
+    --transition-normal: 300ms;
+    --transition-slow: 500ms;
   }
 
   .dark {
@@ -87,6 +106,12 @@
     --flow-muted: 225 20% 15%;
     --flow-muted-foreground: 180 10% 70%;
     --flow-border: 260 30% 50%;
+    
+    /* Status colors - dark mode */
+    --flow-success: 142 76% 45%;
+    --flow-warning: 38 92% 50%;
+    --flow-error: 0 84% 60%;
+    --flow-info: 199 89% 48%;
   }
 }
 
@@ -98,6 +123,36 @@
   body {
     @apply bg-flow-background text-flow-foreground font-sans antialiased;
     font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+  }
+  
+  /* Headings */
+  h1 {
+    @apply text-3xl sm:text-4xl font-bold tracking-tight mb-4;
+  }
+  
+  h2 {
+    @apply text-2xl sm:text-3xl font-semibold tracking-tight mb-3;
+  }
+  
+  h3 {
+    @apply text-xl sm:text-2xl font-medium tracking-tight mb-2;
+  }
+  
+  h4 {
+    @apply text-lg font-medium tracking-tight mb-2;
+  }
+  
+  h5 {
+    @apply text-base font-medium tracking-tight mb-1;
+  }
+  
+  /* Content spacing */
+  section {
+    @apply mb-8;
+  }
+  
+  p {
+    @apply mb-4 last:mb-0;
   }
   
   /* Custom classes for glass morphism */
@@ -441,4 +496,109 @@
   background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='rgba(134, 70, 255, 0.1)' stroke-width='1'/%3E%3Cpath d='M30 10v80M50 10v80M70 10v80M10 30h80M10 50h80M10 70h80' stroke='rgba(134, 70, 255, 0.05)' stroke-width='0.5'/%3E%3C/svg%3E");
   background-size: 40px 40px;
   animation: flow-circuit 30s linear infinite;
+}
+
+/* Standard layout spacing classes */
+@layer components {
+  .container-lg {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .container-md {
+    @apply max-w-5xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .container-sm {
+    @apply max-w-3xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .page-section {
+    @apply py-8 md:py-12;
+  }
+  
+  .section-title {
+    @apply text-2xl font-bold mb-6 flex items-center gap-2;
+  }
+  
+  /* Interactive components */
+  .interactive-card {
+    @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-cyber;
+  }
+  
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-cyber;
+  }
+  
+  .hover-glow-sm {
+    @apply transition-all duration-300 hover:shadow-cyber-sm;
+  }
+  
+  .hover-glow-lg {
+    @apply transition-all duration-300 hover:shadow-cyber-lg;
+  }
+  
+  /* Navigation active state */
+  .nav-link {
+    @apply transition-all duration-300 px-3 py-2 rounded-md;
+  }
+  
+  .nav-link-active {
+    @apply bg-flow-accent/20 text-flow-foreground;
+  }
+  
+  /* Status indicators */
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .status-badge-success {
+    @apply bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400;
+  }
+  
+  .status-badge-warning {
+    @apply bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400;
+  }
+  
+  .status-badge-error {
+    @apply bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400;
+  }
+  
+  .status-badge-info {
+    @apply bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-400;
+  }
+  
+  /* Data card styles */
+  .data-card {
+    @apply bg-flow-card p-4 rounded-lg border border-flow-border shadow-neo-subtle transition-all duration-300;
+  }
+  
+  .data-card-hover {
+    @apply hover:shadow-neo hover:border-flow-accent/20;
+  }
+}
+
+/* Status colors for indicators */
+.text-status-success {
+  @apply text-emerald-600 dark:text-emerald-400;
+}
+
+.text-status-warning {
+  @apply text-amber-600 dark:text-amber-400;
+}
+
+.text-status-error {
+  @apply text-rose-600 dark:text-rose-400;
+}
+
+.text-status-info {
+  @apply text-sky-600 dark:text-sky-400;
+}
+
+/* Standardized page layouts */
+.page-layout {
+  @apply min-h-screen flex flex-col bg-flow-background;
+}
+
+.page-content {
+  @apply flex-1 mt-20 px-4 sm:px-6 pb-12;
 }
