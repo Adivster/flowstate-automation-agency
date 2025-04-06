@@ -11,9 +11,10 @@ import { useAgentData } from './grid/useAgentData';
 
 interface AgentGridProps {
   maxAgents?: number;
+  showAsGrid?: boolean;
 }
 
-const AgentGrid: React.FC<AgentGridProps> = ({ maxAgents }) => {
+const AgentGrid: React.FC<AgentGridProps> = ({ maxAgents, showAsGrid }) => {
   const { t } = useLanguage();
   const { toast } = useToast();
   
@@ -35,6 +36,13 @@ const AgentGrid: React.FC<AgentGridProps> = ({ maxAgents }) => {
     formatLastUpdateTime,
     filteredAgents
   } = useAgentData(maxAgents);
+
+  // If showAsGrid prop is provided, use it to override the viewMode state
+  React.useEffect(() => {
+    if (showAsGrid !== undefined) {
+      setViewMode(showAsGrid ? 'grid' : 'list');
+    }
+  }, [showAsGrid, setViewMode]);
   
   const getDivisionName = (division: string) => {
     const divisions = {
