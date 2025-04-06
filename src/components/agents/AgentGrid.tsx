@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -129,7 +128,12 @@ const agentsData = [
   },
 ];
 
-const AgentGrid: React.FC = () => {
+interface AgentGridProps {
+  maxAgents?: number;
+  showAsGrid?: boolean;
+}
+
+const AgentGrid: React.FC<AgentGridProps> = ({ maxAgents, showAsGrid = true }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedAgent, setExpandedAgent] = useState<number | null>(null);
   const { toast } = useToast();
@@ -173,18 +177,19 @@ const AgentGrid: React.FC = () => {
       duration: 3000,
     });
     
-    // For the message action, open the communication terminal
     if (action === 'message') {
       const event = new CustomEvent('openCommunicationTerminal');
       window.dispatchEvent(event);
     }
   };
   
-  const filteredAgents = agentsData.filter(agent => 
-    agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    agent.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    getDivisionName(agent.division).toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredAgents = agentsData
+    .filter(agent => 
+      agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      agent.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      getDivisionName(agent.division).toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .slice(0, maxAgents || agentsData.length);
   
   return (
     <div className="space-y-4">
@@ -212,7 +217,7 @@ const AgentGrid: React.FC = () => {
         </Button>
       </div>
       
-      <div className="flex flex-col space-y-4">
+      <div className={`flex flex-col space-y-4 ${showAsGrid ? 'md:grid md:grid-cols-2 md:gap-4 md:space-y-0' : ''}`}>
         {filteredAgents.map((agent) => {
           const colors = divisionColors[agent.division] || divisionColors.kb;
           const isExpanded = expandedAgent === agent.id;
