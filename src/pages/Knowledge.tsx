@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
@@ -736,3 +737,324 @@ const Knowledge = () => {
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
+                        className="border-flow-border hover:border-flow-accent transition-all duration-300 h-11"
+                        onClick={resetFilters}
+                      >
+                        <Filter className="w-4 h-4 mr-2" />
+                        Reset
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Reset all filters
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="border-flow-border hover:border-flow-accent transition-all duration-300 h-11"
+                        onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                      >
+                        {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid className="w-4 h-4" />}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Toggle view mode
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </div>
+            
+            <Tabs defaultValue="all" className="w-full mt-4" onValueChange={value => setActiveTab(value)}>
+              <TabsList className="bg-flow-muted/30 border border-flow-border/30 p-1 w-full flex mb-4 rounded-md overflow-x-auto">
+                <TabsTrigger 
+                  value="all"
+                  className="flex-1 data-[state=active]:bg-flow-accent/20 data-[state=active]:text-flow-accent rounded-sm transition-all"
+                >
+                  All
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="internal"
+                  className="flex-1 data-[state=active]:bg-flow-accent/20 data-[state=active]:text-flow-accent rounded-sm transition-all"
+                >
+                  Internal
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="client-facing"
+                  className="flex-1 data-[state=active]:bg-flow-accent/20 data-[state=active]:text-flow-accent rounded-sm transition-all"
+                >
+                  Client Facing
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="all" className="mt-0">
+                <div className={cn(
+                  'grid gap-6',
+                  viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'
+                )}>
+                  {filteredItems.map((item) => (
+                    <Card
+                      key={item.id}
+                      className={cn(
+                        'border border-flow-border/30 bg-[rgba(11,15,25,0.6)] backdrop-blur-md transition-all duration-300',
+                        viewMode === 'grid' ? '' : 'flex flex-row',
+                        hoveredCard === item.id ? 'shadow-[0_0_15px_rgba(85,120,255,0.3)] border-flow-accent/30' : ''
+                      )}
+                      onMouseEnter={() => setHoveredCard(item.id)}
+                      onMouseLeave={() => setHoveredCard(null)}
+                      onClick={() => handleViewItem(item)}
+                    >
+                      {viewMode === 'grid' ? (
+                        <>
+                          <CardHeader className="pb-2">
+                            <div className="flex justify-between items-start">
+                              <div 
+                                className="p-2 rounded-md flex items-center justify-center" 
+                                style={{ backgroundColor: getTypeColor(item.type) }}
+                              >
+                                {getTypeIcon(item.type)}
+                              </div>
+                              {item.isNew && (
+                                <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30">New</Badge>
+                              )}
+                            </div>
+                            <CardTitle className="mt-3 line-clamp-1">{item.title}</CardTitle>
+                            <CardDescription className="flex items-center">
+                              <Calendar className="h-3 w-3 mr-1 text-flow-foreground/60" /> 
+                              <span>Updated {item.lastUpdated}</span>
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <p className="text-sm text-flow-foreground/70 line-clamp-2 mb-3">{item.preview}</p>
+                            <div className="flex flex-wrap gap-1">
+                              {item.tags.slice(0, 3).map((tag) => (
+                                <Badge key={tag} className="bg-flow-accent/10 text-flow-accent hover:bg-flow-accent/20">
+                                  {tag}
+                                </Badge>
+                              ))}
+                              {item.tags.length > 3 && (
+                                <Badge className="bg-flow-muted/30 hover:bg-flow-muted/40">
+                                  +{item.tags.length - 3}
+                                </Badge>
+                              )}
+                            </div>
+                          </CardContent>
+                          <CardFooter className="border-t border-flow-border/20 pt-4 flex justify-between">
+                            <div className="flex items-center text-sm text-flow-foreground/60">
+                              <Progress 
+                                value={item.completion} 
+                                className="h-1.5 w-24" 
+                                indicatorColor={getTypeColor(item.type)} 
+                              />
+                              <span className="ml-2 text-xs">{item.completion}%</span>
+                            </div>
+                            <div className="flex gap-2">
+                              <div className="flex items-center text-xs text-flow-foreground/60">
+                                <Eye className="h-3 w-3 mr-1" /> 
+                                {item.views}
+                              </div>
+                              <div className="flex items-center text-xs text-flow-foreground/60">
+                                <ThumbsUp className="h-3 w-3 mr-1" /> 
+                                {item.likes}
+                              </div>
+                            </div>
+                          </CardFooter>
+                        </>
+                      ) : (
+                        <>
+                          <div 
+                            className="flex items-center justify-center p-4 border-r border-flow-border/30"
+                            style={{ backgroundColor: `${getTypeColor(item.type)}10` }}
+                          >
+                            <div 
+                              className="w-12 h-12 rounded-md flex items-center justify-center" 
+                              style={{ backgroundColor: getTypeColor(item.type) }}
+                            >
+                              {getTypeIcon(item.type)}
+                            </div>
+                          </div>
+                          <div className="flex flex-col flex-1 p-4">
+                            <div className="flex justify-between items-start">
+                              <h3 className="font-semibold">{item.title}</h3>
+                              {item.isNew && (
+                                <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 ml-2">New</Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-flow-foreground/70 line-clamp-1 mt-1">{item.preview}</p>
+                            <div className="flex items-center mt-2 text-xs text-flow-foreground/60">
+                              <Calendar className="h-3 w-3 mr-1" /> 
+                              <span className="mr-4">Updated {item.lastUpdated}</span>
+                              <Eye className="h-3 w-3 mr-1" /> 
+                              <span className="mr-4">{item.views}</span>
+                              <ThumbsUp className="h-3 w-3 mr-1" /> 
+                              <span>{item.likes}</span>
+                            </div>
+                            <div className="flex items-center justify-between mt-3">
+                              <div className="flex flex-wrap gap-1">
+                                {item.tags.slice(0, 2).map((tag) => (
+                                  <Badge key={tag} className="bg-flow-accent/10 text-flow-accent hover:bg-flow-accent/20">
+                                    {tag}
+                                  </Badge>
+                                ))}
+                                {item.tags.length > 2 && (
+                                  <Badge className="bg-flow-muted/30 hover:bg-flow-muted/40">
+                                    +{item.tags.length - 2}
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="flex items-center">
+                                <Progress 
+                                  value={item.completion} 
+                                  className="h-1.5 w-24" 
+                                  indicatorColor={getTypeColor(item.type)} 
+                                />
+                                <span className="ml-2 text-xs">{item.completion}%</span>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </Card>
+                  ))}
+                </div>
+                
+                {filteredItems.length === 0 && (
+                  <div className="p-12 text-center rounded-lg border border-flow-border/30 bg-flow-muted/20">
+                    <HelpCircle className="h-12 w-12 mx-auto text-flow-foreground/30 mb-4" />
+                    <h3 className="text-xl font-semibold mb-2">No results found</h3>
+                    <p className="text-flow-foreground/60">
+                      Try adjusting your search or filters to find what you're looking for.
+                    </p>
+                    <Button 
+                      onClick={resetFilters} 
+                      variant="outline" 
+                      className="mt-4"
+                    >
+                      Reset all filters
+                    </Button>
+                  </div>
+                )}
+              </TabsContent>
+              
+              <TabsContent value="internal" className="mt-0">
+                {/* This content is dynamically filtered by the useEffect */}
+              </TabsContent>
+              
+              <TabsContent value="client-facing" className="mt-0">
+                {/* This content is dynamically filtered by the useEffect */}
+              </TabsContent>
+            </Tabs>
+          </GlassMorphism>
+        </TransitionWrapper>
+      </main>
+      
+      <Footer />
+      
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-4xl max-h-[80vh] overflow-y-auto bg-[rgba(11,15,25,0.95)] backdrop-blur-lg border-flow-border/40">
+          {selectedItem && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center mb-2">
+                  <div 
+                    className="p-2 rounded-md flex items-center justify-center mr-3" 
+                    style={{ backgroundColor: getTypeColor(selectedItem.type) }}
+                  >
+                    {getTypeIcon(selectedItem.type)}
+                  </div>
+                  <DialogTitle className="text-2xl">{selectedItem.title}</DialogTitle>
+                </div>
+                <DialogDescription className="flex flex-wrap gap-3 items-center">
+                  <Badge variant="outline" className="bg-flow-muted/30">{selectedItem.type}</Badge>
+                  <span className="text-flow-foreground/60 flex items-center">
+                    <Calendar className="h-3 w-3 mr-1" /> Updated {selectedItem.lastUpdated}
+                  </span>
+                  <span className="text-flow-foreground/60 flex items-center">
+                    <Users className="h-3 w-3 mr-1" /> By {selectedItem.author}
+                  </span>
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="space-y-4">
+                <div className="flex items-center">
+                  <Progress 
+                    value={selectedItem.completion} 
+                    className="h-2 flex-1" 
+                    indicatorColor={getTypeColor(selectedItem.type)} 
+                  />
+                  <span className="ml-3 text-sm">{selectedItem.completion}% complete</span>
+                </div>
+                
+                <p className="text-flow-foreground/80 leading-relaxed">
+                  {selectedItem.preview}
+                </p>
+                
+                <p className="text-flow-foreground/80 leading-relaxed">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam convallis libero in vulputate feugiat. 
+                  Phasellus viverra ex in tempus lobortis. Aenean faucibus congue lacinia. 
+                  Nullam auctor, nisi nec egestas volutpat, augue felis pellentesque libero, non consequat sem metus ac metus.
+                </p>
+                
+                <div className="space-y-2">
+                  <h4 className="font-semibold">Key points:</h4>
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>Implementation strategies for agency workflows</li>
+                    <li>Integration with existing systems and processes</li>
+                    <li>Performance metrics and measuring success</li>
+                    <li>Common challenges and troubleshooting</li>
+                  </ul>
+                </div>
+                
+                <Separator className="my-4 bg-flow-border/20" />
+                
+                <div className="flex flex-wrap gap-2">
+                  <h4 className="font-semibold mr-2">Tags:</h4>
+                  {selectedItem.tags.map((tag) => (
+                    <Badge key={tag} className="bg-flow-accent/10 text-flow-accent hover:bg-flow-accent/20">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+                
+                <Separator className="my-4 bg-flow-border/20" />
+                
+                <div className="flex justify-between">
+                  <Button
+                    variant="outline"
+                    className="bg-flow-muted/30 border-flow-border"
+                    onClick={() => setIsDialogOpen(false)}
+                  >
+                    Close
+                  </Button>
+                  <div className="space-x-2">
+                    <Button
+                      variant="ghost"
+                      className="border border-flow-border"
+                      onClick={() => toggleBookmark(selectedItem.id)}
+                    >
+                      <Bookmark className="h-4 w-4 mr-2" />
+                      Bookmark
+                    </Button>
+                    <Button
+                      variant="default"
+                      className="bg-flow-accent hover:bg-flow-accent/80"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View Full Document
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default Knowledge;
