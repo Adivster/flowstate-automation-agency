@@ -42,9 +42,9 @@ const ExpandedAgentCard: React.FC<ExpandedAgentCardProps> = ({
   };
   
   const getProgressBarColor = (value: number) => {
-    if (value > 90) return 'bg-green-500';
-    if (value > 70) return 'bg-yellow-500';
-    return 'bg-red-500';
+    if (value > 90) return '#10b981'; // green-500
+    if (value > 70) return '#eab308'; // yellow-500
+    return '#ef4444'; // red-500
   };
   
   return (
@@ -96,7 +96,7 @@ const ExpandedAgentCard: React.FC<ExpandedAgentCardProps> = ({
               <Progress 
                 value={agent.efficiency} 
                 className="h-2" 
-                indicatorClassName={getProgressBarColor(agent.efficiency)}
+                indicatorColor={getProgressBarColor(agent.efficiency)}
               />
             </div>
             
@@ -120,7 +120,7 @@ const ExpandedAgentCard: React.FC<ExpandedAgentCardProps> = ({
                   <span className="text-sm text-flow-foreground">Data Processing Task #4872</span>
                   <span className="text-sm text-green-500">82%</span>
                 </div>
-                <Progress value={82} className="h-1.5" indicatorClassName="bg-green-500" />
+                <Progress value={82} className="h-1.5" indicatorColor="#10b981" />
               </motion.div>
               
               <motion.div 
@@ -131,7 +131,7 @@ const ExpandedAgentCard: React.FC<ExpandedAgentCardProps> = ({
                   <span className="text-sm text-flow-foreground">System Optimization #3391</span>
                   <span className="text-sm text-amber-500">45%</span>
                 </div>
-                <Progress value={45} className="h-1.5" indicatorClassName="bg-amber-500" />
+                <Progress value={45} className="h-1.5" indicatorColor="#eab308" />
               </motion.div>
             </div>
           </div>

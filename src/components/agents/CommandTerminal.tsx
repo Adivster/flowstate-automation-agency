@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Terminal, X, Send, Download, RotateCcw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -262,7 +261,7 @@ const CommandTerminal = () => {
         <Terminal className="h-4 w-4 text-flow-accent" />
       </Button>
       
-      <style jsx global>{`
+      <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
           height: 4px;
