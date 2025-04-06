@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
@@ -7,8 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { BarChart2 } from 'lucide-react';
 import PageHeader from '@/components/ui/design-system/PageHeader';
-
-// Import other components and code as needed
+import Section from '@/components/ui/design-system/Section';
 
 const Analytics = () => {
   const { t } = useLanguage();
@@ -32,7 +32,6 @@ const Analytics = () => {
             />
             
             <GlassMorphism className="rounded-2xl p-6 md:p-8 shadow-sm border-flow-border/30 scan-lines">
-              {/* Analytics content goes here */}
               <div className="text-center py-12">
                 <h3 className="text-2xl font-semibold mb-3">Analytics Content</h3>
                 <p className="text-flow-foreground/70">Performance metrics and charts will be displayed here.</p>
