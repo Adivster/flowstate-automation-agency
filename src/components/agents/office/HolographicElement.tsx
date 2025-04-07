@@ -20,7 +20,7 @@ const HolographicElement: React.FC<HolographicElementProps> = ({ type, x, y, siz
             <ChartBar className="absolute inset-0 m-auto w-2/3 h-2/3 text-flow-accent/80" />
             <motion.div 
               className="absolute inset-0 bg-flow-accent/5 rounded-md"
-              animate={{ opacity: [0.2, 0.4] }} // Fixed: Using only two keyframes
+              animate={{ opacity: [0.2, 0.4] }}
               transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
             />
           </div>
@@ -32,7 +32,7 @@ const HolographicElement: React.FC<HolographicElementProps> = ({ type, x, y, siz
             <Activity className="absolute w-2/3 h-2/3 text-cyan-400/80" />
             <motion.div 
               className="absolute inset-0 bg-cyan-500/5 rounded-md"
-              animate={{ opacity: [0.2, 0.4] }} // Fixed: Using only two keyframes
+              animate={{ opacity: [0.2, 0.4] }}
               transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
             />
           </div>
@@ -44,7 +44,7 @@ const HolographicElement: React.FC<HolographicElementProps> = ({ type, x, y, siz
             <Code className="absolute w-2/3 h-2/3 text-green-400/80" />
             <motion.div 
               className="absolute inset-0 bg-green-500/5 rounded-md"
-              animate={{ opacity: [0.2, 0.4] }} // Fixed: Using only two keyframes
+              animate={{ opacity: [0.2, 0.4] }}
               transition={{ duration: 2.5, repeat: Infinity, repeatType: "reverse" }}
             />
           </div>

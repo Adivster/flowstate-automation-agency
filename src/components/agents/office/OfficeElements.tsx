@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import Workstation from './Workstation';
 import DecorativeElement from './DecorativeElement';
@@ -142,7 +141,7 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
       
       return (
         <AgentCharacter 
-          key={`agent-${agent.id}`} // Fixed: Ensuring key uniqueness
+          key={`agent-${agent.id}`}
           agent={{
             ...agent,
             position,
@@ -191,7 +190,7 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
       {divisions.map((division) => (
         pulsing[division.id] && !selectedDivision && (
           <motion.div 
-            key={`pulse-${division.id}`} // Fixed: Ensuring key uniqueness
+            key={`pulse-${division.id}`}
             className="absolute rounded-xl opacity-0"
             style={{
               left: `${(divisionPositions?.[division.id]?.x || division.position.x) - 1}%`,
@@ -201,7 +200,7 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
               boxShadow: `0 0 30px ${division.borderColor || '#ffffff'}50`,
             }}
             animate={{
-              opacity: [0, 0.3]  // Fixed: Using only two keyframes
+              opacity: [0, 0.3]
             }}
             transition={{
               duration: 2,

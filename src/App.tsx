@@ -15,6 +15,7 @@ import Analytics from "./pages/Analytics";
 import Courses from "./pages/Courses";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import CommunicationTerminal from "./components/communication/CommunicationTerminal";
+import CommandTerminal from "./components/agents/CommandTerminal";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <CommunicationTerminal />
+              <CommandTerminal />
             </BrowserRouter>
           </TooltipProvider>
         </LanguageProvider>

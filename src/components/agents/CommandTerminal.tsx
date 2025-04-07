@@ -4,7 +4,7 @@ import { Terminal, X, Send, Download, RotateCcw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import GlassMorphism from '@/components/ui/GlassMorphism';
+import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 // This is a refactored version of CommandTerminal with real-time updates
