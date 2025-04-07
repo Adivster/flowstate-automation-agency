@@ -76,8 +76,19 @@ export interface AgentData {
     x: number;
     y: number;
   }>;
+  mood?: AgentMood;
+  workload?: number; // 0-100 percentage
   zIndex?: number;
 }
+
+export type AgentMood = 
+  | 'optimal' 
+  | 'focused'
+  | 'learning'
+  | 'overwhelmed'
+  | 'underutilized'
+  | 'frustrated'
+  | 'confused';
 
 export interface DivisionPosition {
   x: number;

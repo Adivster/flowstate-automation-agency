@@ -14,6 +14,8 @@ export const agents: AgentData[] = [
       x: 22,
       y: 25
     },
+    mood: 'optimal',
+    workload: 65,
     route: [
       { division: 'kb', x: 22, y: 25 },
       { division: 'analytics', x: 58, y: 25 },
@@ -32,6 +34,8 @@ export const agents: AgentData[] = [
       x: 62,
       y: 65
     },
+    mood: 'overwhelmed',
+    workload: 92,
     route: [
       { division: 'strategy', x: 62, y: 65 },
       { division: 'operations', x: 22, y: 60 },
@@ -49,6 +53,8 @@ export const agents: AgentData[] = [
       x: 62,
       y: 25
     },
+    mood: 'focused',
+    workload: 78,
     route: [
       { division: 'analytics', x: 62, y: 25 },
       { division: 'kb', x: 22, y: 25 },
@@ -67,6 +73,8 @@ export const agents: AgentData[] = [
       x: 22,
       y: 60
     },
+    mood: 'focused',
+    workload: 70,
     route: [
       { division: 'operations', x: 22, y: 60 },
       { division: 'strategy', x: 62, y: 65 },
@@ -84,6 +92,8 @@ export const agents: AgentData[] = [
       x: 64,
       y: 70
     },
+    mood: 'learning',
+    workload: 55,
     route: [
       { division: 'strategy', x: 64, y: 70 },
       { division: 'analytics', x: 62, y: 25 },
@@ -101,6 +111,8 @@ export const agents: AgentData[] = [
       x: 40,
       y: 42
     },
+    mood: 'optimal',
+    workload: 75,
     route: [
       { division: 'research', x: 40, y: 42 },
       { division: 'analytics', x: 62, y: 25 },
@@ -119,6 +131,8 @@ export const agents: AgentData[] = [
       x: 60,
       y: 28
     },
+    mood: 'underutilized',
+    workload: 30,
     route: [
       { division: 'analytics', x: 60, y: 28 },
       { division: 'kb', x: 20, y: 27 },
@@ -137,6 +151,8 @@ export const agents: AgentData[] = [
       x: 20,
       y: 57
     },
+    mood: 'frustrated',
+    workload: 82,
     route: [
       { division: 'operations', x: 20, y: 57 },
       { division: 'strategy', x: 62, y: 68 },
@@ -154,6 +170,8 @@ export const agents: AgentData[] = [
       x: 20,
       y: 27
     },
+    mood: 'confused',
+    workload: 45,
     route: [
       { division: 'kb', x: 20, y: 27 },
       { division: 'analytics', x: 60, y: 28 },
@@ -171,6 +189,8 @@ export const agents: AgentData[] = [
       x: 60,
       y: 62
     },
+    mood: 'optimal',
+    workload: 68,
     route: [
       { division: 'strategy', x: 60, y: 62 },
       { division: 'operations', x: 20, y: 58 },
