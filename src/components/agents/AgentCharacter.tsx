@@ -84,7 +84,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
   const getAnimationState = () => {
     const baseAnimation = { 
       scale: isSelected ? 1.1 : 1, 
-      rotate: isTraveling ? [0, -5, 5, -5, 0] : 0,
+      rotate: isTraveling ? [-5, 5] : 0, // Fixed: Using only two keyframes for spring animation
       transition: { 
         duration: isTraveling ? 0.8 : 0.3,
         type: isTraveling ? "spring" : "tween"
@@ -96,14 +96,14 @@ const AgentCharacter: React.FC<AgentProps> = ({
         return {
           ...baseAnimation,
           boxShadow: isSelected ? 
-            ['0 0 10px rgba(34, 197, 94, 0.4)', '0 0 20px rgba(34, 197, 94, 0.6)', '0 0 10px rgba(34, 197, 94, 0.4)'] : 
+            ['0 0 10px rgba(34, 197, 94, 0.4)', '0 0 20px rgba(34, 197, 94, 0.6)'] : // Fixed: Using only two keyframes
             '0 0 5px rgba(34, 197, 94, 0.3)',
         };
       case 'error':
         return {
           ...baseAnimation,
           boxShadow: isSelected ? 
-            ['0 0 10px rgba(239, 68, 68, 0.4)', '0 0 20px rgba(239, 68, 68, 0.6)', '0 0 10px rgba(239, 68, 68, 0.4)'] : 
+            ['0 0 10px rgba(239, 68, 68, 0.4)', '0 0 20px rgba(239, 68, 68, 0.6)'] : // Fixed: Using only two keyframes
             '0 0 5px rgba(239, 68, 68, 0.3)',
         };
       case 'idle':

@@ -20,8 +20,8 @@ const HolographicElement: React.FC<HolographicElementProps> = ({ type, x, y, siz
             <ChartBar className="absolute inset-0 m-auto w-2/3 h-2/3 text-flow-accent/80" />
             <motion.div 
               className="absolute inset-0 bg-flow-accent/5 rounded-md"
-              animate={{ opacity: [0.2, 0.4, 0.2] }}
-              transition={{ duration: 3, repeat: Infinity }}
+              animate={{ opacity: [0.2, 0.4] }} // Fixed: Using only two keyframes
+              transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
             />
           </div>
         );
@@ -32,8 +32,8 @@ const HolographicElement: React.FC<HolographicElementProps> = ({ type, x, y, siz
             <Activity className="absolute w-2/3 h-2/3 text-cyan-400/80" />
             <motion.div 
               className="absolute inset-0 bg-cyan-500/5 rounded-md"
-              animate={{ opacity: [0.2, 0.4, 0.2] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              animate={{ opacity: [0.2, 0.4] }} // Fixed: Using only two keyframes
+              transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
             />
           </div>
         );
@@ -44,8 +44,8 @@ const HolographicElement: React.FC<HolographicElementProps> = ({ type, x, y, siz
             <Code className="absolute w-2/3 h-2/3 text-green-400/80" />
             <motion.div 
               className="absolute inset-0 bg-green-500/5 rounded-md"
-              animate={{ opacity: [0.2, 0.4, 0.2] }}
-              transition={{ duration: 2.5, repeat: Infinity }}
+              animate={{ opacity: [0.2, 0.4] }} // Fixed: Using only two keyframes
+              transition={{ duration: 2.5, repeat: Infinity, repeatType: "reverse" }}
             />
           </div>
         );
@@ -66,13 +66,14 @@ const HolographicElement: React.FC<HolographicElementProps> = ({ type, x, y, siz
       }}
       initial={{ opacity: 0.5, scale: 0.9 }}
       animate={{ 
-        opacity: [0.7, 0.9, 0.7], 
-        scale: [1, 1.05, 1],
-        y: [-2, 2, -2]
+        opacity: [0.7, 0.9], 
+        scale: [1, 1.05],
+        y: [-2, 2]
       }}
       transition={{ 
         duration: 4, 
         repeat: Infinity,
+        repeatType: "reverse",
         ease: "easeInOut"
       }}
     >

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, Terminal, Server, BarChart3, Map, HelpingHand, Coffee, PieChart, Cpu, Radio, Box, Tablet, PanelTop, Globe, TestTube, Microscope, Rocket } from 'lucide-react';
@@ -21,8 +22,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(99, 102, 241, 0.2)',
         tooltip: 'Digital Library',
         animation: {
-          y: [0, -3, 0],
-          transition: { repeat: Infinity, duration: 3 }
+          y: [0, -3], // Fixed: Using only two keyframes for spring animation
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 3 }
         }
       },
       terminal: {
@@ -31,8 +32,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(99, 102, 241, 0.2)',
         tooltip: 'Knowledge Terminal',
         animation: {
-          opacity: [0.7, 1, 0.7],
-          transition: { repeat: Infinity, duration: 2 }
+          opacity: [0.7, 1],
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 2 }
         }
       },
       server: {
@@ -41,8 +42,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(99, 102, 241, 0.2)',
         tooltip: 'Archive Server',
         animation: {
-          scale: [1, 1.05, 1],
-          transition: { repeat: Infinity, duration: 3 }
+          scale: [1, 1.05],
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 3 }
         }
       },
       
@@ -53,8 +54,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(234, 179, 8, 0.2)',
         tooltip: 'Data Hologram',
         animation: {
-          rotate: [0, 5, 0, -5, 0],
-          transition: { repeat: Infinity, duration: 4 }
+          rotate: [0, 5], // Fixed: Using only two keyframes for spring animation
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 4 }
         }
       },
       chart: {
@@ -63,8 +64,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(234, 179, 8, 0.2)',
         tooltip: 'Live Charts',
         animation: {
-          y: [0, -3, 0],
-          transition: { repeat: Infinity, duration: 2.5 }
+          y: [0, -3],
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 2.5 }
         }
       },
       dashboard: {
@@ -73,8 +74,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(234, 179, 8, 0.2)',
         tooltip: 'Analytics Dashboard',
         animation: {
-          scale: [1, 1.05, 1],
-          transition: { repeat: Infinity, duration: 2 }
+          scale: [1, 1.05],
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 2 }
         }
       },
       
@@ -85,9 +86,9 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(168, 85, 247, 0.2)',
         tooltip: 'Monitoring Drone',
         animation: {
-          x: [0, 3, 0, -3, 0],
-          y: [0, -3, 0],
-          transition: { repeat: Infinity, duration: 4 }
+          x: [0, 3], // Fixed: Using only two keyframes for spring animation
+          y: [0, -3],
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 4 }
         }
       },
       robot: {
@@ -96,8 +97,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(168, 85, 247, 0.2)',
         tooltip: 'Utility Robot',
         animation: {
-          scale: [1, 1.05, 1],
-          transition: { repeat: Infinity, duration: 2 }
+          scale: [1, 1.05],
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 2 }
         }
       },
       securityPanel: {
@@ -106,8 +107,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(168, 85, 247, 0.2)',
         tooltip: 'Security Panel',
         animation: {
-          opacity: [0.7, 1, 0.7],
-          transition: { repeat: Infinity, duration: 3 }
+          opacity: [0.7, 1],
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 3 }
         }
       },
       
@@ -118,8 +119,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(59, 130, 246, 0.2)',
         tooltip: 'Strategic Map',
         animation: {
-          scale: [1, 1.05, 1],
-          transition: { repeat: Infinity, duration: 3 }
+          scale: [1, 1.05],
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 3 }
         }
       },
       holomap: {
@@ -128,8 +129,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(59, 130, 246, 0.2)',
         tooltip: '3D Projection',
         animation: {
-          rotate: [0, 5, 0, -5, 0],
-          transition: { repeat: Infinity, duration: 4 }
+          rotate: [0, 5], // Fixed: Using only two keyframes for spring animation
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 4 }
         }
       },
       board: {
@@ -138,8 +139,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(59, 130, 246, 0.2)',
         tooltip: 'Planning Board',
         animation: {
-          y: [0, -2, 0],
-          transition: { repeat: Infinity, duration: 3 }
+          y: [0, -2],
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 3 }
         }
       },
       
@@ -150,8 +151,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(34, 197, 94, 0.2)',
         tooltip: 'Research Lab',
         animation: {
-          y: [0, -3, 0],
-          transition: { repeat: Infinity, duration: 3 }
+          y: [0, -3],
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 3 }
         }
       },
       microscope: {
@@ -160,8 +161,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(34, 197, 94, 0.2)',
         tooltip: 'Advanced Microscope',
         animation: {
-          opacity: [0.7, 1, 0.7],
-          transition: { repeat: Infinity, duration: 2 }
+          opacity: [0.7, 1],
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 2 }
         }
       },
       prototype: {
@@ -170,8 +171,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(34, 197, 94, 0.2)',
         tooltip: 'Prototype Device',
         animation: {
-          scale: [1, 1.05, 1],
-          transition: { repeat: Infinity, duration: 2.5 }
+          scale: [1, 1.05],
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 2.5 }
         }
       },
       
@@ -182,8 +183,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(245, 158, 11, 0.2)',
         tooltip: 'Coffee Station',
         animation: {
-          rotate: [0, 5, 0, -5, 0],
-          transition: { repeat: Infinity, duration: 4 }
+          rotate: [0, 5], // Fixed: Using only two keyframes for spring animation
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 4 }
         }
       },
       lounge: {
@@ -192,8 +193,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(245, 158, 11, 0.2)',
         tooltip: 'Relaxation Pod',
         animation: {
-          scale: [1, 1.05, 1],
-          transition: { repeat: Infinity, duration: 3 }
+          scale: [1, 1.05],
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 3 }
         }
       },
       arcade: {
@@ -202,8 +203,8 @@ const DecorativeElement: React.FC<DecorativeElementProps> = ({ type, x, y, size 
         bgColor: 'rgba(245, 158, 11, 0.2)',
         tooltip: 'Recreation Zone',
         animation: {
-          y: [0, -2, 0],
-          transition: { repeat: Infinity, duration: 2.5 }
+          y: [0, -2],
+          transition: { repeat: Infinity, repeatType: "reverse", duration: 2.5 }
         }
       }
     };

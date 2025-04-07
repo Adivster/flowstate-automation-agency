@@ -8,11 +8,12 @@ const CentralServer: React.FC = () => {
     <motion.div 
       className="absolute left-1/2 top-[15%] -translate-x-1/2 w-10 h-18 bg-blue-900 dark:bg-blue-800 rounded-sm border border-flow-accent/70 flex flex-col items-center justify-center gap-1 overflow-hidden z-20"
       animate={{ 
-        boxShadow: ['0 0 5px rgba(99, 102, 241, 0.3)', '0 0 15px rgba(99, 102, 241, 0.5)', '0 0 5px rgba(99, 102, 241, 0.3)']
+        boxShadow: ['0 0 5px rgba(99, 102, 241, 0.3)', '0 0 15px rgba(99, 102, 241, 0.5)']  // Fixed: Using only two keyframes
       }}
       transition={{ 
         duration: 3,
         repeat: Infinity,
+        repeatType: "reverse",
         ease: "easeInOut"
       }}
     >
