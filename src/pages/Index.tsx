@@ -14,7 +14,7 @@ const Index: React.FC = () => {
       <Navbar />
       
       {/* Main Content */}
-      <main className="flex-1 mt-10 px-4 sm:px-6 pb-4">
+      <main className="flex-1 mt-8 px-4 sm:px-6 pb-4">
         <TransitionWrapper>
           <div className="max-w-7xl mx-auto">
             <PageHeader 
