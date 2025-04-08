@@ -97,7 +97,9 @@ const AISystemStatus: React.FC = () => {
         </Button>
       </div>
       
-      <style jsx>{`
+      {/* Fix: Remove the jsx property from style element */}
+      <style>
+        {`
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
           height: 4px;
@@ -115,7 +117,8 @@ const AISystemStatus: React.FC = () => {
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background: rgba(255, 255, 255, 0.3);
         }
-      `}</style>
+        `}
+      </style>
     </GlassMorphism>
   );
 };
