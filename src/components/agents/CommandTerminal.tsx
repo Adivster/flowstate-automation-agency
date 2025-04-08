@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Terminal, X, Send, Download, RotateCcw } from 'lucide-react';
+import { Terminal, X, Send, Download, RotateCcw, Plus, Code } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -14,11 +14,20 @@ const CommandTerminal = () => {
   const [history, setHistory] = useState<Array<{type: 'input' | 'output' | 'error' | 'system', content: string, timestamp: Date}>>([
     { type: 'system', content: 'Terminal initialized. Connected to agency network.', timestamp: new Date() }
   ]);
+  const [showExamples, setShowExamples] = useState(false);
   const { toast } = useToast();
   const { t } = useLanguage();
   const terminalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  const exampleCommands = [
+    { label: 'System Status', command: 'status' },
+    { label: 'List Agents', command: 'list agents' },
+    { label: 'Connect to Agent', command: 'connect Knowledge Engineer' },
+    { label: 'Deploy New Agent', command: 'deploy Marketing Specialist' },
+    { label: 'Create Task', command: 'create task "Update knowledge base" priority:high' },
+  ];
   
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -33,10 +42,12 @@ const CommandTerminal = () => {
     
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('openCommunicationTerminal', handleOpenTerminal);
+    window.addEventListener('openCommandTerminal', handleOpenTerminal);
     
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('openCommunicationTerminal', handleOpenTerminal);
+      window.removeEventListener('openCommandTerminal', handleOpenTerminal);
     };
   }, []);
   
@@ -58,6 +69,7 @@ const CommandTerminal = () => {
     // Add input to history
     setHistory(prev => [...prev, { type: 'input', content: input, timestamp: new Date() }]);
     setIsProcessing(true);
+    setShowExamples(false);
     
     // Process the command - this would connect to an actual API in a real app
     setTimeout(() => {
@@ -66,19 +78,35 @@ const CommandTerminal = () => {
       setIsProcessing(false);
     }, 300);
   };
+
+  const handleExampleClick = (command: string) => {
+    setInput(command);
+    setShowExamples(false);
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
   
   const processCommand = (cmd: string) => {
     const lowerCmd = cmd.toLowerCase().trim();
     
     // Simple command processing logic
     if (lowerCmd.startsWith('help')) {
-      addOutput('Available commands: help, status, list agents, connect [agent name], deploy, restart');
+      addOutput('Available commands: help, status, list agents, connect [agent name], deploy [agent type], create task "[description]" [attributes], restart');
     } 
     else if (lowerCmd.startsWith('status')) {
-      addOutput('System Status: OPERATIONAL\nAll systems nominal. Agency network at 97% efficiency.');
+      addOutput('System Status: OPERATIONAL\nAll systems nominal. Agency network at 97% efficiency.\n\nActive AI Processes: 14\nAgent Utilization: 78%\nKnowledge Base: Updated 15 minutes ago');
+      
+      setTimeout(() => {
+        addOutput('Would you like to see detailed metrics? Try: "status details"');
+      }, 500);
     }
     else if (lowerCmd.startsWith('list agents')) {
       addOutput('Active Agents:\n- Knowledge Engineer (working)\n- Data Architect (working)\n- Strategic Planner (working)\n- Content Curator (idle)\nPaused Agents:\n- Operations Manager (paused)\nError State:\n- Security Officer (error)');
+      
+      setTimeout(() => {
+        addOutput('To interact with an agent, try: "connect [agent name]"');
+      }, 500);
     }
     else if (lowerCmd.startsWith('connect')) {
       const agentName = cmd.substring(7).trim();
@@ -99,16 +127,48 @@ const CommandTerminal = () => {
       }
     }
     else if (lowerCmd.startsWith('deploy')) {
-      addOutput('Initiating deployment sequence...');
-      
-      // Simulate deployment
-      setTimeout(() => {
-        toast({
-          title: "Deployment Initiated",
-          description: "New agent deployment in progress",
-          duration: 3000,
-        });
-      }, 1000);
+      const agentType = cmd.substring(6).trim();
+      if (agentType) {
+        addOutput(`Initiating deployment sequence for ${agentType}...`);
+        
+        // Simulate deployment
+        setTimeout(() => {
+          addOutput(`Allocating resources for ${agentType}...`);
+          setTimeout(() => {
+            addOutput(`${agentType} deployed successfully. Agent is now initializing knowledge base.`);
+            toast({
+              title: "Deployment Complete",
+              description: `${agentType} is now active`,
+              duration: 3000,
+            });
+          }, 1500);
+        }, 1000);
+      } else {
+        addError('Please specify an agent type to deploy.');
+      }
+    }
+    else if (lowerCmd.startsWith('create task')) {
+      try {
+        const taskContent = cmd.match(/"([^"]+)"/)?.[1] || "";
+        if (!taskContent) throw new Error("Task description required in quotes");
+        
+        const priorityMatch = cmd.match(/priority:(\w+)/);
+        const priority = priorityMatch ? priorityMatch[1] : "normal";
+        
+        addOutput(`Creating new task: "${taskContent}"\nPriority: ${priority}`);
+        
+        setTimeout(() => {
+          addOutput(`Task created successfully. ID: TSK-${Math.floor(Math.random() * 1000)}`);
+          toast({
+            title: "Task Created",
+            description: `New task added to your dashboard`,
+            duration: 3000,
+          });
+        }, 800);
+      } catch (error) {
+        addError(`Error creating task: ${error.message}`);
+        addOutput('Example format: create task "Update knowledge base" priority:high');
+      }
     }
     else if (lowerCmd.startsWith('restart')) {
       const serviceName = cmd.substring(7).trim() || 'system';
@@ -227,15 +287,54 @@ const CommandTerminal = () => {
                   )}
                 </div>
                 
+                <AnimatePresence>
+                  {showExamples && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="border-t border-flow-border/30 overflow-hidden bg-flow-background/60"
+                    >
+                      <div className="p-3">
+                        <div className="text-xs text-flow-foreground/70 mb-2">Example commands:</div>
+                        <div className="flex flex-wrap gap-2">
+                          {exampleCommands.map((example, index) => (
+                            <Button
+                              key={index}
+                              variant="outline"
+                              size="sm"
+                              className="text-xs bg-flow-background/40 border-flow-border/30"
+                              onClick={() => handleExampleClick(example.command)}
+                            >
+                              {example.label}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                
                 <form onSubmit={handleSubmit} className="flex p-3 border-t border-flow-border/30 bg-flow-background/40">
-                  <input
-                    type="text"
-                    ref={inputRef}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder={t('typeCommand')}
-                    className="flex-1 bg-transparent text-flow-foreground border-none outline-none text-sm placeholder:text-flow-foreground/50"
-                  />
+                  <div className="flex-grow relative">
+                    <input
+                      type="text"
+                      ref={inputRef}
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      placeholder={t('typeCommand')}
+                      className="w-full bg-transparent text-flow-foreground border-none outline-none text-sm placeholder:text-flow-foreground/50"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 rounded-full absolute right-0 top-1/2 -translate-y-1/2 text-flow-foreground/50 hover:text-flow-accent"
+                      onClick={() => setShowExamples(!showExamples)}
+                    >
+                      <Code className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                   
                   <Button
                     type="submit"

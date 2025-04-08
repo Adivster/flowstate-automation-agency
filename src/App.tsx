@@ -18,8 +18,40 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { TaskProvider } from "./contexts/TaskContext";
 import CommunicationTerminal from "./components/communication/CommunicationTerminal";
 import CommandTerminal from "./components/agents/CommandTerminal";
+import { useEffect } from "react";
+import { useToast } from "./hooks/use-toast";
 
 const queryClient = new QueryClient();
+
+// Task creator event handler component
+const TaskCreatorEventHandler = () => {
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const handleOpenTaskCreator = () => {
+      // In a real app this would open a modal
+      toast({
+        title: "Quick Task Creation",
+        description: "Opening task creation form...",
+        duration: 3000,
+      });
+      
+      // This is a simple demonstration. In a real app, we would:
+      // 1. Open a modal with a task creation form
+      // 2. Or navigate to the tasks page with the form pre-opened
+      setTimeout(() => {
+        window.location.href = "/tasks";
+      }, 1000);
+    };
+
+    window.addEventListener("openTaskCreator", handleOpenTaskCreator);
+    return () => {
+      window.removeEventListener("openTaskCreator", handleOpenTaskCreator);
+    };
+  }, [toast]);
+
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -31,6 +63,7 @@ const App = () => (
               <Toaster />
               <Sonner />
               <BrowserRouter>
+                <TaskCreatorEventHandler />
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/agents" element={<Agents />} />
