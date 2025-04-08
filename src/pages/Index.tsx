@@ -14,16 +14,17 @@ const Index: React.FC = () => {
       <Navbar />
       
       {/* Main Content */}
-      <main className="flex-1 mt-20 px-4 sm:px-6 pb-12">
+      <main className="flex-1 mt-16 px-4 sm:px-6 pb-8">
         <TransitionWrapper>
           <div className="max-w-7xl mx-auto">
             <PageHeader 
               title="Dashboard"
               description="Welcome to your Agency HQ. Monitor performance, manage divisions, and optimize workflows from this central command center."
               icon={<LayoutDashboard className="h-8 w-8 text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]" />}
+              className="mb-6"
             />
             
-            <GlassMorphism className="rounded-2xl p-5 md:p-8 shadow-md border-flow-border/30 scan-lines bg-flow-background/20 backdrop-blur-lg">
+            <GlassMorphism className="rounded-2xl p-4 md:p-6 shadow-md border-flow-border/30 scan-lines bg-flow-background/20 backdrop-blur-lg">
               <AgencyDashboard />
             </GlassMorphism>
           </div>

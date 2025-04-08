@@ -158,7 +158,7 @@ const AgencyDashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 py-4 md:py-6">
+    <div className="space-y-6 py-4 md:py-6">
       <TransitionWrapper>
         <GlassMorphism className="p-6 rounded-xl border-flow-accent/30 animate-glow-pulse mb-2 bg-gradient-to-br from-flow-background/20 to-flow-accent/5">
           <div className="space-y-3">
@@ -267,7 +267,7 @@ const AgencyDashboard: React.FC = () => {
             <CollapsibleTrigger asChild>
               <Button
                 variant="ghost" 
-                className="flex items-center justify-between w-full text-left p-2 rounded-lg border border-flow-border/20 bg-flow-background/30 mt-6"
+                className="flex items-center justify-between w-full text-left p-2 rounded-lg border border-flow-border/20 bg-flow-background/30 mt-4"
               >
                 <div className="flex items-center">
                   <BarChart className="h-4 w-4 mr-2 text-flow-accent" />
@@ -277,7 +277,7 @@ const AgencyDashboard: React.FC = () => {
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <GlassMorphism className="p-5 sm:p-6 rounded-xl bg-flow-background/20 hover:bg-flow-background/30 transition-all duration-300">
                   <h4 className="text-lg font-medium mb-4 flex items-center">
                     <BarChart className="w-4 h-4 mr-2 text-flow-accent" />
