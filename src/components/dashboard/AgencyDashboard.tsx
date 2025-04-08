@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   BookOpen, 
@@ -37,8 +38,9 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 import { useToast } from '@/hooks/use-toast';
+import Section from '../ui/design-system/Section';
 
 const AgencyDashboard: React.FC = () => {
   const { t } = useLanguage();
@@ -158,11 +160,11 @@ const AgencyDashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 py-4 md:py-6">
+    <div className="py-2">
       <TransitionWrapper>
-        <GlassMorphism className="p-6 rounded-xl border-flow-accent/30 animate-glow-pulse mb-2 bg-gradient-to-br from-flow-background/20 to-flow-accent/5">
+        <GlassMorphism className="p-5 rounded-xl border-flow-accent/30 animate-glow-pulse mb-4 bg-gradient-to-br from-flow-background/20 to-flow-accent/5">
           <div className="space-y-3">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-1 neon-text">FlowState Business Agency</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold neon-text">FlowState Business Agency</h2>
             <p className="text-flow-foreground/80">
               AI-powered automation for your growing business
             </p>
@@ -201,7 +203,7 @@ const AgencyDashboard: React.FC = () => {
         onValueChange={setActiveTab}
         className="w-full"
       >
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-3">
           <TabsList className="bg-flow-background/30">
             <TabsTrigger value="overview" className="data-[state=active]:bg-flow-accent/20">Overview</TabsTrigger>
             <TabsTrigger value="divisions" className="data-[state=active]:bg-flow-accent/20">Divisions</TabsTrigger>
@@ -210,54 +212,62 @@ const AgencyDashboard: React.FC = () => {
           </TabsList>
         </div>
         
-        <TabsContent value="overview" className="space-y-6 mt-0">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2">
-              <AISystemStatus />
-            </div>
-            <div className="md:col-span-1">
-              <PersonalizedSection />
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2">
-              <section className="space-y-5">
-                <TransitionWrapper delay={50}>
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-medium neon-text">Performance Overview</h3>
-                    <Link to="/analytics">
-                      <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
-                        View Analytics <ChevronRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
-                      </Button>
-                    </Link>
-                  </div>
-                  <p className="text-sm text-flow-foreground/60 mb-4">Key metrics and performance indicators for your agency</p>
-                </TransitionWrapper>
-                <StatsOverview />
-              </section>
-            </div>
-            <div className="md:col-span-1">
-              <AIInsights />
-            </div>
-          </div>
-          
-          <section className="space-y-5">
-            <TransitionWrapper delay={100}>
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xl font-medium neon-text">Task Management</h3>
-                <Link to="/tasks">
-                  <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
-                    View All Tasks <ChevronRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
-                  </Button>
-                </Link>
+        <TabsContent value="overview" className="space-y-4 mt-0">
+          <Section noPadding>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2">
+                <AISystemStatus />
               </div>
-              <p className="text-sm text-flow-foreground/60 mb-4">Current tasks and their status across all divisions</p>
-            </TransitionWrapper>
-            <TaskManagement />
-          </section>
+              <div className="md:col-span-1">
+                <PersonalizedSection />
+              </div>
+            </div>
+          </Section>
           
-          <InteractiveSystemDiagram />
+          <Section noPadding>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2">
+                <section>
+                  <TransitionWrapper delay={50}>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-xl font-medium neon-text">Performance Overview</h3>
+                      <Link to="/analytics">
+                        <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
+                          View Analytics <ChevronRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                        </Button>
+                      </Link>
+                    </div>
+                    <p className="text-sm text-flow-foreground/60 mb-3">Key metrics and performance indicators for your agency</p>
+                  </TransitionWrapper>
+                  <StatsOverview />
+                </section>
+              </div>
+              <div className="md:col-span-1">
+                <AIInsights />
+              </div>
+            </div>
+          </Section>
+          
+          <Section noPadding>
+            <section>
+              <TransitionWrapper delay={100}>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xl font-medium neon-text">Task Management</h3>
+                  <Link to="/tasks">
+                    <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
+                      View All Tasks <ChevronRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                    </Button>
+                  </Link>
+                </div>
+                <p className="text-sm text-flow-foreground/60 mb-3">Current tasks and their status across all divisions</p>
+              </TransitionWrapper>
+              <TaskManagement />
+            </section>
+          </Section>
+          
+          <Section noPadding>
+            <InteractiveSystemDiagram />
+          </Section>
           
           <Collapsible
             open={isResourcesOpen}
@@ -267,7 +277,7 @@ const AgencyDashboard: React.FC = () => {
             <CollapsibleTrigger asChild>
               <Button
                 variant="ghost" 
-                className="flex items-center justify-between w-full text-left p-2 rounded-lg border border-flow-border/20 bg-flow-background/30 mt-4"
+                className="flex items-center justify-between w-full text-left p-2 rounded-lg border border-flow-border/20 bg-flow-background/30 mt-3"
               >
                 <div className="flex items-center">
                   <BarChart className="h-4 w-4 mr-2 text-flow-accent" />
@@ -276,10 +286,10 @@ const AgencyDashboard: React.FC = () => {
                 <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isResourcesOpen ? 'transform rotate-180' : ''}`} />
               </Button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <GlassMorphism className="p-5 sm:p-6 rounded-xl bg-flow-background/20 hover:bg-flow-background/30 transition-all duration-300">
-                  <h4 className="text-lg font-medium mb-4 flex items-center">
+            <CollapsibleContent className="mt-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <GlassMorphism className="p-4 rounded-xl bg-flow-background/20 hover:bg-flow-background/30 transition-all duration-300">
+                  <h4 className="text-lg font-medium mb-3 flex items-center">
                     <BarChart className="w-4 h-4 mr-2 text-flow-accent" />
                     Division Resource Allocation
                   </h4>
@@ -306,14 +316,14 @@ const AgencyDashboard: React.FC = () => {
                     </Link>
                   </div>
                 </GlassMorphism>
-                <GlassMorphism className="p-5 sm:p-6 rounded-xl bg-flow-background/20 hover:bg-flow-background/30 transition-all duration-300">
-                  <h4 className="text-lg font-medium mb-4 flex items-center">
+                <GlassMorphism className="p-4 rounded-xl bg-flow-background/20 hover:bg-flow-background/30 transition-all duration-300">
+                  <h4 className="text-lg font-medium mb-3 flex items-center">
                     <BarChart className="w-4 h-4 mr-2 text-flow-accent" />
                     Key Performance Indicators
                   </h4>
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {['Workflow Efficiency', 'Agent Productivity', 'Task Completion Rate', 'System Reliability'].map((metric, index) => (
-                      <div key={index} className="space-y-2">
+                      <div key={index} className="space-y-1.5">
                         <div className="flex justify-between text-sm">
                           <span>{metric}</span>
                           <span className="font-mono">{75 + index * 5}%</span>
@@ -331,7 +341,7 @@ const AgencyDashboard: React.FC = () => {
                       </div>
                     ))}
                   </div>
-                  <div className="text-right mt-6">
+                  <div className="text-right mt-4">
                     <Link to="/analytics">
                       <Button variant="link" size="sm" className="text-flow-accent hover:text-flow-accent/80 text-xs p-0 h-auto">
                         View performance details <ChevronRight className="ml-1 h-3 w-3" />
