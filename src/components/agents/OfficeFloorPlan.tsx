@@ -2,14 +2,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { 
-  getDivisions, 
-  defaultDivisionPositions,
-  workstations, 
-  decorations, 
-  holograms, 
-  agents
-} from './office/data';
+import { getDivisions, defaultDivisionPositions } from './office/data/divisionsData';
+import { workstations, decorations, holograms, agents } from './office/data';
 import { fixOverlaps, optimizeLayout } from './office/utils/layoutUtils';
 import DataTransmissionManager, { DataTransmission } from './office/DataTransmissionManager';
 import NotificationManager, { Notification } from './office/NotificationManager';
@@ -19,6 +13,7 @@ import InfoPanelManager from './office/InfoPanelManager';
 import { Button } from '@/components/ui/button';
 import { Pencil, Save, RotateCcw, X, ZoomIn, ZoomOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { motion } from 'framer-motion';
 
 const OfficeFloorPlan: React.FC = () => {
   // Component state
@@ -40,9 +35,8 @@ const OfficeFloorPlan: React.FC = () => {
   const contentRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
   
-  // Handle initial load to prevent flickering
+  // Handle initial load
   useEffect(() => {
-    // Immediately set loaded state to avoid flash
     if (isInitialMount.current) {
       isInitialMount.current = false;
       
@@ -53,7 +47,6 @@ const OfficeFloorPlan: React.FC = () => {
         if (savedPositions) {
           setDivisionPositions(JSON.parse(savedPositions));
         } else {
-          // Use optimized layout instead of just fixing overlaps
           setDivisionPositions(optimizeLayout(divisions, defaultDivisionPositions));
         }
       } catch (error) {
@@ -61,12 +54,11 @@ const OfficeFloorPlan: React.FC = () => {
         setDivisionPositions(optimizeLayout(divisions, defaultDivisionPositions));
       }
       
-      // Signal that loading is complete
       setIsLoaded(true);
     }
   }, [divisions]);
   
-  // Setup data transmissions once loaded
+  // Setup data transmissions
   useEffect(() => {
     if (!isLoaded) return;
     
@@ -104,7 +96,7 @@ const OfficeFloorPlan: React.FC = () => {
     };
   }, [isLoaded]);
   
-  // Handle random data transmissions
+  // Random data transmissions
   useEffect(() => {
     if (!isLoaded) return;
     
@@ -120,15 +112,26 @@ const OfficeFloorPlan: React.FC = () => {
       const division2 = divisions.find(d => d.id === div2);
       
       if (division1 && division2) {
+        // Use the positioned division coordinates if available
+        const div1Pos = divisionPositions[div1] || { 
+          x: division1.position.x, 
+          y: division1.position.y 
+        };
+        
+        const div2Pos = divisionPositions[div2] || {
+          x: division2.position.x,
+          y: division2.position.y
+        };
+        
         const newTransmission: DataTransmission = {
           id: Math.random().toString(),
           start: { 
-            x: division1.position.x + (division1.position.width / 2), 
-            y: division1.position.y + (division1.position.height / 2)
+            x: div1Pos.x + (division1.position.width / 2), 
+            y: div1Pos.y + (division1.position.height / 2)
           },
           end: { 
-            x: division2.position.x + (division2.position.width / 2), 
-            y: division2.position.y + (division2.position.height / 2)
+            x: div2Pos.x + (division2.position.width / 2), 
+            y: div2Pos.y + (division2.position.height / 2)
           },
           color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`,
           temporary: true,
@@ -149,8 +152,8 @@ const OfficeFloorPlan: React.FC = () => {
           
           const notif: Notification = {
             id: Date.now(),
-            x: division2.position.x + (division2.position.width / 2),
-            y: division2.position.y - 5,
+            x: div2Pos.x + (division2.position.width / 2),
+            y: div2Pos.y - 5,
             message: msg,
             type
           };
@@ -165,9 +168,9 @@ const OfficeFloorPlan: React.FC = () => {
     }, 8000);
     
     return () => clearInterval(interval);
-  }, [divisions, isLoaded]);
+  }, [divisions, isLoaded, divisionPositions]);
   
-  // Handle division pulsing effect
+  // Division pulsing effect
   useEffect(() => {
     if (!isLoaded) return;
     
@@ -236,7 +239,7 @@ const OfficeFloorPlan: React.FC = () => {
     }
   };
   
-  // Handle escape key to exit edit mode or close panels
+  // Handle escape key
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -287,14 +290,13 @@ const OfficeFloorPlan: React.FC = () => {
     const boundedX = Math.max(5, Math.min(95 - 20, x));
     const boundedY = Math.max(5, Math.min(85 - 20, y));
     
-    // Update position without overlap check - we'll provide visual feedback instead
     setDivisionPositions(prev => ({
       ...prev,
       [divisionId]: { x: boundedX, y: boundedY }
     }));
   };
   
-  // Save division positions
+  // Save positions
   const savePositions = () => {
     try {
       localStorage.setItem('officeDivisionPositions', JSON.stringify(divisionPositions));
@@ -314,7 +316,7 @@ const OfficeFloorPlan: React.FC = () => {
     }
   };
   
-  // Reset division positions
+  // Reset positions
   const resetPositions = () => {
     const optimizedPositions = optimizeLayout(divisions, defaultDivisionPositions);
     
@@ -328,21 +330,20 @@ const OfficeFloorPlan: React.FC = () => {
     });
   };
   
-  // Handle zoom in
+  // Zoom controls
   const handleZoomIn = () => {
     setZoomLevel(prev => Math.min(prev + 0.1, 1.5));
   };
   
-  // Handle zoom out
   const handleZoomOut = () => {
     setZoomLevel(prev => Math.max(prev - 0.1, 0.8));
   };
   
-  // Loading placeholder
+  // Loading state
   if (!isLoaded) {
     return (
-      <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-gray-100 dark:bg-gray-900 neon-border">
-        <div className="absolute inset-0 flex items-center justify-center">
+      <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-flow-background/20 border-flow-border neon-border">
+        <div className="absolute inset-0 flex items-center justify-center bg-flow-background/50 backdrop-blur-sm">
           <div className="w-12 h-12 border-4 border-flow-accent border-t-transparent rounded-full animate-spin"></div>
         </div>
       </Card>
@@ -350,15 +351,13 @@ const OfficeFloorPlan: React.FC = () => {
   }
   
   return (
-    <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-gray-100 dark:bg-gray-900 neon-border">
+    <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-flow-background/20 border-flow-border neon-border">
       <div 
         ref={contentRef}
-        className="absolute inset-0 bg-gray-200 dark:bg-gray-800 select-none overflow-hidden"
+        className="absolute inset-0 bg-flow-background/30 select-none overflow-hidden"
         onClick={handleBackgroundClick}
-        style={{
-          transformOrigin: 'center center',
-        }}
       >
+        {/* Cyberpunk grid background */}
         <div 
           className="absolute inset-0 will-change-transform" 
           style={{ 
@@ -369,6 +368,12 @@ const OfficeFloorPlan: React.FC = () => {
           }}
         />
         
+        {/* Background glow effects */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-purple-500/5 blur-3xl"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-blue-500/5 blur-3xl"></div>
+        </div>
+        
         <div
           style={{
             transform: `scale(${zoomLevel})`,
@@ -376,9 +381,13 @@ const OfficeFloorPlan: React.FC = () => {
           }}
           className="absolute inset-0"
         >
+          {/* Data transmission lines */}
           <DataTransmissionManager transmissions={dataTransmissions} />
+          
+          {/* Notifications */}
           <NotificationManager notifications={notifications} />
           
+          {/* All office elements */}
           <OfficeElements 
             divisions={divisions}
             workstations={workstations}
@@ -396,8 +405,10 @@ const OfficeFloorPlan: React.FC = () => {
           />
         </div>
         
+        {/* Control buttons and UI */}
         <OfficeControls translationFunction={t} />
         
+        {/* Info panel for selected division/agent */}
         <InfoPanelManager 
           selectedDivision={selectedDivision}
           selectedDivisionObject={selectedDivisionObject}
@@ -488,20 +499,47 @@ const OfficeFloorPlan: React.FC = () => {
       
       <style>
         {`
+        .neon-border {
+          box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+        }
+        
         @keyframes pulse-opacity {
           0%, 100% { opacity: 0.7; }
           50% { opacity: 0.9; }
         }
-        .loader {
-          width: 40px;
-          height: 40px;
-          border: 3px solid rgba(99, 102, 241, 0.3);
-          border-top-color: rgba(99, 102, 241, 0.9);
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
+        
+        @keyframes glow {
+          0%, 100% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
+          50% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.7); }
         }
-        @keyframes spin {
-          to { transform: rotate(360deg); }
+        
+        @keyframes ping-slow {
+          0% { transform: scale(0.8); opacity: 0.8; }
+          50% { transform: scale(1.2); opacity: 0.4; }
+          100% { transform: scale(0.8); opacity: 0.8; }
+        }
+        
+        .animate-ping-slow {
+          animation: ping-slow 3s ease-in-out infinite;
+        }
+        
+        .scan-lines {
+          background-image: linear-gradient(
+            transparent 0%,
+            rgba(32, 128, 255, 0.02) 2%,
+            rgba(32, 128, 255, 0.02) 3%,
+            transparent 3%,
+            transparent 100%
+          );
+          background-size: 100% 4px;
+          width: 100%;
+          height: 100%;
+          animation: scan-moving 4s linear infinite;
+        }
+        
+        @keyframes scan-moving {
+          0% { background-position: 0 0; }
+          100% { background-position: 0 100%; }
         }
         `}
       </style>

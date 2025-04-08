@@ -1,266 +1,187 @@
 
-import React, { useState, useRef } from 'react';
-import { motion, useDragControls } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { Division as DivisionType, ZIndexLayers } from './types/officeTypes';
-import { GripVertical } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { ZIndexLayers } from './types/officeTypes';
 import DivisionDecoration from './DivisionDecoration';
-import { getDivisionStyle, getDivisionGlow, getDefaultDecorations } from './styles/divisionStyles';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { getDivisionStyle } from './styles/divisionStyles';
 
 interface DivisionProps {
-  division: DivisionType;
-  isSelected: boolean;
+  division: {
+    id: string;
+    name: string;
+    icon: any;
+    position: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    };
+    backgroundColor: string;
+    borderColor: string;
+    zIndex?: number;
+  };
+  isSelected?: boolean;
   isPulsing?: boolean;
-  onDivisionClick: (id: string) => void;
-  agents: Array<any>;
+  onDivisionClick?: (id: string) => void;
   isDraggable?: boolean;
-  onDragEnd?: (divisionId: string, x: number, y: number) => void;
-  customPosition?: { x: number, y: number };
+  onDragEnd?: (id: string, x: number, y: number) => void;
+  customPosition?: { x: number; y: number };
+  agents?: Array<any>;
 }
 
-const Division: React.FC<DivisionProps> = ({ 
-  division, 
-  isSelected, 
+const Division: React.FC<DivisionProps> = ({
+  division,
+  isSelected = false,
   isPulsing = false,
-  onDivisionClick, 
-  agents,
+  onDivisionClick,
   isDraggable = false,
   onDragEnd,
-  customPosition
+  customPosition,
+  agents = []
 }) => {
-  const { t } = useLanguage();
-  const Icon = division.icon;
-  const agentsInDivision = agents.filter(agent => agent.division === division.id);
-  const activeAgents = agentsInDivision.filter(agent => agent.status === 'working');
-  const dragControls = useDragControls();
   const [isHovered, setIsHovered] = useState(false);
-  const divRef = useRef<HTMLDivElement>(null);
   
-  // Use custom position if provided, otherwise use the default position from division data
-  const positionX = customPosition ? customPosition.x : division.position.x;
-  const positionY = customPosition ? customPosition.y : division.position.y;
+  // Get agents that belong to this division
+  const divisionAgents = agents.filter(agent => agent.division === division.id);
+  const agentCount = divisionAgents.length;
   
-  // Get division style based on division ID
-  const style = getDivisionStyle(division.id);
+  // Get division style from our division styles
+  const divStyle = getDivisionStyle(division.id);
   
-  // Get default decorations for this division
-  const decorations = getDefaultDecorations(division.id);
+  // Use custom position if provided, otherwise use division's position
+  const xPos = customPosition?.x !== undefined ? customPosition.x : division.position.x;
+  const yPos = customPosition?.y !== undefined ? customPosition.y : division.position.y;
   
-  // Handle division drag end with improved position calculation
-  const handleDragEnd = (event, info) => {
-    if (onDragEnd) {
-      // Get the parent container dimensions
-      const parentWidth = event.target.parentElement.clientWidth;
-      const parentHeight = event.target.parentElement.clientHeight;
-      
-      // Calculate new position as percentage
-      const newX = positionX + (info.delta.x / parentWidth * 100);
-      const newY = positionY + (info.delta.y / parentHeight * 100);
-      
-      onDragEnd(division.id, newX, newY);
+  // Calculate box shadow based on state
+  const getBoxShadow = () => {
+    if (isSelected) {
+      return `0 0 30px ${division.borderColor}, inset 0 0 20px ${division.borderColor}`;
     }
+    if (isPulsing || isHovered) {
+      return `0 0 15px ${division.borderColor}`;
+    }
+    return `0 0 5px ${division.borderColor}`;
   };
-  
-  // Function to start drag only from the drag handle
-  const startDrag = (event) => {
-    dragControls.start(event);
-  };
-
-  // Calculate box shadow based on selection and pulse states
-  const boxShadow = getDivisionGlow(division.id, isSelected, isPulsing);
   
   // Calculate z-index based on state
-  const zIndex = isSelected 
-    ? ZIndexLayers.DIVISION_SELECTED 
-    : isHovered 
-      ? ZIndexLayers.DIVISION_HOVERED 
-      : division.zIndex || ZIndexLayers.DIVISION;
-
+  const getZIndex = () => {
+    if (isSelected) {
+      return ZIndexLayers.DIVISION_SELECTED;
+    }
+    if (isHovered) {
+      return ZIndexLayers.DIVISION_HOVERED;
+    }
+    return division.zIndex || ZIndexLayers.DIVISION;
+  };
+  
+  // Decorations for the division
+  const decorations = [
+    { type: 'light', x: 30, y: 30 },
+    { type: division.id === 'kb' ? 'boards' : 
+            division.id === 'analytics' ? 'chart' :
+            division.id === 'operations' ? 'server' :
+            division.id === 'strategy' ? 'desk' :
+            division.id === 'research' ? 'monitor' :
+            'coffee', x: 70, y: 70 }
+  ];
+  
+  const Icon = division.icon;
+  
   return (
-    <Tooltip delayDuration={300}>
-      <TooltipTrigger asChild>
-        <motion.div
-          ref={divRef}
-          key={division.id}
-          className={`absolute rounded-lg overflow-hidden transition-all duration-300 backdrop-blur-sm ${isDraggable ? 'cursor-move' : 'cursor-pointer'}`}
-          style={{
-            left: `${positionX}%`,
-            top: `${positionY}%`,
-            width: `${division.position.width}%`,
-            height: `${division.position.height}%`,
-            backgroundColor: division.backgroundColor || style.bg,
-            backgroundImage: style.pattern,
-            borderWidth: '2px',
-            borderStyle: 'solid',
-            borderColor: isSelected ? '#ffffff' : division.borderColor || style.border,
-            boxShadow,
-            zIndex,
-            willChange: 'transform',
-          }}
-          onClick={() => !isDraggable && onDivisionClick(division.id)}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          whileHover={!isDraggable ? { scale: 1.01 } : {}}
-          animate={
-            isSelected ? { 
-              scale: 1.03,
-            } : 
-            isPulsing ? {
-              boxShadow: [
-                `0 0 5px ${style.border}30`,
-                style.shadow,
-                `0 0 5px ${style.border}30`
-              ]
-            } : { 
-              scale: 1
-            }
-          }
-          drag={isDraggable}
-          dragControls={dragControls}
-          dragMomentum={false}
-          dragElastic={0.2}
-          onDragEnd={handleDragEnd}
-          transition={{
-            boxShadow: {
-              duration: 1.8,
-              repeat: isPulsing ? Infinity : 0,
-              repeatType: "reverse"
-            }
-          }}
-        >
-          {/* Enhanced Glass Reflection Effect */}
-          <div 
-            className="absolute inset-0 pointer-events-none opacity-40"
-            style={{
-              background: `linear-gradient(135deg, ${style.border}25 0%, transparent 50%, ${style.border}15 100%)`,
-              zIndex: 1
-            }}
-          ></div>
-
-          {/* Division Header with enhanced cyberpunk styling */}
-          <div className="absolute top-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-1.5 flex items-center justify-between border-b" 
-               style={{ borderColor: `${style.border}40`, zIndex: 5 }}>
-            <div className="flex items-center">
-              <motion.div 
-                className="p-1 rounded-full mr-1.5" 
-                animate={isPulsing || isSelected ? { 
-                  boxShadow: [
-                    `0 0 3px ${style.border}`, 
-                    `0 0 8px ${style.border}`, 
-                    `0 0 3px ${style.border}`
-                  ] 
-                } : {}}
-                transition={{ duration: 2, repeat: Infinity }}
-                style={{ 
-                  backgroundColor: `${style.border}20`,
-                }}
-              >
-                <Icon className="h-4 w-4" style={{ color: style.text }} />
-              </motion.div>
-              <div className="text-xs font-semibold font-cyber" style={{ color: style.text }}>
-                {division.name}
-              </div>
-            </div>
+    <motion.div
+      className="absolute rounded-xl border overflow-hidden cursor-pointer transition-all"
+      style={{
+        left: `${xPos}%`,
+        top: `${yPos}%`,
+        width: `${division.position.width}%`,
+        height: `${division.position.height}%`,
+        backgroundColor: division.backgroundColor,
+        borderColor: division.borderColor,
+        boxShadow: getBoxShadow(),
+        zIndex: getZIndex(),
+        backgroundImage: divStyle.pattern
+      }}
+      initial={{
+        opacity: 0,
+        scale: 0.9
+      }}
+      animate={{
+        opacity: 1,
+        scale: 1,
+        boxShadow: getBoxShadow()
+      }}
+      transition={{
+        duration: 0.5,
+        boxShadow: {
+          duration: 2,
+          repeat: isPulsing ? Infinity : 0,
+          repeatType: "reverse"
+        }
+      }}
+      whileHover={{ scale: 1.02 }}
+      onClick={() => onDivisionClick && onDivisionClick(division.id)}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      drag={isDraggable}
+      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      dragElastic={0.2}
+      dragMomentum={false}
+      onDragEnd={(event, info) => {
+        if (onDragEnd) {
+          // Convert pixel offsets to percentage of container
+          const container = (event.target as HTMLElement).parentElement;
+          if (container) {
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
             
-            {/* Drag handle - only visible in edit mode */}
-            {isDraggable && (
-              <div 
-                className="p-1 rounded hover:bg-white/10 cursor-grab active:cursor-grabbing"
-                onPointerDown={startDrag}
-              >
-                <GripVertical className="h-4 w-4 text-white/70" />
-              </div>
-            )}
-          </div>
-          
-          {/* Active Agents Count */}
-          <div className="absolute bottom-1 right-1" style={{ zIndex: 4 }}>
-            <Badge 
-              variant="outline" 
-              className="text-[0.6rem] py-0 px-1.5 bg-black/50 backdrop-blur-sm text-white border-white/20 flex items-center gap-1"
-              style={{ 
-                borderColor: style.border, 
-                boxShadow: isSelected ? `0 0 5px ${style.border}80` : 'none' 
-              }}
-            >
-              <motion.span 
-                className="inline-block w-1.5 h-1.5 rounded-full" 
-                animate={{ opacity: [0.6, 1, 0.6] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                style={{ backgroundColor: style.text }}
-              ></motion.span>
-              {activeAgents.length} {t('activeAgents')}
-            </Badge>
-          </div>
-          
-          {/* Division decoration items - these move with the division */}
-          {decorations.map(item => (
-            <DivisionDecoration 
-              key={`${item.type}-${item.x}-${item.y}`} 
-              type={item.type} 
-              x={item.x} 
-              y={item.y}
-              divisionColor={style.border}
-              isHovered={isHovered || isSelected}
-            />
-          ))}
-          
-          {/* Activity indicators - enhanced visibility */}
-          {isPulsing && (
-            <div className="absolute right-2 top-9 flex items-center" style={{ zIndex: 3 }}>
-              <motion.span 
-                className="absolute h-2 w-2 rounded-full opacity-75" 
-                animate={{ scale: [1, 1.5, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                style={{ backgroundColor: style.text }}
-              ></motion.span>
-              <span className="relative h-2 w-2 rounded-full" style={{ backgroundColor: style.text }}></span>
+            // Current position in percentage plus delta in percentage
+            const newX = xPos + (info.offset.x / containerWidth * 100);
+            const newY = yPos + (info.offset.y / containerHeight * 100);
+            
+            onDragEnd(division.id, newX, newY);
+          }
+        }
+      }}
+    >
+      <div className="h-full w-full p-3">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center">
+            <div className={`p-1.5 rounded-md flex items-center justify-center`} style={{ backgroundColor: `${division.borderColor}30` }}>
+              <Icon className="h-3.5 w-3.5 text-white drop-shadow-glow" style={{ color: divStyle.text }} />
             </div>
-          )}
+            <h3 className="text-xs font-medium ml-1 tracking-wide text-white drop-shadow-md">{division.name}</h3>
+          </div>
           
-          {/* Division Border Glow Effect for selected state */}
-          {isSelected && (
-            <div 
-              className="absolute inset-0 rounded-lg pointer-events-none" 
-              style={{ 
-                boxShadow: `inset 0 0 15px ${style.border}40`,
-                border: `1px solid ${style.border}60`,
-                zIndex: 2
-              }}
-            />
-          )}
-          
-          {/* Enhanced Scan Lines Effect */}
-          <div 
-            className="absolute inset-0 scan-lines pointer-events-none opacity-20"
-            style={{ backgroundSize: '3px 3px', zIndex: 3 }}
-          ></div>
-          
-          {/* Division Content Grid Pattern Overlay */}
-          <div 
-            className="absolute inset-0 pointer-events-none opacity-10"
-            style={{
-              backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), 
-                                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-              backgroundSize: '20px 20px',
-              zIndex: 1
-            }}
-          ></div>
-        </motion.div>
-      </TooltipTrigger>
-      <TooltipContent 
-        className="bg-black/80 border border-flow-accent/30 text-white text-xs p-2 backdrop-blur-sm"
-        side="top"
-        style={{ zIndex: ZIndexLayers.UI_CONTROLS }}
-      >
-        <div className="font-medium" style={{ color: style.text }}>{division.name}</div>
-        <div className="text-xs text-white/80">
-          {agentsInDivision.length} agents ({activeAgents.length} active)
+          <div className="bg-white/10 rounded-full text-[0.65rem] px-1.5 flex items-center">
+            <span className="text-white/80">{agentCount}</span>
+            <span className="ml-1 opacity-70">AI</span>
+          </div>
         </div>
-      </TooltipContent>
-    </Tooltip>
+        
+        {/* Division decorations */}
+        {decorations.map((decoration, index) => (
+          <DivisionDecoration
+            key={`${division.id}-decor-${index}`}
+            type={decoration.type}
+            x={decoration.x}
+            y={decoration.y}
+            divisionColor={division.borderColor}
+            isHovered={isHovered}
+          />
+        ))}
+        
+        {/* Scan lines effect */}
+        <div className="absolute inset-0 scan-lines opacity-20 pointer-events-none"></div>
+        
+        {/* Agent count indicator with glow effect */}
+        <div className="absolute bottom-3 right-3">
+          <div 
+            className={`h-2 w-2 rounded-full ${isPulsing ? 'animate-ping-slow' : ''}`}
+            style={{ backgroundColor: divStyle.text, boxShadow: `0 0 5px ${divStyle.glow}` }}
+          ></div>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 

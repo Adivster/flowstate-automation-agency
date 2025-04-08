@@ -117,11 +117,11 @@ export const getDivisionGlow = (divisionId: string, isSelected: boolean, isPulsi
 // Default positioning for divisions to create a balanced layout
 export const defaultDivisionPositions = {
   kb: { x: 20, y: 20 },
-  analytics: { x: 60, y: 20 },
+  analytics: { x: 55, y: 20 },
   operations: { x: 20, y: 55 },
-  strategy: { x: 60, y: 55 },
-  research: { x: 40, y: 37 },
-  lounge: { x: 85, y: 37 }
+  strategy: { x: 55, y: 55 },
+  research: { x: 38, y: 38 },
+  lounge: { x: 70, y: 38 }
 };
 
 // Function to calculate the position of any child elements within a division
