@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   BookOpen, 
@@ -33,6 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AISystemStatus from './AISystemStatus';
 import InteractiveSystemDiagram from './InteractiveSystemDiagram';
 import PersonalizedSection from './PersonalizedSection';
+import AIInsights from './AIInsights';
 import {
   Collapsible,
   CollapsibleContent,
@@ -223,20 +223,27 @@ const AgencyDashboard: React.FC = () => {
             </div>
           </div>
           
-          <section className="space-y-5">
-            <TransitionWrapper delay={50}>
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xl font-medium neon-text">Performance Overview</h3>
-                <Link to="/analytics">
-                  <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
-                    View Analytics <ChevronRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
-                  </Button>
-                </Link>
-              </div>
-              <p className="text-sm text-flow-foreground/60 mb-4">Key metrics and performance indicators for your agency</p>
-            </TransitionWrapper>
-            <StatsOverview />
-          </section>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2">
+              <section className="space-y-5">
+                <TransitionWrapper delay={50}>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xl font-medium neon-text">Performance Overview</h3>
+                    <Link to="/analytics">
+                      <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
+                        View Analytics <ChevronRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                      </Button>
+                    </Link>
+                  </div>
+                  <p className="text-sm text-flow-foreground/60 mb-4">Key metrics and performance indicators for your agency</p>
+                </TransitionWrapper>
+                <StatsOverview />
+              </section>
+            </div>
+            <div className="md:col-span-1">
+              <AIInsights />
+            </div>
+          </div>
           
           <section className="space-y-5">
             <TransitionWrapper delay={100}>
