@@ -14,6 +14,7 @@ export interface PerformanceData {
     taskCompletion: number[];
     efficiency: number[];
     errorRate: number[];
+    responseTime: number[];
   };
   resourceAllocation: {
     cpu: number;
@@ -26,6 +27,12 @@ export interface PerformanceData {
     medium: number;
     low: number;
   };
+  systemStatus: 'optimal' | 'normal' | 'warning' | 'critical';
+  agentPerformance: {
+    topAgents: string[];
+    needsAttention: string[];
+  };
+  workloadTrend: 'increasing' | 'steady' | 'decreasing';
 }
 
 /**
@@ -65,6 +72,58 @@ export const usePerformanceData = (entityId?: string | number): PerformanceData 
       
       return result;
     };
+
+    // Generate response time data (in seconds)
+    const generateResponseTimes = (baseValue: number, variance: number, count: number) => {
+      const result = [];
+      let current = baseValue;
+      
+      for (let i = 0; i < count; i++) {
+        const change = (random() * variance * 2) - variance;
+        current = Math.max(0.1, current + change);
+        result.push(parseFloat(current.toFixed(2)));
+      }
+      
+      return result;
+    };
+
+    // Determine workload trend
+    const trendValue = random();
+    let workloadTrend: 'increasing' | 'steady' | 'decreasing';
+    if (trendValue > 0.66) {
+      workloadTrend = 'increasing';
+    } else if (trendValue > 0.33) {
+      workloadTrend = 'steady';
+    } else {
+      workloadTrend = 'decreasing';
+    }
+
+    // Determine system status
+    const statusValue = efficiency - errorRate * 5;
+    let systemStatus: 'optimal' | 'normal' | 'warning' | 'critical';
+    if (statusValue > 90) {
+      systemStatus = 'optimal';
+    } else if (statusValue > 80) {
+      systemStatus = 'normal';
+    } else if (statusValue > 70) {
+      systemStatus = 'warning';
+    } else {
+      systemStatus = 'critical';
+    }
+
+    // Generate agent names for performance metrics
+    const generateAgentName = (index: number) => {
+      const prefixes = ['Agent', 'AI', 'Bot', 'Assistant', 'Helper'];
+      const prefix = prefixes[Math.floor((random() + index/10) * 5) % prefixes.length];
+      const number = Math.floor((random() + index/5) * 900) + 100;
+      return `${prefix}-${number}`;
+    };
+
+    const topAgentsCount = Math.floor(random() * 3) + 3; // 3-5 agents
+    const needsAttentionCount = Math.floor(random() * 2) + 1; // 1-2 agents
+    
+    const topAgents = Array.from({ length: topAgentsCount }, (_, i) => generateAgentName(i));
+    const needsAttention = Array.from({ length: needsAttentionCount }, (_, i) => generateAgentName(i + 10));
     
     return {
       taskCompletion,
@@ -80,6 +139,7 @@ export const usePerformanceData = (entityId?: string | number): PerformanceData 
         taskCompletion: generateHistoricalPoints(taskCompletion, 5, 10),
         efficiency: generateHistoricalPoints(efficiency, 3, 10),
         errorRate: generateHistoricalPoints(errorRate, 1, 10),
+        responseTime: generateResponseTimes(1.5, 0.3, 10),
       },
       resourceAllocation: {
         cpu: Math.floor(random() * 40 + 60), // 60-100%
@@ -91,7 +151,13 @@ export const usePerformanceData = (entityId?: string | number): PerformanceData 
         high: Math.floor(random() * 40), // 0-40%
         medium: Math.floor(random() * 40), // 0-40%
         low: 100 - Math.floor(random() * 40) - Math.floor(random() * 40), // Remaining %
-      }
+      },
+      systemStatus,
+      agentPerformance: {
+        topAgents,
+        needsAttention,
+      },
+      workloadTrend,
     };
   }, [entityId]); // Only regenerate if entityId changes
 };

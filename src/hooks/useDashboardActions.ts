@@ -1,8 +1,10 @@
 
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 export const useDashboardActions = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleCreateAgent = () => {
     toast({
@@ -11,6 +13,9 @@ export const useDashboardActions = () => {
       duration: 3000
     });
     // In a real app, this would open a modal or navigate to agent creation page
+    setTimeout(() => {
+      navigate('/agents');
+    }, 800);
   };
 
   const handleStartWorkflow = () => {
@@ -20,6 +25,9 @@ export const useDashboardActions = () => {
       duration: 3000
     });
     // In a real app, this would open a modal or navigate to workflow page
+    setTimeout(() => {
+      navigate('/workflows');
+    }, 800);
   };
 
   const handleQuickTask = () => {
@@ -27,10 +35,63 @@ export const useDashboardActions = () => {
     window.dispatchEvent(event);
     // In a real app, this would open a modal for quick task creation
   };
+  
+  const handleOptimizeResources = () => {
+    toast({
+      title: "Resource Optimization",
+      description: "Analyzing and optimizing system resources...",
+      duration: 3000
+    });
+    
+    setTimeout(() => {
+      toast({
+        title: "Optimization Complete",
+        description: "System resources have been optimized. Performance improved by 12%.",
+        duration: 4000
+      });
+    }, 2000);
+  };
+  
+  const handleRunAnalysis = () => {
+    toast({
+      title: "Running Analysis",
+      description: "Analyzing performance data and generating insights...",
+      duration: 3000
+    });
+    
+    setTimeout(() => {
+      navigate('/analytics');
+    }, 1500);
+  };
+  
+  const handleSystemAlert = (message: string) => {
+    toast({
+      title: "System Alert",
+      description: message,
+      duration: 5000,
+      variant: "destructive"
+    });
+  };
+  
+  const handleAiConsult = () => {
+    toast({
+      title: "AI Consultation",
+      description: "Opening AI advisor interface...",
+      duration: 3000
+    });
+    
+    // Trigger communication terminal opening
+    const event = new CustomEvent('openCommunication');
+    window.dispatchEvent(event);
+  };
 
   return {
     handleCreateAgent,
     handleStartWorkflow,
-    handleQuickTask
+    handleQuickTask,
+    handleOptimizeResources,
+    handleRunAnalysis,
+    handleSystemAlert,
+    handleAiConsult
   };
 };

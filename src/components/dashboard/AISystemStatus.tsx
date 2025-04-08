@@ -1,17 +1,35 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { ActivityIcon, BrainCircuit, Cpu, Heart, CircleAlert, BatteryFull, Zap } from 'lucide-react';
+import { 
+  ActivityIcon, 
+  BrainCircuit, 
+  Cpu, 
+  Heart, 
+  CircleAlert, 
+  BatteryFull, 
+  Zap, 
+  Shield,
+  AlertTriangle,
+  CheckCircle2
+} from 'lucide-react';
 import { Button } from '../ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { motion } from 'framer-motion';
 
 const AISystemStatus: React.FC = () => {
   // Mock data - in a real application, this would come from an API
   const systemHealth = 98;
   const activeProcesses = 14;
+  const [expanded, setExpanded] = useState(false);
+  const { toast } = useToast();
+  
   const recentActivities = [
-    { id: 1, description: "Task prioritization algorithm updated", time: "2 mins ago" },
-    { id: 2, description: "Agent efficiency analysis completed", time: "15 mins ago" },
-    { id: 3, description: "Workflow optimization suggestions generated", time: "32 mins ago" }
+    { id: 1, description: "Task prioritization algorithm updated", time: "2 mins ago", status: "success" },
+    { id: 2, description: "Agent efficiency analysis completed", time: "15 mins ago", status: "success" },
+    { id: 3, description: "Workflow optimization suggestions generated", time: "32 mins ago", status: "success" },
+    { id: 4, description: "Minor network latency detected", time: "47 mins ago", status: "warning" },
+    { id: 5, description: "Security protocols verified", time: "1 hour ago", status: "success" },
   ];
   
   const getHealthColor = (health: number) => {
@@ -20,9 +38,34 @@ const AISystemStatus: React.FC = () => {
     return "text-red-500";
   };
 
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'success':
+        return <CheckCircle2 className="h-3.5 w-3.5 text-green-400" />;
+      case 'warning':
+        return <AlertTriangle className="h-3.5 w-3.5 text-yellow-400" />;
+      case 'error':
+        return <CircleAlert className="h-3.5 w-3.5 text-red-400" />;
+      default:
+        return null;
+    }
+  };
+
   const openCommandTerminal = () => {
     const event = new CustomEvent('openCommandTerminal');
     window.dispatchEvent(event);
+  };
+
+  const pulseVariants = {
+    animate: {
+      scale: [1, 1.05, 1],
+      opacity: [0.7, 1, 0.7],
+      transition: { 
+        repeat: Infinity, 
+        duration: 2.5,
+        ease: "easeInOut"
+      }
+    }
   };
 
   return (
@@ -35,13 +78,18 @@ const AISystemStatus: React.FC = () => {
           <h3 className="text-lg font-medium">AI System Status</h3>
         </div>
         <div className={`flex items-center ${getHealthColor(systemHealth)}`}>
+          <motion.div
+            variants={pulseVariants}
+            animate="animate"
+            className={`h-2 w-2 rounded-full mr-2 ${systemHealth >= 90 ? 'bg-green-500' : systemHealth >= 70 ? 'bg-yellow-500' : 'bg-red-500'}`}
+          />
           <Heart className="h-4 w-4 mr-1" />
-          <span className="text-sm font-medium">{systemHealth}%</span>
+          <span className="text-sm font-medium">{systemHealth}% Operational</span>
         </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div className="bg-flow-card/30 rounded-lg p-3 flex items-center justify-between">
+        <div className="bg-flow-card/30 rounded-lg p-3 flex items-center justify-between hover:bg-flow-card/40 transition-colors duration-300">
           <div className="flex items-center">
             <Cpu className="h-4 w-4 mr-2 text-blue-400" />
             <span className="text-sm">Active Processes</span>
@@ -49,7 +97,7 @@ const AISystemStatus: React.FC = () => {
           <span className="text-sm font-medium">{activeProcesses}</span>
         </div>
         
-        <div className="bg-flow-card/30 rounded-lg p-3 flex items-center justify-between">
+        <div className="bg-flow-card/30 rounded-lg p-3 flex items-center justify-between hover:bg-flow-card/40 transition-colors duration-300">
           <div className="flex items-center">
             <BatteryFull className="h-4 w-4 mr-2 text-green-400" />
             <span className="text-sm">System Resources</span>
@@ -57,22 +105,38 @@ const AISystemStatus: React.FC = () => {
           <span className="text-sm font-medium">87%</span>
         </div>
         
-        <div className="bg-flow-card/30 rounded-lg p-3 flex items-center justify-between">
+        <div className="bg-flow-card/30 rounded-lg p-3 flex items-center justify-between hover:bg-flow-card/40 transition-colors duration-300">
           <div className="flex items-center">
-            <ActivityIcon className="h-4 w-4 mr-2 text-purple-400" />
-            <span className="text-sm">AI Activity</span>
+            <Shield className="h-4 w-4 mr-2 text-purple-400" />
+            <span className="text-sm">Security Status</span>
           </div>
-          <span className="text-sm font-medium">High</span>
+          <span className="text-sm font-medium bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full text-xs">Secured</span>
         </div>
       </div>
       
       <div className="mb-4">
-        <h4 className="text-sm font-medium mb-2">Recent AI Activities</h4>
+        <div className="flex items-center justify-between mb-2">
+          <h4 className="text-sm font-medium">Recent AI Activities</h4>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className="h-7 px-2 text-xs"
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded ? "Show Less" : "Show All"}
+          </Button>
+        </div>
         <div className="space-y-2 max-h-28 overflow-y-auto custom-scrollbar">
-          {recentActivities.map(activity => (
-            <div key={activity.id} className="bg-flow-card/20 rounded-lg p-2.5 text-xs flex justify-between">
-              <span>{activity.description}</span>
-              <span className="text-flow-foreground/60">{activity.time}</span>
+          {recentActivities.slice(0, expanded ? recentActivities.length : 3).map(activity => (
+            <div 
+              key={activity.id} 
+              className="bg-flow-card/20 rounded-lg p-2.5 text-xs flex justify-between hover:bg-flow-card/30 transition-colors duration-300"
+            >
+              <div className="flex items-center">
+                {getStatusIcon(activity.status)}
+                <span className="ml-1.5">{activity.description}</span>
+              </div>
+              <span className="text-flow-foreground/60 ml-2">{activity.time}</span>
             </div>
           ))}
         </div>
@@ -82,7 +146,7 @@ const AISystemStatus: React.FC = () => {
         <Button 
           size="sm" 
           onClick={openCommandTerminal}
-          className="text-xs gap-1.5 bg-flow-accent/70 hover:bg-flow-accent text-flow-accent-foreground"
+          className="text-xs gap-1.5 bg-gradient-to-r from-flow-accent/70 to-purple-500/70 hover:from-flow-accent hover:to-purple-500 text-flow-accent-foreground"
         >
           <Zap className="h-3.5 w-3.5" />
           Open Command Terminal
@@ -91,6 +155,13 @@ const AISystemStatus: React.FC = () => {
           variant="outline" 
           size="sm" 
           className="text-xs gap-1.5 border-flow-border/60 hover:bg-flow-accent/20 hover:text-flow-accent hover:border-flow-accent/40"
+          onClick={() => {
+            toast({
+              title: "System Logs",
+              description: "Opening system logs in a new panel...",
+              duration: 3000
+            });
+          }}
         >
           <CircleAlert className="h-3.5 w-3.5" />
           View System Logs

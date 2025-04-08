@@ -33,7 +33,7 @@ const StatItem: React.FC<StatItemProps> = ({
   return (
     <GlassMorphism 
       className={cn(
-        'p-6 rounded-xl flex flex-col transition-all duration-300 hover:shadow-md', 
+        'p-6 rounded-xl flex flex-col transition-all duration-300 hover:shadow-md hover:translate-y-[-2px]', 
         className
       )}
       style={{ borderColor: `${color}40` }}
@@ -59,6 +59,7 @@ const StatItem: React.FC<StatItemProps> = ({
             data={chartData} 
             lineColor={color}
             height={50}
+            dotColor="#fef3c7"
           />
         </div>
       )}
@@ -67,13 +68,15 @@ const StatItem: React.FC<StatItemProps> = ({
 };
 
 const StatsOverview: React.FC = () => {
-  // Sample chart data
+  // Enhanced chart data with more points for better visualization
   const agentData = [
     { name: "Mon", value: 18 },
     { name: "Tue", value: 20 },
     { name: "Wed", value: 22 },
     { name: "Thu", value: 21 },
     { name: "Fri", value: 24 },
+    { name: "Sat", value: 26 },
+    { name: "Sun", value: 28 },
   ];
   
   const tasksData = [
@@ -82,6 +85,8 @@ const StatsOverview: React.FC = () => {
     { name: "Wed", value: 1180 },
     { name: "Thu", value: 1220 },
     { name: "Fri", value: 1248 },
+    { name: "Sat", value: 1290 },
+    { name: "Sun", value: 1310 },
   ];
   
   const responseData = [
@@ -90,6 +95,8 @@ const StatsOverview: React.FC = () => {
     { name: "Wed", value: 1.3 },
     { name: "Thu", value: 1.4 },
     { name: "Fri", value: 1.2 },
+    { name: "Sat", value: 1.1 },
+    { name: "Sun", value: 1.0 },
   ];
   
   const loadData = [
@@ -98,6 +105,8 @@ const StatsOverview: React.FC = () => {
     { name: "Wed", value: 45 },
     { name: "Thu", value: 40 },
     { name: "Fri", value: 42 },
+    { name: "Sat", value: 38 },
+    { name: "Sun", value: 36 },
   ];
 
   return (
@@ -106,9 +115,9 @@ const StatsOverview: React.FC = () => {
         <StatItem
           icon={<Activity className="h-5 w-5" style={{ color: '#0ea5e9' }} />}
           label="Active Agents"
-          value="24"
+          value="28"
           trend="up"
-          trendValue="12%"
+          trendValue="16%"
           chartData={agentData}
           color="#0ea5e9"
         />
@@ -118,9 +127,9 @@ const StatsOverview: React.FC = () => {
         <StatItem
           icon={<Zap className="h-5 w-5" style={{ color: '#f97316' }} />}
           label="Tasks Completed"
-          value="1,248"
+          value="1,310"
           trend="up"
-          trendValue="8%"
+          trendValue="12%"
           chartData={tasksData}
           color="#f97316"
         />
@@ -130,9 +139,9 @@ const StatsOverview: React.FC = () => {
         <StatItem
           icon={<Clock className="h-5 w-5" style={{ color: '#8b5cf6' }} />}
           label="Avg. Response Time"
-          value="1.2s"
+          value="1.0s"
           trend="down"
-          trendValue="5%"
+          trendValue="20%"
           chartData={responseData}
           color="#8b5cf6"
         />
@@ -142,9 +151,9 @@ const StatsOverview: React.FC = () => {
         <StatItem
           icon={<Server className="h-5 w-5" style={{ color: '#22c55e' }} />}
           label="System Load"
-          value="42%"
+          value="36%"
           trend="neutral"
-          trendValue="Stable"
+          trendValue="Optimal"
           chartData={loadData}
           color="#22c55e"
         />
