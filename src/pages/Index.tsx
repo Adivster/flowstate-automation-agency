@@ -14,7 +14,7 @@ const Index: React.FC = () => {
       <Navbar />
       
       {/* Main Content */}
-      <main className="flex-1 mt-14 px-4 sm:px-6 pb-6">
+      <main className="flex-1 mt-10 px-4 sm:px-6 pb-4">
         <TransitionWrapper>
           <div className="max-w-7xl mx-auto">
             <PageHeader 
@@ -24,7 +24,7 @@ const Index: React.FC = () => {
               className="mb-4"
             />
             
-            <GlassMorphism className="rounded-2xl p-4 shadow-md border-flow-border/30 scan-lines bg-flow-background/20 backdrop-blur-lg">
+            <GlassMorphism className="rounded-2xl shadow-md border-flow-border/30 scan-lines bg-flow-background/20 backdrop-blur-lg">
               <AgencyDashboard />
             </GlassMorphism>
           </div>

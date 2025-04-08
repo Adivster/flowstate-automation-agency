@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   BookOpen, 
@@ -160,7 +159,7 @@ const AgencyDashboard: React.FC = () => {
   };
 
   return (
-    <div className="py-2">
+    <div className="p-4">
       <TransitionWrapper>
         <GlassMorphism className="p-5 rounded-xl border-flow-accent/30 animate-glow-pulse mb-4 bg-gradient-to-br from-flow-background/20 to-flow-accent/5">
           <div className="space-y-3">
@@ -213,61 +212,55 @@ const AgencyDashboard: React.FC = () => {
         </div>
         
         <TabsContent value="overview" className="space-y-4 mt-0">
-          <Section noPadding>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2">
-                <AISystemStatus />
-              </div>
-              <div className="md:col-span-1">
-                <PersonalizedSection />
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <AISystemStatus />
             </div>
-          </Section>
-          
-          <Section noPadding>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2">
-                <section>
-                  <TransitionWrapper delay={50}>
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-xl font-medium neon-text">Performance Overview</h3>
-                      <Link to="/analytics">
-                        <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
-                          View Analytics <ChevronRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
-                        </Button>
-                      </Link>
-                    </div>
-                    <p className="text-sm text-flow-foreground/60 mb-3">Key metrics and performance indicators for your agency</p>
-                  </TransitionWrapper>
-                  <StatsOverview />
-                </section>
-              </div>
-              <div className="md:col-span-1">
-                <AIInsights />
-              </div>
+            <div className="md:col-span-1">
+              <PersonalizedSection />
             </div>
-          </Section>
+          </div>
           
-          <Section noPadding>
-            <section>
-              <TransitionWrapper delay={100}>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-xl font-medium neon-text">Task Management</h3>
-                  <Link to="/tasks">
-                    <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
-                      View All Tasks <ChevronRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
-                    </Button>
-                  </Link>
-                </div>
-                <p className="text-sm text-flow-foreground/60 mb-3">Current tasks and their status across all divisions</p>
-              </TransitionWrapper>
-              <TaskManagement />
-            </section>
-          </Section>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <section>
+                <TransitionWrapper delay={50}>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xl font-medium neon-text">Performance Overview</h3>
+                    <Link to="/analytics">
+                      <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
+                        View Analytics <ChevronRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                      </Button>
+                    </Link>
+                  </div>
+                  <p className="text-sm text-flow-foreground/60 mb-3">Key metrics and performance indicators for your agency</p>
+                </TransitionWrapper>
+                <StatsOverview />
+              </section>
+            </div>
+            <div className="md:col-span-1">
+              <AIInsights />
+            </div>
+          </div>
           
-          <Section noPadding>
+          <section>
+            <TransitionWrapper delay={100}>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-xl font-medium neon-text">Task Management</h3>
+                <Link to="/tasks">
+                  <Button variant="ghost" className="text-xs text-flow-foreground/70 hover:text-flow-accent group flex items-center">
+                    View All Tasks <ChevronRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                  </Button>
+                </Link>
+              </div>
+              <p className="text-sm text-flow-foreground/60 mb-3">Current tasks and their status across all divisions</p>
+            </TransitionWrapper>
+            <TaskManagement />
+          </section>
+          
+          <section className="mt-4">
             <InteractiveSystemDiagram />
-          </Section>
+          </section>
           
           <Collapsible
             open={isResourcesOpen}
@@ -277,7 +270,7 @@ const AgencyDashboard: React.FC = () => {
             <CollapsibleTrigger asChild>
               <Button
                 variant="ghost" 
-                className="flex items-center justify-between w-full text-left p-2 rounded-lg border border-flow-border/20 bg-flow-background/30 mt-3"
+                className="flex items-center justify-between w-full text-left p-2 rounded-lg border border-flow-border/20 bg-flow-background/30 mt-2"
               >
                 <div className="flex items-center">
                   <BarChart className="h-4 w-4 mr-2 text-flow-accent" />
@@ -354,7 +347,7 @@ const AgencyDashboard: React.FC = () => {
           </Collapsible>
         </TabsContent>
         
-        <TabsContent value="divisions" className="space-y-6 mt-0">
+        <TabsContent value="divisions" className="mt-0">
           <section className="space-y-5">
             <TransitionWrapper delay={150}>
               <div className="flex items-center justify-between mb-2">
@@ -498,7 +491,7 @@ const AgencyDashboard: React.FC = () => {
           </section>
         </TabsContent>
         
-        <TabsContent value="agents" className="space-y-6 mt-0">
+        <TabsContent value="agents" className="mt-0">
           <section className="space-y-4">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-xl font-medium neon-text">Agent Management</h3>
@@ -534,13 +527,13 @@ const AgencyDashboard: React.FC = () => {
           </section>
         </TabsContent>
         
-        <TabsContent value="system" className="space-y-6 mt-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <TabsContent value="system" className="mt-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <AISystemStatus />
             <InteractiveSystemDiagram />
           </div>
           
-          <GlassMorphism className="p-6 rounded-xl bg-flow-background/20 backdrop-blur-lg">
+          <GlassMorphism className="p-4 mt-4 rounded-xl bg-flow-background/20 backdrop-blur-lg">
             <h3 className="text-xl font-medium mb-4 flex items-center">
               <Shield className="w-5 h-5 mr-2 text-flow-accent" />
               System Settings & Controls
@@ -590,7 +583,7 @@ const AgencyDashboard: React.FC = () => {
               </div>
             </div>
             
-            <div className="mt-6 text-xs text-flow-foreground/60">
+            <div className="mt-4 text-xs text-flow-foreground/60">
               Use the Command Terminal for advanced system controls and administration
             </div>
           </GlassMorphism>
