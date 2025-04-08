@@ -13,7 +13,9 @@ import Workflows from "./pages/Workflows";
 import Knowledge from "./pages/Knowledge";
 import Analytics from "./pages/Analytics";
 import Courses from "./pages/Courses";
+import Tasks from "./pages/Tasks";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { TaskProvider } from "./contexts/TaskContext";
 import CommunicationTerminal from "./components/communication/CommunicationTerminal";
 import CommandTerminal from "./components/agents/CommandTerminal";
 
@@ -24,24 +26,27 @@ const App = () => (
     <HelmetProvider>
       <ThemeProvider attribute="class" defaultTheme="dark">
         <LanguageProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/agents" element={<Agents />} />
-                <Route path="/workflows" element={<Workflows />} />
-                <Route path="/knowledge" element={<Knowledge />} />
-                <Route path="/analytics" element={<Analytics />} />
-                <Route path="/courses" element={<Courses />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <CommunicationTerminal />
-              <CommandTerminal />
-            </BrowserRouter>
-          </TooltipProvider>
+          <TaskProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/agents" element={<Agents />} />
+                  <Route path="/workflows" element={<Workflows />} />
+                  <Route path="/knowledge" element={<Knowledge />} />
+                  <Route path="/analytics" element={<Analytics />} />
+                  <Route path="/courses" element={<Courses />} />
+                  <Route path="/tasks" element={<Tasks />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                <CommunicationTerminal />
+                <CommandTerminal />
+              </BrowserRouter>
+            </TooltipProvider>
+          </TaskProvider>
         </LanguageProvider>
       </ThemeProvider>
     </HelmetProvider>

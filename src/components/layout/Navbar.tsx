@@ -3,7 +3,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Layers, Activity, Command, Search, Menu, X, BookOpen } from 'lucide-react';
+import { Layers, Activity, Command, Search, Menu, X, BookOpen, ClipboardList } from 'lucide-react';
 import GlassMorphism from '../ui/GlassMorphism';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -21,6 +21,7 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
     { label: t('dashboard'), href: '/' },
     { label: t('agents'), href: '/agents' },
     { label: t('workflows'), href: '/workflows' },
+    { label: t('tasks'), href: '/tasks' },
     { label: t('knowledge'), href: '/knowledge' },
     { label: t('analytics'), href: '/analytics' },
     { label: t('courses'), href: '/courses' },
