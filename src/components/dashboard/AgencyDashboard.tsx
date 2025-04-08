@@ -46,7 +46,6 @@ const AgencyDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [isResourcesOpen, setIsResourcesOpen] = useState(true);
 
-  // Core divisions for a new business
   const coreDivisions = [
     {
       title: 'Knowledge Base (KB)',
@@ -77,7 +76,6 @@ const AgencyDashboard: React.FC = () => {
     },
   ];
 
-  // Additional divisions for a new business
   const additionalDivisions = [
     {
       title: 'Strategy Division',
@@ -212,7 +210,6 @@ const AgencyDashboard: React.FC = () => {
           </TabsList>
         </div>
         
-        {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6 mt-0">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
@@ -347,7 +344,6 @@ const AgencyDashboard: React.FC = () => {
           </Collapsible>
         </TabsContent>
         
-        {/* Divisions Tab */}
         <TabsContent value="divisions" className="space-y-6 mt-0">
           <section className="space-y-5">
             <TransitionWrapper delay={150}>
@@ -492,7 +488,6 @@ const AgencyDashboard: React.FC = () => {
           </section>
         </TabsContent>
         
-        {/* Agents Tab */}
         <TabsContent value="agents" className="space-y-6 mt-0">
           <section className="space-y-4">
             <div className="flex items-center justify-between mb-2">
@@ -529,7 +524,6 @@ const AgencyDashboard: React.FC = () => {
           </section>
         </TabsContent>
         
-        {/* System Tab */}
         <TabsContent value="system" className="space-y-6 mt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <AISystemStatus />
