@@ -1,6 +1,6 @@
 
 import { Book, Database, BarChart3, Coffee, TestTube, Cpu } from 'lucide-react';
-import { Division } from '../types/officeTypes';
+import { Division, ZIndexLayers } from '../office/types/officeTypes';
 import { divisionColors } from '@/utils/colorSystem';
 
 export const getDivisions = (t): Division[] => [
