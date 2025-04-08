@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LucideIcon, BookOpen, Shield, BarChart, Settings, TrendingUp, Flask, Database, Server, FileText, Coffee } from 'lucide-react';
+import { LucideIcon, BookOpen, Shield, BarChart, Settings, TrendingUp, TestTube, Database, Server, FileText, Coffee } from 'lucide-react';
 import AgentCard from '../AgentCard';
 
 interface GridViewProps {
@@ -38,7 +38,7 @@ const GridView: React.FC<GridViewProps> = ({
     'BarChart': BarChart,
     'Settings': Settings,
     'TrendingUp': TrendingUp,
-    'Flask': Flask,
+    'Flask': TestTube, // Changed Flask to TestTube which is available
     'Database': Database,
     'Server': Server,
     'FileText': FileText,
