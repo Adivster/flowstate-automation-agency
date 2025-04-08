@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Task, TaskStatus } from '@/contexts/TaskContext';
 import { format } from 'date-fns';
+import { getDivisionColorScheme, getTaskColorClasses, getStatusColorClasses } from '@/utils/colorSystem';
 
 interface TaskItemProps {
   task: Task;
@@ -28,14 +29,10 @@ const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
   };
 
   const getPriorityBadge = (priority: string) => {
-    const classes = {
-      high: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-      medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-      low: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-    };
+    const colorClasses = getTaskColorClasses(priority);
     
     return (
-      <span className={cn("px-2 py-1 text-xs rounded-full", classes[priority as keyof typeof classes])}>
+      <span className={cn("px-2 py-1 text-xs rounded-full", colorClasses)}>
         {priority}
       </span>
     );
@@ -77,8 +74,19 @@ const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
     ? format(new Date(task.dueDate), 'MMM dd, yyyy')
     : 'No due date';
 
+  // Get division color scheme if available
+  const divisionColorScheme = task.division ? getDivisionColorScheme(task.division) : null;
+  const divisionBorderStyle = divisionColorScheme ? 
+    { borderLeft: `3px solid ${divisionColorScheme.primary}` } : {};
+
   return (
-    <div className="border rounded-lg p-4 bg-flow-card/50 space-y-3 hover:shadow-md transition-all">
+    <div 
+      className={cn(
+        "border rounded-lg p-4 bg-flow-card/50 space-y-3 hover:shadow-md transition-all",
+        task.division && `hover:shadow-[0_0_15px_${divisionColorScheme?.glow || 'rgba(85,120,255,0.2)'}]`
+      )}
+      style={divisionBorderStyle}
+    >
       <div className="flex justify-between items-start">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
@@ -99,16 +107,42 @@ const TaskItem: React.FC<TaskItemProps> = ({ task }) => {
           className={cn(
             "h-2", 
             task.status === 'failed' ? "bg-red-200" : "bg-flow-muted",
-            task.status === 'completed' ? "bg-green-200" : ""
+            task.status === 'completed' ? "bg-green-200" : "",
+            divisionColorScheme && `overflow-hidden rounded-full`
           )}
-        />
+        >
+          <div 
+            className={cn("h-full transition-all duration-500")}
+            style={{ 
+              width: `${task.progress}%`, 
+              backgroundColor: task.status === 'completed' 
+                ? '#22c55e' 
+                : task.status === 'failed' 
+                  ? '#ef4444' 
+                  : divisionColorScheme?.primary || '#3b82f6',
+              boxShadow: divisionColorScheme ? `0 0 8px ${divisionColorScheme.glow}` : 'none'
+            }}
+          />
+        </Progress>
       </div>
       
       <div className="flex justify-between items-center pt-2">
         <div className="flex flex-col text-xs text-flow-foreground/70">
           <span>Assigned to: <span className="font-medium">{task.assignedTo}</span></span>
           <span>Due date: <span className="font-medium">{dueDateFormatted}</span></span>
-          <span>Division: <span className="font-medium capitalize">{task.division}</span></span>
+          <span>Division: 
+            <span 
+              className={cn("ml-1 px-1.5 py-0.5 rounded text-[0.65rem]", 
+                divisionColorScheme ? "bg-opacity-20 font-medium" : "font-medium capitalize"
+              )}
+              style={divisionColorScheme ? { 
+                backgroundColor: `${divisionColorScheme.bg}`, 
+                color: divisionColorScheme.text
+              } : {}}
+            >
+              {task.division}
+            </span>
+          </span>
         </div>
         <TaskActionButtons status={task.status} />
       </div>

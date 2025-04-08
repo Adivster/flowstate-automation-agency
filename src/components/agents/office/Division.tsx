@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ZIndexLayers } from './types/officeTypes';
 import DivisionDecoration from './DivisionDecoration';
-import { getDivisionStyle } from './styles/divisionStyles';
+import { getDivisionStyle } from '@/utils/colorSystem';
 
 interface DivisionProps {
   division: {
@@ -55,12 +55,12 @@ const Division: React.FC<DivisionProps> = ({
   // Calculate box shadow based on state
   const getBoxShadow = () => {
     if (isSelected) {
-      return `0 0 30px ${division.borderColor}, inset 0 0 20px ${division.borderColor}`;
+      return `0 0 30px ${divStyle.glow}, inset 0 0 20px ${divStyle.glow}`;
     }
     if (isPulsing || isHovered) {
-      return `0 0 15px ${division.borderColor}`;
+      return `0 0 15px ${divStyle.glow}`;
     }
-    return `0 0 5px ${division.borderColor}`;
+    return `0 0 5px ${divStyle.glow}`;
   };
   
   // Calculate z-index based on state
@@ -95,8 +95,8 @@ const Division: React.FC<DivisionProps> = ({
         top: `${yPos}%`,
         width: `${division.position.width}%`,
         height: `${division.position.height}%`,
-        backgroundColor: division.backgroundColor,
-        borderColor: division.borderColor,
+        backgroundColor: divStyle.bg,
+        borderColor: divStyle.border,
         boxShadow: getBoxShadow(),
         zIndex: getZIndex(),
         backgroundImage: divStyle.pattern
@@ -143,19 +143,34 @@ const Division: React.FC<DivisionProps> = ({
         }
       }}
     >
-      <div className="h-full w-full p-3">
+      <div className="h-full w-full p-4 flex flex-col justify-between">
         <div className="flex items-start justify-between">
           <div className="flex items-center">
-            <div className={`p-1.5 rounded-md flex items-center justify-center`} style={{ backgroundColor: `${division.borderColor}30` }}>
-              <Icon className="h-3.5 w-3.5 text-white drop-shadow-glow" style={{ color: divStyle.text }} />
+            <div className={`p-1.5 rounded-md flex items-center justify-center bg-white/10`} style={{ boxShadow: `0 0 8px ${divStyle.glow}` }}>
+              <Icon className="h-4 w-4 text-white" style={{ color: divStyle.text }} />
             </div>
-            <h3 className="text-xs font-medium ml-1 tracking-wide text-white drop-shadow-md">{division.name}</h3>
+            <h3 className="text-sm font-medium ml-2 tracking-wide text-white drop-shadow-md font-cyber">{division.name}</h3>
           </div>
           
-          <div className="bg-white/10 rounded-full text-[0.65rem] px-1.5 flex items-center">
-            <span className="text-white/80">{agentCount}</span>
-            <span className="ml-1 opacity-70">AI</span>
+          <div className="bg-black/30 backdrop-blur-sm rounded-full text-xs px-2 py-0.5 flex items-center gap-1 border border-white/10">
+            <span className="text-white">{agentCount}</span>
+            <span className="opacity-70 text-white/80">AI</span>
           </div>
+        </div>
+        
+        {/* Central division content area - can be extended with more info */}
+        <div className="flex-1 flex items-center justify-center">
+          {isSelected && (
+            <motion.div 
+              className="rounded-full w-12 h-12 bg-white/5 flex items-center justify-center"
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
+              style={{ boxShadow: `0 0 15px ${divStyle.glow}` }}
+            >
+              <Icon className="h-6 w-6" style={{ color: divStyle.text }} />
+            </motion.div>
+          )}
         </div>
         
         {/* Division decorations */}
@@ -165,21 +180,46 @@ const Division: React.FC<DivisionProps> = ({
             type={decoration.type}
             x={decoration.x}
             y={decoration.y}
-            divisionColor={division.borderColor}
+            divisionColor={divStyle.primary}
             isHovered={isHovered}
           />
         ))}
         
+        {/* Bottom status area */}
+        <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center gap-1.5">
+            <div 
+              className={`h-1.5 w-1.5 rounded-full ${isPulsing || isHovered ? 'animate-pulse-subtle' : ''}`}
+              style={{ backgroundColor: divStyle.text, boxShadow: `0 0 5px ${divStyle.glow}` }}
+            ></div>
+            <span className="text-[0.65rem] text-white/70">Status: Active</span>
+          </div>
+          
+          {/* Additional division info can go here */}
+          {divisionAgents.length > 0 && (
+            <div className="text-[0.65rem] text-white/70">
+              {Math.round(divisionAgents.reduce((sum, agent) => sum + agent.efficiency, 0) / divisionAgents.length)}% Eff
+            </div>
+          )}
+        </div>
+        
         {/* Scan lines effect */}
         <div className="absolute inset-0 scan-lines opacity-20 pointer-events-none"></div>
         
-        {/* Agent count indicator with glow effect */}
-        <div className="absolute bottom-3 right-3">
-          <div 
-            className={`h-2 w-2 rounded-full ${isPulsing ? 'animate-ping-slow' : ''}`}
-            style={{ backgroundColor: divStyle.text, boxShadow: `0 0 5px ${divStyle.glow}` }}
-          ></div>
-        </div>
+        {/* Neon border effect on hover */}
+        {isHovered && (
+          <motion.div 
+            className="absolute inset-0 pointer-events-none rounded-xl border"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{ 
+              borderColor: divStyle.border,
+              boxShadow: `0 0 15px ${divStyle.glow}, inset 0 0 10px ${divStyle.glow}`
+            }}
+          />
+        )}
       </div>
     </motion.div>
   );

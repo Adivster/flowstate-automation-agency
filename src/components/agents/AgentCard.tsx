@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { LucideIcon, MoreHorizontal, ArrowUpRight, Zap, Activity } from 'lucide-react';
@@ -14,6 +13,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '../ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { ColorScheme, getStatusColorClasses } from '@/utils/colorSystem';
 
 interface AgentCardProps {
   name: string;
@@ -24,6 +24,8 @@ interface AgentCardProps {
   lastActivity: string;
   className?: string;
   tags?: string[];
+  divisionColor?: ColorScheme;
+  division?: string;
   onClick?: () => void;
 }
 
@@ -36,6 +38,8 @@ const AgentCard: React.FC<AgentCardProps> = ({
   lastActivity,
   className,
   tags = [],
+  divisionColor,
+  division,
   onClick,
 }) => {
   const { toast } = useToast();
@@ -43,31 +47,23 @@ const AgentCard: React.FC<AgentCardProps> = ({
   const statusConfig = {
     idle: { 
       label: 'Idle', 
-      color: 'bg-gray-200 text-gray-800',
-      background: 'bg-gray-500/10',
-      indicator: <div className="h-2 w-2 rounded-full bg-gray-400"></div>
+      ...getStatusColorClasses('idle')
     },
     working: { 
       label: 'Working', 
-      color: 'bg-green-100 text-green-800', 
-      background: 'bg-green-500/10',
-      indicator: <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+      ...getStatusColorClasses('working')
     },
     paused: { 
       label: 'Paused', 
-      color: 'bg-yellow-100 text-yellow-800',
-      background: 'bg-yellow-500/10',
-      indicator: <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
+      ...getStatusColorClasses('paused')
     },
     error: { 
       label: 'Error', 
-      color: 'bg-red-100 text-red-800',
-      background: 'bg-red-500/10',
-      indicator: <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse"></div>
+      ...getStatusColorClasses('error')
     },
   };
 
-  const { label, color, background, indicator } = statusConfig[status];
+  const { label, badge, background, indicator } = statusConfig[status];
   
   const getEfficiencyColor = (value: number) => {
     if (value > 90) return 'text-green-500';
@@ -89,10 +85,16 @@ const AgentCard: React.FC<AgentCardProps> = ({
     });
   };
 
+  // Division-based styling
+  const divBgColor = divisionColor ? divisionColor.bg : 'bg-flow-accent/20';
+  const divIconColor = divisionColor ? divisionColor.text : 'text-flow-accent';
+  const divBorderColor = divisionColor ? `border-${divisionColor.primary}` : 'border-flow-accent';
+  
   return (
     <GlassMorphism 
       className={cn(
         'rounded-xl overflow-hidden transition-all duration-300 border border-flow-border/50 hover:border-flow-accent hover:shadow-[0_0_20px_rgba(85,120,255,0.2)] hover:-translate-y-1',
+        divisionColor && `hover:shadow-[0_0_20px_${divisionColor.glow}]`,
         className
       )}
       onClick={onClick}
@@ -100,8 +102,8 @@ const AgentCard: React.FC<AgentCardProps> = ({
       <div className="p-5">
         <div className="flex justify-between items-start">
           <div className="flex items-center space-x-3">
-            <div className={`p-2 rounded-lg ${status === 'working' ? 'bg-flow-accent/20' : background}`}>
-              <Icon className={`h-5 w-5 ${status === 'working' ? 'text-flow-accent animate-pulse-subtle' : 'text-flow-foreground'}`} />
+            <div className={`p-2 rounded-lg ${status === 'working' ? divBgColor : background}`}>
+              <Icon className={`h-5 w-5 ${status === 'working' ? divIconColor : 'text-flow-foreground'} ${status === 'working' ? 'animate-pulse-subtle' : ''}`} />
             </div>
             <div>
               <div className="flex items-center space-x-2">
@@ -111,12 +113,12 @@ const AgentCard: React.FC<AgentCardProps> = ({
                     <TooltipTrigger className="inline-flex">
                       <InfoChip 
                         label={label} 
-                        className={color}
+                        className={badge}
                       />
                     </TooltipTrigger>
                     <TooltipContent>
                       <div className="flex items-center gap-2">
-                        {indicator}
+                        <div className={`h-2 w-2 rounded-full ${indicator}`}></div>
                         <span>{label} status</span>
                       </div>
                     </TooltipContent>
@@ -213,6 +215,23 @@ const AgentCard: React.FC<AgentCardProps> = ({
             </button>
           </div>
         </div>
+        
+        {division && (
+          <div className="mt-3 flex items-center">
+            <span className="text-xs text-flow-foreground/70 mr-2">Division:</span>
+            <Badge 
+              variant="outline" 
+              style={{ 
+                backgroundColor: divisionColor?.bg || 'transparent',
+                color: divisionColor?.text || 'currentColor',
+                borderColor: divisionColor?.border || 'currentColor'
+              }}
+              className="text-xs"
+            >
+              {division}
+            </Badge>
+          </div>
+        )}
         
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-1 pt-3">

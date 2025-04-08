@@ -3,6 +3,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LucideIcon, BookOpen, Shield, BarChart, Settings, TrendingUp, TestTube, Database, Server, FileText, Coffee } from 'lucide-react';
 import AgentCard from '../AgentCard';
+import { getDivisionColorScheme } from '@/utils/colorSystem';
 
 interface GridViewProps {
   filteredAgents: Array<{
@@ -50,6 +51,7 @@ const GridView: React.FC<GridViewProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredAgents.map((agent, index) => {
           const IconComponent = iconMap[agent.icon] || BookOpen;
+          const colorScheme = getDivisionColorScheme(agent.division);
           
           return (
             <motion.div
@@ -68,15 +70,10 @@ const GridView: React.FC<GridViewProps> = ({
                 efficiency={agent.efficiency}
                 lastActivity={agent.lastActive}
                 tags={agent.tags}
+                divisionColor={colorScheme}
+                division={agent.division}
                 onClick={() => handleExpandAgent(agent.id)}
-                className={`h-full border-l-2 ${expandedAgent === agent.id ? 'border-l-flow-accent' : 
-                  agent.division === 'kb' ? 'border-l-indigo-500' : 
-                  agent.division === 'analytics' ? 'border-l-yellow-500' : 
-                  agent.division === 'operations' ? 'border-l-purple-500' :
-                  agent.division === 'strategy' ? 'border-l-blue-500' :
-                  agent.division === 'research' ? 'border-l-green-500' :
-                  'border-l-amber-500'
-                }`}
+                className={`h-full border-l-2 ${expandedAgent === agent.id ? 'border-l-flow-accent' : `border-l-${colorScheme.primary}`}`}
               />
             </motion.div>
           );
