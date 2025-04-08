@@ -129,6 +129,11 @@ export const getDivisionColorScheme = (divisionId: string): ColorScheme => {
   return divisionColors[divisionId] || divisionColors.kb;
 };
 
+// Get division style based on division ID - adding the missing function
+export const getDivisionStyle = (divisionId: string): ColorScheme => {
+  return divisionColors[divisionId] || divisionColors.kb;
+};
+
 // Get task color classes based on priority
 export const getTaskColorClasses = (priority: string) => {
   const colors = taskColors[priority.toLowerCase() as keyof typeof taskColors] || taskColors.medium;
@@ -147,4 +152,3 @@ export const getStatusColorClasses = (status: string) => {
     border: colors.border
   };
 };
-

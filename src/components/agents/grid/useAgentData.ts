@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { divisionStyles } from '../office/styles/divisionStyles';
+import { getDivisionStyle } from '@/utils/colorSystem';
 
 // Sample agent data
 const agentSampleData = [
