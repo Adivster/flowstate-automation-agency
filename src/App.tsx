@@ -58,10 +58,10 @@ const App = () => (
       <ThemeProvider attribute="class" defaultTheme="dark">
         <LanguageProvider>
           <TaskProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
+            <BrowserRouter>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
                 <TaskCreatorEventHandler />
                 <Routes>
                   <Route path="/" element={<Index />} />
@@ -75,8 +75,8 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <CommandTerminal />
-              </BrowserRouter>
-            </TooltipProvider>
+              </TooltipProvider>
+            </BrowserRouter>
           </TaskProvider>
         </LanguageProvider>
       </ThemeProvider>
