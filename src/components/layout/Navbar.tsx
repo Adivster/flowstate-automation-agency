@@ -68,7 +68,7 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
               aria-label="Command"
               onClick={() => {
                 // This will open the combined terminal that handles both command and chat
-                window.dispatchEvent(new CustomEvent('openCommunicationTerminal'));
+                window.dispatchEvent(new CustomEvent('openCommandTerminal'));
               }}
             >
               <Command className="h-5 w-5" />

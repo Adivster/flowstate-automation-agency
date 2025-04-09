@@ -17,6 +17,7 @@ const CommandTerminal = () => {
   const { t } = useLanguage();
   const terminalRef = useRef<HTMLDivElement>(null);
   const chatRef = useRef<HTMLDivElement>(null);
+  const terminalContentRef = useRef<HTMLDivElement>(null);
   
   // Command terminal state
   const [input, setInput] = useState('');
@@ -88,6 +89,30 @@ const CommandTerminal = () => {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
   }, [isVisible, history, messages, activeTab]);
+  
+  // Handle outside clicks - improved implementation
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Check if terminal is open and click was outside terminal and not on toggle button
+      const target = event.target as Element;
+      
+      if (
+        isVisible && 
+        terminalContentRef.current && 
+        !terminalContentRef.current.contains(target) && 
+        !target.closest('.terminal-toggle-btn')
+      ) {
+        setIsVisible(false);
+      }
+    };
+
+    // Add event listener for mouse clicks
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isVisible, setIsVisible]);
   
   // Handle command submission
   const handleSubmit = (e: React.FormEvent) => {
@@ -266,6 +291,7 @@ const CommandTerminal = () => {
       <AnimatePresence>
         {isVisible && (
           <motion.div
+            ref={terminalContentRef}
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
@@ -455,23 +481,23 @@ const CommandTerminal = () => {
                     </div>
                   </Tabs>
                   
-                  <div className="flex items-center gap-2 ml-2">
+                  <div className="flex items-center gap-1">
                     <Button
                       variant="ghost"
-                      size="icon"
-                      className="h-6 w-6 rounded-full hover:bg-flow-muted/30"
+                      size="sm"
+                      className="h-7 w-7 rounded-md text-gray-400 hover:text-cyan-300 hover:bg-black/30 p-0 flex items-center justify-center"
                       onClick={clearTerminal}
                     >
-                      <RotateCcw className="h-3 w-3" />
+                      <RotateCcw className="h-3.5 w-3.5" />
                     </Button>
                     
                     <Button
                       variant="ghost"
-                      size="icon"
-                      className="h-6 w-6 rounded-full hover:bg-flow-muted/30"
+                      size="sm"
+                      className="h-7 w-7 rounded-md text-gray-400 hover:text-cyan-300 hover:bg-black/30 p-0 flex items-center justify-center"
                       onClick={() => setIsVisible(false)}
                     >
-                      <X className="h-3 w-3" />
+                      <X className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -484,7 +510,7 @@ const CommandTerminal = () => {
       <Button
         variant="outline"
         size="sm"
-        className="fixed bottom-4 right-4 h-10 w-10 rounded-full bg-flow-background/70 border-flow-accent/50 shadow-lg hover:shadow-flow-accent/20 hover:bg-flow-accent/20 z-40"
+        className="fixed bottom-4 right-4 h-10 w-10 rounded-full bg-flow-background/70 border-flow-accent/50 shadow-lg hover:shadow-flow-accent/20 hover:bg-flow-accent/20 z-40 terminal-toggle-btn"
         onClick={() => setIsVisible(v => !v)}
       >
         <Terminal className="h-4 w-4 text-flow-accent" />
