@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, BookOpen, BarChart, LayoutGrid, Shield, Share2, DollarSign, Users, MessagesSquare, TestTube } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import DivisionCard from '../DivisionCard';
@@ -24,7 +24,7 @@ const DivisionsTab: React.FC = () => {
     {
       title: 'Knowledge Base (KB)',
       description: 'Builds and structures knowledge from scratch with automated content ingestion.',
-      icon: require('lucide-react').BookOpen,
+      icon: BookOpen,
       activeAgents: 3,
       taskStatus: { completed: 24, total: 30 },
       type: 'knowledge',
@@ -33,7 +33,7 @@ const DivisionsTab: React.FC = () => {
     {
       title: 'Analytics Division',
       description: 'Establishes metrics and dashboards for early-stage growth tracking.',
-      icon: require('lucide-react').BarChart,
+      icon: BarChart,
       activeAgents: 3,
       taskStatus: { completed: 15, total: 22 },
       type: 'research',
@@ -42,7 +42,7 @@ const DivisionsTab: React.FC = () => {
     {
       title: 'Operations Division',
       description: 'Streamlines workflows and integrations for maximum efficiency.',
-      icon: require('lucide-react').LayoutGrid,
+      icon: LayoutGrid,
       activeAgents: 4,
       taskStatus: { completed: 32, total: 45 },
       type: 'architecture',
@@ -54,7 +54,7 @@ const DivisionsTab: React.FC = () => {
     {
       title: 'Strategy Division',
       description: 'Defines business strategy, goals, and conducts market research.',
-      icon: require('lucide-react').Shield,
+      icon: Shield,
       activeAgents: 2,
       taskStatus: { completed: 18, total: 20 },
       type: 'compliance',
@@ -63,7 +63,7 @@ const DivisionsTab: React.FC = () => {
     {
       title: 'Marketing Division',
       description: 'Builds brand awareness, acquires customers, and executes campaigns.',
-      icon: require('lucide-react').Share2,
+      icon: Share2,
       activeAgents: 3,
       taskStatus: { completed: 12, total: 15 },
       type: 'strategy',
@@ -72,7 +72,7 @@ const DivisionsTab: React.FC = () => {
     {
       title: 'Finance Division',
       description: 'Manages budgets, tracks expenses, and secures funding opportunities.',
-      icon: require('lucide-react').DollarSign,
+      icon: DollarSign,
       activeAgents: 2,
       taskStatus: { completed: 8, total: 10 },
       type: 'development',
@@ -81,7 +81,7 @@ const DivisionsTab: React.FC = () => {
     {
       title: 'HR & Recruitment',
       description: 'Handles recruitment, employee onboarding, and team management.',
-      icon: require('lucide-react').Users,
+      icon: Users,
       activeAgents: 2,
       taskStatus: { completed: 5, total: 8 },
       type: 'strategy',
@@ -90,7 +90,7 @@ const DivisionsTab: React.FC = () => {
     {
       title: 'Customer Support',
       description: 'Manages support tickets, FAQs, and analyzes customer feedback.',
-      icon: require('lucide-react').MessagesSquare,
+      icon: MessagesSquare,
       activeAgents: 3,
       taskStatus: { completed: 45, total: 60 },
       type: 'knowledge',
@@ -99,7 +99,7 @@ const DivisionsTab: React.FC = () => {
     {
       title: 'Research Division',
       description: 'Explores new technologies, market trends, and innovation opportunities.',
-      icon: require('lucide-react').TestTube,
+      icon: TestTube,
       activeAgents: 4,
       taskStatus: { completed: 22, total: 30 },
       type: 'research',
