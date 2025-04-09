@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Terminal, X, Send, ChevronDown, Bot, MessageCircle } from 'lucide-react';
+import { Terminal, X, Send, ChevronDown, Bot, MessageCircle, RotateCcw } from 'lucide-react';
 
 const CommunicationTerminal = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -160,23 +160,12 @@ const CommunicationTerminal = () => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
   
-  const renderCommandOutput = (item: {type: 'input' | 'output', content: string}, index: number) => {
-    if (item.type === 'input') {
-      return (
-        <div key={index} className="flex gap-2 text-xs text-flow-accent font-mono py-1">
-          <span className="text-flow-accent-foreground">&gt;</span>
-          <span>{item.content}</span>
-        </div>
-      );
-    } else {
-      return (
-        <div key={index} className="text-xs text-flow-foreground font-mono mt-1 mb-2">
-          {item.content.split('\n').map((line, i) => (
-            <div key={i}>{line}</div>
-          ))}
-        </div>
-      );
-    }
+  const clearTerminal = () => {
+    setCommandHistory([
+      { type: 'output', content: 'Terminal cleared.' },
+      { type: 'output', content: 'Welcome to the Agency Command Interface v3.0' },
+      { type: 'output', content: 'Type "help" for available commands' }
+    ]);
   };
 
   return (
@@ -187,7 +176,7 @@ const CommunicationTerminal = () => {
           size="icon"
           variant="outline"
           onClick={() => setIsOpen(!isOpen)}
-          className={`terminal-toggle-btn rounded-full h-12 w-12 shadow-lg neon-border ${isOpen ? 'bg-flow-accent' : 'bg-flow-background'}`}
+          className="terminal-toggle-btn rounded-full h-12 w-12 shadow-lg neon-border bg-flow-background hover:bg-flow-background/90"
         >
           {isOpen ? <X className="h-5 w-5" /> : <Terminal className="h-5 w-5" />}
         </Button>
@@ -202,12 +191,11 @@ const CommunicationTerminal = () => {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 400, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed bottom-0 left-0 right-0 z-40 bg-gray-900 border-t-2 border-flow-accent neon-border"
-            style={{ height: '350px' }}
+            className="fixed bottom-20 left-4 right-4 md:left-auto md:right-4 md:w-[450px] z-40 rounded-xl overflow-hidden"
           >
-            <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'command' | 'chat')} className="w-full h-full">
-              <div className="flex justify-between items-center p-3 border-b border-flow-accent/50">
-                <TabsList className="h-8">
+            <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'command' | 'chat')} className="w-full bg-gray-900 border-2 border-flow-accent/30 rounded-xl shadow-lg neon-border">
+              <div className="flex justify-between items-center p-3 border-b border-flow-accent/50 bg-black/50">
+                <TabsList className="h-8 bg-black/30 border border-flow-accent/20">
                   <TabsTrigger value="command" className="text-xs">
                     <Terminal className="h-3.5 w-3.5 mr-1.5" />
                     Command Terminal
@@ -217,101 +205,131 @@ const CommunicationTerminal = () => {
                     Communication Bot
                   </TabsTrigger>
                 </TabsList>
+                
                 <div className="flex gap-2">
                   <Button 
                     size="icon" 
                     variant="ghost" 
-                    className="h-6 w-6 text-flow-muted-foreground hover:text-flow-accent"
-                    onClick={() => setIsOpen(false)}
+                    className="h-6 w-6 text-flow-muted-foreground hover:text-flow-accent hover:bg-transparent"
+                    onClick={clearTerminal}
+                    title="Clear terminal"
                   >
-                    <ChevronDown className="h-4 w-4" />
+                    <RotateCcw className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    className="h-6 w-6 text-flow-muted-foreground hover:text-flow-accent hover:bg-transparent"
+                    onClick={() => setIsOpen(false)}
+                    title="Close terminal"
+                  >
+                    <X className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
               
-              {/* Terminal Tab */}
-              <TabsContent value="command" className="h-[295px] m-0">
-                <div 
-                  ref={terminalRef}
-                  className="p-4 h-[235px] overflow-y-auto scan-lines font-mono"
-                  style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
-                >
-                  {commandHistory.map((item, index) => renderCommandOutput(item, index))}
-                </div>
-                
-                <form onSubmit={handleCommand} className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex items-center">
-                  <Input
-                    type="text"
-                    value={command}
-                    onChange={(e) => setCommand(e.target.value)}
-                    placeholder="Enter command..."
-                    className="flex-1 bg-transparent border-flow-accent/30 text-flow-foreground text-sm"
-                    onKeyPress={handleKeyPress}
-                  />
-                  <Button 
-                    type="submit" 
-                    size="sm" 
-                    className="ml-2 bg-flow-accent hover:bg-flow-accent/80 neon-glow min-w-20"
+              <div>
+                {/* Terminal Tab */}
+                <TabsContent value="command" className="m-0 p-0">
+                  <div 
+                    ref={terminalRef}
+                    className="p-4 h-[300px] overflow-y-auto scan-lines font-mono"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
                   >
-                    <Send className="h-4 w-4 mr-1" />
-                    Execute
-                  </Button>
-                </form>
-              </TabsContent>
-              
-              {/* Chat Tab */}
-              <TabsContent value="chat" className="h-[295px] m-0">
-                <div 
-                  ref={chatRef}
-                  className="p-4 h-[235px] overflow-y-auto bg-gray-900/80"
-                >
-                  {messages.map((message, index) => (
-                    <motion.div 
-                      key={index}
-                      className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} mb-3`}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
+                    {commandHistory.map((item, index) => {
+                      if (item.type === 'input') {
+                        return (
+                          <div key={index} className="flex gap-2 text-xs text-flow-accent font-mono py-1">
+                            <span className="text-flow-accent-foreground">&gt;</span>
+                            <span>{item.content}</span>
+                          </div>
+                        );
+                      } else {
+                        return (
+                          <div key={index} className="text-xs text-flow-foreground font-mono mt-1 mb-2">
+                            {item.content.split('\n').map((line, i) => (
+                              <div key={i}>{line}</div>
+                            ))}
+                          </div>
+                        );
+                      }
+                    })}
+                  </div>
+                  
+                  <form onSubmit={handleCommand} className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex items-center">
+                    <Input
+                      type="text"
+                      value={command}
+                      onChange={(e) => setCommand(e.target.value)}
+                      placeholder="Enter command..."
+                      className="flex-1 bg-transparent border-flow-accent/30 text-flow-foreground text-sm"
+                      onKeyPress={handleKeyPress}
+                    />
+                    <Button 
+                      type="submit" 
+                      size="sm" 
+                      className="ml-2 bg-flow-accent hover:bg-flow-accent/80 neon-glow min-w-20"
                     >
-                      {message.sender === 'bot' && (
-                        <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center mr-2">
-                          <Bot className="h-4 w-4 text-indigo-400" />
-                        </div>
-                      )}
-                      <div 
-                        className={`max-w-[80%] px-3 py-2 rounded-lg ${
-                          message.sender === 'user' 
-                            ? 'bg-indigo-500 text-white' 
-                            : 'bg-flow-muted text-flow-foreground'
-                        }`}
-                      >
-                        <div className="text-sm">{message.text}</div>
-                        <div className="text-[10px] text-right mt-1 opacity-70">
-                          {formatTime(message.timestamp)}
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
+                      <Send className="h-4 w-4 mr-1" />
+                      Execute
+                    </Button>
+                  </form>
+                </TabsContent>
                 
-                <div className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex items-center">
-                  <Input
-                    type="text"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="What can I help you with?"
-                    className="flex-1 bg-transparent border-flow-accent/30 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-                  />
-                  <Button 
-                    size="sm" 
-                    onClick={handleSendMessage}
-                    className="ml-2 bg-indigo-500 hover:bg-indigo-600 min-w-10"
+                {/* Chat Tab */}
+                <TabsContent value="chat" className="m-0 p-0">
+                  <div 
+                    ref={chatRef}
+                    className="p-4 h-[300px] overflow-y-auto bg-gray-900/80"
                   >
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </div>
-              </TabsContent>
+                    {messages.map((message, index) => (
+                      <motion.div 
+                        key={index}
+                        className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} mb-3`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {message.sender === 'bot' && (
+                          <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center mr-2">
+                            <Bot className="h-4 w-4 text-indigo-400" />
+                          </div>
+                        )}
+                        <div 
+                          className={`max-w-[80%] px-3 py-2 rounded-lg ${
+                            message.sender === 'user' 
+                              ? 'bg-indigo-500 text-white' 
+                              : 'bg-flow-muted text-flow-foreground'
+                          }`}
+                        >
+                          <div className="text-sm">{message.text}</div>
+                          <div className="text-[10px] text-right mt-1 opacity-70">
+                            {formatTime(message.timestamp)}
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                  
+                  <div className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex items-center">
+                    <Input
+                      type="text"
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="What can I help you with?"
+                      className="flex-1 bg-transparent border-flow-accent/30 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    />
+                    <Button 
+                      size="sm" 
+                      onClick={handleSendMessage}
+                      className="ml-2 bg-indigo-500 hover:bg-indigo-600 min-w-10"
+                    >
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TabsContent>
+              </div>
             </Tabs>
           </motion.div>
         )}
