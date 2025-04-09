@@ -1,82 +1,91 @@
 
-import { Division } from '../types/officeTypes';
-import { divisionColors, ColorScheme } from '@/utils/colorSystem';
+import { DivisionStyle } from '../types/officeTypes';
 
-// Get division style based on division ID
-export const getDivisionStyle = (divisionId: string): ColorScheme => {
-  return divisionColors[divisionId] || divisionColors.kb;
-};
-
-// Generate default decorations for divisions based on their ID
-export const getDefaultDecorations = (divisionId: string) => {
-  switch(divisionId) {
-    case 'kb':
-      return [
-        { type: 'boards', x: 30, y: 40 },
-        { type: 'computer', x: 70, y: 60 },
-        { type: 'light', x: 50, y: 20 }
-      ];
-    case 'analytics':
-      return [
-        { type: 'chart', x: 30, y: 40 },
-        { type: 'computer', x: 70, y: 60 },
-        { type: 'light', x: 50, y: 20 }
-      ];
-    case 'operations':
-      return [
-        { type: 'server', x: 30, y: 40 },
-        { type: 'monitor', x: 70, y: 60 },
-        { type: 'light', x: 50, y: 20 }
-      ];
-    case 'strategy':
-      return [
-        { type: 'boards', x: 30, y: 40 },
-        { type: 'desk', x: 70, y: 60 },
-        { type: 'light', x: 50, y: 20 }
-      ];
-    case 'research':
-      return [
-        { type: 'monitor', x: 30, y: 40 },
-        { type: 'plant', x: 70, y: 60 },
-        { type: 'light', x: 50, y: 20 }
-      ];
-    case 'lounge':
-      return [
-        { type: 'coffee', x: 30, y: 40 },
-        { type: 'sofa', x: 70, y: 60 },
-        { type: 'light', x: 50, y: 20 }
-      ];
-    default:
-      return [];
-  }
-};
-
-// Enhanced glow effect for divisions
-export const getDivisionGlow = (divisionId: string, isSelected: boolean, isPulsing: boolean) => {
-  const style = getDivisionStyle(divisionId);
+// Color mapping for different divisions
+export const getDivisionColors = (divisionId: string): DivisionStyle => {
+  const divisionStyles: Record<string, DivisionStyle> = {
+    kb: {
+      bg: 'bg-blue-500/20',
+      border: 'border-blue-500/50',
+      shadow: 'shadow-blue-500/20',
+      text: 'text-blue-500',
+      glow: 'rgba(59, 130, 246, 0.4)',
+      pattern: 'bg-gradient-to-br from-blue-500/10 to-blue-700/10'
+    },
+    analytics: {
+      bg: 'bg-purple-500/20',
+      border: 'border-purple-500/50',
+      shadow: 'shadow-purple-500/20',
+      text: 'text-purple-500',
+      glow: 'rgba(168, 85, 247, 0.4)',
+      pattern: 'bg-gradient-to-br from-purple-500/10 to-purple-700/10'
+    },
+    strategy: {
+      bg: 'bg-green-500/20',
+      border: 'border-green-500/50',
+      shadow: 'shadow-green-500/20',
+      text: 'text-green-500',
+      glow: 'rgba(34, 197, 94, 0.4)',
+      pattern: 'bg-gradient-to-br from-green-500/10 to-green-700/10'
+    },
+    operations: {
+      bg: 'bg-amber-500/20',
+      border: 'border-amber-500/50',
+      shadow: 'shadow-amber-500/20',
+      text: 'text-amber-500',
+      glow: 'rgba(245, 158, 11, 0.4)',
+      pattern: 'bg-gradient-to-br from-amber-500/10 to-amber-700/10'
+    },
+    innovation: {
+      bg: 'bg-cyan-500/20',
+      border: 'border-cyan-500/50',
+      shadow: 'shadow-cyan-500/20',
+      text: 'text-cyan-500',
+      glow: 'rgba(6, 182, 212, 0.4)',
+      pattern: 'bg-gradient-to-br from-cyan-500/10 to-cyan-700/10'
+    },
+    security: {
+      bg: 'bg-red-500/20',
+      border: 'border-red-500/50',
+      shadow: 'shadow-red-500/20',
+      text: 'text-red-500',
+      glow: 'rgba(239, 68, 68, 0.4)',
+      pattern: 'bg-gradient-to-br from-red-500/10 to-red-700/10'
+    }
+  };
   
-  if (isSelected) {
-    return `0 0 30px ${style.glow}, inset 0 0 20px ${style.glow}`;
-  } else if (isPulsing) {
-    return `0 0 20px ${style.glow}`;
-  }
-  return 'none';
+  // Return the style for the specified division or default to flow accent color
+  return divisionStyles[divisionId] || {
+    bg: 'bg-flow-accent/20',
+    border: 'border-flow-accent/50',
+    shadow: 'shadow-flow-accent/20',
+    text: 'text-flow-accent',
+    glow: 'rgba(99, 102, 241, 0.4)',
+    pattern: 'bg-gradient-to-br from-flow-accent/10 to-indigo-700/10'
+  };
 };
 
-// Default positioning for divisions to create a balanced layout
-export const defaultDivisionPositions = {
-  kb: { x: 20, y: 20 },
-  analytics: { x: 55, y: 20 },
-  operations: { x: 20, y: 55 },
-  strategy: { x: 55, y: 55 },
-  research: { x: 38, y: 38 },
-  lounge: { x: 70, y: 38 }
+export const getDivisionStyle = (id: string) => {
+  return getDivisionColors(id);
 };
 
-// Function to calculate the position of any child elements within a division
-export const calculateChildPosition = (parentX: number, parentY: number, childRelativeX: number, childRelativeY: number) => {
+// Get hover style for a division
+export const getHoverStyle = (divisionId: string) => {
+  const colors = getDivisionColors(divisionId);
   return {
-    x: parentX + (childRelativeX / 100),
-    y: parentY + (childRelativeY / 100)
+    bg: colors.bg.replace('/20', '/30'),
+    border: colors.border.replace('/50', '/70'),
+    shadow: `0 0 15px ${colors.glow}`
+  };
+};
+
+// Get selected style for a division
+export const getSelectedStyle = (divisionId: string) => {
+  const colors = getDivisionColors(divisionId);
+  return {
+    bg: colors.bg.replace('/20', '/40'),
+    border: colors.border.replace('/50', '/90'),
+    shadow: `0 0 25px ${colors.glow}`,
+    pattern: colors.pattern
   };
 };

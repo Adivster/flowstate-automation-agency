@@ -1,13 +1,15 @@
 
 import React, { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Activity, Clock, Zap, BarChart3, X, Brain, Gauge } from 'lucide-react';
+import { Activity, Clock, Zap, BarChart3, X, Brain, Gauge, MessageCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePerformanceData } from '@/hooks/usePerformanceData';
 import { LineChart } from '@/components/ui/chart';
 import GlassMorphism from '@/components/ui/GlassMorphism';
 import { Progress } from '@/components/ui/progress';
 import { AgentMood } from './types/officeTypes';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 interface AgentDetails {
   id: number;
@@ -28,6 +30,7 @@ const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({
   onClose 
 }) => {
   const { t } = useLanguage();
+  const { toast } = useToast();
   const panelRef = useRef<HTMLDivElement>(null);
   
   // Pass agent ID to get consistent performance data
@@ -56,25 +59,25 @@ const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({
     };
   }, [onClose]);
 
-  // Helper function to get mood emoji and color
+  // Helper function to get mood color and label
   const getMoodInfo = (mood: AgentMood | undefined) => {
     switch(mood) {
       case 'optimal':
-        return { emoji: '😎', color: 'text-green-500', label: 'Optimal' };
+        return { color: 'text-green-500', label: 'Optimal', bgColor: 'bg-green-500/20' };
       case 'focused':
-        return { emoji: '🧠', color: 'text-blue-500', label: 'Focused' };
+        return { color: 'text-blue-500', label: 'Focused', bgColor: 'bg-blue-500/20' };
       case 'learning':
-        return { emoji: '🤓', color: 'text-cyan-500', label: 'Learning' };
+        return { color: 'text-cyan-500', label: 'Learning', bgColor: 'bg-cyan-500/20' };
       case 'overwhelmed':
-        return { emoji: '😓', color: 'text-red-500', label: 'Overwhelmed' };
+        return { color: 'text-red-500', label: 'Overwhelmed', bgColor: 'bg-red-500/20' };
       case 'underutilized':
-        return { emoji: '😴', color: 'text-amber-500', label: 'Underutilized' };
+        return { color: 'text-amber-500', label: 'Underutilized', bgColor: 'bg-amber-500/20' };
       case 'frustrated':
-        return { emoji: '😤', color: 'text-orange-500', label: 'Frustrated' };
+        return { color: 'text-orange-500', label: 'Frustrated', bgColor: 'bg-orange-500/20' };
       case 'confused':
-        return { emoji: '🤔', color: 'text-purple-500', label: 'Confused' };
+        return { color: 'text-purple-500', label: 'Confused', bgColor: 'bg-purple-500/20' };
       default:
-        return { emoji: '😐', color: 'text-gray-500', label: 'Neutral' };
+        return { color: 'text-gray-500', label: 'Neutral', bgColor: 'bg-gray-500/20' };
     }
   };
 
@@ -91,6 +94,14 @@ const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({
   // Get mood info
   const moodInfo = getMoodInfo(agent.mood);
   const workloadColor = getWorkloadColor(agent.workload);
+  
+  const handleChatWithAgent = () => {
+    toast({
+      title: `Chat with ${agent.name}`,
+      description: `Opening communication channel with ${agent.name}`,
+      duration: 3000,
+    });
+  };
   
   return (
     <motion.div 
@@ -127,7 +138,7 @@ const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({
         <div className="text-white/60 text-xs ml-3">{agent.role}</div>
       </div>
 
-      {/* New Mood and Workload Section */}
+      {/* Mood and Workload Section with clearer indicators */}
       {(agent.mood || agent.workload !== undefined) && (
         <GlassMorphism intensity="low" className="p-3 rounded mb-4 backdrop-blur-md">
           <h4 className="text-white/80 text-xs font-semibold mb-2 flex items-center">
@@ -136,9 +147,9 @@ const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({
           </h4>
           <div className="grid grid-cols-2 gap-3">
             {agent.mood && (
-              <div className="bg-flow-background/20 p-2 rounded-lg flex items-center">
-                <div className="text-2xl mr-3" aria-hidden="true">
-                  {moodInfo.emoji}
+              <div className={`${moodInfo.bgColor} p-2 rounded-lg flex items-center`}>
+                <div className={`w-8 h-8 ${moodInfo.bgColor} rounded-full flex items-center justify-center mr-2`}>
+                  <Brain className={`h-4 w-4 ${moodInfo.color}`} />
                 </div>
                 <div>
                   <div className={`text-sm font-medium ${moodInfo.color}`}>
@@ -152,14 +163,14 @@ const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({
             {agent.workload !== undefined && (
               <div className="bg-flow-background/20 p-2 rounded-lg">
                 <div className="flex justify-between items-center mb-1">
-                  <div className="text-xs text-white/60">Workload</div>
+                  <div className="text-xs text-white/60">Task Completion</div>
                   <div className={`text-sm font-medium ${workloadColor}`}>
                     {agent.workload}%
                   </div>
                 </div>
                 <Progress 
                   value={agent.workload} 
-                  className="h-1.5"
+                  className="h-2"
                   indicatorColor={
                     agent.workload > 90 ? '#ef4444' :
                     agent.workload > 75 ? '#f97316' :
@@ -169,9 +180,9 @@ const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({
                   }
                 />
                 <div className="text-xs mt-1 text-white/40 flex justify-between">
-                  <span>Idle</span>
-                  <span>Optimal</span>
-                  <span>Max</span>
+                  <span>0%</span>
+                  <span>50%</span>
+                  <span>100%</span>
                 </div>
               </div>
             )}
@@ -232,13 +243,20 @@ const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({
       </GlassMorphism>
       
       <div className="grid grid-cols-2 gap-3">
-        <button className="text-xs bg-flow-accent/90 text-white px-3 py-1.5 rounded hover:bg-flow-accent flex items-center justify-center">
+        <Button 
+          className="text-xs bg-flow-accent/90 text-white flex items-center justify-center hover:bg-flow-accent"
+          onClick={handleChatWithAgent}
+        >
+          <MessageCircle className="h-3 w-3 mr-1" />
+          Chat with Agent
+        </Button>
+        <Button 
+          variant="outline" 
+          className="text-xs bg-flow-muted/30 text-white/90 hover:bg-flow-muted/50 flex items-center justify-center"
+        >
           <Activity className="h-3 w-3 mr-1" />
-          {t('agents')}
-        </button>
-        <button className="text-xs bg-flow-muted/30 text-white/90 px-3 py-1.5 rounded hover:bg-flow-muted/50 flex items-center justify-center">
           {t('analytics')}
-        </button>
+        </Button>
       </div>
     </motion.div>
   );

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import Workstation from './Workstation';
 import DecorativeElement from './DecorativeElement';
@@ -8,6 +9,7 @@ import Division from './Division';
 import AgentCharacter from '../AgentCharacter';
 import { Division as DivisionType, DecorativeElement as DecorativeElementType, ZIndexLayers } from './types/officeTypes';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getDivisionColors } from './styles/divisionStyles';
 
 interface OfficeElementsProps {
   divisions: DivisionType[];
@@ -43,6 +45,16 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
   zoomLevel = 1
 }) => {
   const [adjustedAgentPositions, setAdjustedAgentPositions] = useState<Record<number, { x: number, y: number }>>({});
+  const [divisionColorMap, setDivisionColorMap] = useState<Record<string, any>>({});
+  
+  // Generate division color map
+  useEffect(() => {
+    const colorMap: Record<string, any> = {};
+    divisions.forEach(division => {
+      colorMap[division.id] = getDivisionColors(division.id);
+    });
+    setDivisionColorMap(colorMap);
+  }, [divisions]);
   
   useEffect(() => {
     const newPositions: Record<number, { x: number, y: number }> = {};
@@ -138,6 +150,7 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
   const renderAgents = () => (
     agents.map(agent => {
       const position = adjustedAgentPositions[agent.id] || agent.position;
+      const divisionColor = agent.division ? divisionColorMap[agent.division] : undefined;
       
       return (
         <AgentCharacter 
@@ -151,6 +164,7 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
           isSelected={selectedAgent === agent.id}
           onAgentClick={onAgentClick}
           style={{ zIndex: selectedAgent === agent.id ? ZIndexLayers.AGENT_SELECTED : ZIndexLayers.AGENT }}
+          divisionColor={divisionColor}
         />
       );
     })
