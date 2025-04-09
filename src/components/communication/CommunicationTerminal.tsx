@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
@@ -29,6 +29,25 @@ const CommunicationTerminal = () => {
     clearTerminal,
   } = useCommunicationTerminal();
 
+  // Handle outside clicks
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isOpen && 
+        terminalWrapperRef.current && 
+        !terminalWrapperRef.current.contains(event.target as Node) &&
+        !(event.target as Element).closest('.terminal-toggle-btn')
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, setIsOpen, terminalWrapperRef]);
+
   return (
     <>
       {/* Terminal toggle button positioned in bottom right */}
@@ -37,9 +56,9 @@ const CommunicationTerminal = () => {
           size="icon"
           variant="outline"
           onClick={() => setIsOpen(!isOpen)}
-          className="terminal-toggle-btn rounded-full h-12 w-12 shadow-lg neon-border bg-flow-background hover:bg-flow-background/90"
+          className="terminal-toggle-btn rounded-full h-12 w-12 shadow-lg bg-black/70 border border-indigo-500/50 hover:bg-indigo-900/30 hover:border-indigo-400/80 transition-all duration-300"
         >
-          {isOpen ? <X className="h-5 w-5" /> : <Terminal className="h-5 w-5" />}
+          {isOpen ? <X className="h-5 w-5 text-cyan-300" /> : <Terminal className="h-5 w-5 text-cyan-300" />}
         </Button>
       </div>
 
@@ -52,12 +71,12 @@ const CommunicationTerminal = () => {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 400, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed bottom-20 left-4 right-4 md:left-auto md:right-4 md:w-[450px] z-40 rounded-xl overflow-hidden"
+            className="fixed bottom-20 left-4 right-4 md:left-auto md:right-4 md:w-[500px] z-40 rounded-xl overflow-hidden shadow-[0_0_30px_rgba(79,70,229,0.3)]"
           >
             <Tabs 
               value={activeTab} 
               onValueChange={(val) => setActiveTab(val as 'command' | 'chat')} 
-              className="w-full bg-gray-900 border-2 border-flow-accent/30 rounded-xl shadow-lg neon-border"
+              className="w-full bg-gray-900/90 backdrop-blur-md border border-indigo-500/30 rounded-xl"
             >
               <TerminalHeader 
                 activeTab={activeTab}
@@ -95,6 +114,45 @@ const CommunicationTerminal = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* Add global styles for scrollbar and scan-lines effect */}
+      <style>
+        {`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+          height: 4px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(99, 102, 241, 0.3);
+          border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(99, 102, 241, 0.5);
+        }
+        
+        .scan-lines::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: repeating-linear-gradient(
+            0deg,
+            transparent 0,
+            rgba(0, 170, 255, 0.03) 1px,
+            transparent 2px
+          );
+          pointer-events: none;
+        }
+        `}
+      </style>
     </>
   );
 };

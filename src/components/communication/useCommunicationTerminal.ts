@@ -19,8 +19,8 @@ export const useCommunicationTerminal = () => {
   // Command terminal state
   const [command, setCommand] = useState('');
   const [commandHistory, setCommandHistory] = useState<CommandHistoryItem[]>([
-    { type: 'output', content: 'Welcome to the Agency Command Interface v3.0' },
-    { type: 'output', content: 'Type "help" for available commands' },
+    { type: 'output', content: '> Welcome to the Agency Command Interface v3.2' },
+    { type: 'output', content: '> Type "help" for available commands' },
   ]);
   
   // Chat bot state
@@ -42,6 +42,11 @@ export const useCommunicationTerminal = () => {
       setActiveTab('command');
     };
     
+    const handleOpenCommunicationTerminal = () => {
+      setIsOpen(true);
+      setActiveTab('chat');
+    };
+    
     window.addEventListener('openCommunicationTerminal', handleOpenTerminal);
     window.addEventListener('openCommandTerminal', handleOpenCommandTerminal);
     
@@ -50,25 +55,6 @@ export const useCommunicationTerminal = () => {
       window.removeEventListener('openCommandTerminal', handleOpenCommandTerminal);
     };
   }, []);
-
-  // Handle outside clicks
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        isOpen && 
-        terminalWrapperRef.current && 
-        !terminalWrapperRef.current.contains(event.target as Node) &&
-        !(event.target as Element).closest('.terminal-toggle-btn')
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isOpen]);
 
   // Handle command submission
   const handleCommand = (e: React.FormEvent) => {
@@ -151,15 +137,15 @@ export const useCommunicationTerminal = () => {
   };
   
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
   
   const clearTerminal = () => {
     if (activeTab === 'command') {
       setCommandHistory([
-        { type: 'output', content: 'Terminal cleared.' },
-        { type: 'output', content: 'Welcome to the Agency Command Interface v3.0' },
-        { type: 'output', content: 'Type "help" for available commands' }
+        { type: 'output', content: '> Terminal cleared.' },
+        { type: 'output', content: '> Welcome to the Agency Command Interface v3.2' },
+        { type: 'output', content: '> Type "help" for available commands' }
       ]);
     } else {
       setMessages([

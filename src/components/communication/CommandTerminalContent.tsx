@@ -34,20 +34,24 @@ const CommandTerminalContent: React.FC<CommandTerminalContentProps> = ({
     <>
       <div 
         ref={terminalRef}
-        className="p-4 h-[300px] overflow-y-auto scan-lines font-mono"
-        style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
+        className="p-4 h-[320px] overflow-y-auto scan-lines font-mono custom-scrollbar"
+        style={{ 
+          backgroundColor: 'rgba(0,0,0,0.85)',
+          backgroundImage: 'linear-gradient(rgba(0, 70, 100, 0.05) 50%, transparent 50%)',
+          backgroundSize: '100% 4px'
+        }}
       >
         {commandHistory.map((item, index) => {
           if (item.type === 'input') {
             return (
-              <div key={index} className="flex gap-2 text-xs text-flow-accent font-mono py-1">
-                <span className="text-flow-accent-foreground">&gt;</span>
+              <div key={index} className="flex gap-2 text-xs text-cyan-400 font-mono py-1">
+                <span className="text-cyan-400/70">&gt;</span>
                 <span>{item.content}</span>
               </div>
             );
           } else {
             return (
-              <div key={index} className="text-xs text-flow-foreground font-mono mt-1 mb-2">
+              <div key={index} className="text-xs text-green-300 font-mono mt-1 mb-2">
                 {item.content.split('\n').map((line, i) => (
                   <div key={i}>{line}</div>
                 ))}
@@ -57,19 +61,19 @@ const CommandTerminalContent: React.FC<CommandTerminalContentProps> = ({
         })}
       </div>
       
-      <form onSubmit={handleCommand} className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex items-center">
+      <form onSubmit={handleCommand} className="p-3 border-t border-indigo-500/30 bg-black/80 flex items-center">
         <Input
           type="text"
           value={command}
           onChange={(e) => setCommand(e.target.value)}
           placeholder="Enter command..."
-          className="flex-1 bg-transparent border-flow-accent/30 text-flow-foreground text-sm"
+          className="flex-1 bg-black/50 border-indigo-500/30 text-cyan-100 text-sm font-mono focus:border-cyan-400/70 focus:ring-1 focus:ring-cyan-400/40"
           onKeyPress={handleKeyPress}
         />
         <Button 
           type="submit" 
           size="sm" 
-          className="ml-2 bg-flow-accent hover:bg-flow-accent/80 neon-glow min-w-20"
+          className="ml-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_0_10px_rgba(79,70,229,0.5)] min-w-20"
         >
           <Send className="h-4 w-4 mr-1" />
           Execute

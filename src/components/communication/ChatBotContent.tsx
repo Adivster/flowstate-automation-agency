@@ -41,30 +41,34 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
     <>
       <div 
         ref={chatRef}
-        className="p-4 h-[300px] overflow-y-auto bg-gray-900/80"
+        className="p-4 h-[320px] overflow-y-auto custom-scrollbar"
+        style={{ 
+          backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(17, 24, 39, 0.7), rgba(6, 8, 15, 0.95))',
+          backgroundSize: '100% 100%'
+        }}
       >
         {messages.map((message, index) => (
           <motion.div 
             key={index}
-            className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} mb-3`}
+            className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} mb-4`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
             {message.sender === 'bot' && (
-              <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center mr-2">
-                <Bot className="h-4 w-4 text-indigo-400" />
+              <div className="w-8 h-8 rounded-full bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center mr-2 shadow-[0_0_10px_rgba(79,70,229,0.3)]">
+                <Bot className="h-4 w-4 text-cyan-300" />
               </div>
             )}
             <div 
-              className={`max-w-[80%] px-3 py-2 rounded-lg ${
+              className={`max-w-[80%] px-4 py-3 rounded-2xl ${
                 message.sender === 'user' 
-                  ? 'bg-indigo-500 text-white' 
-                  : 'bg-flow-muted text-flow-foreground'
+                  ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-[0_0_15px_rgba(79,70,229,0.4)]' 
+                  : 'bg-gray-900/80 border border-indigo-500/20 text-cyan-100 shadow-[0_0_10px_rgba(79,70,229,0.2)]'
               }`}
             >
               <div className="text-sm">{message.text}</div>
-              <div className="text-[10px] text-right mt-1 opacity-70">
+              <div className="text-[10px] text-right mt-1.5 opacity-70">
                 {formatTime(message.timestamp)}
               </div>
             </div>
@@ -72,19 +76,19 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
         ))}
       </div>
       
-      <div className="p-3 border-t border-flow-accent/50 bg-black bg-opacity-70 flex items-center">
+      <div className="p-3 border-t border-indigo-500/30 bg-black/80 flex items-center">
         <Input
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder="What can I help you with?"
-          className="flex-1 bg-transparent border-flow-accent/30 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+          className="flex-1 bg-black/50 border-indigo-500/30 rounded-full px-4 py-1.5 text-sm text-cyan-100 focus:border-cyan-400/70 focus:ring-1 focus:ring-cyan-400/40"
         />
         <Button 
-          size="sm" 
           onClick={handleSendMessage}
-          className="ml-2 bg-indigo-500 hover:bg-indigo-600 min-w-10"
+          size="sm" 
+          className="ml-2 bg-indigo-600 hover:bg-indigo-700 min-w-10 rounded-full shadow-[0_0_10px_rgba(79,70,229,0.5)]"
         >
           <Send className="h-4 w-4" />
         </Button>

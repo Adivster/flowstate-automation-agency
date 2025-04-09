@@ -18,13 +18,21 @@ const TerminalHeader: React.FC<TerminalHeaderProps> = ({
   closeTerminal
 }) => {
   return (
-    <div className="flex justify-between items-center p-3 border-b border-flow-accent/50 bg-black/50">
-      <TabsList className="h-8 bg-black/30 border border-flow-accent/20">
-        <TabsTrigger value="command" className="text-xs">
+    <div className="flex justify-between items-center p-3 border-b border-indigo-500/30 bg-black/70">
+      <TabsList className="h-8 bg-black/50 border border-indigo-400/20 rounded-md">
+        <TabsTrigger 
+          value="command" 
+          className={`text-xs ${activeTab === 'command' ? 'text-cyan-300' : 'text-flow-muted-foreground'}`}
+          onClick={() => setActiveTab('command')}
+        >
           <Terminal className="h-3.5 w-3.5 mr-1.5" />
           Command Terminal
         </TabsTrigger>
-        <TabsTrigger value="chat" className="text-xs">
+        <TabsTrigger 
+          value="chat" 
+          className={`text-xs ${activeTab === 'chat' ? 'text-cyan-300' : 'text-flow-muted-foreground'}`}
+          onClick={() => setActiveTab('chat')}
+        >
           <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
           Communication Bot
         </TabsTrigger>
@@ -34,7 +42,7 @@ const TerminalHeader: React.FC<TerminalHeaderProps> = ({
         <Button 
           size="icon" 
           variant="ghost" 
-          className="h-6 w-6 text-flow-muted-foreground hover:text-flow-accent hover:bg-transparent"
+          className="h-6 w-6 text-flow-muted-foreground hover:text-cyan-300 hover:bg-black/30"
           onClick={clearTerminal}
           title="Clear terminal"
         >
@@ -43,7 +51,7 @@ const TerminalHeader: React.FC<TerminalHeaderProps> = ({
         <Button 
           size="icon" 
           variant="ghost" 
-          className="h-6 w-6 text-flow-muted-foreground hover:text-flow-accent hover:bg-transparent"
+          className="h-6 w-6 text-flow-muted-foreground hover:text-cyan-300 hover:bg-black/30"
           onClick={closeTerminal}
           title="Close terminal"
         >
