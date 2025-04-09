@@ -1,4 +1,3 @@
-
 import { Division, ZIndexLayers } from '../types/officeTypes';
 
 // Improved overlap detection with better precision
@@ -121,9 +120,7 @@ export const optimizeLayout = (divisions: Division[], defaultPositions: Record<s
     kb: { x: 10, y: 15 },
     analytics: { x: 60, y: 15 },
     operations: { x: 10, y: 55 },
-    strategy: { x: 60, y: 55 },
-    research: { x: 35, y: 75 }, // Moved research down to avoid overlap
-    lounge: { x: 70, y: 75 }    // Moved lounge to bottom right corner
+    strategy: { x: 60, y: 55 }
   };
   
   // Apply ideal positioning
@@ -239,4 +236,3 @@ export const calculateOptimalPosition = (
   // If no empty cell, return a default position
   return { x: 50, y: 50 };
 };
-

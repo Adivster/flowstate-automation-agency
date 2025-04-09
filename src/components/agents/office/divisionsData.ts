@@ -1,5 +1,5 @@
 
-import { Book, Database, BarChart3, Coffee, TestTube, Cpu } from 'lucide-react';
+import { Book, Database, BarChart3, Cpu } from 'lucide-react';
 import { Division, ZIndexLayers } from '../office/types/officeTypes';
 import { divisionColors } from '@/utils/colorSystem';
 
@@ -59,34 +59,6 @@ export const getDivisions = (t): Division[] => [
     backgroundColor: 'rgba(59, 130, 246, 0.15)',
     borderColor: 'rgba(59, 130, 246, 0.8)',
     zIndex: ZIndexLayers.DIVISION
-  },
-  {
-    id: 'research',
-    name: t('researchDivision'),
-    icon: TestTube,
-    position: {
-      x: 38,
-      y: 38,
-      width: 25,
-      height: 25
-    },
-    backgroundColor: 'rgba(34, 197, 94, 0.15)',
-    borderColor: 'rgba(34, 197, 94, 0.8)',
-    zIndex: ZIndexLayers.DIVISION
-  },
-  {
-    id: 'lounge',
-    name: t('agentLounge'),
-    icon: Coffee,
-    position: {
-      x: 70,
-      y: 38,
-      width: 25,
-      height: 25
-    },
-    backgroundColor: 'rgba(245, 158, 11, 0.15)',
-    borderColor: 'rgba(245, 158, 11, 0.8)',
-    zIndex: ZIndexLayers.DIVISION
   }
 ];
 
@@ -95,7 +67,5 @@ export const defaultDivisionPositions = {
   kb: { x: 20, y: 20 },
   analytics: { x: 55, y: 20 },
   operations: { x: 20, y: 55 },
-  strategy: { x: 55, y: 55 },
-  research: { x: 38, y: 38 },
-  lounge: { x: 70, y: 38 }
+  strategy: { x: 55, y: 55 }
 };
