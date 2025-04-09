@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -101,7 +100,7 @@ const OfficeFloorPlan: React.FC = () => {
     if (!isLoaded) return;
     
     const interval = setInterval(() => {
-      const divs = ['kb', 'analytics', 'operations', 'strategy', 'lounge', 'research'];
+      const divs = ['kb', 'analytics', 'operations', 'strategy'];
       let div1 = divs[Math.floor(Math.random() * divs.length)];
       let div2 = divs[Math.floor(Math.random() * divs.length)];
       while (div1 === div2) {
