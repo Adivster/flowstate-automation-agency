@@ -29,32 +29,8 @@ export const useCommunicationTerminal = () => {
     { sender: 'bot', text: 'Hello! I\'m your agency communication assistant. How can I help you today?', timestamp: new Date() }
   ]);
   
+  // Reference to the terminal wrapper for click detection
   const terminalWrapperRef = useRef<HTMLDivElement>(null);
-
-  // Listen for the custom event to open the terminal
-  useEffect(() => {
-    const handleOpenTerminal = () => {
-      setIsOpen(true);
-    };
-    
-    const handleOpenCommandTerminal = () => {
-      setIsOpen(true);
-      setActiveTab('command');
-    };
-    
-    const handleOpenCommunicationTerminal = () => {
-      setIsOpen(true);
-      setActiveTab('chat');
-    };
-    
-    window.addEventListener('openCommunicationTerminal', handleOpenTerminal);
-    window.addEventListener('openCommandTerminal', handleOpenCommandTerminal);
-    
-    return () => {
-      window.removeEventListener('openCommunicationTerminal', handleOpenTerminal);
-      window.removeEventListener('openCommandTerminal', handleOpenCommandTerminal);
-    };
-  }, []);
 
   // Handle command submission
   const handleCommand = (e: React.FormEvent) => {

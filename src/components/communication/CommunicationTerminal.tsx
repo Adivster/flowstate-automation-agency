@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
@@ -29,24 +29,44 @@ const CommunicationTerminal = () => {
     clearTerminal,
   } = useCommunicationTerminal();
 
-  // Handle outside clicks
+  // Create a separate ref for click detection
+  const clickDetectionRef = useRef<HTMLDivElement>(null);
+
+  // Handle outside clicks - improved implementation
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // Check if the terminal is open and the click target is outside both the terminal and toggle button
       if (
         isOpen && 
-        terminalWrapperRef.current && 
-        !terminalWrapperRef.current.contains(event.target as Node) &&
+        clickDetectionRef.current && 
+        !clickDetectionRef.current.contains(event.target as Node) &&
         !(event.target as Element).closest('.terminal-toggle-btn')
       ) {
         setIsOpen(false);
       }
     };
 
+    // Add the event listener to document
     document.addEventListener('mousedown', handleClickOutside);
+    
+    // Cleanup function to remove event listener
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen, setIsOpen, terminalWrapperRef]);
+  }, [isOpen, setIsOpen]);
+
+  // Custom effect to listen for the communication terminal event
+  useEffect(() => {
+    const handleOpenTerminal = () => {
+      setIsOpen(true);
+    };
+
+    window.addEventListener('openCommunicationTerminal', handleOpenTerminal);
+    
+    return () => {
+      window.removeEventListener('openCommunicationTerminal', handleOpenTerminal);
+    };
+  }, [setIsOpen]);
 
   return (
     <>
@@ -66,7 +86,7 @@ const CommunicationTerminal = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            ref={terminalWrapperRef}
+            ref={clickDetectionRef}
             initial={{ y: 400, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 400, opacity: 0 }}
@@ -85,7 +105,7 @@ const CommunicationTerminal = () => {
                 closeTerminal={() => setIsOpen(false)}
               />
               
-              <div>
+              <div className="max-h-[600px]">
                 {/* Terminal Tab */}
                 <TabsContent value="command" className="m-0 p-0">
                   <CommandTerminalContent
