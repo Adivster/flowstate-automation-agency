@@ -286,6 +286,173 @@ const CommandTerminal = () => {
                         Communication Bot
                       </TabsTrigger>
                     </TabsList>
+                  
+                    <div className="mt-0">
+                      {/* Command Terminal Tab */}
+                      <TabsContent value="command" className="m-0 border-none outline-none">
+                        <div 
+                          ref={terminalRef}
+                          className="h-72 overflow-y-auto p-3 space-y-2 bg-black/20 backdrop-blur-lg custom-scrollbar"
+                        >
+                          {history.map((item, index) => (
+                            <div key={index} className="text-sm">
+                              <div className="flex items-start">
+                                <span className="text-xs text-flow-foreground/50 mr-2 min-w-[70px]">
+                                  {formatTime(item.timestamp)}
+                                </span>
+                                
+                                {item.type === 'input' && (
+                                  <div className="flex-1">
+                                    <span className="text-green-400">{'>'}</span> 
+                                    <span className="text-white ml-1">{item.content}</span>
+                                  </div>
+                                )}
+                                
+                                {item.type === 'output' && (
+                                  <div className="flex-1 whitespace-pre-wrap text-cyan-200">
+                                    {item.content}
+                                  </div>
+                                )}
+                                
+                                {item.type === 'error' && (
+                                  <div className="flex-1 text-red-400">
+                                    {item.content}
+                                  </div>
+                                )}
+                                
+                                {item.type === 'system' && (
+                                  <div className="flex-1 text-yellow-300">
+                                    {item.content}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                          
+                          {isProcessing && (
+                            <div className="flex items-center text-flow-accent animate-pulse">
+                              <span className="text-xs">Processing</span>
+                              <span className="ml-1">...</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <AnimatePresence>
+                          {showExamples && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="border-t border-flow-border/30 overflow-hidden bg-flow-background/60"
+                            >
+                              <div className="p-3">
+                                <div className="text-xs text-flow-foreground/70 mb-2">Example commands:</div>
+                                <div className="flex flex-wrap gap-2">
+                                  {exampleCommands.map((example, index) => (
+                                    <Button
+                                      key={index}
+                                      variant="outline"
+                                      size="sm"
+                                      className="text-xs bg-flow-background/40 border-flow-border/30"
+                                      onClick={() => handleExampleClick(example.command)}
+                                    >
+                                      {example.label}
+                                    </Button>
+                                  ))}
+                                </div>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                        
+                        <form onSubmit={handleSubmit} className="flex p-3 border-t border-flow-border/30 bg-flow-background/40">
+                          <div className="flex-grow relative">
+                            <input
+                              type="text"
+                              ref={inputRef}
+                              value={input}
+                              onChange={(e) => setInput(e.target.value)}
+                              placeholder={t('typeCommand')}
+                              className="w-full bg-transparent text-flow-foreground border-none outline-none text-sm placeholder:text-flow-foreground/50"
+                              onKeyPress={handleKeyPress}
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 rounded-full absolute right-0 top-1/2 -translate-y-1/2 text-flow-foreground/50 hover:text-flow-accent"
+                              onClick={() => setShowExamples(!showExamples)}
+                            >
+                              <Code className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                          
+                          <Button
+                            type="submit"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 rounded-full text-flow-accent hover:bg-flow-accent/10"
+                            disabled={isProcessing}
+                          >
+                            <Send className="h-4 w-4" />
+                          </Button>
+                        </form>
+                      </TabsContent>
+                      
+                      {/* Chat Bot Tab */}
+                      <TabsContent value="chat" className="m-0 border-none outline-none">
+                        <div 
+                          ref={chatRef}
+                          className="h-72 overflow-y-auto p-3 space-y-2 bg-black/20 backdrop-blur-lg custom-scrollbar"
+                        >
+                          {messages.map((message, index) => (
+                            <motion.div 
+                              key={index}
+                              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} mb-3`}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              {message.sender === 'bot' && (
+                                <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center mr-2">
+                                  <Bot className="h-4 w-4 text-indigo-400" />
+                                </div>
+                              )}
+                              <div 
+                                className={`max-w-[80%] px-3 py-2 rounded-lg ${
+                                  message.sender === 'user' 
+                                    ? 'bg-indigo-500 text-white' 
+                                    : 'bg-flow-muted text-flow-foreground'
+                                }`}
+                              >
+                                <div className="text-sm">{message.text}</div>
+                                <div className="text-[10px] text-right mt-1 opacity-70">
+                                  {formatTime(message.timestamp)}
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                        
+                        <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex p-3 border-t border-flow-border/30 bg-flow-background/40">
+                          <Input
+                            type="text"
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            placeholder="What can I help you with?"
+                            className="flex-1 bg-transparent border-flow-accent/30 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                          />
+                          <Button 
+                            type="submit"
+                            size="sm" 
+                            className="ml-2 bg-indigo-500 hover:bg-indigo-600 min-w-10"
+                          >
+                            <Send className="h-4 w-4" />
+                          </Button>
+                        </form>
+                      </TabsContent>
+                    </div>
                   </Tabs>
                   
                   <div className="flex items-center gap-2 ml-2">
@@ -308,169 +475,6 @@ const CommandTerminal = () => {
                     </Button>
                   </div>
                 </div>
-                
-                <TabsContent value="command" className="m-0 border-none outline-none">
-                  <div 
-                    ref={terminalRef}
-                    className="h-72 overflow-y-auto p-3 space-y-2 bg-black/20 backdrop-blur-lg custom-scrollbar"
-                  >
-                    {history.map((item, index) => (
-                      <div key={index} className="text-sm">
-                        <div className="flex items-start">
-                          <span className="text-xs text-flow-foreground/50 mr-2 min-w-[70px]">
-                            {formatTime(item.timestamp)}
-                          </span>
-                          
-                          {item.type === 'input' && (
-                            <div className="flex-1">
-                              <span className="text-green-400">{'>'}</span> 
-                              <span className="text-white ml-1">{item.content}</span>
-                            </div>
-                          )}
-                          
-                          {item.type === 'output' && (
-                            <div className="flex-1 whitespace-pre-wrap text-cyan-200">
-                              {item.content}
-                            </div>
-                          )}
-                          
-                          {item.type === 'error' && (
-                            <div className="flex-1 text-red-400">
-                              {item.content}
-                            </div>
-                          )}
-                          
-                          {item.type === 'system' && (
-                            <div className="flex-1 text-yellow-300">
-                              {item.content}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                    
-                    {isProcessing && (
-                      <div className="flex items-center text-flow-accent animate-pulse">
-                        <span className="text-xs">Processing</span>
-                        <span className="ml-1">...</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <AnimatePresence>
-                    {showExamples && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="border-t border-flow-border/30 overflow-hidden bg-flow-background/60"
-                      >
-                        <div className="p-3">
-                          <div className="text-xs text-flow-foreground/70 mb-2">Example commands:</div>
-                          <div className="flex flex-wrap gap-2">
-                            {exampleCommands.map((example, index) => (
-                              <Button
-                                key={index}
-                                variant="outline"
-                                size="sm"
-                                className="text-xs bg-flow-background/40 border-flow-border/30"
-                                onClick={() => handleExampleClick(example.command)}
-                              >
-                                {example.label}
-                              </Button>
-                            ))}
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                  
-                  <form onSubmit={handleSubmit} className="flex p-3 border-t border-flow-border/30 bg-flow-background/40">
-                    <div className="flex-grow relative">
-                      <input
-                        type="text"
-                        ref={inputRef}
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder={t('typeCommand')}
-                        className="w-full bg-transparent text-flow-foreground border-none outline-none text-sm placeholder:text-flow-foreground/50"
-                        onKeyPress={handleKeyPress}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 rounded-full absolute right-0 top-1/2 -translate-y-1/2 text-flow-foreground/50 hover:text-flow-accent"
-                        onClick={() => setShowExamples(!showExamples)}
-                      >
-                        <Code className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                    
-                    <Button
-                      type="submit"
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 rounded-full text-flow-accent hover:bg-flow-accent/10"
-                      disabled={isProcessing}
-                    >
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </form>
-                </TabsContent>
-                
-                <TabsContent value="chat" className="m-0 border-none outline-none">
-                  <div 
-                    ref={chatRef}
-                    className="h-72 overflow-y-auto p-3 space-y-2 bg-black/20 backdrop-blur-lg custom-scrollbar"
-                  >
-                    {messages.map((message, index) => (
-                      <motion.div 
-                        key={index}
-                        className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} mb-3`}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        {message.sender === 'bot' && (
-                          <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center mr-2">
-                            <Bot className="h-4 w-4 text-indigo-400" />
-                          </div>
-                        )}
-                        <div 
-                          className={`max-w-[80%] px-3 py-2 rounded-lg ${
-                            message.sender === 'user' 
-                              ? 'bg-indigo-500 text-white' 
-                              : 'bg-flow-muted text-flow-foreground'
-                          }`}
-                        >
-                          <div className="text-sm">{message.text}</div>
-                          <div className="text-[10px] text-right mt-1 opacity-70">
-                            {formatTime(message.timestamp)}
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                  
-                  <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex p-3 border-t border-flow-border/30 bg-flow-background/40">
-                    <Input
-                      type="text"
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="What can I help you with?"
-                      className="flex-1 bg-transparent border-flow-accent/30 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-                    />
-                    <Button 
-                      type="submit"
-                      size="sm" 
-                      className="ml-2 bg-indigo-500 hover:bg-indigo-600 min-w-10"
-                    >
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </form>
-                </TabsContent>
               </div>
             </GlassMorphism>
           </motion.div>
