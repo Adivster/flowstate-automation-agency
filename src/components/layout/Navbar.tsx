@@ -21,7 +21,7 @@ export const Navbar: React.FC<NavbarProps> = ({ className }) => {
     { label: t('dashboard'), href: '/' },
     { label: t('agents'), href: '/agents' },
     { label: t('workflows'), href: '/workflows' },
-    { label: t('tasks'), href: '/tasks' },
+    { label: t('Tasks'), href: '/tasks' }, // Capitalized "Tasks"
     { label: t('knowledge'), href: '/knowledge' },
     { label: t('analytics'), href: '/analytics' },
     { label: t('courses'), href: '/courses' },
