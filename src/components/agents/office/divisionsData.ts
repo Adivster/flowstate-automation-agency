@@ -1,6 +1,6 @@
 
 import { Book, Database, BarChart3, Cpu } from 'lucide-react';
-import { Division, ZIndexLayers } from '../office/types/officeTypes';
+import { Division, ZIndexLayers } from './types/officeTypes';
 import { divisionColors } from '@/utils/colorSystem';
 
 export const getDivisions = (t): Division[] => [
@@ -9,13 +9,13 @@ export const getDivisions = (t): Division[] => [
     name: t('knowledgeBase'),
     icon: Book,
     position: {
-      x: 20,
-      y: 20,
-      width: 25,
-      height: 25
+      x: 10,
+      y: 15,
+      width: 30,
+      height: 30
     },
-    backgroundColor: 'rgba(99, 102, 241, 0.15)',
-    borderColor: 'rgba(99, 102, 241, 0.8)',
+    backgroundColor: divisionColors.kb.bg,
+    borderColor: divisionColors.kb.border,
     zIndex: ZIndexLayers.DIVISION
   },
   {
@@ -23,13 +23,13 @@ export const getDivisions = (t): Division[] => [
     name: t('analyticsDivision'),
     icon: BarChart3,
     position: {
-      x: 55,
-      y: 20,
-      width: 25,
-      height: 25
+      x: 60,
+      y: 15,
+      width: 30,
+      height: 30
     },
-    backgroundColor: 'rgba(234, 179, 8, 0.15)',
-    borderColor: 'rgba(234, 179, 8, 0.8)',
+    backgroundColor: divisionColors.analytics.bg,
+    borderColor: divisionColors.analytics.border,
     zIndex: ZIndexLayers.DIVISION
   },
   {
@@ -37,13 +37,13 @@ export const getDivisions = (t): Division[] => [
     name: t('operationsDivision'),
     icon: Cpu,
     position: {
-      x: 20,
+      x: 10,
       y: 55,
-      width: 25,
-      height: 25
+      width: 30,
+      height: 30
     },
-    backgroundColor: 'rgba(168, 85, 247, 0.15)',
-    borderColor: 'rgba(168, 85, 247, 0.8)',
+    backgroundColor: divisionColors.operations.bg,
+    borderColor: divisionColors.operations.border,
     zIndex: ZIndexLayers.DIVISION
   },
   {
@@ -51,21 +51,21 @@ export const getDivisions = (t): Division[] => [
     name: t('strategyDivision'),
     icon: Database,
     position: {
-      x: 55,
+      x: 60,
       y: 55,
-      width: 25,
-      height: 25
+      width: 30,
+      height: 30
     },
-    backgroundColor: 'rgba(59, 130, 246, 0.15)',
-    borderColor: 'rgba(59, 130, 246, 0.8)',
+    backgroundColor: divisionColors.strategy.bg,
+    borderColor: divisionColors.strategy.border,
     zIndex: ZIndexLayers.DIVISION
   }
 ];
 
 // Default/initial positions for divisions to allow reset functionality
 export const defaultDivisionPositions = {
-  kb: { x: 20, y: 20 },
-  analytics: { x: 55, y: 20 },
-  operations: { x: 20, y: 55 },
-  strategy: { x: 55, y: 55 }
+  kb: { x: 10, y: 15 },
+  analytics: { x: 60, y: 15 },
+  operations: { x: 10, y: 55 },
+  strategy: { x: 60, y: 55 }
 };

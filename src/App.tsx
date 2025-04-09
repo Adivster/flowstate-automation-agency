@@ -16,7 +16,6 @@ import Courses from "./pages/Courses";
 import Tasks from "./pages/Tasks";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { TaskProvider } from "./contexts/TaskContext";
-import CommunicationTerminal from "./components/communication/CommunicationTerminal";
 import CommandTerminal from "./components/agents/CommandTerminal";
 import { useEffect } from "react";
 import { useToast } from "./hooks/use-toast";
@@ -75,7 +74,6 @@ const App = () => (
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-                <CommunicationTerminal />
                 <CommandTerminal />
               </BrowserRouter>
             </TooltipProvider>
