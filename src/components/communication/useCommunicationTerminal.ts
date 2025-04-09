@@ -29,9 +29,6 @@ export const useCommunicationTerminal = () => {
     { sender: 'bot', text: 'Hello! I\'m your agency communication assistant. How can I help you today?', timestamp: new Date() }
   ]);
   
-  // Reference to the terminal wrapper for click detection
-  const terminalWrapperRef = useRef<HTMLDivElement>(null);
-
   // Handle command submission
   const handleCommand = (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,7 +138,6 @@ export const useCommunicationTerminal = () => {
     newMessage,
     setNewMessage,
     messages,
-    terminalWrapperRef,
     handleCommand,
     handleSendMessage,
     handleKeyPress,

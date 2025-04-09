@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { Terminal, X } from 'lucide-react';
+import { Terminal } from 'lucide-react';
 import { useCommunicationTerminal } from './useCommunicationTerminal';
 import TerminalHeader from './TerminalHeader';
 import CommandTerminalContent from './CommandTerminalContent';
@@ -21,7 +21,6 @@ const CommunicationTerminal = () => {
     newMessage,
     setNewMessage,
     messages,
-    terminalWrapperRef,
     handleCommand,
     handleSendMessage,
     handleKeyPress,
@@ -29,33 +28,34 @@ const CommunicationTerminal = () => {
     clearTerminal,
   } = useCommunicationTerminal();
 
-  // Create a separate ref for click detection
-  const clickDetectionRef = useRef<HTMLDivElement>(null);
+  // Create a separate ref for the terminal content
+  const terminalContentRef = useRef<HTMLDivElement>(null);
 
   // Handle outside clicks - improved implementation
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Check if the terminal is open and the click target is outside both the terminal and toggle button
+      // Check if terminal is open and click was outside terminal and not on toggle button
+      const target = event.target as Element;
+      
       if (
         isOpen && 
-        clickDetectionRef.current && 
-        !clickDetectionRef.current.contains(event.target as Node) &&
-        !(event.target as Element).closest('.terminal-toggle-btn')
+        terminalContentRef.current && 
+        !terminalContentRef.current.contains(target) && 
+        !target.closest('.terminal-toggle-btn')
       ) {
         setIsOpen(false);
       }
     };
 
-    // Add the event listener to document
+    // Add event listener for mouse clicks
     document.addEventListener('mousedown', handleClickOutside);
     
-    // Cleanup function to remove event listener
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen, setIsOpen]);
 
-  // Custom effect to listen for the communication terminal event
+  // Custom event listener to open terminal
   useEffect(() => {
     const handleOpenTerminal = () => {
       setIsOpen(true);
@@ -78,7 +78,7 @@ const CommunicationTerminal = () => {
           onClick={() => setIsOpen(!isOpen)}
           className="terminal-toggle-btn rounded-full h-12 w-12 shadow-lg bg-black/70 border border-indigo-500/50 hover:bg-indigo-900/30 hover:border-indigo-400/80 transition-all duration-300"
         >
-          {isOpen ? <X className="h-5 w-5 text-cyan-300" /> : <Terminal className="h-5 w-5 text-cyan-300" />}
+          <Terminal className="h-5 w-5 text-cyan-300" />
         </Button>
       </div>
 
@@ -86,7 +86,7 @@ const CommunicationTerminal = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            ref={clickDetectionRef}
+            ref={terminalContentRef}
             initial={{ y: 400, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 400, opacity: 0 }}

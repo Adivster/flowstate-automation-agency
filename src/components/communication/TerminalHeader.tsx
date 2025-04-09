@@ -38,20 +38,20 @@ const TerminalHeader: React.FC<TerminalHeaderProps> = ({
         </TabsTrigger>
       </TabsList>
       
-      <div className="flex gap-2">
+      <div className="flex gap-1">
         <Button 
-          size="icon" 
+          size="sm" 
           variant="ghost" 
-          className="h-6 w-6 text-flow-muted-foreground hover:text-cyan-300 hover:bg-black/30"
+          className="h-7 w-7 rounded-md text-gray-400 hover:text-cyan-300 hover:bg-black/30 p-0 flex items-center justify-center"
           onClick={clearTerminal}
           title="Clear terminal"
         >
           <RotateCcw className="h-3.5 w-3.5" />
         </Button>
         <Button 
-          size="icon" 
+          size="sm" 
           variant="ghost" 
-          className="h-6 w-6 text-flow-muted-foreground hover:text-cyan-300 hover:bg-black/30"
+          className="h-7 w-7 rounded-md text-gray-400 hover:text-cyan-300 hover:bg-black/30 p-0 flex items-center justify-center"
           onClick={closeTerminal}
           title="Close terminal"
         >
