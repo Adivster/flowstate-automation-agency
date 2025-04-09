@@ -75,7 +75,7 @@ export const fixOverlaps = (divisions: Division[], positions: Record<string, {x:
           );
           
           // Use a larger push amount to ensure at least 2 grid squares (10%) spacing
-          const pushAmount = Math.max(overlapX, overlapY) + 10;
+          const pushAmount = Math.max(overlapX, overlapY) + 15; // Increased from 10 to 15
           
           // Adjust position along the axis with smaller overlap
           if (overlapX <= overlapY) {
@@ -122,8 +122,8 @@ export const optimizeLayout = (divisions: Division[], defaultPositions: Record<s
     analytics: { x: 60, y: 15 },
     operations: { x: 10, y: 55 },
     strategy: { x: 60, y: 55 },
-    research: { x: 35, y: 35 },
-    lounge: { x: 78, y: 35 }
+    research: { x: 35, y: 75 }, // Moved research down to avoid overlap
+    lounge: { x: 70, y: 75 }    // Moved lounge to bottom right corner
   };
   
   // Apply ideal positioning

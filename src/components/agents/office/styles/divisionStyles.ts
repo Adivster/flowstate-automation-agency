@@ -36,7 +36,7 @@ export const getDivisionColors = (divisionId: string): DivisionStyle => {
       glow: 'rgba(245, 158, 11, 0.4)',
       pattern: 'bg-gradient-to-br from-amber-500/10 to-amber-700/10'
     },
-    innovation: {
+    research: {
       bg: 'bg-cyan-500/20',
       border: 'border-cyan-500/50',
       shadow: 'shadow-cyan-500/20',
@@ -44,13 +44,13 @@ export const getDivisionColors = (divisionId: string): DivisionStyle => {
       glow: 'rgba(6, 182, 212, 0.4)',
       pattern: 'bg-gradient-to-br from-cyan-500/10 to-cyan-700/10'
     },
-    security: {
-      bg: 'bg-red-500/20',
-      border: 'border-red-500/50',
-      shadow: 'shadow-red-500/20',
-      text: 'text-red-500',
-      glow: 'rgba(239, 68, 68, 0.4)',
-      pattern: 'bg-gradient-to-br from-red-500/10 to-red-700/10'
+    lounge: {
+      bg: 'bg-pink-500/20',      // Changed from security/red to pink for lounge
+      border: 'border-pink-500/50',
+      shadow: 'shadow-pink-500/20',
+      text: 'text-pink-500',
+      glow: 'rgba(236, 72, 153, 0.4)',
+      pattern: 'bg-gradient-to-br from-pink-500/10 to-pink-700/10'
     }
   };
   

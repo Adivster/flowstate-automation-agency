@@ -9,7 +9,7 @@ export const getDivisions = (t): Division[] => [
     name: t('knowledgeBase'),
     icon: Book,
     position: {
-      x: 15,
+      x: 10,
       y: 15,
       width: 30,
       height: 30
@@ -23,7 +23,7 @@ export const getDivisions = (t): Division[] => [
     name: t('analyticsDivision'),
     icon: BarChart3,
     position: {
-      x: 55,
+      x: 60,
       y: 15,
       width: 30,
       height: 30
@@ -37,7 +37,7 @@ export const getDivisions = (t): Division[] => [
     name: t('operationsDivision'),
     icon: Cpu,
     position: {
-      x: 15,
+      x: 10,
       y: 55,
       width: 30,
       height: 30
@@ -51,7 +51,7 @@ export const getDivisions = (t): Division[] => [
     name: t('strategyDivision'),
     icon: Database,
     position: {
-      x: 55,
+      x: 60,
       y: 55,
       width: 30,
       height: 30
@@ -66,7 +66,7 @@ export const getDivisions = (t): Division[] => [
     icon: TestTube,
     position: {
       x: 35,
-      y: 35,
+      y: 75,  // Moved research division down
       width: 30,
       height: 30
     },
@@ -80,7 +80,7 @@ export const getDivisions = (t): Division[] => [
     icon: Coffee,
     position: {
       x: 70,
-      y: 35,
+      y: 75,  // Moved agent lounge to bottom right
       width: 20,
       height: 30
     },
@@ -92,10 +92,10 @@ export const getDivisions = (t): Division[] => [
 
 // Default/initial positions for divisions to allow reset functionality
 export const defaultDivisionPositions = {
-  kb: { x: 15, y: 15 },
-  analytics: { x: 55, y: 15 },
-  operations: { x: 15, y: 55 },
-  strategy: { x: 55, y: 55 },
-  research: { x: 35, y: 35 },
-  lounge: { x: 70, y: 35 }
+  kb: { x: 10, y: 15 },
+  analytics: { x: 60, y: 15 },
+  operations: { x: 10, y: 55 },
+  strategy: { x: 60, y: 55 },
+  research: { x: 35, y: 75 }, // Updated position
+  lounge: { x: 70, y: 75 }    // Updated position
 };
