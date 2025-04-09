@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Terminal, X, Send, Download, RotateCcw, Plus, Code, MessageCircle, ChevronDown, Bot } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -9,7 +8,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 
-// This is a refactored version of CommandTerminal with real-time updates
 const CommandTerminal = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState<'command' | 'chat'>('command');
@@ -19,7 +17,6 @@ const CommandTerminal = () => {
   const chatRef = useRef<HTMLDivElement>(null);
   const terminalContentRef = useRef<HTMLDivElement>(null);
   
-  // Command terminal state
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<Array<{type: 'input' | 'output' | 'error' | 'system', content: string, timestamp: Date}>>([
     { type: 'system', content: 'Terminal initialized. Connected to agency network.', timestamp: new Date() }
@@ -28,7 +25,6 @@ const CommandTerminal = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   
-  // Chat bot state
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState<{ sender: 'user' | 'bot', text: string, timestamp: Date }[]>([
     { sender: 'bot', text: 'Hello! I\'m your agency communication assistant. How can I help you today?', timestamp: new Date() }
@@ -81,7 +77,6 @@ const CommandTerminal = () => {
       }
     }
     
-    // Scroll to bottom when history/messages change
     if (terminalRef.current && activeTab === 'command') {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
@@ -90,10 +85,8 @@ const CommandTerminal = () => {
     }
   }, [isVisible, history, messages, activeTab]);
   
-  // Handle outside clicks - improved implementation
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Check if terminal is open and click was outside terminal and not on toggle button
       const target = event.target as Element;
       
       if (
@@ -106,7 +99,6 @@ const CommandTerminal = () => {
       }
     };
 
-    // Add event listener for mouse clicks
     document.addEventListener('mousedown', handleClickOutside);
     
     return () => {
@@ -114,17 +106,14 @@ const CommandTerminal = () => {
     };
   }, [isVisible, setIsVisible]);
   
-  // Handle command submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
     
-    // Add input to history
     setHistory(prev => [...prev, { type: 'input', content: input, timestamp: new Date() }]);
     setIsProcessing(true);
     setShowExamples(false);
     
-    // Process the command - this would connect to an actual API in a real app
     setTimeout(() => {
       processCommand(input);
       setInput('');
@@ -132,15 +121,12 @@ const CommandTerminal = () => {
     }, 300);
   };
 
-  // Handle chat message submission
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
     
-    // Add user message
     setMessages(prev => [...prev, { sender: 'user', text: newMessage, timestamp: new Date() }]);
     setNewMessage('');
     
-    // Simulate bot response after a delay
     setTimeout(() => {
       const botResponses = [
         "I'll connect you with the appropriate agent team right away.",
@@ -176,7 +162,6 @@ const CommandTerminal = () => {
   const processCommand = (cmd: string) => {
     const lowerCmd = cmd.toLowerCase().trim();
     
-    // Simple command processing logic
     if (lowerCmd.startsWith('help')) {
       addOutput('Available commands: help, status, list agents, connect [agent name], deploy [agent type], create task "[description]" [attributes], restart');
     } 
@@ -199,7 +184,6 @@ const CommandTerminal = () => {
       if (agentName) {
         addOutput(`Establishing secure connection to ${agentName}...`);
         
-        // Simulate a connection process
         setTimeout(() => {
           addOutput(`Connection established. Agent ${agentName} ready for communication.`);
           toast({
@@ -217,7 +201,6 @@ const CommandTerminal = () => {
       if (agentType) {
         addOutput(`Initiating deployment sequence for ${agentType}...`);
         
-        // Simulate deployment
         setTimeout(() => {
           addOutput(`Allocating resources for ${agentType}...`);
           setTimeout(() => {
@@ -260,7 +243,6 @@ const CommandTerminal = () => {
       const serviceName = cmd.substring(7).trim() || 'system';
       addOutput(`Restarting ${serviceName}...`);
       
-      // Simulate restart
       setTimeout(() => {
         addOutput(`${serviceName} successfully restarted.`);
       }, 2000);
@@ -298,211 +280,213 @@ const CommandTerminal = () => {
             transition={{ type: 'spring', damping: 20 }}
             className="fixed bottom-4 right-4 w-full max-w-lg z-50"
           >
-            <GlassMorphism intensity="medium" className="border border-flow-accent/30 rounded-lg overflow-hidden">
-              <div className="bg-flow-background/80 backdrop-blur-lg">
-                <div className="p-3 border-b border-flow-border/30 flex justify-between items-center">
-                  <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'command' | 'chat')} className="flex-1">
-                    <TabsList className="h-8 bg-flow-background/30 border border-flow-border/50">
-                      <TabsTrigger value="command" className="text-xs flex items-center">
-                        <Terminal className="h-3.5 w-3.5 mr-1.5" />
-                        Command Terminal
-                      </TabsTrigger>
-                      <TabsTrigger value="chat" className="text-xs flex items-center">
-                        <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
-                        Communication Bot
-                      </TabsTrigger>
-                    </TabsList>
-                  
-                    <div className="mt-0">
-                      {/* Command Terminal Tab */}
-                      <TabsContent value="command" className="m-0 border-none outline-none">
-                        <div 
-                          ref={terminalRef}
-                          className="h-72 overflow-y-auto p-3 space-y-2 bg-black/20 backdrop-blur-lg custom-scrollbar"
-                        >
-                          {history.map((item, index) => (
-                            <div key={index} className="text-sm">
-                              <div className="flex items-start">
-                                <span className="text-xs text-flow-foreground/50 mr-2 min-w-[70px]">
-                                  {formatTime(item.timestamp)}
-                                </span>
-                                
-                                {item.type === 'input' && (
-                                  <div className="flex-1">
-                                    <span className="text-green-400">{'>'}</span> 
-                                    <span className="text-white ml-1">{item.content}</span>
-                                  </div>
-                                )}
-                                
-                                {item.type === 'output' && (
-                                  <div className="flex-1 whitespace-pre-wrap text-cyan-200">
-                                    {item.content}
-                                  </div>
-                                )}
-                                
-                                {item.type === 'error' && (
-                                  <div className="flex-1 text-red-400">
-                                    {item.content}
-                                  </div>
-                                )}
-                                
-                                {item.type === 'system' && (
-                                  <div className="flex-1 text-yellow-300">
-                                    {item.content}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-                          
-                          {isProcessing && (
-                            <div className="flex items-center text-flow-accent animate-pulse">
-                              <span className="text-xs">Processing</span>
-                              <span className="ml-1">...</span>
-                            </div>
-                          )}
-                        </div>
-                        
-                        <AnimatePresence>
-                          {showExamples && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: 'auto', opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              className="border-t border-flow-border/30 overflow-hidden bg-flow-background/60"
-                            >
-                              <div className="p-3">
-                                <div className="text-xs text-flow-foreground/70 mb-2">Example commands:</div>
-                                <div className="flex flex-wrap gap-2">
-                                  {exampleCommands.map((example, index) => (
-                                    <Button
-                                      key={index}
-                                      variant="outline"
-                                      size="sm"
-                                      className="text-xs bg-flow-background/40 border-flow-border/30"
-                                      onClick={() => handleExampleClick(example.command)}
-                                    >
-                                      {example.label}
-                                    </Button>
-                                  ))}
+            <div className="rounded-lg overflow-hidden shadow-[0_0_20px_rgba(139,92,246,0.5)] border border-indigo-500/60 animate-glow-pulse">
+              <GlassMorphism intensity="medium" className="bg-flow-background/80 backdrop-blur-lg">
+                <div className="bg-black/80 backdrop-blur-md">
+                  <div className="p-3 border-b border-indigo-500/30 flex justify-between items-center">
+                    <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'command' | 'chat')} className="flex-1">
+                      <TabsList className="h-8 bg-black/50 border border-indigo-400/20 rounded-md">
+                        <TabsTrigger value="command" className="text-xs flex items-center">
+                          <Terminal className="h-3.5 w-3.5 mr-1.5" />
+                          Command Terminal
+                        </TabsTrigger>
+                        <TabsTrigger value="chat" className="text-xs flex items-center">
+                          <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
+                          Communication Bot
+                        </TabsTrigger>
+                      </TabsList>
+                    
+                      <div className="mt-0">
+                        <TabsContent value="command" className="m-0 border-none outline-none">
+                          <div 
+                            ref={terminalRef}
+                            className="h-72 overflow-y-auto p-3 space-y-2 bg-black/40 backdrop-blur-lg custom-scrollbar"
+                          >
+                            {history.map((item, index) => (
+                              <div key={index} className="text-sm">
+                                <div className="flex items-start">
+                                  <span className="text-xs text-flow-foreground/50 mr-2 min-w-[70px]">
+                                    {formatTime(item.timestamp)}
+                                  </span>
+                                  
+                                  {item.type === 'input' && (
+                                    <div className="flex-1">
+                                      <span className="text-green-400">{'>'}</span> 
+                                      <span className="text-white ml-1">{item.content}</span>
+                                    </div>
+                                  )}
+                                  
+                                  {item.type === 'output' && (
+                                    <div className="flex-1 whitespace-pre-wrap text-cyan-200">
+                                      {item.content}
+                                    </div>
+                                  )}
+                                  
+                                  {item.type === 'error' && (
+                                    <div className="flex-1 text-red-400">
+                                      {item.content}
+                                    </div>
+                                  )}
+                                  
+                                  {item.type === 'system' && (
+                                    <div className="flex-1 text-yellow-300">
+                                      {item.content}
+                                    </div>
+                                  )}
                                 </div>
                               </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                        
-                        <form onSubmit={handleSubmit} className="flex p-3 border-t border-flow-border/30 bg-flow-background/40">
-                          <div className="flex-grow relative">
-                            <input
-                              type="text"
-                              ref={inputRef}
-                              value={input}
-                              onChange={(e) => setInput(e.target.value)}
-                              placeholder={t('typeCommand')}
-                              className="w-full bg-transparent text-flow-foreground border-none outline-none text-sm placeholder:text-flow-foreground/50"
-                              onKeyPress={handleKeyPress}
-                            />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7 rounded-full absolute right-0 top-1/2 -translate-y-1/2 text-flow-foreground/50 hover:text-flow-accent"
-                              onClick={() => setShowExamples(!showExamples)}
-                            >
-                              <Code className="h-3.5 w-3.5" />
-                            </Button>
+                            ))}
+                            
+                            {isProcessing && (
+                              <div className="flex items-center text-flow-accent animate-pulse">
+                                <span className="text-xs">Processing</span>
+                                <span className="ml-1">...</span>
+                              </div>
+                            )}
                           </div>
                           
-                          <Button
-                            type="submit"
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 rounded-full text-flow-accent hover:bg-flow-accent/10"
-                            disabled={isProcessing}
-                          >
-                            <Send className="h-4 w-4" />
-                          </Button>
-                        </form>
-                      </TabsContent>
-                      
-                      {/* Chat Bot Tab */}
-                      <TabsContent value="chat" className="m-0 border-none outline-none">
-                        <div 
-                          ref={chatRef}
-                          className="h-72 overflow-y-auto p-3 space-y-2 bg-black/20 backdrop-blur-lg custom-scrollbar"
-                        >
-                          {messages.map((message, index) => (
-                            <motion.div 
-                              key={index}
-                              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} mb-3`}
-                              initial={{ opacity: 0, y: 10 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ duration: 0.3 }}
-                            >
-                              {message.sender === 'bot' && (
-                                <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center mr-2">
-                                  <Bot className="h-4 w-4 text-indigo-400" />
-                                </div>
-                              )}
-                              <div 
-                                className={`max-w-[80%] px-3 py-2 rounded-lg ${
-                                  message.sender === 'user' 
-                                    ? 'bg-indigo-500 text-white' 
-                                    : 'bg-flow-muted text-flow-foreground'
-                                }`}
+                          <AnimatePresence>
+                            {showExamples && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="border-t border-flow-border/30 overflow-hidden bg-flow-background/60"
                               >
-                                <div className="text-sm">{message.text}</div>
-                                <div className="text-[10px] text-right mt-1 opacity-70">
-                                  {formatTime(message.timestamp)}
+                                <div className="p-3">
+                                  <div className="text-xs text-flow-foreground/70 mb-2">Example commands:</div>
+                                  <div className="flex flex-wrap gap-2">
+                                    {exampleCommands.map((example, index) => (
+                                      <Button
+                                        key={index}
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-xs bg-flow-background/40 border-flow-border/30"
+                                        onClick={() => handleExampleClick(example.command)}
+                                      >
+                                        {example.label}
+                                      </Button>
+                                    ))}
+                                  </div>
                                 </div>
-                              </div>
-                            </motion.div>
-                          ))}
-                        </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                          
+                          <form onSubmit={handleSubmit} className="flex p-3 border-t border-indigo-500/30 bg-black/30">
+                            <div className="flex-grow relative">
+                              <input
+                                type="text"
+                                ref={inputRef}
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                placeholder={t('typeCommand')}
+                                className="w-full bg-transparent text-flow-foreground border-none outline-none text-sm placeholder:text-flow-foreground/50"
+                                onKeyPress={handleKeyPress}
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 rounded-full absolute right-0 top-1/2 -translate-y-1/2 text-flow-foreground/50 hover:text-indigo-400"
+                                onClick={() => setShowExamples(!showExamples)}
+                              >
+                                <Code className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                            
+                            <Button
+                              type="submit"
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 rounded-full text-indigo-400 hover:bg-indigo-500/10"
+                              disabled={isProcessing}
+                            >
+                              <Send className="h-4 w-4" />
+                            </Button>
+                          </form>
+                        </TabsContent>
                         
-                        <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex p-3 border-t border-flow-border/30 bg-flow-background/40">
-                          <Input
-                            type="text"
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            onKeyPress={handleKeyPress}
-                            placeholder="What can I help you with?"
-                            className="flex-1 bg-transparent border-flow-accent/30 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-                          />
-                          <Button 
-                            type="submit"
-                            size="sm" 
-                            className="ml-2 bg-indigo-500 hover:bg-indigo-600 min-w-10"
+                        <TabsContent value="chat" className="m-0 border-none outline-none">
+                          <div 
+                            ref={chatRef}
+                            className="h-72 overflow-y-auto p-3 space-y-2 bg-black/40 backdrop-blur-lg custom-scrollbar"
                           >
-                            <Send className="h-4 w-4" />
-                          </Button>
-                        </form>
-                      </TabsContent>
-                    </div>
-                  </Tabs>
-                  
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 rounded-md text-gray-400 hover:text-cyan-300 hover:bg-black/30 p-0 flex items-center justify-center"
-                      onClick={clearTerminal}
-                    >
-                      <RotateCcw className="h-3.5 w-3.5" />
-                    </Button>
+                            {messages.map((message, index) => (
+                              <motion.div 
+                                key={index}
+                                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} mb-3`}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3 }}
+                              >
+                                {message.sender === 'bot' && (
+                                  <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center mr-2">
+                                    <Bot className="h-4 w-4 text-indigo-400" />
+                                  </div>
+                                )}
+                                <div 
+                                  className={`max-w-[80%] px-3 py-2 rounded-lg ${
+                                    message.sender === 'user' 
+                                      ? 'bg-indigo-600/90 text-white' 
+                                      : 'bg-black/60 border border-indigo-500/40 text-cyan-100'
+                                  }`}
+                                >
+                                  <div className="text-sm">{message.text}</div>
+                                  <div className="text-[10px] text-right mt-1 opacity-70">
+                                    {formatTime(message.timestamp)}
+                                  </div>
+                                </div>
+                              </motion.div>
+                            ))}
+                          </div>
+                          
+                          <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex p-3 border-t border-indigo-500/30 bg-black/30">
+                            <Input
+                              type="text"
+                              value={newMessage}
+                              onChange={(e) => setNewMessage(e.target.value)}
+                              onKeyPress={handleKeyPress}
+                              placeholder="What can I help you with?"
+                              className="flex-1 bg-transparent border-indigo-500/40 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                            />
+                            <Button 
+                              type="submit"
+                              size="sm" 
+                              className="ml-2 bg-indigo-600 hover:bg-indigo-700 min-w-10"
+                            >
+                              <Send className="h-4 w-4" />
+                            </Button>
+                          </form>
+                        </TabsContent>
+                      </div>
+                    </Tabs>
                     
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 rounded-md text-gray-400 hover:text-cyan-300 hover:bg-black/30 p-0 flex items-center justify-center"
-                      onClick={() => setIsVisible(false)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center gap-2 ml-3">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 rounded-md text-cyan-300 hover:text-cyan-200 hover:bg-black/50 p-0 flex items-center justify-center"
+                        onClick={clearTerminal}
+                        title="Clear terminal"
+                      >
+                        <RotateCcw className="h-3.5 w-3.5" />
+                      </Button>
+                      
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 rounded-md text-cyan-300 hover:text-cyan-200 hover:bg-black/50 p-0 flex items-center justify-center"
+                        onClick={() => setIsVisible(false)}
+                        title="Close terminal"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </GlassMorphism>
+              </GlassMorphism>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -510,10 +494,10 @@ const CommandTerminal = () => {
       <Button
         variant="outline"
         size="sm"
-        className="fixed bottom-4 right-4 h-10 w-10 rounded-full bg-flow-background/70 border-flow-accent/50 shadow-lg hover:shadow-flow-accent/20 hover:bg-flow-accent/20 z-40 terminal-toggle-btn"
+        className="fixed bottom-4 right-4 h-10 w-10 rounded-full bg-black/80 border-indigo-500/50 shadow-lg hover:shadow-indigo-500/20 hover:bg-indigo-500/20 z-40 terminal-toggle-btn animate-glow-pulse"
         onClick={() => setIsVisible(v => !v)}
       >
-        <Terminal className="h-4 w-4 text-flow-accent" />
+        <Terminal className="h-4 w-4 text-cyan-300" />
       </Button>
       
       <style>
@@ -528,12 +512,12 @@ const CommandTerminal = () => {
         }
         
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.2);
+          background: rgba(139, 92, 246, 0.3);
           border-radius: 10px;
         }
         
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.3);
+          background: rgba(139, 92, 246, 0.5);
         }
         
         @keyframes pulse-subtle {
@@ -543,6 +527,25 @@ const CommandTerminal = () => {
         
         .animate-pulse-subtle {
           animation: pulse-subtle 2s infinite ease-in-out;
+        }
+        
+        @keyframes glow-pulse {
+          0% {
+            box-shadow: 0 0 5px rgba(139, 92, 246, 0.3);
+            border-color: rgba(139, 92, 246, 0.3);
+          }
+          50% {
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.6);
+            border-color: rgba(139, 92, 246, 0.6);
+          }
+          100% {
+            box-shadow: 0 0 5px rgba(139, 92, 246, 0.3);
+            border-color: rgba(139, 92, 246, 0.3);
+          }
+        }
+        
+        .animate-glow-pulse {
+          animation: glow-pulse 3s infinite ease-in-out;
         }
         `}
       </style>
