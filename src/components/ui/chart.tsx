@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { 
   ResponsiveContainer, 
@@ -98,7 +99,7 @@ export const LineChart: React.FC<LineChartProps> = ({
   showGrid = true,
   ...props 
 }) => {
-  const [activeIndex, setActiveIndex] = useState(null);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const gradientId = `line-gradient-${lineColor.replace('#', '')}`;
   const areaGradientId = `area-gradient-${lineColor.replace('#', '')}`;
   
@@ -255,7 +256,7 @@ export const LineChart: React.FC<LineChartProps> = ({
   );
 };
 
-const renderActiveShape = (props) => {
+const renderActiveShape = (props: any) => {
   const { 
     cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, 
     payload, percent, value, name
@@ -398,7 +399,7 @@ export const PieChart: React.FC<EnhancedPieChartProps> = ({
     }
   };
 
-  const handleClick = (data, index) => {
+  const handleClick = (data: any, index: number) => {
     if (onClick) {
       onClick(data, index);
     }
@@ -471,7 +472,11 @@ export const PieChart: React.FC<EnhancedPieChartProps> = ({
             iconType="circle"
             iconSize={8}
             wrapperStyle={{ cursor: onClick ? 'pointer' : 'default' }}
-            onClick={onClick ? (data) => onClick(data, data.payload.index) : undefined}
+            onClick={(data) => {
+              if (onClick && data.payload && typeof data.payload.index === 'number') {
+                onClick(data, data.payload.index);
+              }
+            }}
           />
         )}
       </RechartsPieChart>
