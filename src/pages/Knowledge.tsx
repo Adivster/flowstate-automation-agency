@@ -44,13 +44,13 @@ const Knowledge = () => {
     { id: 'security', name: 'Security', count: 1 },
   ];
   
-  // Enhanced categories with descriptions and icons for the visual section
+  // Enhanced categories with descriptions and icons for the visual section - FIX: ensure icon is one of the allowed types
   const categoriesWithDetails = [
     { 
       id: 'process', 
       name: 'Process Documentation', 
       count: 2, 
-      icon: 'book',
+      icon: 'book' as 'book',
       description: 'Standard operating procedures and workflow documentation',
       color: 'bg-gradient-to-br from-blue-500/20 to-purple-500/30 text-blue-400'
     },
@@ -58,7 +58,7 @@ const Knowledge = () => {
       id: 'guidelines', 
       name: 'Guidelines & Standards', 
       count: 1, 
-      icon: 'bookmarked',
+      icon: 'bookmarked' as 'bookmarked',
       description: 'Best practices and compliance standards',
       color: 'bg-gradient-to-br from-emerald-500/20 to-green-500/30 text-emerald-400'
     },
@@ -66,7 +66,7 @@ const Knowledge = () => {
       id: 'templates', 
       name: 'Templates & Forms', 
       count: 1, 
-      icon: 'file',
+      icon: 'file' as 'file',
       description: 'Reusable templates for common business documents',
       color: 'bg-gradient-to-br from-amber-500/20 to-yellow-500/30 text-amber-400'
     },
@@ -74,7 +74,7 @@ const Knowledge = () => {
       id: 'technical', 
       name: 'Technical Documentation', 
       count: 1, 
-      icon: 'file',
+      icon: 'file' as 'file',
       description: 'System architecture and technical specifications',
       color: 'bg-gradient-to-br from-indigo-500/20 to-blue-500/30 text-indigo-400'
     },
@@ -82,7 +82,7 @@ const Knowledge = () => {
       id: 'marketing', 
       name: 'Marketing Resources', 
       count: 1, 
-      icon: 'bookmarked',
+      icon: 'bookmarked' as 'bookmarked',
       description: 'Brand guidelines and marketing materials',
       color: 'bg-gradient-to-br from-rose-500/20 to-pink-500/30 text-rose-400'
     },
@@ -90,7 +90,7 @@ const Knowledge = () => {
       id: 'security', 
       name: 'Security Protocols', 
       count: 1, 
-      icon: 'book',
+      icon: 'book' as 'book',
       description: 'Security guidelines and compliance documentation',
       color: 'bg-gradient-to-br from-red-500/20 to-orange-500/30 text-red-400'
     },
