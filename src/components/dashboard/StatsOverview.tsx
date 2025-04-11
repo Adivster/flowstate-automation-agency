@@ -5,6 +5,8 @@ import TransitionWrapper from '../ui/TransitionWrapper';
 import GlassMorphism from '../ui/GlassMorphism';
 import { cn } from '@/lib/utils';
 import { LineChart } from '../ui/chart';
+import { Badge } from '../ui/badge';
+import { motion } from 'framer-motion';
 
 interface StatItemProps {
   icon: React.ReactNode;
@@ -28,42 +30,63 @@ const StatItem: React.FC<StatItemProps> = ({
   className,
 }) => {
   const trendColor = trend === 'up' ? 'text-green-500' : trend === 'down' ? 'text-red-500' : 'text-gray-500';
-  const trendIcon = trend === 'up' ? <TrendingUp className="h-3 w-3 mr-1" /> : trend === 'down' ? <TrendingDown className="h-3 w-3 mr-1" /> : <ArrowRight className="h-3 w-3 mr-1" />;
-
+  
   return (
-    <GlassMorphism 
-      className={cn(
-        'p-6 rounded-xl flex flex-col transition-all duration-300 hover:shadow-md hover:translate-y-[-2px]', 
-        className
-      )}
-      style={{ borderColor: `${color}40` }}
+    <motion.div
+      whileHover={{ translateY: -4 }}
+      transition={{ duration: 0.2 }}
     >
-      <div className="flex items-start justify-between mb-2">
-        <div className="rounded-full p-2" style={{ backgroundColor: `${color}20` }}>
-          {icon}
+      <GlassMorphism 
+        className={cn(
+          'p-6 rounded-xl flex flex-col transition-all duration-300 hover:shadow-md hover:border-opacity-50',
+          className
+        )}
+        style={{ borderColor: `${color}40` }}
+      >
+        <div className="flex items-start justify-between mb-2">
+          <div className="rounded-full p-2" style={{ backgroundColor: `${color}20` }}>
+            {icon}
+          </div>
+          <Badge 
+            variant="outline" 
+            className={`text-xs flex items-center bg-opacity-20 ${trendColor}`}
+            style={{ 
+              backgroundColor: trend === 'up' ? 'rgba(34, 197, 94, 0.1)' : 
+                              trend === 'down' ? 'rgba(239, 68, 68, 0.1)' : 
+                              'rgba(100, 116, 139, 0.1)',
+              borderColor: trend === 'up' ? 'rgba(34, 197, 94, 0.3)' : 
+                          trend === 'down' ? 'rgba(239, 68, 68, 0.3)' : 
+                          'rgba(100, 116, 139, 0.3)'
+            }}
+          >
+            {trend === 'up' ? (
+              <TrendingUp className="h-3 w-3 mr-1" />
+            ) : trend === 'down' ? (
+              <TrendingDown className="h-3 w-3 mr-1" />
+            ) : (
+              <ArrowRight className="h-3 w-3 mr-1" />
+            )}
+            {trendValue}
+          </Badge>
         </div>
-        <div className={`text-xs font-medium ${trendColor} flex items-center px-2 py-1 rounded-full bg-flow-background/30 backdrop-blur-sm border`} style={{ borderColor: trendColor }}>
-          {trendIcon}
-          {trendValue}
+        
+        <div className="mt-2 mb-4">
+          <p className="text-sm font-medium text-flow-foreground/60">{label}</p>
+          <p className="text-2xl font-semibold" style={{ color }}>{value}</p>
         </div>
-      </div>
-      
-      <div className="mt-2 mb-4">
-        <p className="text-sm font-medium text-flow-foreground/60">{label}</p>
-        <p className="text-2xl font-semibold">{value}</p>
-      </div>
-      
-      {chartData && (
-        <div className="mt-auto h-[50px] -mx-2 -mb-2">
-          <LineChart 
-            data={chartData} 
-            lineColor={color}
-            height={50}
-            dotColor="#fef3c7"
-          />
-        </div>
-      )}
-    </GlassMorphism>
+        
+        {chartData && (
+          <div className="mt-auto h-[50px] -mx-2 -mb-2">
+            <LineChart 
+              data={chartData} 
+              lineColor={color}
+              height={50}
+              dotColor="#fef3c7"
+            />
+          </div>
+        )}
+      </GlassMorphism>
+    </motion.div>
   );
 };
 

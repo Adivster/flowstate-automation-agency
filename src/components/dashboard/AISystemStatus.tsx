@@ -11,11 +11,16 @@ import {
   Zap, 
   Shield,
   AlertTriangle,
-  CheckCircle2
+  CheckCircle2,
+  BarChart,
+  ArrowUp,
+  ArrowDown,
+  Database
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
+import { Progress } from '../ui/progress';
 
 const AISystemStatus: React.FC = () => {
   // Mock data - in a real application, this would come from an API
@@ -36,6 +41,12 @@ const AISystemStatus: React.FC = () => {
     if (health >= 90) return "text-green-500";
     if (health >= 70) return "text-yellow-500";
     return "text-red-500";
+  };
+
+  const getHealthBgColor = (health: number) => {
+    if (health >= 90) return "bg-green-500";
+    if (health >= 70) return "bg-yellow-500";
+    return "bg-red-500";
   };
 
   const getStatusIcon = (status: string) => {
@@ -68,24 +79,66 @@ const AISystemStatus: React.FC = () => {
     }
   };
 
+  // System metrics data
+  const systemMetrics = [
+    { label: "CPU", value: 42, trend: "up", change: "+5%" },
+    { label: "Memory", value: 67, trend: "down", change: "-3%" },
+    { label: "Network", value: 53, trend: "neutral", change: "0%" },
+  ];
+
   return (
     <GlassMorphism className="p-6 rounded-xl bg-flow-background/20 backdrop-blur-lg border-flow-accent/20 overflow-hidden relative">
       <div className="absolute -top-12 -right-12 w-48 h-48 bg-flow-accent/5 rounded-full blur-3xl pointer-events-none"></div>
       
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center">
-          <BrainCircuit className="h-5 w-5 mr-2 text-flow-accent" />
-          <h3 className="text-lg font-medium">AI System Status</h3>
+          <div className="p-2 rounded-full bg-flow-accent/20 mr-2">
+            <BrainCircuit className="h-5 w-5 text-flow-accent" />
+          </div>
+          <h3 className="text-lg font-medium bg-gradient-to-r from-flow-accent to-purple-400 bg-clip-text text-transparent">
+            AI System Status
+          </h3>
         </div>
         <div className={`flex items-center ${getHealthColor(systemHealth)}`}>
           <motion.div
             variants={pulseVariants}
             animate="animate"
-            className={`h-2 w-2 rounded-full mr-2 ${systemHealth >= 90 ? 'bg-green-500' : systemHealth >= 70 ? 'bg-yellow-500' : 'bg-red-500'}`}
+            className={`h-2 w-2 rounded-full mr-2 ${getHealthBgColor(systemHealth)}`}
           />
           <Heart className="h-4 w-4 mr-1" />
           <span className="text-sm font-medium">{systemHealth}% Operational</span>
         </div>
+      </div>
+
+      {/* System Metrics */}
+      <div className="grid grid-cols-3 gap-3 mb-4">
+        {systemMetrics.map((metric, index) => (
+          <div key={index} className="bg-flow-card/30 rounded-lg p-3 hover:bg-flow-card/40 transition-all duration-300">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-xs text-flow-foreground/70">{metric.label}</span>
+              <div className="flex items-center text-xs">
+                {metric.trend === 'up' ? (
+                  <ArrowUp className="h-3 w-3 text-green-500 mr-0.5" />
+                ) : metric.trend === 'down' ? (
+                  <ArrowDown className="h-3 w-3 text-red-500 mr-0.5" />
+                ) : null}
+                <span className={metric.trend === 'up' ? 'text-green-500' : metric.trend === 'down' ? 'text-red-500' : 'text-flow-foreground/60'}>
+                  {metric.change}
+                </span>
+              </div>
+            </div>
+            <Progress 
+              value={metric.value} 
+              className="h-1.5 bg-flow-foreground/10" 
+              indicatorClassName={
+                metric.value > 75 ? "bg-red-500" :
+                metric.value > 50 ? "bg-yellow-500" :
+                "bg-green-500"
+              }
+            />
+            <div className="mt-1 text-right text-xs font-medium">{metric.value}%</div>
+          </div>
+        ))}
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -116,29 +169,24 @@ const AISystemStatus: React.FC = () => {
       
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <h4 className="text-sm font-medium">Recent AI Activities</h4>
+          <div className="flex items-center">
+            <Database className="h-4 w-4 mr-1.5 text-flow-accent" />
+            <h4 className="text-sm font-medium">Recent AI Activities</h4>
+          </div>
           <Button 
             variant="ghost" 
             size="sm"
-            className="h-7 px-2 text-xs"
+            className="h-7 px-2 text-xs hover:bg-flow-accent/10 hover:text-flow-accent"
             onClick={() => setExpanded(!expanded)}
           >
             {expanded ? "Show Less" : "Show All"}
           </Button>
         </div>
         <div className="space-y-2 max-h-28 overflow-y-auto custom-scrollbar">
-          {recentActivities.slice(0, expanded ? recentActivities.length : 3).map(activity => (
-            <div 
-              key={activity.id} 
-              className="bg-flow-card/20 rounded-lg p-2.5 text-xs flex justify-between hover:bg-flow-card/30 transition-colors duration-300"
-            >
-              <div className="flex items-center">
-                {getStatusIcon(activity.status)}
-                <span className="ml-1.5">{activity.description}</span>
-              </div>
-              <span className="text-flow-foreground/60 ml-2">{activity.time}</span>
-            </div>
-          ))}
+          <AnimatedActivityList 
+            activities={recentActivities.slice(0, expanded ? recentActivities.length : 3)} 
+            getStatusIcon={getStatusIcon}
+          />
         </div>
       </div>
       
@@ -163,12 +211,11 @@ const AISystemStatus: React.FC = () => {
             });
           }}
         >
-          <CircleAlert className="h-3.5 w-3.5" />
+          <BarChart className="h-3.5 w-3.5" />
           View System Logs
         </Button>
       </div>
       
-      {/* Fix: Remove the jsx property from style element */}
       <style>
         {`
         .custom-scrollbar::-webkit-scrollbar {
@@ -191,6 +238,32 @@ const AISystemStatus: React.FC = () => {
         `}
       </style>
     </GlassMorphism>
+  );
+};
+
+// Animated activity list component
+const AnimatedActivityList = ({ activities, getStatusIcon }: { 
+  activities: { id: number, description: string, time: string, status: string }[],
+  getStatusIcon: (status: string) => JSX.Element | null
+}) => {
+  return (
+    <>
+      {activities.map((activity, index) => (
+        <motion.div 
+          key={activity.id} 
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: index * 0.1 }}
+          className="bg-flow-card/20 rounded-lg p-2.5 text-xs flex justify-between hover:bg-flow-card/30 transition-colors duration-300"
+        >
+          <div className="flex items-center">
+            {getStatusIcon(activity.status)}
+            <span className="ml-1.5">{activity.description}</span>
+          </div>
+          <span className="text-flow-foreground/60 ml-2">{activity.time}</span>
+        </motion.div>
+      ))}
+    </>
   );
 };
 
