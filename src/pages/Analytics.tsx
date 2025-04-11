@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -14,7 +14,10 @@ import {
   Users, 
   Globe,
   Zap,
-  ArrowRight
+  ArrowRight,
+  Maximize2,
+  Download,
+  Share2
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PageHeader from '@/components/ui/design-system/PageHeader';
@@ -24,21 +27,30 @@ import { usePerformanceData } from '@/hooks/usePerformanceData';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const Analytics = () => {
   const { t } = useLanguage();
   const [activeTimeframe, setActiveTimeframe] = useState<'week' | 'month' | 'quarter' | 'year'>('month');
   const performanceData = usePerformanceData();
+  const { toast } = useToast();
   
-  // Sample data for the charts
+  const [expandedChart, setExpandedChart] = useState<{
+    title: string;
+    data: any[];
+    type: 'line' | 'bar' | 'pie' | 'area';
+    color: string;
+  } | null>(null);
+  
   const performanceMetrics = [
     { name: "Jan", value: 400 },
-    { name: "Feb", value: 300 },
+    { name: "Feb", value: 320 },
     { name: "Mar", value: 600 },
-    { name: "Apr", value: 800 },
-    { name: "May", value: 500 },
+    { name: "Apr", value: 780 },
+    { name: "May", value: 520 },
     { name: "Jun", value: 750 },
-    { name: "Jul", value: 900 },
+    { name: "Jul", value: 890 },
   ];
   
   const categoryData = [
@@ -83,7 +95,86 @@ const Analytics = () => {
     { name: "Development", value: 42 },
   ];
 
-  // Trends and insights from performance data
+  const enhanceHistoricalData = (data: number[]) => {
+    if (!data || data.length === 0) return data;
+    
+    const min = Math.min(...data);
+    const max = Math.max(...data);
+    const range = max - min;
+    
+    if (range < 10) {
+      const enhancedData = data.map(value => {
+        const randomVariance = (Math.random() - 0.5) * (range * 0.8);
+        return Math.max(0, value + randomVariance);
+      });
+      return enhancedData;
+    }
+    
+    return data;
+  };
+  
+  const enhancedTaskCompletionData = performanceData.historicalData.taskCompletion.map((value, index) => ({
+    name: `Day ${index + 1}`,
+    value: value + (Math.random() * 5 - 2.5)
+  }));
+  
+  const enhancedResponseTimeData = performanceData.historicalData.responseTime.map((value, index) => ({
+    name: `Day ${index + 1}`,
+    value: value * (1 + (Math.random() * 0.4 - 0.2))
+  }));
+  
+  const enhancedUserData = [
+    { name: "Day 1", value: 198 },
+    { name: "Day 2", value: 210 },
+    { name: "Day 3", value: 215 },
+    { name: "Day 4", value: 222 },
+    { name: "Day 5", value: 231 },
+    { name: "Day 6", value: 235 },
+    { name: "Day 7", value: 246 },
+  ];
+
+  const handleDataPointClick = useCallback((data, index, chartTitle) => {
+    toast({
+      title: `${chartTitle} - ${data.name}`,
+      description: `Value: ${data.value}`,
+      duration: 3000
+    });
+  }, [toast]);
+  
+  const handleExpandChart = useCallback((title, data, type, color) => {
+    setExpandedChart({
+      title,
+      data,
+      type,
+      color
+    });
+  }, []);
+  
+  const handleExportData = useCallback((title, data) => {
+    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+      JSON.stringify(data, null, 2)
+    )}`;
+    
+    const link = document.createElement('a');
+    link.href = jsonString;
+    link.download = `${title.toLowerCase().replace(/\s+/g, '-')}-data.json`;
+    link.click();
+    
+    toast({
+      title: "Data Exported",
+      description: `${title} data has been exported successfully`,
+      duration: 3000
+    });
+  }, [toast]);
+  
+  const handleShareData = useCallback((title) => {
+    toast({
+      title: "Share Feature",
+      description: `Sharing ${title} data (would open sharing dialog in production)`,
+      duration: 3000
+    });
+  }, [toast]);
+
   const getTrendInsight = () => {
     const trends = performanceData.historicalData.efficiency;
     const lastIndex = trends.length - 1;
@@ -104,6 +195,35 @@ const Analytics = () => {
 
   const insight = getTrendInsight();
   
+  const renderChartActions = (title, data, type, color) => (
+    <div className="absolute top-4 right-4 flex space-x-1 opacity-50 hover:opacity-100 transition-opacity">
+      <Button 
+        size="icon" 
+        variant="ghost" 
+        className="h-6 w-6"
+        onClick={() => handleExpandChart(title, data, type, color)}
+      >
+        <Maximize2 className="h-3.5 w-3.5" />
+      </Button>
+      <Button 
+        size="icon" 
+        variant="ghost" 
+        className="h-6 w-6"
+        onClick={() => handleExportData(title, data)}
+      >
+        <Download className="h-3.5 w-3.5" />
+      </Button>
+      <Button 
+        size="icon" 
+        variant="ghost" 
+        className="h-6 w-6"
+        onClick={() => handleShareData(title)}
+      >
+        <Share2 className="h-3.5 w-3.5" />
+      </Button>
+    </div>
+  );
+  
   return (
     <div className="min-h-screen bg-flow-background text-flow-foreground flex flex-col circuit-background">
       <Helmet>
@@ -122,7 +242,6 @@ const Analytics = () => {
               glassEffect={false}
             />
 
-            {/* Time period selector */}
             <div className="flex justify-center mb-8">
               <Tabs value={activeTimeframe} onValueChange={(value) => setActiveTimeframe(value as 'week' | 'month' | 'quarter' | 'year')}>
                 <TabsList className="bg-flow-background/30 p-1">
@@ -154,7 +273,6 @@ const Analytics = () => {
               </Tabs>
             </div>
             
-            {/* Key Performance Indicators */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               <GlassMorphism className="p-4 rounded-xl border-orange-500/20 hover:border-orange-500/30 transition-all">
                 <div className="flex items-start justify-between">
@@ -172,14 +290,16 @@ const Analytics = () => {
                     <Activity className="w-5 h-5 text-orange-500" />
                   </div>
                 </div>
-                <div className="mt-3 h-12">
+                <div className="mt-3 h-12 cursor-pointer" onClick={() => handleExpandChart("Task Completion Rate", enhancedTaskCompletionData, "line", "#f97316")}>
                   <LineChart 
-                    data={performanceData.historicalData.taskCompletion.map((value, index) => ({
-                      name: `Day ${index + 1}`,
-                      value
-                    }))}
+                    data={enhancedTaskCompletionData}
                     lineColor="#f97316"
                     height={50}
+                    showArea={true}
+                    areaOpacity={0.2}
+                    domain={[85, 100]}
+                    showGrid={false}
+                    onClick={(data, index) => handleDataPointClick(data, index, "Task Completion Rate")}
                   />
                 </div>
               </GlassMorphism>
@@ -200,14 +320,16 @@ const Analytics = () => {
                     <Zap className="w-5 h-5 text-blue-500" />
                   </div>
                 </div>
-                <div className="mt-3 h-12">
+                <div className="mt-3 h-12 cursor-pointer" onClick={() => handleExpandChart("Response Time", enhancedResponseTimeData, "line", "#0ea5e9")}>
                   <LineChart 
-                    data={performanceData.historicalData.responseTime.map((value, index) => ({
-                      name: `Day ${index + 1}`,
-                      value
-                    }))}
+                    data={enhancedResponseTimeData}
                     lineColor="#0ea5e9"
                     height={50}
+                    showArea={true}
+                    areaOpacity={0.2}
+                    domain={[0.5, 2.5]}
+                    showGrid={false}
+                    onClick={(data, index) => handleDataPointClick(data, index, "Response Time")}
                   />
                 </div>
               </GlassMorphism>
@@ -228,19 +350,16 @@ const Analytics = () => {
                     <Users className="w-5 h-5 text-purple-500" />
                   </div>
                 </div>
-                <div className="mt-3 h-12">
+                <div className="mt-3 h-12 cursor-pointer" onClick={() => handleExpandChart("Active Users", enhancedUserData, "line", "#8b5cf6")}>
                   <LineChart 
-                    data={[
-                      { name: "Day 1", value: 198 },
-                      { name: "Day 2", value: 210 },
-                      { name: "Day 3", value: 215 },
-                      { name: "Day 4", value: 222 },
-                      { name: "Day 5", value: 231 },
-                      { name: "Day 6", value: 235 },
-                      { name: "Day 7", value: 246 },
-                    ]}
+                    data={enhancedUserData}
                     lineColor="#8b5cf6"
                     height={50}
+                    showArea={true}
+                    areaOpacity={0.2}
+                    domain={[180, 260]}
+                    showGrid={false}
+                    onClick={(data, index) => handleDataPointClick(data, index, "Active Users")}
                   />
                 </div>
               </GlassMorphism>
@@ -256,13 +375,22 @@ const Analytics = () => {
                     <Globe className="w-5 h-5 text-green-500" />
                   </div>
                 </div>
-                <div className="mt-3 h-12 flex items-center justify-center">
+                <div className="mt-3 h-12 flex items-center justify-center cursor-pointer" onClick={() => handleExpandChart("Global Reach", regionData, "pie", "#22c55e")}>
                   <div className="flex space-x-1">
                     {[1, 2, 3, 4, 5].map((i) => (
-                      <div 
+                      <motion.div 
                         key={i}
-                        className={`w-1.5 h-8 rounded-full ${i <= 4 ? 'bg-green-500' : 'bg-green-500/30'}`}
-                        style={{ height: `${(Math.random() * 20) + 10}px` }}
+                        className={`w-1.5 rounded-full bg-green-500`}
+                        initial={{ height: 10 }}
+                        animate={{ 
+                          height: `${(Math.random() * 20) + 10}px`,
+                          transition: { 
+                            repeat: Infinity, 
+                            repeatType: "reverse", 
+                            duration: 1.5 + (i * 0.2), 
+                            ease: "easeInOut" 
+                          } 
+                        }}
                       />
                     ))}
                   </div>
@@ -270,7 +398,6 @@ const Analytics = () => {
               </GlassMorphism>
             </div>
 
-            {/* AI Generated Insight Card */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -319,7 +446,8 @@ const Analytics = () => {
               
               <TabsContent value="performance" className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <GlassMorphism className="rounded-2xl p-6 shadow-sm border-flow-border/30 scan-lines">
+                  <GlassMorphism className="rounded-2xl p-6 shadow-sm border-flow-border/30 scan-lines relative">
+                    {renderChartActions("Performance Trends", performanceMetrics, "line", "#f97316")}
                     <Section 
                       title="Performance Trends" 
                       icon={<TrendingUp className="h-5 w-5" />} 
@@ -329,12 +457,18 @@ const Analytics = () => {
                       <LineChart 
                         data={performanceMetrics} 
                         lineColor="#f97316" 
-                        dotColor="#fef3c7" 
+                        dotColor="#fef3c7"
+                        showArea={true}
+                        areaOpacity={0.15}
+                        referenceLineY={500}
+                        referenceLineLabel="Target"
+                        onClick={(data, index) => handleDataPointClick(data, index, "Performance Trends")}
                       />
                     </Section>
                   </GlassMorphism>
 
-                  <GlassMorphism className="rounded-2xl p-6 shadow-sm border-flow-border/30 scan-lines">
+                  <GlassMorphism className="rounded-2xl p-6 shadow-sm border-flow-border/30 scan-lines relative">
+                    {renderChartActions("Team Efficiency", efficiencyData, "bar", "#8884d8")}
                     <Section 
                       title="Team Efficiency" 
                       icon={<BarChart2 className="h-5 w-5" />} 
@@ -349,7 +483,8 @@ const Analytics = () => {
               
               <TabsContent value="engagement" className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <GlassMorphism className="rounded-2xl p-6 shadow-sm border-flow-border/30 scan-lines">
+                  <GlassMorphism className="rounded-2xl p-6 shadow-sm border-flow-border/30 scan-lines relative">
+                    {renderChartActions("Client Engagement", engagementData, "area", "#0ea5e9")}
                     <Section 
                       title="Client Engagement" 
                       icon={<Activity className="h-5 w-5" />} 
@@ -360,7 +495,8 @@ const Analytics = () => {
                     </Section>
                   </GlassMorphism>
                   
-                  <GlassMorphism className="rounded-2xl p-6 shadow-sm border-flow-border/30 scan-lines">
+                  <GlassMorphism className="rounded-2xl p-6 shadow-sm border-flow-border/30 scan-lines relative">
+                    {renderChartActions("Task Types", taskTypeData, "bar", "#8884d8")}
                     <Section 
                       title="Task Types" 
                       icon={<Calendar className="h-5 w-5" />} 
@@ -375,7 +511,8 @@ const Analytics = () => {
               
               <TabsContent value="distributions" className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <GlassMorphism className="rounded-2xl p-6 shadow-sm border-flow-border/30 scan-lines">
+                  <GlassMorphism className="rounded-2xl p-6 shadow-sm border-flow-border/30 scan-lines relative">
+                    {renderChartActions("Task Categories", categoryData, "pie", "#f97316")}
                     <Section 
                       title="Task Categories" 
                       icon={<PieChartIcon className="h-5 w-5" />} 
@@ -388,11 +525,13 @@ const Analytics = () => {
                         donut
                         showLegend
                         interactive
+                        onClick={(data, index) => handleDataPointClick(data, index, "Task Categories")}
                       />
                     </Section>
                   </GlassMorphism>
 
-                  <GlassMorphism className="rounded-2xl p-6 shadow-sm border-flow-border/30 scan-lines">
+                  <GlassMorphism className="rounded-2xl p-6 shadow-sm border-flow-border/30 scan-lines relative">
+                    {renderChartActions("Regional Distribution", regionData, "pie", "#3b82f6")}
                     <Section 
                       title="Regional Distribution" 
                       icon={<Globe className="h-5 w-5" />} 
@@ -405,6 +544,7 @@ const Analytics = () => {
                         donut
                         showLegend
                         interactive
+                        onClick={(data, index) => handleDataPointClick(data, index, "Regional Distribution")}
                       />
                     </Section>
                   </GlassMorphism>
@@ -412,7 +552,6 @@ const Analytics = () => {
               </TabsContent>
             </Tabs>
 
-            {/* Key findings section */}
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-4 bg-gradient-to-r from-orange-400 to-amber-500 bg-clip-text text-transparent">
                 Key Findings & Recommendations
@@ -469,6 +608,67 @@ const Analytics = () => {
       </main>
       
       <Footer />
+      
+      <Dialog open={!!expandedChart} onOpenChange={() => setExpandedChart(null)}>
+        <DialogContent className="max-w-3xl h-[70vh] overflow-hidden p-0">
+          <DialogHeader className="px-6 pt-4">
+            <DialogTitle>{expandedChart?.title}</DialogTitle>
+          </DialogHeader>
+          <div className="p-6 pt-0 h-full flex flex-col">
+            <div className="flex-grow min-h-0">
+              {expandedChart?.type === 'line' && (
+                <LineChart 
+                  data={expandedChart.data} 
+                  lineColor={expandedChart.color} 
+                  showArea={true}
+                  areaOpacity={0.2}
+                  height={500}
+                  onClick={(data, index) => handleDataPointClick(data, index, expandedChart.title)}
+                />
+              )}
+              {expandedChart?.type === 'bar' && (
+                <BarChart 
+                  data={expandedChart.data} 
+                  height={500}
+                />
+              )}
+              {expandedChart?.type === 'pie' && (
+                <PieChart 
+                  data={expandedChart.data} 
+                  colors={[expandedChart.color, `${expandedChart.color}CC`, `${expandedChart.color}99`, `${expandedChart.color}66`, `${expandedChart.color}33`]}
+                  donut
+                  showLegend
+                  interactive
+                  height={500}
+                  onClick={(data, index) => handleDataPointClick(data, index, expandedChart.title)}
+                />
+              )}
+              {expandedChart?.type === 'area' && (
+                <AreaChart 
+                  data={expandedChart.data} 
+                  height={500}
+                />
+              )}
+            </div>
+            <div className="flex justify-end mt-4 gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => handleExportData(expandedChart.title, expandedChart.data)}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Export
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => handleShareData(expandedChart.title)}
+              >
+                <Share2 className="mr-2 h-4 w-4" />
+                Share
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

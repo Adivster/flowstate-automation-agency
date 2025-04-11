@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { 
   ResponsiveContainer, 
   AreaChart as RechartsAreaChart,
@@ -16,7 +16,8 @@ import {
   Legend,
   Cell,
   Sector,
-  PieProps
+  PieProps,
+  ReferenceLine
 } from "recharts";
 
 // Sample data for testing
@@ -68,18 +69,72 @@ export const LineChart = ({
   lineColor = "#8884d8", 
   dotColor = "#ffffff",
   height = 250,
+  showArea = false,
+  areaOpacity = 0.1,
+  animate = true,
+  focusAnimation = true,
+  referenceLineY,
+  referenceLineLabel,
+  referenceLineColor = "#ff7300",
+  domain,
+  onClick,
+  showGrid = true,
   ...props 
 }) => {
+  const [activeIndex, setActiveIndex] = useState(null);
   const gradientId = `line-gradient-${lineColor.replace('#', '')}`;
+  const areaGradientId = `area-gradient-${lineColor.replace('#', '')}`;
+  
+  const effectiveDomain = domain || (() => {
+    const values = data.map(item => item.value);
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const padding = (max - min) * 0.2;
+    
+    const lowerBound = Math.max(0, min - padding);
+    const upperBound = max + padding;
+    
+    return [lowerBound, upperBound];
+  })();
+  
+  const handleMouseMove = (e) => {
+    if (focusAnimation && e && e.activeTooltipIndex !== undefined) {
+      setActiveIndex(e.activeTooltipIndex);
+    }
+  };
+  
+  const handleMouseLeave = () => {
+    if (focusAnimation) {
+      setActiveIndex(null);
+    }
+  };
+  
+  const handleClick = (data, index) => {
+    if (onClick) {
+      onClick(data, index);
+    }
+  };
   
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <RechartsLineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+      <RechartsLineChart 
+        data={data} 
+        margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        onClick={handleClick}
+      >
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor={`${lineColor}90`} />
             <stop offset="100%" stopColor={lineColor} />
           </linearGradient>
+          {showArea && (
+            <linearGradient id={areaGradientId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={lineColor} stopOpacity={areaOpacity * 2} />
+              <stop offset="100%" stopColor={lineColor} stopOpacity={0} />
+            </linearGradient>
+          )}
         </defs>
         <XAxis 
           dataKey="name" 
@@ -94,12 +149,15 @@ export const LineChart = ({
           tickLine={false} 
           axisLine={{ stroke: '#33333350' }}
           width={25}
+          domain={effectiveDomain}
         />
-        <CartesianGrid 
-          stroke="#33333330" 
-          strokeDasharray="3 3" 
-          vertical={false}
-        />
+        {showGrid && (
+          <CartesianGrid 
+            stroke="#33333330" 
+            strokeDasharray="3 3" 
+            vertical={false}
+          />
+        )}
         <Tooltip 
           contentStyle={{ 
             backgroundColor: 'rgba(15, 15, 20, 0.9)',
@@ -110,24 +168,69 @@ export const LineChart = ({
           }}
           itemStyle={{ color: '#ffffff' }}
           labelStyle={{ color: '#aaaaaa' }}
+          cursor={{ stroke: `${lineColor}50`, strokeWidth: 1 }}
         />
+        {referenceLineY && (
+          <ReferenceLine 
+            y={referenceLineY} 
+            stroke={referenceLineColor} 
+            strokeDasharray="3 3" 
+            label={{ 
+              value: referenceLineLabel || `${referenceLineY}`, 
+              fill: referenceLineColor,
+              fontSize: 10,
+              position: 'insideTopRight' 
+            }}
+          />
+        )}
+        {showArea && (
+          <Area 
+            type="monotone"
+            dataKey="value"
+            stroke="none"
+            fillOpacity={1}
+            fill={`url(#${areaGradientId})`}
+            animationDuration={1500}
+          />
+        )}
         <Line 
           type="monotone" 
           dataKey="value" 
           stroke={`url(#${gradientId})`}
           strokeWidth={2.5}
-          dot={{ 
-            stroke: lineColor,
-            strokeWidth: 2,
-            r: 4,
-            fill: dotColor
-          }} 
+          dot={(props) => {
+            const { cx, cy, index } = props;
+            const size = index === activeIndex ? 6 : 4;
+            const strokeWidth = index === activeIndex ? 2.5 : 2;
+            
+            return (
+              <circle
+                cx={cx}
+                cy={cy}
+                r={size}
+                stroke={lineColor}
+                strokeWidth={strokeWidth}
+                fill={dotColor}
+                style={{ 
+                  filter: index === activeIndex ? `drop-shadow(0 0 3px ${lineColor})` : 'none',
+                  cursor: 'pointer'
+                }}
+              />
+            );
+          }}
           activeDot={{ 
             r: 6, 
             stroke: lineColor,
             strokeWidth: 2,
-            fill: dotColor
-          }} 
+            fill: dotColor,
+            style: { 
+              filter: `drop-shadow(0 0 4px ${lineColor})`,
+              cursor: 'pointer'
+            }
+          }}
+          isAnimationActive={animate}
+          animationDuration={1500}
+          animationEasing="ease-in-out"
         />
       </RechartsLineChart>
     </ResponsiveContainer>
@@ -248,6 +351,7 @@ interface EnhancedPieChartProps {
   paddingAngle?: number;
   donut?: boolean;
   gradient?: boolean;
+  onClick?: (data: any, index: number) => void;
 }
 
 export const PieChart: React.FC<EnhancedPieChartProps> = ({ 
@@ -264,6 +368,7 @@ export const PieChart: React.FC<EnhancedPieChartProps> = ({
   paddingAngle = 2,
   donut = false,
   gradient = false,
+  onClick,
   ...props 
 }) => {
   const [activeIndex, setActiveIndex] = React.useState(0);
@@ -272,6 +377,12 @@ export const PieChart: React.FC<EnhancedPieChartProps> = ({
   const onPieEnter = (_: any, index: number) => {
     if (interactive) {
       setActiveIndex(index);
+    }
+  };
+
+  const handleClick = (data, index) => {
+    if (onClick) {
+      onClick(data, index);
     }
   };
 
@@ -314,9 +425,14 @@ export const PieChart: React.FC<EnhancedPieChartProps> = ({
           dataKey={dataKey}
           nameKey={nameKey}
           onMouseEnter={onPieEnter}
+          onClick={handleClick}
           label={!interactive ? ({name, percent}) => `${name} (${(percent * 100).toFixed(0)}%)` : undefined}
           stroke="#00000022"
           strokeWidth={1}
+          isAnimationActive={true}
+          animationBegin={0}
+          animationDuration={1200}
+          animationEasing="ease-out"
         >
           {dataWithPercentages.map((entry, index) => (
             <Cell 
@@ -324,6 +440,7 @@ export const PieChart: React.FC<EnhancedPieChartProps> = ({
               fill={gradient ? `url(#${gradientIds![index % colors.length]})` : colors[index % colors.length]} 
               strokeWidth={1}
               stroke="#00000022" 
+              style={{ cursor: onClick ? 'pointer' : 'default' }}
             />
           ))}
         </Pie>
@@ -335,6 +452,8 @@ export const PieChart: React.FC<EnhancedPieChartProps> = ({
             verticalAlign={legendPosition === 'top' ? 'top' : legendPosition === 'bottom' ? 'bottom' : 'middle'}
             iconType="circle"
             iconSize={8}
+            wrapperStyle={{ cursor: onClick ? 'pointer' : 'default' }}
+            onClick={onClick ? (data) => onClick(data, data.payload.index) : undefined}
           />
         )}
       </RechartsPieChart>
