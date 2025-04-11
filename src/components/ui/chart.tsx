@@ -14,10 +14,11 @@ import {
   CartesianGrid, 
   Tooltip, 
   Legend, 
-  TooltipProps 
+  TooltipProps,
+  Area,
+  ReferenceLine
 } from "recharts";
 import { curveCardinal } from "d3-shape";
-import { ReactText } from 'react';
 
 // Type for data points
 interface DataPoint {
@@ -47,6 +48,16 @@ interface ChartProps {
   showLabel?: boolean;
   outerRadius?: number;
   legendPosition?: string;
+  // Additional properties for LineChart
+  lineColor?: string;
+  dotColor?: string;
+  showArea?: boolean;
+  areaOpacity?: number;
+  showGrid?: boolean;
+  referenceLineY?: number | null;
+  referenceLineLabel?: string;
+  domain?: [number, number] | null;
+  // Click handler
   onClick?: (data: any, index: number) => void;
 }
 
@@ -82,10 +93,24 @@ export const Chart: FC<ChartProps> = ({
   showLabel = true,
   outerRadius = 80,
   legendPosition = 'bottom',
+  lineColor,
+  dotColor,
+  showArea = false,
+  areaOpacity = 0.3,
+  referenceLineY = null,
+  referenceLineLabel = "",
+  domain = null,
   onClick,
 }) => {
   // Line area generator using cardinal curve
   const cardinal = curveCardinal.tension(0.2);
+  
+  // Event handler adapter for recharts onClick event
+  const handleClick = (data: any, index: number) => {
+    if (onClick && interactive) {
+      onClick(data, index);
+    }
+  };
 
   // Responsive wrapper to ensure chart fits container
   return (
@@ -103,17 +128,30 @@ export const Chart: FC<ChartProps> = ({
           >
             {showGrid && <CartesianGrid strokeDasharray="3 3" />}
             {showXAxis && <XAxis dataKey="name" />}
-            {showYAxis && <YAxis />}
+            {showYAxis && <YAxis domain={domain || ['auto', 'auto']} />}
             {showTooltip && <Tooltip />}
             {showLegend && <Legend />}
+            {referenceLineY !== null && (
+              <ReferenceLine y={referenceLineY} label={referenceLineLabel} stroke="#888" strokeDasharray="3 3" />
+            )}
             <Line
               type="monotone"
               dataKey="value"
-              stroke={colors[0]}
+              stroke={lineColor || colors[0]}
               strokeWidth={2}
               activeDot={{ r: 8 }}
-              onClick={onClick}
+              dot={{ r: 4, fill: dotColor || lineColor || colors[0] }}
+              onClick={(e) => e && onClick && onClick(e.payload, 0)}
             />
+            {showArea && (
+              <Area 
+                type="monotone" 
+                dataKey="value" 
+                stroke="none" 
+                fill={lineColor || colors[0]} 
+                fillOpacity={areaOpacity} 
+              />
+            )}
           </RLineChart>
         )}
 
@@ -129,10 +167,17 @@ export const Chart: FC<ChartProps> = ({
           >
             {showGrid && <CartesianGrid strokeDasharray="3 3" />}
             {showXAxis && <XAxis dataKey="name" />}
-            {showYAxis && <YAxis />}
+            {showYAxis && <YAxis domain={domain || ['auto', 'auto']} />}
             {showTooltip && <Tooltip />}
             {showLegend && <Legend />}
-            <Bar dataKey="value" fill={colors[0]} onClick={onClick} />
+            {referenceLineY !== null && (
+              <ReferenceLine y={referenceLineY} label={referenceLineLabel} stroke="#888" strokeDasharray="3 3" />
+            )}
+            <Bar 
+              dataKey="value" 
+              fill={lineColor || colors[0]} 
+              onClick={(e) => e && onClick && onClick(e.payload, 0)}
+            />
           </RBarChart>
         )}
 
@@ -148,24 +193,26 @@ export const Chart: FC<ChartProps> = ({
           >
             {showGrid && <CartesianGrid strokeDasharray="3 3" />}
             {showXAxis && <XAxis dataKey="name" />}
-            {showYAxis && <YAxis />}
+            {showYAxis && <YAxis domain={domain || ['auto', 'auto']} />}
             {showTooltip && <Tooltip />}
             {showLegend && <Legend />}
+            {referenceLineY !== null && (
+              <ReferenceLine y={referenceLineY} label={referenceLineLabel} stroke="#888" strokeDasharray="3 3" />
+            )}
             <defs>
               <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={colors[0]} stopOpacity={0.8} />
-                <stop offset="95%" stopColor={colors[0]} stopOpacity={0} />
+                <stop offset="5%" stopColor={lineColor || colors[0]} stopOpacity={0.8} />
+                <stop offset="95%" stopColor={lineColor || colors[0]} stopOpacity={0} />
               </linearGradient>
             </defs>
-            <Line
+            <Area
               type="monotone"
               dataKey="value"
-              stroke={colors[0]}
+              stroke={lineColor || colors[0]}
               strokeWidth={2}
-              dot={{ r: 4, strokeWidth: 1 }}
               fillOpacity={1}
               fill="url(#colorValue)"
-              onClick={onClick}
+              onClick={(e) => e && onClick && onClick(e.payload, 0)}
             />
           </RLineChart>
         )}
@@ -182,7 +229,7 @@ export const Chart: FC<ChartProps> = ({
               dataKey="value"
               innerRadius={donut ? outerRadius * 0.6 : 0}
               label={showLabel ? ({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%` : undefined}
-              onClick={onClick}
+              onClick={(e) => e && onClick && onClick(e.payload, e.index || 0)}
             >
               {data.map((entry, index) => (
                 <Cell
@@ -236,3 +283,4 @@ export const AreaChart: FC<Omit<ChartProps, "type">> = (props) => (
 // For backward compatibility, add LineChart and BarChart as aliases of LineChart2 and BarChart2
 export const LineChart = LineChart2;
 export const BarChart = BarChart2;
+
