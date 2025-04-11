@@ -53,7 +53,6 @@ interface ChartProps {
   dotColor?: string;
   showArea?: boolean;
   areaOpacity?: number;
-  showGrid?: boolean;
   referenceLineY?: number | null;
   referenceLineLabel?: string;
   domain?: [number, number] | null;
@@ -141,7 +140,11 @@ export const Chart: FC<ChartProps> = ({
               strokeWidth={2}
               activeDot={{ r: 8 }}
               dot={{ r: 4, fill: dotColor || lineColor || colors[0] }}
-              onClick={(e) => e && onClick && onClick(e.payload, 0)}
+              onClick={(e) => {
+                if (e && e.payload && onClick) {
+                  onClick(e.payload, 0);
+                }
+              }}
             />
             {showArea && (
               <Area 
@@ -176,7 +179,11 @@ export const Chart: FC<ChartProps> = ({
             <Bar 
               dataKey="value" 
               fill={lineColor || colors[0]} 
-              onClick={(e) => e && onClick && onClick(e.payload, 0)}
+              onClick={(e) => {
+                if (e && e.payload && onClick) {
+                  onClick(e.payload, 0);
+                }
+              }}
             />
           </RBarChart>
         )}
@@ -212,7 +219,11 @@ export const Chart: FC<ChartProps> = ({
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorValue)"
-              onClick={(e) => e && onClick && onClick(e.payload, 0)}
+              onClick={(e) => {
+                if (e && e.payload && onClick) {
+                  onClick(e.payload, 0);
+                }
+              }}
             />
           </RLineChart>
         )}
@@ -229,7 +240,11 @@ export const Chart: FC<ChartProps> = ({
               dataKey="value"
               innerRadius={donut ? outerRadius * 0.6 : 0}
               label={showLabel ? ({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%` : undefined}
-              onClick={(e) => e && onClick && onClick(e.payload, e.index || 0)}
+              onClick={(e) => {
+                if (e && onClick) {
+                  onClick(e, e.index || 0);
+                }
+              }}
             >
               {data.map((entry, index) => (
                 <Cell
@@ -283,4 +298,3 @@ export const AreaChart: FC<Omit<ChartProps, "type">> = (props) => (
 // For backward compatibility, add LineChart and BarChart as aliases of LineChart2 and BarChart2
 export const LineChart = LineChart2;
 export const BarChart = BarChart2;
-

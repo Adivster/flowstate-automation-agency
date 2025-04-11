@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Terminal, X, Send, Download, RotateCcw, Plus, Code, MessageCircle, ChevronDown, Bot } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -494,61 +495,11 @@ const CommandTerminal = () => {
       <Button
         variant="outline"
         size="sm"
-        className="fixed bottom-4 right-4 h-10 w-10 rounded-full bg-black/80 border-indigo-500/50 shadow-lg hover:shadow-indigo-500/20 hover:bg-indigo-500/20 z-40 terminal-toggle-btn animate-glow-pulse"
-        onClick={() => setIsVisible(v => !v)}
+        className="fixed bottom-4 right-4 z-40 terminal-toggle-btn rounded-full h-12 w-12 bg-black/70 border border-indigo-500/30 hover:bg-indigo-900/30 hover:border-indigo-400/60 transition-all duration-300"
+        onClick={() => setIsVisible(!isVisible)}
       >
-        <Terminal className="h-4 w-4 text-cyan-300" />
+        <Terminal className="h-5 w-5 text-cyan-300" />
       </Button>
-      
-      <style>
-        {`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-          height: 4px;
-        }
-        
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(139, 92, 246, 0.3);
-          border-radius: 10px;
-        }
-        
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(139, 92, 246, 0.5);
-        }
-        
-        @keyframes pulse-subtle {
-          0%, 100% { opacity: 0.8; }
-          50% { opacity: 1; }
-        }
-        
-        .animate-pulse-subtle {
-          animation: pulse-subtle 2s infinite ease-in-out;
-        }
-        
-        @keyframes glow-pulse {
-          0% {
-            box-shadow: 0 0 5px rgba(139, 92, 246, 0.3);
-            border-color: rgba(139, 92, 246, 0.3);
-          }
-          50% {
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.6);
-            border-color: rgba(139, 92, 246, 0.6);
-          }
-          100% {
-            box-shadow: 0 0 5px rgba(139, 92, 246, 0.3);
-            border-color: rgba(139, 92, 246, 0.3);
-          }
-        }
-        
-        .animate-glow-pulse {
-          animation: glow-pulse 3s infinite ease-in-out;
-        }
-        `}
-      </style>
     </>
   );
 };

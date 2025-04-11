@@ -2,7 +2,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Terminal } from 'lucide-react';
 import { useCommunicationTerminal } from './useCommunicationTerminal';
 import TerminalHeader from './TerminalHeader';
