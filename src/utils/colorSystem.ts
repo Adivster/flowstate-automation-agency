@@ -46,14 +46,14 @@ export const divisionColors: Record<string, ColorScheme> = {
     pattern: 'radial-gradient(circle at 75% 30%, rgba(168, 85, 247, 0.15) 0%, transparent 45%)'
   },
   strategy: { 
-    primary: '#3b82f6',
-    secondary: '#60a5fa',
-    border: 'rgba(59, 130, 246, 0.8)',
-    text: '#3b82f6',
-    bg: 'rgba(59, 130, 246, 0.15)',
-    shadow: '0 0 30px rgba(59, 130, 246, 0.8)',
-    glow: 'rgba(59, 130, 246, 0.6)',
-    pattern: 'radial-gradient(circle at 75% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 45%)'
+    primary: '#22c55e',
+    secondary: '#4ade80',
+    border: 'rgba(34, 197, 94, 0.8)',
+    text: '#22c55e',
+    bg: 'rgba(34, 197, 94, 0.15)',
+    shadow: '0 0 30px rgba(34, 197, 94, 0.8)',
+    glow: 'rgba(34, 197, 94, 0.6)',
+    pattern: 'radial-gradient(circle at 75% 30%, rgba(34, 197, 94, 0.15) 0%, transparent 45%)'
   },
   research: { 
     primary: '#22c55e',
