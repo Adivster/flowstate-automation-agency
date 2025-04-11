@@ -3,24 +3,27 @@ import React from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { FileText, BookMarked, Clock, Star, Eye, User, Bookmark } from 'lucide-react';
+import { FileText, BookMarked, Clock, Star, Eye, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getDivisionColorScheme } from '@/utils/colorSystem';
+
+interface Document {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  tags: string[];
+  updatedAt: string;
+  author: string;
+  views: number;
+  likes: number;
+  status: string;
+  icon: string;
+  pinned: boolean;
+}
 
 interface DocumentCardProps {
-  document: {
-    id: number;
-    title: string;
-    description: string;
-    category: string;
-    tags: string[];
-    updatedAt: string;
-    author: string;
-    views: number;
-    likes: number;
-    status: string;
-    icon: string;
-    pinned: boolean;
-  };
+  document: Document;
   activeFilters: string[];
   onToggleFilter: (tag: string) => void;
   onClick: () => void;
@@ -34,16 +37,32 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
   onClick,
   isGridView
 }) => {
+  // Get color scheme based on category
+  const getCategoryColor = () => {
+    const category = document.category.toLowerCase();
+    let divisionId = 'kb';
+    
+    if (category.includes('technical') || category.includes('system')) divisionId = 'strategy';
+    else if (category.includes('process') || category.includes('workflow')) divisionId = 'operations';
+    else if (category.includes('guideline') || category.includes('standard')) divisionId = 'analytics';
+    else if (category.includes('market') || category.includes('brand')) divisionId = 'lounge';
+    else if (category.includes('template') || category.includes('form')) divisionId = 'research';
+    
+    return getDivisionColorScheme(divisionId);
+  };
+  
+  const colorScheme = getCategoryColor();
+
   if (isGridView) {
     // Grid view card
     return (
       <Card 
         onClick={onClick}
-        className="bg-flow-background/30 border-flow-border/50 hover:border-blue-500/50 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300 cursor-pointer group"
+        className={`bg-flow-background/30 border-flow-border/50 hover:border-${colorScheme.text}/50 hover:shadow-[0_0_15px_${colorScheme.glow}] transition-all duration-300 cursor-pointer group`}
       >
         <CardHeader className="pb-2">
           <div className="flex justify-between items-start">
-            <div className="bg-blue-500/10 p-2 rounded text-blue-500">
+            <div className={`${colorScheme.bg} p-2 rounded text-${colorScheme.text}`}>
               {document.icon === 'file' ? (
                 <FileText className="h-5 w-5" />
               ) : (
@@ -77,7 +96,7 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
               </Button>
             </div>
           </div>
-          <CardTitle className="text-lg mt-2 group-hover:text-blue-500 transition-colors">
+          <CardTitle className={`text-lg mt-2 group-hover:text-${colorScheme.text} transition-colors`}>
             {document.title}
           </CardTitle>
           <CardDescription className="line-clamp-2">
@@ -86,7 +105,7 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
         </CardHeader>
         <CardContent className="pb-2">
           <div className="flex flex-wrap gap-1">
-            <span className="bg-blue-500/10 text-blue-500 text-xs py-1 px-2 rounded-full">
+            <span className={`${colorScheme.bg} text-${colorScheme.text} text-xs py-1 px-2 rounded-full`}>
               {document.category}
             </span>
             {document.tags.map((tag) => (
@@ -94,7 +113,7 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
                 key={tag} 
                 className={cn(
                   activeFilters.includes(tag) 
-                    ? 'bg-blue-500 text-white' 
+                    ? `bg-${colorScheme.text} text-white` 
                     : 'bg-flow-background/50 text-flow-foreground/70',
                   "text-xs py-1 px-2 rounded-full cursor-pointer hover:bg-blue-500/50 hover:text-white transition-colors"
                 )}
@@ -138,10 +157,10 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
   return (
     <div 
       onClick={onClick}
-      className="bg-flow-background/30 border border-flow-border/50 rounded-lg p-4 hover:border-blue-500/50 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300 cursor-pointer group"
+      className={`bg-flow-background/30 border border-flow-border/50 rounded-lg p-4 hover:border-${colorScheme.text}/50 hover:shadow-[0_0_15px_${colorScheme.glow}] transition-all duration-300 cursor-pointer group`}
     >
       <div className="flex items-start gap-4">
-        <div className="bg-blue-500/10 p-2 rounded text-blue-500 flex-shrink-0">
+        <div className={`${colorScheme.bg} p-2 rounded text-${colorScheme.text} flex-shrink-0`}>
           {document.icon === 'file' ? (
             <FileText className="h-5 w-5" />
           ) : (
@@ -152,7 +171,7 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
         <div className="flex-grow min-w-0">
           <div className="flex items-center justify-between gap-2 mb-1">
             <div className="flex items-center gap-2">
-              <h3 className="text-lg font-medium group-hover:text-blue-500 transition-colors truncate">
+              <h3 className={`text-lg font-medium group-hover:text-${colorScheme.text} transition-colors truncate`}>
                 {document.title}
               </h3>
               {document.status && (
@@ -186,7 +205,7 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
           </p>
           
           <div className="flex flex-wrap gap-2 mb-2">
-            <span className="bg-blue-500/10 text-blue-500 text-xs py-1 px-2 rounded-full">
+            <span className={`${colorScheme.bg} text-${colorScheme.text} text-xs py-1 px-2 rounded-full`}>
               {document.category}
             </span>
             {document.tags.map((tag) => (
@@ -194,7 +213,7 @@ const DocumentCard: React.FC<DocumentCardProps> = ({
                 key={tag} 
                 className={cn(
                   activeFilters.includes(tag) 
-                    ? 'bg-blue-500 text-white' 
+                    ? `bg-${colorScheme.text} text-white` 
                     : 'bg-flow-background/50 text-flow-foreground/70',
                   "text-xs py-1 px-2 rounded-full cursor-pointer hover:bg-blue-500/50 hover:text-white transition-colors"
                 )}

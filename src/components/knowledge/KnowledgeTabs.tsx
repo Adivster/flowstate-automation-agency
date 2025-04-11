@@ -11,8 +11,8 @@ interface Document {
   title: string;
   description: string;
   category: string;
-  status?: string;
-  pinned?: boolean;
+  status: string;
+  pinned: boolean;
   fileType?: string;
   fileUrl?: string;
   content?: string;

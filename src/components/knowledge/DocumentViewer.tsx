@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { X, Download, Star, BookmarkPlus, Share2, ExternalLink, Maximize2, Minimize2 } from 'lucide-react';
+import { X, Download, Star, BookmarkPlus, Share2, ExternalLink, Maximize2, Minimize2, BookOpen, FileText } from 'lucide-react';
+import { getDivisionColorScheme } from '@/utils/colorSystem';
 
 interface DocumentViewerProps {
   document: {
@@ -17,6 +17,11 @@ interface DocumentViewerProps {
     author: string;
     fileType?: 'pdf' | 'doc' | 'txt' | 'md' | 'html';
     fileUrl?: string;
+    status?: string;
+    icon: string;
+    pinned?: boolean;
+    views: number;
+    likes: number;
   } | null;
   onClose: () => void;
 }
@@ -35,14 +40,38 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({ document, onClose }) =>
     setIsBookmarked(!isBookmarked);
   };
 
+  // Get color scheme based on category
+  const getCategoryColor = () => {
+    const category = document.category.toLowerCase();
+    let divisionId = 'kb';
+    
+    if (category.includes('technical') || category.includes('system')) divisionId = 'strategy';
+    else if (category.includes('process') || category.includes('workflow')) divisionId = 'operations';
+    else if (category.includes('guideline') || category.includes('standard')) divisionId = 'analytics';
+    else if (category.includes('market') || category.includes('brand')) divisionId = 'lounge';
+    else if (category.includes('template') || category.includes('form')) divisionId = 'research';
+    
+    return getDivisionColorScheme(divisionId);
+  };
+  
+  const colorScheme = getCategoryColor();
+
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm ${isFullscreen ? 'overflow-hidden' : 'overflow-auto'}`}>
       <GlassMorphism className={`relative w-full flex flex-col rounded-xl shadow-xl border-flow-border/40 ${isFullscreen ? 'h-full m-0' : 'max-w-4xl max-h-[85vh]'}`}>
         {/* Document Header */}
-        <div className="flex items-center justify-between p-5 border-b border-flow-border/30 bg-gradient-to-r from-blue-500/20 to-purple-500/20">
+        <div className={`flex items-center justify-between p-5 border-b border-flow-border/30 bg-gradient-to-r from-${colorScheme.text}/20 to-${colorScheme.secondary}/20`}>
           <div className="flex-grow">
-            <h2 className="text-2xl font-semibold text-white">{document.title}</h2>
-            <p className="text-sm text-flow-foreground/70">{document.category} • Last updated {document.updatedAt} by {document.author}</p>
+            <div className="flex items-center gap-2">
+              <div className={`p-2 rounded-lg ${colorScheme.bg}`}>
+                {document.icon === 'book' ? 
+                  <BookOpen className={`h-5 w-5 text-${colorScheme.text}`} /> : 
+                  <FileText className={`h-5 w-5 text-${colorScheme.text}`} />
+                }
+              </div>
+              <h2 className="text-2xl font-semibold text-white">{document.title}</h2>
+            </div>
+            <p className="text-sm text-flow-foreground/70 mt-1 ml-11">{document.category} • Last updated {document.updatedAt} by {document.author}</p>
           </div>
           
           <div className="flex items-center gap-2">
@@ -84,13 +113,13 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({ document, onClose }) =>
         </div>
         
         {/* Document Content */}
-        <div className="flex-grow overflow-auto p-6 bg-gradient-to-b from-transparent to-blue-900/10">
+        <div className={`flex-grow overflow-auto p-6 bg-gradient-to-b from-transparent to-${colorScheme.text}/5`}>
           {document.fileUrl ? (
             <div className="relative h-full w-full flex flex-col items-center">
               {document.fileType === 'pdf' && (
                 <iframe 
                   src={`${document.fileUrl}#toolbar=0`}
-                  className="w-full h-full min-h-[500px] rounded-lg border border-flow-border/20 bg-white/5"
+                  className={`w-full h-full min-h-[500px] rounded-lg border border-${colorScheme.text}/20 bg-white/5 shadow-[0_0_30px_${colorScheme.glow}]`}
                   title={document.title}
                 />
               )}
@@ -98,7 +127,7 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({ document, onClose }) =>
               {document.fileType === 'html' && (
                 <iframe 
                   src={document.fileUrl}
-                  className="w-full h-full min-h-[500px] rounded-lg border border-flow-border/20"
+                  className={`w-full h-full min-h-[500px] rounded-lg border border-${colorScheme.text}/20 shadow-[0_0_30px_${colorScheme.glow}]`}
                   title={document.title}
                 />
               )}
@@ -137,12 +166,12 @@ const DocumentViewer: React.FC<DocumentViewerProps> = ({ document, onClose }) =>
         </div>
         
         {/* Document Footer */}
-        <div className="p-4 border-t border-flow-border/30 bg-flow-background/30">
+        <div className={`p-4 border-t border-flow-border/30 bg-${colorScheme.text}/5`}>
           <div className="flex flex-wrap gap-2">
             {document.tags.map(tag => (
               <span 
                 key={tag} 
-                className="bg-blue-500/20 text-blue-400 text-xs py-1.5 px-2.5 rounded-full"
+                className={`bg-${colorScheme.text}/20 text-${colorScheme.text} text-xs py-1.5 px-2.5 rounded-full`}
               >
                 #{tag}
               </span>
