@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { 
   BookOpen, 
@@ -456,7 +455,7 @@ const AgencyDashboard: React.FC = () => {
                 { icon: <Settings size={14} />, color: 'text-cyan-500', text: 'System update deployed successfully', time: '1h ago' },
                 { icon: <UserPlus size={14} />, color: 'text-green-500', text: 'New agent "Content Specialist" deployed', time: '3h ago' },
                 { icon: <Shield size={14} />, color: 'text-red-500', text: 'Security scan completed', time: '5h ago' },
-                { icon: <MessageSquare size={14} />, color: 'text-indigo-500', text: 'Agent mesh communication updated', time: '6h ago' },
+                { icon: <MessagesSquare size={14} />, color: 'text-purple-500', text: 'Agent mesh communication updated', time: '6h ago' },
               ].map((activity, index) => (
                 <div key={index} className="flex items-start p-2 hover:bg-flow-background/10 rounded-md">
                   <div className={`${activity.color} mr-2 mt-0.5`}>

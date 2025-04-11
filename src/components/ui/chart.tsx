@@ -1,16 +1,12 @@
 
-// This is the file causing TypeScript errors. Let's fix the PieChart component, which has dataIndex and index errors
-// Fixed file follows:
-// Original file error: Property 'dataIndex' and 'index' do not exist on type '{ strokeDasharray: ReactText; value?: any; }'
-
 import React, { FC } from "react";
 import { 
   ResponsiveContainer, 
-  LineChart, 
+  LineChart as RLineChart, 
   Line, 
-  BarChart, 
+  BarChart as RBarChart, 
   Bar, 
-  PieChart as RechartsPieChart,
+  PieChart as RPieChart,
   Pie, 
   Cell, 
   XAxis, 
@@ -28,6 +24,7 @@ interface DataPoint {
   name: string;
   value: number;
   color?: string;
+  description?: string;
 }
 
 // Chart Component Props
@@ -43,6 +40,14 @@ interface ChartProps {
   showXAxis?: boolean;
   showYAxis?: boolean;
   className?: string;
+  // Additional properties for PieChart
+  donut?: boolean;
+  gradient?: boolean;
+  interactive?: boolean;
+  showLabel?: boolean;
+  outerRadius?: number;
+  legendPosition?: string;
+  onClick?: (data: any, index: number) => void;
 }
 
 // Default colors
@@ -71,6 +76,13 @@ export const Chart: FC<ChartProps> = ({
   showXAxis = true,
   showYAxis = true,
   className,
+  donut = false,
+  gradient = false,
+  interactive = false,
+  showLabel = true,
+  outerRadius = 80,
+  legendPosition = 'bottom',
+  onClick,
 }) => {
   // Line area generator using cardinal curve
   const cardinal = curveCardinal.tension(0.2);
@@ -80,7 +92,7 @@ export const Chart: FC<ChartProps> = ({
     <div style={{ width: width || "100%", height }} className={className}>
       <ResponsiveContainer width="100%" height="100%">
         {type === "line" && (
-          <LineChart
+          <RLineChart
             data={data}
             margin={{
               top: 5,
@@ -100,12 +112,13 @@ export const Chart: FC<ChartProps> = ({
               stroke={colors[0]}
               strokeWidth={2}
               activeDot={{ r: 8 }}
+              onClick={onClick}
             />
-          </LineChart>
+          </RLineChart>
         )}
 
         {type === "bar" && (
-          <BarChart
+          <RBarChart
             data={data}
             margin={{
               top: 5,
@@ -119,12 +132,12 @@ export const Chart: FC<ChartProps> = ({
             {showYAxis && <YAxis />}
             {showTooltip && <Tooltip />}
             {showLegend && <Legend />}
-            <Bar dataKey="value" fill={colors[0]} />
-          </BarChart>
+            <Bar dataKey="value" fill={colors[0]} onClick={onClick} />
+          </RBarChart>
         )}
 
         {type === "area" && (
-          <LineChart
+          <RLineChart
             data={data}
             margin={{
               top: 5,
@@ -152,21 +165,24 @@ export const Chart: FC<ChartProps> = ({
               dot={{ r: 4, strokeWidth: 1 }}
               fillOpacity={1}
               fill="url(#colorValue)"
+              onClick={onClick}
             />
-          </LineChart>
+          </RLineChart>
         )}
 
         {type === "pie" && (
-          <RechartsPieChart>
+          <RPieChart>
             <Pie
               data={data}
               cx="50%"
               cy="50%"
               labelLine={false}
-              outerRadius={80}
+              outerRadius={outerRadius}
               fill="#8884d8"
               dataKey="value"
-              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+              innerRadius={donut ? outerRadius * 0.6 : 0}
+              label={showLabel ? ({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%` : undefined}
+              onClick={onClick}
             >
               {data.map((entry, index) => (
                 <Cell
@@ -177,8 +193,10 @@ export const Chart: FC<ChartProps> = ({
             </Pie>
             {showLegend && (
               <Legend 
+                layout={legendPosition === 'side' ? 'vertical' : 'horizontal'}
+                align={legendPosition === 'side' ? 'right' : 'center'}
+                verticalAlign={legendPosition === 'side' ? 'middle' : 'bottom'}
                 formatter={(value, entry, index) => {
-                  // Fixed TypeScript error by correctly typing the entry parameter
                   if (typeof index === 'number') {
                     return (
                       <span style={{ color: data[index].color || colors[index % colors.length] }}>
@@ -191,7 +209,7 @@ export const Chart: FC<ChartProps> = ({
               />
             )}
             {showTooltip && <Tooltip />}
-          </RechartsPieChart>
+          </RPieChart>
         )}
       </ResponsiveContainer>
     </div>
@@ -215,5 +233,6 @@ export const AreaChart: FC<Omit<ChartProps, "type">> = (props) => (
   <Chart {...props} type="area" />
 );
 
-// Usage example:
-// <LineChart2 data={[{name: 'A', value: 10}, {name: 'B', value: 20}]} />
+// For backward compatibility, add LineChart and BarChart as aliases of LineChart2 and BarChart2
+export const LineChart = LineChart2;
+export const BarChart = BarChart2;
