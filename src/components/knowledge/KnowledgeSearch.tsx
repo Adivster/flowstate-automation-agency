@@ -70,12 +70,12 @@ const KnowledgeSearch: React.FC<KnowledgeSearchProps> = ({
               </SelectContent>
             </Select>
             
-            <Tabs value={viewMode} className="hidden md:block">
+            <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'grid' | 'list')} className="hidden md:block">
               <TabsList className="bg-flow-background/30 border border-flow-border/40">
-                <TabsTrigger value="grid" className="data-[state=active]:bg-blue-500" onClick={() => setViewMode('grid')}>
+                <TabsTrigger value="grid" className="data-[state=active]:bg-blue-500">
                   <Grid className="h-4 w-4" />
                 </TabsTrigger>
-                <TabsTrigger value="list" className="data-[state=active]:bg-blue-500" onClick={() => setViewMode('list')}>
+                <TabsTrigger value="list" className="data-[state=active]:bg-blue-500">
                   <List className="h-4 w-4" />
                 </TabsTrigger>
               </TabsList>

@@ -5,6 +5,7 @@ import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { PieChart, BarChart as BarChartComponent } from '@/components/ui/chart';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Collapsible,
   CollapsibleContent,
@@ -89,22 +90,24 @@ const ResourceUsageSection: React.FC = () => {
                       </span>
                     </h4>
                     <div className="flex gap-2">
-                      <Button 
-                        variant="ghost"
-                        size="sm"
-                        className={`text-xs ${activeTab === 'division' ? 'bg-flow-accent/20 text-flow-accent' : 'text-flow-foreground/70'}`}
-                        onClick={() => setActiveTab('division')}
-                      >
-                        Divisions
-                      </Button>
-                      <Button 
-                        variant="ghost"
-                        size="sm"
-                        className={`text-xs ${activeTab === 'performance' ? 'bg-flow-accent/20 text-flow-accent' : 'text-flow-foreground/70'}`}
-                        onClick={() => setActiveTab('performance')}
-                      >
-                        Resources
-                      </Button>
+                      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'division' | 'performance')}>
+                        <Button 
+                          variant="ghost"
+                          size="sm"
+                          className={`text-xs ${activeTab === 'division' ? 'bg-flow-accent/20 text-flow-accent' : 'text-flow-foreground/70'}`}
+                          onClick={() => setActiveTab('division')}
+                        >
+                          Divisions
+                        </Button>
+                        <Button 
+                          variant="ghost"
+                          size="sm"
+                          className={`text-xs ${activeTab === 'performance' ? 'bg-flow-accent/20 text-flow-accent' : 'text-flow-foreground/70'}`}
+                          onClick={() => setActiveTab('performance')}
+                        >
+                          Resources
+                        </Button>
+                      </Tabs>
                     </div>
                   </div>
 

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
@@ -125,36 +124,34 @@ const Analytics = () => {
 
             {/* Time period selector */}
             <div className="flex justify-center mb-8">
-              <TabsList className="bg-flow-background/30 p-1">
-                <TabsTrigger 
-                  value="week" 
-                  onClick={() => setActiveTimeframe('week')}
-                  className={`data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-500 ${activeTimeframe === 'week' ? 'bg-orange-500/20 text-orange-500' : ''}`}
-                >
-                  Week
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="month" 
-                  onClick={() => setActiveTimeframe('month')}
-                  className={`data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-500 ${activeTimeframe === 'month' ? 'bg-orange-500/20 text-orange-500' : ''}`}
-                >
-                  Month
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="quarter" 
-                  onClick={() => setActiveTimeframe('quarter')}
-                  className={`data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-500 ${activeTimeframe === 'quarter' ? 'bg-orange-500/20 text-orange-500' : ''}`}
-                >
-                  Quarter
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="year" 
-                  onClick={() => setActiveTimeframe('year')}
-                  className={`data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-500 ${activeTimeframe === 'year' ? 'bg-orange-500/20 text-orange-500' : ''}`}
-                >
-                  Year
-                </TabsTrigger>
-              </TabsList>
+              <Tabs value={activeTimeframe} onValueChange={(value) => setActiveTimeframe(value as 'week' | 'month' | 'quarter' | 'year')}>
+                <TabsList className="bg-flow-background/30 p-1">
+                  <TabsTrigger 
+                    value="week" 
+                    className={activeTimeframe === 'week' ? 'bg-orange-500/20 text-orange-500' : ''}
+                  >
+                    Week
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="month" 
+                    className={activeTimeframe === 'month' ? 'bg-orange-500/20 text-orange-500' : ''}
+                  >
+                    Month
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="quarter" 
+                    className={activeTimeframe === 'quarter' ? 'bg-orange-500/20 text-orange-500' : ''}
+                  >
+                    Quarter
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="year" 
+                    className={activeTimeframe === 'year' ? 'bg-orange-500/20 text-orange-500' : ''}
+                  >
+                    Year
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
             
             {/* Key Performance Indicators */}
