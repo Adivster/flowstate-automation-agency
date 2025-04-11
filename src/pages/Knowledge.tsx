@@ -6,7 +6,11 @@ import Footer from '@/components/layout/Footer';
 import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { BookOpen, Search, FileText, Filter, Tag, Clock, Star, BookMarked, Calendar, Eye, User, X, ChevronDown } from 'lucide-react';
+import { 
+  BookOpen, Search, FileText, Filter, Tag, Clock, Star, 
+  BookMarked, Calendar, Eye, User, X, ChevronDown,
+  Upload, SortAsc, BrainCircuit, Plus, FolderPlus
+} from 'lucide-react';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import Section from '@/components/ui/design-system/Section';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -16,6 +20,9 @@ import DataCard from '@/components/ui/design-system/DataCard';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import DocumentViewer from '@/components/knowledge/DocumentViewer';
+import CategorySection from '@/components/knowledge/CategorySection';
+import DocumentCard from '@/components/knowledge/DocumentCard';
 
 const Knowledge = () => {
   const { t } = useLanguage();
@@ -23,10 +30,12 @@ const Knowledge = () => {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [showCategorySection, setShowCategorySection] = useState(true);
+  const [selectedDocument, setSelectedDocument] = useState<any | null>(null);
   
   // Sample categories
   const categories = [
-    { id: 'all', name: 'All Documents' },
+    { id: 'all', name: 'All Documents', count: 6 },
     { id: 'process', name: 'Process', count: 2 },
     { id: 'guidelines', name: 'Guidelines', count: 1 },
     { id: 'templates', name: 'Templates', count: 1 },
@@ -35,12 +44,65 @@ const Knowledge = () => {
     { id: 'security', name: 'Security', count: 1 },
   ];
   
-  // Sample knowledge documents with extended metadata
+  // Enhanced categories with descriptions and icons for the visual section
+  const categoriesWithDetails = [
+    { 
+      id: 'process', 
+      name: 'Process Documentation', 
+      count: 2, 
+      icon: 'book',
+      description: 'Standard operating procedures and workflow documentation',
+      color: 'bg-gradient-to-br from-blue-500/20 to-purple-500/30 text-blue-400'
+    },
+    { 
+      id: 'guidelines', 
+      name: 'Guidelines & Standards', 
+      count: 1, 
+      icon: 'bookmarked',
+      description: 'Best practices and compliance standards',
+      color: 'bg-gradient-to-br from-emerald-500/20 to-green-500/30 text-emerald-400'
+    },
+    { 
+      id: 'templates', 
+      name: 'Templates & Forms', 
+      count: 1, 
+      icon: 'file',
+      description: 'Reusable templates for common business documents',
+      color: 'bg-gradient-to-br from-amber-500/20 to-yellow-500/30 text-amber-400'
+    },
+    { 
+      id: 'technical', 
+      name: 'Technical Documentation', 
+      count: 1, 
+      icon: 'file',
+      description: 'System architecture and technical specifications',
+      color: 'bg-gradient-to-br from-indigo-500/20 to-blue-500/30 text-indigo-400'
+    },
+    { 
+      id: 'marketing', 
+      name: 'Marketing Resources', 
+      count: 1, 
+      icon: 'bookmarked',
+      description: 'Brand guidelines and marketing materials',
+      color: 'bg-gradient-to-br from-rose-500/20 to-pink-500/30 text-rose-400'
+    },
+    { 
+      id: 'security', 
+      name: 'Security Protocols', 
+      count: 1, 
+      icon: 'book',
+      description: 'Security guidelines and compliance documentation',
+      color: 'bg-gradient-to-br from-red-500/20 to-orange-500/30 text-red-400'
+    },
+  ];
+  
+  // Enhanced sample knowledge documents with extended metadata
   const documents = [
     {
       id: 1,
       title: 'Agency Onboarding Guide',
       description: 'Step-by-step guide for onboarding new clients to the agency platform.',
+      content: 'This comprehensive guide covers all aspects of onboarding new clients to our agency platform. From initial contact to full integration, every step is detailed with best practices and tips for success.',
       category: 'Process',
       tags: ['onboarding', 'clients'],
       updatedAt: '2025-03-22',
@@ -50,11 +112,14 @@ const Knowledge = () => {
       status: 'updated',
       icon: 'file',
       pinned: true,
+      fileType: 'pdf',
+      fileUrl: 'https://example.com/files/onboarding-guide.pdf'
     },
     {
       id: 2,
       title: 'Content Creation Best Practices',
       description: 'Guidelines and standards for creating high-quality AI-generated content.',
+      content: 'Learn how to create compelling, accurate, and ethical AI-generated content with these industry-leading best practices. Covers tone, style, fact-checking, and quality assurance processes.',
       category: 'Guidelines',
       tags: ['content', 'quality'],
       updatedAt: '2025-03-18',
@@ -69,6 +134,7 @@ const Knowledge = () => {
       id: 3,
       title: 'Client Communication Templates',
       description: 'Pre-approved templates for common client communications and scenarios.',
+      content: 'A collection of professionally crafted templates for various client communication scenarios, including project updates, feedback requests, and issue resolution communications.',
       category: 'Templates',
       tags: ['communication', 'templates'],
       updatedAt: '2025-04-01',
@@ -78,6 +144,8 @@ const Knowledge = () => {
       status: 'new',
       icon: 'file',
       pinned: true,
+      fileType: 'doc',
+      fileUrl: 'https://example.com/files/communication-templates.docx'
     },
     {
       id: 4,
@@ -92,6 +160,8 @@ const Knowledge = () => {
       status: '',
       icon: 'file',
       pinned: false,
+      fileType: 'html',
+      fileUrl: 'https://example.com/files/system-architecture.html'
     },
     {
       id: 5,
@@ -120,6 +190,8 @@ const Knowledge = () => {
       status: '',
       icon: 'file',
       pinned: false,
+      fileType: 'pdf',
+      fileUrl: 'https://example.com/files/security-protocol.pdf'
     },
   ];
   
@@ -163,11 +235,17 @@ const Knowledge = () => {
     setSearchQuery('');
   };
   
+  const handleSelectCategory = (categoryId: string) => {
+    setSelectedCategory(categoryId === 'all' ? null : categoryId);
+    setShowCategorySection(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
   // Get pinned or popular documents for quick access
   const quickAccessDocs = documents.filter(doc => doc.pinned || doc.status === 'popular').slice(0, 3);
   
   return (
-    <div className="min-h-screen bg-flow-background text-flow-foreground flex flex-col circuit-background">
+    <div className="min-h-screen bg-flow-background text-flow-foreground flex flex-col circuit-background bg-gradient-to-b from-transparent via-blue-900/10 to-blue-900/20">
       <Helmet>
         <title>{t('knowledge')} | {t('agency')}</title>
       </Helmet>
@@ -180,13 +258,14 @@ const Knowledge = () => {
             <PageHeader 
               title={t('knowledge')}
               description="Access your agency's collective intelligence repository. Search, browse, and utilize AI-optimized knowledge documents."
-              icon={<BookOpen className="h-8 w-8 text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]" />}
-              glassEffect={false}
+              icon={<BookOpen className="h-8 w-8 text-blue-500 drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]" />}
+              glassEffect={true}
+              className="bg-gradient-to-r from-blue-500/5 to-purple-500/5 border-b border-t border-blue-500/20"
             />
             
-            {/* Quick Access Section */}
+            {/* Quick Access Section with Gradient */}
             {quickAccessDocs.length > 0 && (
-              <GlassMorphism className="rounded-2xl p-6 md:p-8 mb-6 shadow-sm border-flow-border/30 scan-lines bg-blue-500/5">
+              <GlassMorphism className="rounded-2xl p-6 md:p-8 mb-6 border-flow-border/30 bg-gradient-to-r from-blue-500/5 to-purple-500/10 shadow-[0_5px_15px_rgba(59,130,246,0.2)]">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-medium flex items-center gap-2">
                     <Star className="h-5 w-5 text-blue-500" />
@@ -197,7 +276,11 @@ const Knowledge = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {quickAccessDocs.map((doc) => (
-                    <Card key={`quick-${doc.id}`} className="bg-flow-background/30 border-flow-border/50 hover:border-blue-500/50 hover:shadow-md transition-all duration-300 cursor-pointer">
+                    <Card 
+                      key={`quick-${doc.id}`} 
+                      className="bg-flow-background/30 border-flow-border/50 hover:border-blue-500/50 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300 cursor-pointer group"
+                      onClick={() => setSelectedDocument(doc)}
+                    >
                       <CardHeader className="pb-2">
                         <div className="flex justify-between">
                           <span className="text-blue-500 font-medium text-sm">{doc.category}</span>
@@ -211,7 +294,9 @@ const Knowledge = () => {
                             </Badge>
                           )}
                         </div>
-                        <CardTitle className="text-base">{doc.title}</CardTitle>
+                        <CardTitle className="text-base group-hover:text-blue-500 transition-colors">
+                          {doc.title}
+                        </CardTitle>
                       </CardHeader>
                     </Card>
                   ))}
@@ -219,8 +304,18 @@ const Knowledge = () => {
               </GlassMorphism>
             )}
             
-            {/* Search and Filter Area */}
-            <GlassMorphism className="rounded-2xl p-6 md:p-8 mb-6 shadow-sm border-flow-border/30 scan-lines">
+            {/* Category showcase section - only shown when no category is selected */}
+            {showCategorySection && (
+              <CategorySection 
+                title="Knowledge Categories"
+                description="Browse our knowledge base by category to find the information you need."
+                categories={categoriesWithDetails}
+                onSelectCategory={handleSelectCategory}
+              />
+            )}
+            
+            {/* Search and Filter Area - Enhanced with gradients */}
+            <GlassMorphism className="rounded-2xl p-6 md:p-8 mb-6 shadow-[0_5px_15px_rgba(0,0,0,0.15)] border-flow-border/30 bg-gradient-to-br from-blue-900/10 to-purple-900/10 backdrop-blur-xl">
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                   <div className="relative w-full md:w-2/3 group">
@@ -313,8 +408,10 @@ const Knowledge = () => {
                       </PopoverContent>
                     </Popover>
                     
-                    <Button className="flex items-center gap-1">
-                      <FileText className="h-4 w-4" />
+                    <Button 
+                      className="flex items-center gap-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-blue-500/20 transition-all duration-300"
+                    >
+                      <Plus className="h-4 w-4" />
                       <span>New Document</span>
                     </Button>
                   </div>
@@ -363,12 +460,29 @@ const Knowledge = () => {
                   </div>
                 )}
                 
-                {/* View Toggle */}
+                {/* View Toggle and Sort Options */}
                 <div className="flex items-center justify-between border-t border-flow-border/30 pt-3 mt-2">
                   <div className="text-sm text-flow-foreground/70">
                     {filteredDocuments.length} {filteredDocuments.length === 1 ? 'document' : 'documents'} available
                   </div>
                   <div className="flex items-center space-x-2">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-8 px-3 flex items-center gap-1">
+                          <SortAsc className="h-4 w-4" />
+                          <span>Sort</span>
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-48" align="end">
+                        <div className="space-y-1">
+                          <Button variant="ghost" size="sm" className="w-full justify-start">Most recent</Button>
+                          <Button variant="ghost" size="sm" className="w-full justify-start">Most viewed</Button>
+                          <Button variant="ghost" size="sm" className="w-full justify-start">Alphabetical (A-Z)</Button>
+                          <Button variant="ghost" size="sm" className="w-full justify-start">Most popular</Button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                    
                     <Button 
                       variant={viewMode === 'grid' ? 'default' : 'outline'} 
                       size="sm" 
@@ -393,10 +507,21 @@ const Knowledge = () => {
             {/* Content Tabs */}
             <Tabs defaultValue="all" className="mb-6">
               <TabsList className="bg-flow-background/30 p-1">
-                <TabsTrigger value="all" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">All Documents</TabsTrigger>
-                <TabsTrigger value="pinned" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">Pinned</TabsTrigger>
-                <TabsTrigger value="recent" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">Recently Updated</TabsTrigger>
-                <TabsTrigger value="popular" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">Popular</TabsTrigger>
+                <TabsTrigger value="all" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+                  All Documents
+                </TabsTrigger>
+                <TabsTrigger value="pinned" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+                  Pinned
+                </TabsTrigger>
+                <TabsTrigger value="recent" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+                  Recently Updated
+                </TabsTrigger>
+                <TabsTrigger value="popular" className="data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+                  Popular
+                </TabsTrigger>
+                <TabsTrigger value="ai" className="data-[state=active]:bg-pink-500 data-[state=active]:text-white">
+                  <BrainCircuit className="h-4 w-4 mr-1" /> AI Recommendations
+                </TabsTrigger>
               </TabsList>
               
               <TabsContent value="all" className="mt-4">
@@ -404,165 +529,27 @@ const Knowledge = () => {
                 {viewMode === 'grid' ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filteredDocuments.map((doc) => (
-                      <Card 
-                        key={doc.id} 
-                        className="bg-flow-background/30 border-flow-border/50 hover:border-blue-500/50 hover:shadow-md transition-all duration-300 cursor-pointer group"
-                      >
-                        <CardHeader className="pb-2">
-                          <div className="flex justify-between items-start">
-                            <div className="bg-blue-500/10 p-2 rounded text-blue-500">
-                              {doc.icon === 'file' ? (
-                                <FileText className="h-5 w-5" />
-                              ) : (
-                                <BookMarked className="h-5 w-5" />
-                              )}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              {doc.status && (
-                                <Badge variant="outline" className={`
-                                  ${doc.status === 'new' ? 'bg-green-500/10 text-green-500 border-green-500/20' : ''}
-                                  ${doc.status === 'updated' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' : ''}
-                                  ${doc.status === 'popular' ? 'bg-orange-500/10 text-orange-500 border-orange-500/20' : ''}
-                                `}>
-                                  {doc.status}
-                                </Badge>
-                              )}
-                              <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Star className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                          <CardTitle className="text-lg mt-2 group-hover:text-blue-500 transition-colors">{doc.title}</CardTitle>
-                          <CardDescription className="line-clamp-2">{doc.description}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="pb-2">
-                          <div className="flex flex-wrap gap-1">
-                            <span className="bg-blue-500/10 text-blue-500 text-xs py-1 px-2 rounded-full">{doc.category}</span>
-                            {doc.tags.map((tag) => (
-                              <span 
-                                key={tag} 
-                                className={`${
-                                  activeFilters.includes(tag) 
-                                    ? 'bg-blue-500 text-white' 
-                                    : 'bg-flow-background/50 text-flow-foreground/70'
-                                } text-xs py-1 px-2 rounded-full cursor-pointer hover:bg-blue-500/50 hover:text-white transition-colors`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleFilter(tag);
-                                }}
-                              >
-                                #{tag}
-                              </span>
-                            ))}
-                          </div>
-                        </CardContent>
-                        <CardFooter className="pt-2 text-xs text-flow-foreground/60 flex justify-between border-t border-flow-border/30 mt-2">
-                          <div className="flex items-center gap-3">
-                            <span className="flex items-center gap-1">
-                              <Clock className="h-3 w-3" /> 
-                              {doc.updatedAt}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <User className="h-3 w-3" />
-                              {doc.author}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className="flex items-center gap-1">
-                              <Eye className="h-3 w-3" />
-                              {doc.views}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Star className="h-3 w-3 fill-current" />
-                              {doc.likes}
-                            </span>
-                          </div>
-                        </CardFooter>
-                      </Card>
+                      <DocumentCard
+                        key={doc.id}
+                        document={doc}
+                        activeFilters={activeFilters}
+                        onToggleFilter={toggleFilter}
+                        onClick={() => setSelectedDocument(doc)}
+                        isGridView={true}
+                      />
                     ))}
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {filteredDocuments.map((doc) => (
-                      <div 
-                        key={doc.id} 
-                        className="bg-flow-background/30 border border-flow-border/50 rounded-lg p-4 hover:border-blue-500/50 hover:shadow-md transition-all duration-300 cursor-pointer group"
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className="bg-blue-500/10 p-2 rounded text-blue-500 flex-shrink-0">
-                            {doc.icon === 'file' ? (
-                              <FileText className="h-5 w-5" />
-                            ) : (
-                              <BookMarked className="h-5 w-5" />
-                            )}
-                          </div>
-                          
-                          <div className="flex-grow min-w-0">
-                            <div className="flex items-center justify-between gap-2 mb-1">
-                              <div className="flex items-center gap-2">
-                                <h3 className="text-lg font-medium group-hover:text-blue-500 transition-colors truncate">{doc.title}</h3>
-                                {doc.status && (
-                                  <Badge variant="outline" className={`
-                                    ${doc.status === 'new' ? 'bg-green-500/10 text-green-500 border-green-500/20' : ''}
-                                    ${doc.status === 'updated' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' : ''}
-                                    ${doc.status === 'popular' ? 'bg-orange-500/10 text-orange-500 border-orange-500/20' : ''}
-                                  `}>
-                                    {doc.status}
-                                  </Badge>
-                                )}
-                              </div>
-                              <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                                <Star className="h-4 w-4" />
-                              </Button>
-                            </div>
-                            
-                            <p className="text-flow-foreground/70 text-sm line-clamp-1 mb-2">{doc.description}</p>
-                            
-                            <div className="flex flex-wrap gap-2 mb-2">
-                              <span className="bg-blue-500/10 text-blue-500 text-xs py-1 px-2 rounded-full">{doc.category}</span>
-                              {doc.tags.map((tag) => (
-                                <span 
-                                  key={tag} 
-                                  className={`${
-                                    activeFilters.includes(tag) 
-                                      ? 'bg-blue-500 text-white' 
-                                      : 'bg-flow-background/50 text-flow-foreground/70'
-                                  } text-xs py-1 px-2 rounded-full cursor-pointer hover:bg-blue-500/50 hover:text-white transition-colors`}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleFilter(tag);
-                                  }}
-                                >
-                                  #{tag}
-                                </span>
-                              ))}
-                            </div>
-                            
-                            <div className="text-xs text-flow-foreground/60 flex justify-between flex-wrap gap-2">
-                              <div className="flex items-center gap-3">
-                                <span className="flex items-center gap-1">
-                                  <Clock className="h-3 w-3" /> 
-                                  {doc.updatedAt}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <User className="h-3 w-3" />
-                                  {doc.author}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <span className="flex items-center gap-1">
-                                  <Eye className="h-3 w-3" />
-                                  {doc.views}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <Star className="h-3 w-3 fill-current" />
-                                  {doc.likes}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      <DocumentCard
+                        key={doc.id}
+                        document={doc}
+                        activeFilters={activeFilters}
+                        onToggleFilter={toggleFilter}
+                        onClick={() => setSelectedDocument(doc)}
+                        isGridView={false}
+                      />
                     ))}
                   </div>
                 )}
@@ -572,39 +559,27 @@ const Knowledge = () => {
                 <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-3"}>
                   {documents.filter(doc => doc.pinned).length > 0 ? (
                     documents.filter(doc => doc.pinned).map((doc) => (
-                      <Card key={`pinned-${doc.id}`} className="bg-flow-background/30 border-flow-border/50 hover:border-blue-500/50 transition-all duration-300 cursor-pointer group">
-                        <CardHeader className="pb-2">
-                          <div className="flex justify-between items-start">
-                            <div className="bg-blue-500/10 p-2 rounded text-blue-500">
-                              {doc.icon === 'file' ? (
-                                <FileText className="h-5 w-5" />
-                              ) : (
-                                <BookMarked className="h-5 w-5" />
-                              )}
-                            </div>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Star className="h-4 w-4 fill-current text-blue-500" />
-                            </Button>
-                          </div>
-                          <CardTitle className="text-lg mt-2 group-hover:text-blue-500 transition-colors">{doc.title}</CardTitle>
-                          <CardDescription className="line-clamp-2">{doc.description}</CardDescription>
-                        </CardHeader>
-                        <CardFooter className="pt-2 text-xs text-flow-foreground/60 flex justify-between">
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" /> 
-                            {doc.updatedAt}
-                          </span>
-                          <span className="bg-blue-500/10 text-blue-500 text-xs py-1 px-2 rounded-full">{doc.category}</span>
-                        </CardFooter>
-                      </Card>
+                      <DocumentCard
+                        key={`pinned-${doc.id}`}
+                        document={doc}
+                        activeFilters={activeFilters}
+                        onToggleFilter={toggleFilter}
+                        onClick={() => setSelectedDocument(doc)}
+                        isGridView={viewMode === 'grid'}
+                      />
                     ))
                   ) : (
                     <div className="text-center py-12 col-span-full">
-                      <Star className="h-12 w-12 mx-auto text-flow-foreground/30 mb-4" />
-                      <h3 className="text-xl font-semibold mb-2">No pinned documents</h3>
-                      <p className="text-flow-foreground/60 max-w-md mx-auto">
-                        Pin important documents for quick access by clicking the star icon on any document card.
-                      </p>
+                      <GlassMorphism className="p-8 max-w-md mx-auto rounded-xl bg-gradient-to-br from-blue-900/10 to-blue-900/5">
+                        <Star className="h-12 w-12 mx-auto text-flow-foreground/30 mb-4" />
+                        <h3 className="text-xl font-semibold mb-2">No pinned documents</h3>
+                        <p className="text-flow-foreground/60 max-w-md mx-auto">
+                          Pin important documents for quick access by clicking the star icon on any document card.
+                        </p>
+                        <Button variant="outline" className="mt-4">
+                          Browse all documents
+                        </Button>
+                      </GlassMorphism>
                     </div>
                   )}
                 </div>
@@ -617,19 +592,14 @@ const Knowledge = () => {
                     .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
                     .slice(0, 6)
                     .map((doc) => (
-                      <Card key={`recent-${doc.id}`} className="bg-flow-background/30 border-flow-border/50 hover:border-blue-500/50 transition-all duration-300 cursor-pointer group">
-                        <CardHeader className="pb-2">
-                          <div className="flex justify-between items-start">
-                            <span className="bg-blue-500/10 text-blue-500 text-xs py-1 px-2 rounded-full">{doc.category}</span>
-                            <span className="flex items-center gap-1 text-xs text-flow-foreground/60">
-                              <Calendar className="h-3 w-3" />
-                              {doc.updatedAt}
-                            </span>
-                          </div>
-                          <CardTitle className="text-lg mt-2 group-hover:text-blue-500 transition-colors">{doc.title}</CardTitle>
-                          <CardDescription className="line-clamp-2">{doc.description}</CardDescription>
-                        </CardHeader>
-                      </Card>
+                      <DocumentCard
+                        key={`recent-${doc.id}`}
+                        document={doc}
+                        activeFilters={activeFilters}
+                        onToggleFilter={toggleFilter}
+                        onClick={() => setSelectedDocument(doc)}
+                        isGridView={viewMode === 'grid'}
+                      />
                     ))}
                 </div>
               </TabsContent>
@@ -641,43 +611,138 @@ const Knowledge = () => {
                     .sort((a, b) => b.views - a.views)
                     .slice(0, 6)
                     .map((doc) => (
-                      <Card key={`popular-${doc.id}`} className="bg-flow-background/30 border-flow-border/50 hover:border-blue-500/50 transition-all duration-300 cursor-pointer group">
-                        <CardHeader className="pb-2">
-                          <div className="flex justify-between items-start">
-                            <span className="bg-blue-500/10 text-blue-500 text-xs py-1 px-2 rounded-full">{doc.category}</span>
-                            <span className="flex items-center gap-1 text-xs text-flow-foreground/70 bg-flow-background/40 py-1 px-2 rounded-full">
-                              <Eye className="h-3 w-3" />
-                              {doc.views}
-                            </span>
-                          </div>
-                          <CardTitle className="text-lg mt-2 group-hover:text-blue-500 transition-colors">{doc.title}</CardTitle>
-                          <CardDescription className="line-clamp-2">{doc.description}</CardDescription>
-                        </CardHeader>
-                      </Card>
+                      <DocumentCard
+                        key={`popular-${doc.id}`}
+                        document={doc}
+                        activeFilters={activeFilters}
+                        onToggleFilter={toggleFilter}
+                        onClick={() => setSelectedDocument(doc)}
+                        isGridView={viewMode === 'grid'}
+                      />
                     ))}
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="ai" className="mt-4">
+                <div className="bg-gradient-to-br from-pink-500/5 to-purple-500/10 p-6 rounded-xl border border-pink-500/20 shadow-[0_0_15px_rgba(236,72,153,0.2)] mb-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 rounded-lg bg-pink-500/20">
+                      <BrainCircuit className="h-5 w-5 text-pink-500" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold">AI Knowledge Recommendations</h3>
+                      <p className="text-sm text-flow-foreground/70">
+                        Personalized document suggestions based on your recent activity and role.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className={viewMode === 'grid' ? "grid grid-cols-1 md:grid-cols-3 gap-4" : "space-y-3"}>
+                    {documents.slice(0, 3).map((doc) => (
+                      <DocumentCard
+                        key={`ai-${doc.id}`}
+                        document={doc}
+                        activeFilters={activeFilters}
+                        onToggleFilter={toggleFilter}
+                        onClick={() => setSelectedDocument(doc)}
+                        isGridView={viewMode === 'grid'}
+                      />
+                    ))}
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
             
             {filteredDocuments.length === 0 && (
               <div className="text-center py-12">
-                <FileText className="h-12 w-12 mx-auto text-flow-foreground/30 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No documents found</h3>
-                <p className="text-flow-foreground/60 max-w-md mx-auto">
-                  Try adjusting your search query or filters
-                </p>
-                <Button 
-                  variant="outline" 
-                  className="mt-4"
-                  onClick={clearFilters}
-                >
-                  Clear all filters
-                </Button>
+                <GlassMorphism className="p-8 max-w-md mx-auto rounded-xl bg-gradient-to-br from-blue-900/10 to-blue-900/5">
+                  <FileText className="h-12 w-12 mx-auto text-flow-foreground/30 mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">No documents found</h3>
+                  <p className="text-flow-foreground/60 max-w-md mx-auto">
+                    Try adjusting your search query or filters
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    className="mt-4"
+                    onClick={clearFilters}
+                  >
+                    Clear all filters
+                  </Button>
+                </GlassMorphism>
               </div>
             )}
+            
+            {/* Upload/Create Documents Section */}
+            <GlassMorphism className="p-6 rounded-2xl mt-8 border-flow-border/30 bg-gradient-to-r from-purple-500/5 to-blue-500/10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="bg-flow-background/30 border-flow-border/40">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Upload className="h-5 w-5 text-blue-500" />
+                      Upload Documents
+                    </CardTitle>
+                    <CardDescription>
+                      Upload existing documents to the knowledge base
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="border-2 border-dashed border-flow-border/50 rounded-lg p-6 text-center hover:border-blue-500/50 transition-colors cursor-pointer">
+                      <Upload className="h-8 w-8 mx-auto text-flow-foreground/40 mb-2" />
+                      <p className="text-sm text-flow-foreground/70 mb-2">
+                        Drag and drop files here or click to browse
+                      </p>
+                      <p className="text-xs text-flow-foreground/50">
+                        Supports PDF, DOCX, TXT, MD, HTML files (max 10MB)
+                      </p>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button className="w-full">Upload Files</Button>
+                  </CardFooter>
+                </Card>
+                
+                <Card className="bg-flow-background/30 border-flow-border/40">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <FolderPlus className="h-5 w-5 text-blue-500" />
+                      Organize Knowledge
+                    </CardTitle>
+                    <CardDescription>
+                      Create and manage knowledge categories
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <p className="text-sm text-flow-foreground/70">
+                        Create new categories, reorganize documents, and manage your knowledge base structure.
+                      </p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button variant="outline" size="sm" className="justify-start">
+                          <FolderPlus className="h-4 w-4 mr-2" /> New Category
+                        </Button>
+                        <Button variant="outline" size="sm" className="justify-start">
+                          <FileText className="h-4 w-4 mr-2" /> New Document
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button className="w-full">Manage Categories</Button>
+                  </CardFooter>
+                </Card>
+              </div>
+            </GlassMorphism>
           </div>
         </TransitionWrapper>
       </main>
+      
+      {/* Document Viewer Modal */}
+      {selectedDocument && (
+        <DocumentViewer 
+          document={selectedDocument} 
+          onClose={() => setSelectedDocument(null)} 
+        />
+      )}
       
       <Footer />
     </div>
