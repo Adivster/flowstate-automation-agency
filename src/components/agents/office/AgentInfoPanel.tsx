@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -31,1025 +32,319 @@ import {
   LayoutDashboard,
   ListOrdered,
   Wrench,
-  Lightbulb,
-  Download,
-  Share,
-  Maximize2,
-  Activity,
-  TrendingUp,
-  TrendingDown,
-  ArrowDown,
-  ArrowUp,
-  ArrowLeftRight,
-  ArrowDownToLine,
-  ArrowUpToLine,
-  ArrowLeft,
-  ArrowRightCircle,
-  ArrowLeftCircle,
-  CopyCheck,
-  CopyPlus,
-  CopySlash,
-  CopyX,
-  CopyAlert,
-  CopyCode,
-  CopyIcon,
-  CopyKey,
-  CopyMinus,
-  CopyPlusMinus,
-  CopyQuestion,
-  CopyQuestionMark,
-  CopyQuote,
-  CopySlash2,
-  CopyText,
-  CopyUser,
-  CopyVideo,
-  CopyVolume,
-  CopyVolume1,
-  CopyVolume2,
-  CopyVolumeX,
-  CopyWifi,
-  CopyXCircle,
-  CopyZap,
-  CopyZap2,
-  CopyZap3,
-  CopyZap4,
-  CopyZap5,
-  CopyZap6,
-  CopyZap7,
-  CopyZap8,
-  CopyZap9,
-  CopyZap10,
-  CopyZap11,
-  CopyZap12,
-  CopyZap13,
-  CopyZap14,
-  CopyZap15,
-  CopyZap16,
-  CopyZap17,
-  CopyZap18,
-  CopyZap19,
-  CopyZap20,
-  CopyZap21,
-  CopyZap22,
-  CopyZap23,
-  CopyZap24,
-  CopyZap25,
-  CopyZap26,
-  CopyZap27,
-  CopyZap28,
-  CopyZap29,
-  CopyZap30,
-  CopyZap31,
-  CopyZap32,
-  CopyZap33,
-  CopyZap34,
-  CopyZap35,
-  CopyZap36,
-  CopyZap37,
-  CopyZap38,
-  CopyZap39,
-  CopyZap40,
-  CopyZap41,
-  CopyZap42,
-  CopyZap43,
-  CopyZap44,
-  CopyZap45,
-  CopyZap46,
-  CopyZap47,
-  CopyZap48,
-  CopyZap49,
-  CopyZap50,
-  CopyZap51,
-  CopyZap52,
-  CopyZap53,
-  CopyZap54,
-  CopyZap55,
-  CopyZap56,
-  CopyZap57,
-  CopyZap58,
-  CopyZap59,
-  CopyZap60,
-  CopyZap61,
-  CopyZap62,
-  CopyZap63,
-  CopyZap64,
-  CopyZap65,
-  CopyZap66,
-  CopyZap67,
-  CopyZap68,
-  CopyZap69,
-  CopyZap70,
-  CopyZap71,
-  CopyZap72,
-  CopyZap73,
-  CopyZap74,
-  CopyZap75,
-  CopyZap76,
-  CopyZap77,
-  CopyZap78,
-  CopyZap79,
-  CopyZap80,
-  CopyZap81,
-  CopyZap82,
-  CopyZap83,
-  CopyZap84,
-  CopyZap85,
-  CopyZap86,
-  CopyZap87,
-  CopyZap88,
-  CopyZap89,
-  CopyZap90,
-  CopyZap91,
-  CopyZap92,
-  CopyZap93,
-  CopyZap94,
-  CopyZap95,
-  CopyZap96,
-  CopyZap97,
-  CopyZap98,
-  CopyZap99,
-  CopyZap100,
-  CopyZap101,
-  CopyZap102,
-  CopyZap103,
-  CopyZap104,
-  CopyZap105,
-  CopyZap106,
-  CopyZap107,
-  CopyZap108,
-  CopyZap109,
-  CopyZap110,
-  CopyZap111,
-  CopyZap112,
-  CopyZap113,
-  CopyZap114,
-  CopyZap115,
-  CopyZap116,
-  CopyZap117,
-  CopyZap118,
-  CopyZap119,
-  CopyZap120,
-  CopyZap121,
-  CopyZap122,
-  CopyZap123,
-  CopyZap124,
-  CopyZap125,
-  CopyZap126,
-  CopyZap127,
-  CopyZap128,
-  CopyZap129,
-  CopyZap130,
-  CopyZap131,
-  CopyZap132,
-  CopyZap133,
-  CopyZap134,
-  CopyZap135,
-  CopyZap136,
-  CopyZap137,
-  CopyZap138,
-  CopyZap139,
-  CopyZap140,
-  CopyZap141,
-  CopyZap142,
-  CopyZap143,
-  CopyZap144,
-  CopyZap145,
-  CopyZap146,
-  CopyZap147,
-  CopyZap148,
-  CopyZap149,
-  CopyZap150,
-  CopyZap151,
-  CopyZap152,
-  CopyZap153,
-  CopyZap154,
-  CopyZap155,
-  CopyZap156,
-  CopyZap157,
-  CopyZap158,
-  CopyZap159,
-  CopyZap160,
-  CopyZap161,
-  CopyZap162,
-  CopyZap163,
-  CopyZap164,
-  CopyZap165,
-  CopyZap166,
-  CopyZap167,
-  CopyZap168,
-  CopyZap169,
-  CopyZap170,
-  CopyZap171,
-  CopyZap172,
-  CopyZap173,
-  CopyZap174,
-  CopyZap175,
-  CopyZap176,
-  CopyZap177,
-  CopyZap178,
-  CopyZap179,
-  CopyZap180,
-  CopyZap181,
-  CopyZap182,
-  CopyZap183,
-  CopyZap184,
-  CopyZap185,
-  CopyZap186,
-  CopyZap187,
-  CopyZap188,
-  CopyZap189,
-  CopyZap190,
-  CopyZap191,
-  CopyZap192,
-  CopyZap193,
-  CopyZap194,
-  CopyZap195,
-  CopyZap196,
-  CopyZap197,
-  CopyZap198,
-  CopyZap199,
-  CopyZap200,
-  CopyZap201,
-  CopyZap202,
-  CopyZap203,
-  CopyZap204,
-  CopyZap205,
-  CopyZap206,
-  CopyZap207,
-  CopyZap208,
-  CopyZap209,
-  CopyZap210,
-  CopyZap211,
-  CopyZap212,
-  CopyZap213,
-  CopyZap214,
-  CopyZap215,
-  CopyZap216,
-  CopyZap217,
-  CopyZap218,
-  CopyZap219,
-  CopyZap220,
-  CopyZap221,
-  CopyZap222,
-  CopyZap223,
-  CopyZap224,
-  CopyZap225,
-  CopyZap226,
-  CopyZap227,
-  CopyZap228,
-  CopyZap229,
-  CopyZap230,
-  CopyZap231,
-  CopyZap232,
-  CopyZap233,
-  CopyZap234,
-  CopyZap235,
-  CopyZap236,
-  CopyZap237,
-  CopyZap238,
-  CopyZap239,
-  CopyZap240,
-  CopyZap241,
-  CopyZap242,
-  CopyZap243,
-  CopyZap244,
-  CopyZap245,
-  CopyZap246,
-  CopyZap247,
-  CopyZap248,
-  CopyZap249,
-  CopyZap250,
-  CopyZap251,
-  CopyZap252,
-  CopyZap253,
-  CopyZap254,
-  CopyZap255,
-  CopyZap256,
-  CopyZap257,
-  CopyZap258,
-  CopyZap259,
-  CopyZap260,
-  CopyZap261,
-  CopyZap262,
-  CopyZap263,
-  CopyZap264,
-  CopyZap265,
-  CopyZap266,
-  CopyZap267,
-  CopyZap268,
-  CopyZap269,
-  CopyZap270,
-  CopyZap271,
-  CopyZap272,
-  CopyZap273,
-  CopyZap274,
-  CopyZap275,
-  CopyZap276,
-  CopyZap277,
-  CopyZap278,
-  CopyZap279,
-  CopyZap280,
-  CopyZap281,
-  CopyZap282,
-  CopyZap283,
-  CopyZap284,
-  CopyZap285,
-  CopyZap286,
-  CopyZap287,
-  CopyZap288,
-  CopyZap289,
-  CopyZap290,
-  CopyZap291,
-  CopyZap292,
-  CopyZap293,
-  CopyZap294,
-  CopyZap295,
-  CopyZap296,
-  CopyZap297,
-  CopyZap298,
-  CopyZap299,
-  CopyZap300,
-  CopyZap301,
-  CopyZap302,
-  CopyZap303,
-  CopyZap304,
-  CopyZap305,
-  CopyZap306,
-  CopyZap307,
-  CopyZap308,
-  CopyZap309,
-  CopyZap310,
-  CopyZap311,
-  CopyZap312,
-  CopyZap313,
-  CopyZap314,
-  CopyZap315,
-  CopyZap316,
-  CopyZap317,
-  CopyZap318,
-  CopyZap319,
-  CopyZap320,
-  CopyZap321,
-  CopyZap322,
-  CopyZap323,
-  CopyZap324,
-  CopyZap325,
-  CopyZap326,
-  CopyZap327,
-  CopyZap328,
-  CopyZap329,
-  CopyZap330,
-  CopyZap331,
-  CopyZap332,
-  CopyZap333,
-  CopyZap334,
-  CopyZap335,
-  CopyZap336,
-  CopyZap337,
-  CopyZap338,
-  CopyZap339,
-  CopyZap340,
-  CopyZap341,
-  CopyZap342,
-  CopyZap343,
-  CopyZap344,
-  CopyZap345,
-  CopyZap346,
-  CopyZap347,
-  CopyZap348,
-  CopyZap349,
-  CopyZap350,
-  CopyZap351,
-  CopyZap352,
-  CopyZap353,
-  CopyZap354,
-  CopyZap355,
-  CopyZap356,
-  CopyZap357,
-  CopyZap358,
-  CopyZap359,
-  CopyZap360,
-  CopyZap361,
-  CopyZap362,
-  CopyZap363,
-  CopyZap364,
-  CopyZap365,
-  CopyZap366,
-  CopyZap367,
-  CopyZap368,
-  CopyZap369,
-  CopyZap370,
-  CopyZap371,
-  CopyZap372,
-  CopyZap373,
-  CopyZap374,
-  CopyZap375,
-  CopyZap376,
-  CopyZap377,
-  CopyZap378,
-  CopyZap379,
-  CopyZap380,
-  CopyZap381,
-  CopyZap382,
-  CopyZap383,
-  CopyZap384,
-  CopyZap385,
-  CopyZap386,
-  CopyZap387,
-  CopyZap388,
-  CopyZap389,
-  CopyZap390,
-  CopyZap391,
-  CopyZap392,
-  CopyZap393,
-  CopyZap394,
-  CopyZap395,
-  CopyZap396,
-  CopyZap397,
-  CopyZap398,
-  CopyZap399,
-  CopyZap400,
-  CopyZap401,
-  CopyZap402,
-  CopyZap403,
-  CopyZap404,
-  CopyZap405,
-  CopyZap406,
-  CopyZap407,
-  CopyZap408,
-  CopyZap409,
-  CopyZap410,
-  CopyZap411,
-  CopyZap412,
-  CopyZap413,
-  CopyZap414,
-  CopyZap415,
-  CopyZap416,
-  CopyZap417,
-  CopyZap418,
-  CopyZap419,
-  CopyZap420,
-  CopyZap421,
-  CopyZap422,
-  CopyZap423,
-  CopyZap424,
-  CopyZap425,
-  CopyZap426,
-  CopyZap427,
-  CopyZap428,
-  CopyZap429,
-  CopyZap430,
-  CopyZap431,
-  CopyZap432,
-  CopyZap433,
-  CopyZap434,
-  CopyZap435,
-  CopyZap436,
-  CopyZap437,
-  CopyZap438,
-  CopyZap439,
-  CopyZap440,
-  CopyZap441,
-  CopyZap442,
-  CopyZap443,
-  CopyZap444,
-  CopyZap445,
-  CopyZap446,
-  CopyZap447,
-  CopyZap448,
-  CopyZap449,
-  CopyZap450,
-  CopyZap451,
-  CopyZap452,
-  CopyZap453,
-  CopyZap454,
-  CopyZap455,
-  CopyZap456,
-  CopyZap457,
-  CopyZap458,
-  CopyZap459,
-  CopyZap460,
-  CopyZap461,
-  CopyZap462,
-  CopyZap463,
-  CopyZap464,
-  CopyZap465,
-  CopyZap466,
-  CopyZap467,
-  CopyZap468,
-  CopyZap469,
-  CopyZap470,
-  CopyZap471,
-  CopyZap472,
-  CopyZap473,
-  CopyZap474,
-  CopyZap475,
-  CopyZap476,
-  CopyZap477,
-  CopyZap478,
-  CopyZap479,
-  CopyZap480,
-  CopyZap481,
-  CopyZap482,
-  CopyZap483,
-  CopyZap484,
-  CopyZap485,
-  CopyZap486,
-  CopyZap487,
-  CopyZap488,
-  CopyZap489,
-  CopyZap490,
-  CopyZap491,
-  CopyZap492,
-  CopyZap493,
-  CopyZap494,
-  CopyZap495,
-  CopyZap496,
-  CopyZap497,
-  CopyZap498,
-  CopyZap499,
-  CopyZap500,
-  CopyZap501,
-  CopyZap502,
-  CopyZap503,
-  CopyZap504,
-  CopyZap505,
-  CopyZap506,
-  CopyZap507,
-  CopyZap508,
-  CopyZap509,
-  CopyZap510,
-  CopyZap511,
-  CopyZap512,
-  CopyZap513,
-  CopyZap514,
-  CopyZap515,
-  CopyZap516,
-  CopyZap517,
-  CopyZap518,
-  CopyZap519,
-  CopyZap520,
-  CopyZap521,
-  CopyZap522,
-  CopyZap523,
-  CopyZap524,
-  CopyZap525,
-  CopyZap526,
-  CopyZap527,
-  CopyZap528,
-  CopyZap529,
-  CopyZap530,
-  CopyZap531,
-  CopyZap532,
-  CopyZap533,
-  CopyZap534,
-  CopyZap535,
-  CopyZap536,
-  CopyZap537,
-  CopyZap538,
-  CopyZap539,
-  CopyZap540,
-  CopyZap541,
-  CopyZap542,
-  CopyZap543,
-  CopyZap544,
-  CopyZap545,
-  CopyZap546,
-  CopyZap547,
-  CopyZap548,
-  CopyZap549,
-  CopyZap550,
-  CopyZap551,
-  CopyZap552,
-  CopyZap553,
-  CopyZap554,
-  CopyZap555,
-  CopyZap556,
-  CopyZap557,
-  CopyZap558,
-  CopyZap559,
-  CopyZap560,
-  CopyZap561,
-  CopyZap562,
-  CopyZap563,
-  CopyZap564,
-  CopyZap565,
-  CopyZap566,
-  CopyZap567,
-  CopyZap568,
-  CopyZap569,
-  CopyZap570,
-  CopyZap571,
-  CopyZap572,
-  CopyZap573,
-  CopyZap574,
-  CopyZap575,
-  CopyZap576,
-  CopyZap577,
-  CopyZap578,
-  CopyZap579,
-  CopyZap580,
-  CopyZap581,
-  CopyZap582,
-  CopyZap583,
-  CopyZap584,
-  CopyZap585,
-  CopyZap586,
-  CopyZap587,
-  CopyZap588,
-  CopyZap589,
-  CopyZap590,
-  CopyZap591,
-  CopyZap592,
-  CopyZap593,
-  CopyZap594,
-  CopyZap595,
-  CopyZap596,
-  CopyZap597,
-  CopyZap598,
-  CopyZap599,
-  CopyZap600,
-  CopyZap601,
-  CopyZap602,
-  CopyZap603,
-  CopyZap604,
-  CopyZap605,
-  CopyZap606,
-  CopyZap607,
-  CopyZap608,
-  CopyZap609,
-  CopyZap610,
-  CopyZap611,
-  CopyZap612,
-  CopyZap613,
-  CopyZap614,
-  CopyZap615,
-  CopyZap616,
-  CopyZap617,
-  CopyZap618,
-  CopyZap619,
-  CopyZap620,
-  CopyZap621,
-  CopyZap622,
-  CopyZap623,
-  CopyZap624,
-  CopyZap625,
-  CopyZap626,
-  CopyZap627,
-  CopyZap628,
-  CopyZap629,
-  CopyZap630,
-  CopyZap631,
-  CopyZap632,
-  CopyZap633,
-  CopyZap634,
-  CopyZap635,
-  CopyZap636,
-  CopyZap637,
-  CopyZap638,
-  CopyZap639,
-  CopyZap640,
-  CopyZap641,
-  CopyZap642,
-  CopyZap643,
-  CopyZap644,
-  CopyZap645,
-  CopyZap646,
-  CopyZap647,
-  CopyZap648,
-  CopyZap649,
-  CopyZap650,
-  CopyZap651,
-  CopyZap652,
-  CopyZap653,
-  CopyZap654,
-  CopyZap655,
-  CopyZap656,
-  CopyZap657,
-  CopyZap658,
-  CopyZap659,
-  CopyZap660,
-  CopyZap661,
-  CopyZap662,
-  CopyZap663,
-  CopyZap664,
-  CopyZap665,
-  CopyZap666,
-  CopyZap667,
-  CopyZap668,
-  CopyZap669,
-  CopyZap670,
-  CopyZap671,
-  CopyZap672,
-  CopyZap673,
-  CopyZap674,
-  CopyZap675,
-  CopyZap676,
-  CopyZap677,
-  CopyZap678,
-  CopyZap679,
-  CopyZap680,
-  CopyZap681,
-  CopyZap682,
-  CopyZap683,
-  CopyZap684,
-  CopyZap685,
-  CopyZap686,
-  CopyZap687,
-  CopyZap688,
-  CopyZap689,
-  CopyZap690,
-  CopyZap691,
-  CopyZap692,
-  CopyZap693,
-  CopyZap694,
-  CopyZap695,
-  CopyZap696,
-  CopyZap697,
-  CopyZap698,
-  CopyZap699,
-  CopyZap700,
-  CopyZap701,
-  CopyZap702,
-  CopyZap703,
-  CopyZap704,
-  CopyZap705,
-  CopyZap706,
-  CopyZap707,
-  CopyZap708,
-  CopyZap709,
-  CopyZap710,
-  CopyZap711,
-  CopyZap712,
-  CopyZap713,
-  CopyZap714,
-  CopyZap715,
-  CopyZap716,
-  CopyZap717,
-  CopyZap718,
-  CopyZap719,
-  CopyZap720,
-  CopyZap721,
-  CopyZap722,
-  CopyZap723,
-  CopyZap724,
-  CopyZap725,
-  CopyZap726,
-  CopyZap727,
-  CopyZap728,
-  CopyZap729,
-  CopyZap730,
-  CopyZap731,
-  CopyZap732,
-  CopyZap733,
-  CopyZap734,
-  CopyZap735,
-  CopyZap736,
-  CopyZap737,
-  CopyZap738,
-  CopyZap739,
-  CopyZap740,
-  CopyZap741,
-  CopyZap742,
-  CopyZap743,
-  CopyZap744,
-  CopyZap745,
-  CopyZap746,
-  CopyZap747,
-  CopyZap748,
-  CopyZap749,
-  CopyZap750,
-  CopyZap751,
-  CopyZap752,
-  CopyZap753,
-  CopyZap754,
-  CopyZap755,
-  CopyZap756,
-  CopyZap757,
-  CopyZap758,
-  CopyZap759,
-  CopyZap760,
-  CopyZap761,
-  CopyZap762,
-  CopyZap763,
-  CopyZap764,
-  CopyZap765,
-  CopyZap766,
-  CopyZap767,
-  CopyZap768,
-  CopyZap769,
-  CopyZap770,
-  CopyZap771,
-  CopyZap772,
-  CopyZap773,
-  CopyZap774,
-  CopyZap775,
-  CopyZap776,
-  CopyZap777,
-  CopyZap778,
-  CopyZap779,
-  CopyZap780,
-  CopyZap781,
-  CopyZap782,
-  CopyZap783,
-  CopyZap784,
-  CopyZap785,
-  CopyZap786,
-  CopyZap787,
-  CopyZap788,
-  CopyZap789,
-  CopyZap790,
-  CopyZap791,
-  CopyZap792,
-  CopyZap793,
-  CopyZap794,
-  CopyZap795,
-  CopyZap796,
-  CopyZap797,
-  CopyZap798,
-  CopyZap799,
-  CopyZap800,
-  CopyZap801,
-  CopyZap802,
-  CopyZap803,
-  CopyZap804,
-  CopyZap805,
-  CopyZap806,
-  CopyZap807,
-  CopyZap808,
-  CopyZap809,
-  CopyZap810,
-  CopyZap811,
-  CopyZap812,
-  CopyZap813,
-  CopyZap814,
-  CopyZap815,
-  CopyZap816,
-  CopyZap817,
-  CopyZap818,
-  CopyZap819,
-  CopyZap820,
-  CopyZap821,
-  CopyZap822,
-  CopyZap823,
-  CopyZap824,
-  CopyZap825,
-  CopyZap826,
-  CopyZap827,
-  CopyZap828,
-  CopyZap829,
-  CopyZap830,
-  CopyZap831,
-  CopyZap832,
-  CopyZap833,
-  CopyZap834,
-  CopyZap835,
-  CopyZap836,
-  CopyZap837,
-  CopyZap838,
-  CopyZap839,
-  CopyZap840,
-  CopyZap841,
-  CopyZap842,
-  CopyZap843,
-  CopyZap844,
-  CopyZap845,
-  CopyZap846,
-  CopyZap847,
-  CopyZap848,
-  CopyZap849,
-  CopyZap850,
-  CopyZap851,
-  CopyZap852,
-  CopyZap853,
-  CopyZap854,
-  CopyZap855,
-  CopyZap856,
-  CopyZap857,
-  CopyZap858,
-  CopyZap859,
-  CopyZap860,
-  CopyZap861,
-  CopyZap862,
-  CopyZap863,
-  CopyZap864,
-  CopyZap865,
-  CopyZap866,
-  CopyZap867,
-  CopyZap868,
-  CopyZap869,
-  CopyZap870,
-  CopyZap871,
-  CopyZap872,
-  CopyZap873,
-  CopyZap874,
-  CopyZap875,
-  CopyZap876,
-  CopyZap877,
-  CopyZap878,
-  CopyZap879,
-  CopyZap880,
-  CopyZap881,
-  CopyZap882,
-  CopyZap883,
-  CopyZap884,
-  CopyZap885,
-  CopyZap886,
-  CopyZap887,
-  CopyZap888,
-  CopyZap889,
-  CopyZap890,
-  CopyZap891,
-  CopyZap892,
-  CopyZap893,
-  CopyZap894,
-  CopyZap895,
-  CopyZap896,
-  CopyZap897,
-  CopyZap898,
-  CopyZap899,
-  CopyZap900,
-  CopyZap901,
-  CopyZap902,
-  CopyZap903,
-  CopyZap904,
-  CopyZap905,
-  CopyZap906,
-  CopyZap907,
-  CopyZap908,
-  CopyZap909,
-  CopyZap910,
-  CopyZap911,
-  CopyZap912,
-  CopyZap913,
-  CopyZap914,
-  CopyZap915,
-  CopyZap916,
-  CopyZap917,
-  CopyZap918,
-  CopyZap919,
-  CopyZap920,
-  CopyZap921,
-  CopyZap922,
-  CopyZap923,
-  CopyZap924,
-  CopyZap925,
-  CopyZap926,
-  CopyZap927,
-  CopyZap928,
-  CopyZap929,
-  CopyZap930,
-  CopyZap931,
-  CopyZap932,
-  CopyZap933,
-  CopyZap934,
-  CopyZap935,
-  CopyZap936,
-  CopyZap937,
-  CopyZap938,
-  CopyZap939,
-  CopyZap940,
-  CopyZap941,
-  CopyZap942,
-  CopyZap943,
-  CopyZap944,
-  CopyZap945,
-  CopyZap946,
-  CopyZap947,
-  CopyZap948,
-  CopyZap949,
-  CopyZap950,
-  CopyZap951,
-  CopyZap952,
-  CopyZap953,
-  CopyZap954,
-  CopyZap955,
-  CopyZap956,
-  CopyZap957,
-  CopyZap958,
-  CopyZap959,
-  CopyZap960,
-  CopyZap961,
-  CopyZap962,
-  CopyZap963,
-  CopyZap964,
-  CopyZap965,
-  CopyZap966,
-  CopyZap967,
-  CopyZap968,
-  CopyZap969,
-  CopyZap970,
-  CopyZap971,
-  CopyZap972,
-  CopyZap973,
-  CopyZap974,
-  CopyZap975,
-  CopyZap976,
-  CopyZap977,
-  CopyZap978,
-  CopyZap979,
-  CopyZap980,
-  CopyZap981,
-  CopyZap982,
-  CopyZap983,
-  CopyZap984,
+  Lightbulb
+} from 'lucide-react';
+import { LineChart } from '@/components/ui/chart';
+
+const AgentInfoPanel = () => {
+  // Sample data for the agent info panel
+  const agent = {
+    id: "agent-1",
+    name: "Alex Data",
+    avatar: "/placeholder.svg",
+    role: "Data Analysis Specialist",
+    status: "active",
+    efficiency: 87,
+    tasks: {
+      completed: 42,
+      inProgress: 3,
+      total: 48
+    },
+    workstationId: "ws-analytics-3",
+    division: "analytics",
+    uptime: "3d 7h 23m",
+    specialty: "Pattern Recognition",
+    skills: ["Data Mining", "Statistical Analysis", "Visualization", "ML Models"],
+    currentTask: "Analyzing Q2 Performance Metrics",
+    recentActivities: [
+      { type: "task", description: "Completed trend analysis for Q1 data", time: "2h ago" },
+      { type: "collaboration", description: "Shared insights with Strategic Planning team", time: "4h ago" },
+      { type: "system", description: "Optimized data processing algorithm", time: "yesterday" },
+      { type: "learning", description: "Acquired new skills in advanced forecasting", time: "2d ago" },
+    ],
+    performanceMetrics: [
+      { metric: "Accuracy", value: 92, change: 3.5, trend: "up" },
+      { metric: "Speed", value: 83, change: -1.2, trend: "down" },
+      { metric: "Resource Efficiency", value: 78, change: 5.7, trend: "up" },
+      { metric: "Learning Rate", value: 95, change: 2.1, trend: "up" },
+    ],
+    collaborationData: [
+      { name: "Jan", value: 12 },
+      { name: "Feb", value: 15 },
+      { name: "Mar", value: 18 },
+      { name: "Apr", value: 20 },
+      { name: "May", value: 23 },
+      { name: "Jun", value: 19 }
+    ]
+  };
+
+  const getTrendIcon = (trend: string) => {
+    switch (trend) {
+      case "up":
+        return <span className="text-green-500 flex items-center"><ArrowRight className="w-3 h-3 rotate-[-45deg]" /></span>;
+      case "down":
+        return <span className="text-red-500 flex items-center"><ArrowRight className="w-3 h-3 rotate-45deg]" /></span>;
+      default:
+        return <span className="text-gray-500 flex items-center"><ArrowRight className="w-3 h-3 rotate-0deg]" /></span>;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "active":
+        return "bg-green-500";
+      case "idle":
+        return "bg-amber-500";
+      case "paused":
+        return "bg-purple-500";
+      case "error":
+        return "bg-red-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
+
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case "task":
+        return <ListChecks className="w-4 h-4 text-blue-500" />;
+      case "collaboration":
+        return <MessageSquare className="w-4 h-4 text-green-500" />;
+      case "system":
+        return <Wrench className="w-4 h-4 text-purple-500" />;
+      case "learning":
+        return <Lightbulb className="w-4 h-4 text-amber-500" />;
+      default:
+        return <Clock className="w-4 h-4 text-gray-500" />;
+    }
+  };
+
+  return (
+    <div className="fixed right-0 top-0 h-full w-96 bg-flow-background/95 border-l border-flow-border shadow-lg backdrop-blur-md overflow-y-auto z-50 custom-scrollbar animate-slide-in-right">
+      <div className="p-4">
+        {/* Header with Close Button */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center">
+            <BrainCircuit className="w-5 h-5 text-flow-accent mr-2" />
+            <h2 className="text-lg font-semibold">Agent Details</h2>
+          </div>
+          <Button variant="ghost" size="icon" className="text-flow-foreground/70 hover:text-flow-foreground">
+            <ArrowRight className="h-5 w-5" />
+          </Button>
+        </div>
+        
+        {/* Agent Identity Card */}
+        <Card className="mb-4 bg-flow-card border-flow-border shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex items-center">
+              <Avatar className="h-14 w-14 border-2 border-flow-accent">
+                <AvatarImage src={agent.avatar} alt={agent.name} />
+                <AvatarFallback className="bg-flow-accent/10 text-flow-accent">AD</AvatarFallback>
+              </Avatar>
+              <div className="ml-4 flex-1">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-medium text-lg">{agent.name}</h3>
+                  <div className="flex items-center">
+                    <span className={`h-2 w-2 rounded-full ${getStatusColor(agent.status)} mr-1.5`}></span>
+                    <span className="text-xs text-flow-foreground/70 capitalize">{agent.status}</span>
+                  </div>
+                </div>
+                <p className="text-sm text-flow-foreground/70">{agent.role}</p>
+                <div className="flex items-center mt-1">
+                  <Badge variant="outline" className="text-xs bg-flow-accent/10 border-flow-accent/40 text-flow-accent">
+                    {agent.division.charAt(0).toUpperCase() + agent.division.slice(1)}
+                  </Badge>
+                  <span className="text-xs text-flow-foreground/50 ml-2">ID: {agent.id}</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          <Card className="bg-flow-card border-flow-border">
+            <CardContent className="p-3">
+              <div className="flex flex-col">
+                <span className="text-xs text-flow-foreground/70 flex items-center">
+                  <CheckCircle className="h-3 w-3 mr-1 text-green-500" />
+                  Tasks Completed
+                </span>
+                <div className="flex items-end justify-between mt-1">
+                  <span className="text-2xl font-semibold">{agent.tasks.completed}</span>
+                  <span className="text-xs text-flow-foreground/50">
+                    of {agent.tasks.total} ({Math.round((agent.tasks.completed / agent.tasks.total) * 100)}%)
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="bg-flow-card border-flow-border">
+            <CardContent className="p-3">
+              <div className="flex flex-col">
+                <span className="text-xs text-flow-foreground/70 flex items-center">
+                  <Clock className="h-3 w-3 mr-1 text-purple-500" />
+                  Uptime
+                </span>
+                <div className="flex items-end justify-between mt-1">
+                  <span className="text-2xl font-semibold">{agent.uptime.split(' ')[0]}<span className="text-sm">d</span></span>
+                  <span className="text-xs text-flow-foreground/50">{agent.uptime.substring(agent.uptime.indexOf(' ') + 1)}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        {/* Efficiency Meter */}
+        <Card className="mb-4 bg-flow-card border-flow-border">
+          <CardContent className="p-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium">Efficiency Rating</span>
+              <span className="text-sm font-semibold">{agent.efficiency}%</span>
+            </div>
+            <Progress value={agent.efficiency} className="h-2" />
+            <div className="flex justify-between mt-1">
+              <span className="text-xs text-flow-foreground/50">Target: 85%</span>
+              <span className="text-xs text-green-500">+3.2% from last week</span>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Current Task */}
+        <Card className="mb-4 bg-flow-card border-flow-border">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium">Current Task</span>
+              <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-400/30">In Progress</Badge>
+            </div>
+            <p className="text-sm mb-2">{agent.currentTask}</p>
+            <div className="flex justify-between text-xs text-flow-foreground/70">
+              <span className="flex items-center">
+                <Clock className="h-3 w-3 mr-1" />
+                Started 4h ago
+              </span>
+              <span className="flex items-center">
+                <BarChart2 className="h-3 w-3 mr-1" />
+                65% complete
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Tabs for Additional Info */}
+        <div className="border-b border-flow-border mb-4">
+          <div className="flex space-x-4">
+            <button className="pb-2 text-sm font-medium border-b-2 border-flow-accent text-flow-accent">Performance</button>
+            <button className="pb-2 text-sm font-medium text-flow-foreground/70">Skills</button>
+            <button className="pb-2 text-sm font-medium text-flow-foreground/70">History</button>
+            <button className="pb-2 text-sm font-medium text-flow-foreground/70">Settings</button>
+          </div>
+        </div>
+        
+        {/* Performance Section */}
+        <div>
+          <h4 className="text-sm font-medium mb-3">Performance Metrics</h4>
+          
+          {/* Metrics Grid */}
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            {agent.performanceMetrics.map((metric, index) => (
+              <Card key={index} className="bg-flow-card border-flow-border">
+                <CardContent className="p-3">
+                  <div className="flex flex-col">
+                    <span className="text-xs text-flow-foreground/70">{metric.metric}</span>
+                    <div className="flex items-end justify-between">
+                      <span className="text-xl font-semibold">{metric.value}%</span>
+                      <span className={`text-xs flex items-center ${metric.trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
+                        {getTrendIcon(metric.trend)}
+                        {metric.change > 0 ? '+' : ''}{metric.change.toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          
+          {/* Collaboration Chart */}
+          <Card className="mb-4 bg-flow-card border-flow-border">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm font-medium">Collaboration Activity</CardTitle>
+              <CardDescription className="text-xs text-flow-foreground/70">Interactions with other agents</CardDescription>
+            </CardHeader>
+            <CardContent className="p-4">
+              <LineChart 
+                data={agent.collaborationData}
+                lineColor="#8b5cf6"
+                height={120}
+                showArea={true}
+                areaOpacity={0.2}
+                referenceLineY={null}
+                referenceLineLabel=""
+                domain={null}
+                onClick={() => {}}
+              />
+            </CardContent>
+          </Card>
+          
+          {/* Recent Activities */}
+          <h4 className="text-sm font-medium mb-3">Recent Activities</h4>
+          <Card className="bg-flow-card border-flow-border">
+            <CardContent className="p-0">
+              <div className="divide-y divide-flow-border">
+                {agent.recentActivities.map((activity, index) => (
+                  <div key={index} className="p-3 flex items-start">
+                    <div className="mt-0.5 mr-3">
+                      {getActivityIcon(activity.type)}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm mb-1">{activity.description}</p>
+                      <span className="text-xs text-flow-foreground/50">{activity.time}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Skills Section */}
+          <h4 className="text-sm font-medium mt-4 mb-3">Skills & Specialties</h4>
+          <Card className="bg-flow-card border-flow-border mb-6">
+            <CardContent className="p-4">
+              <div className="mb-3">
+                <span className="text-xs text-flow-foreground/70">Primary Specialty</span>
+                <div className="flex items-center mt-1">
+                  <BrainCircuit className="w-4 h-4 text-purple-500 mr-2" />
+                  <span className="font-medium">{agent.specialty}</span>
+                </div>
+              </div>
+              <Separator className="my-3 bg-flow-border/50" />
+              <div>
+                <span className="text-xs text-flow-foreground/70 mb-2 block">Skill Set</span>
+                <div className="flex flex-wrap gap-2">
+                  {agent.skills.map((skill, index) => (
+                    <Badge key={index} variant="secondary" className="bg-flow-background border border-flow-border">
+                      {skill}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          {/* Action Buttons */}
+          <div className="flex space-x-2 mb-6">
+            <Button variant="default" className="flex-1 text-sm h-9">
+              <MessageSquare className="w-4 h-4 mr-2" /> Contact
+            </Button>
+            <Button variant="outline" className="flex-1 text-sm h-9">
+              <SlidersHorizontal className="w-4 h-4 mr-2" /> Configure
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AgentInfoPanel;
