@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { X, RotateCcw, Terminal, MessageCircle } from 'lucide-react';
 
@@ -19,24 +19,24 @@ const TerminalHeader: React.FC<TerminalHeaderProps> = ({
 }) => {
   return (
     <div className="flex justify-between items-center p-3 border-b border-indigo-500/30 bg-black/70">
-      <TabsList className="h-8 bg-black/50 border border-indigo-400/20 rounded-md">
-        <TabsTrigger 
-          value="command" 
-          className={`text-xs ${activeTab === 'command' ? 'text-cyan-300' : 'text-flow-muted-foreground'}`}
-          onClick={() => setActiveTab('command')}
-        >
-          <Terminal className="h-3.5 w-3.5 mr-1.5" />
-          Command Terminal
-        </TabsTrigger>
-        <TabsTrigger 
-          value="chat" 
-          className={`text-xs ${activeTab === 'chat' ? 'text-cyan-300' : 'text-flow-muted-foreground'}`}
-          onClick={() => setActiveTab('chat')}
-        >
-          <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
-          Communication Bot
-        </TabsTrigger>
-      </TabsList>
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'command' | 'chat')}>
+        <TabsList className="h-8 bg-black/50 border border-indigo-400/20 rounded-md">
+          <TabsTrigger 
+            value="command" 
+            className={`text-xs ${activeTab === 'command' ? 'text-cyan-300' : 'text-flow-muted-foreground'}`}
+          >
+            <Terminal className="h-3.5 w-3.5 mr-1.5" />
+            Command Terminal
+          </TabsTrigger>
+          <TabsTrigger 
+            value="chat" 
+            className={`text-xs ${activeTab === 'chat' ? 'text-cyan-300' : 'text-flow-muted-foreground'}`}
+          >
+            <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
+            Communication Bot
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
       
       <div className="flex gap-1">
         <Button 
