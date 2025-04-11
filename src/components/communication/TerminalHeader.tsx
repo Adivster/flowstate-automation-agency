@@ -30,10 +30,12 @@ const TerminalHeader: React.FC<TerminalHeaderProps> = ({
           </TabsTrigger>
           <TabsTrigger 
             value="chat" 
-            className={`text-xs ${activeTab === 'chat' ? 'text-cyan-300' : 'text-flow-muted-foreground'}`}
+            className={`text-xs flex items-center justify-between ${activeTab === 'chat' ? 'text-cyan-300' : 'text-flow-muted-foreground'}`}
           >
-            <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
-            Communication Bot
+            <span className="flex items-center">
+              <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
+              Communication Bot
+            </span>
           </TabsTrigger>
         </TabsList>
       </Tabs>
@@ -42,7 +44,7 @@ const TerminalHeader: React.FC<TerminalHeaderProps> = ({
         <Button 
           size="sm" 
           variant="ghost" 
-          className="h-7 w-7 rounded-md text-gray-400 hover:text-cyan-300 hover:bg-black/30 p-0 flex items-center justify-center"
+          className="h-7 w-7 rounded-md text-cyan-300 hover:text-cyan-200 hover:bg-black/30 p-0 flex items-center justify-center"
           onClick={clearTerminal}
           title="Clear terminal"
         >
@@ -51,7 +53,7 @@ const TerminalHeader: React.FC<TerminalHeaderProps> = ({
         <Button 
           size="sm" 
           variant="ghost" 
-          className="h-7 w-7 rounded-md text-gray-400 hover:text-cyan-300 hover:bg-black/30 p-0 flex items-center justify-center"
+          className="h-7 w-7 rounded-md text-red-500 hover:text-red-400 hover:bg-black/30 p-0 flex items-center justify-center"
           onClick={closeTerminal}
           title="Close terminal"
         >

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   ResponsiveContainer, 
@@ -473,8 +472,11 @@ export const PieChart: React.FC<EnhancedPieChartProps> = ({
             iconSize={8}
             wrapperStyle={{ cursor: onClick ? 'pointer' : 'default' }}
             onClick={(data) => {
-              if (onClick && data.payload && typeof data.payload.index === 'number') {
-                onClick(data, data.payload.index);
+              if (onClick && data && data.payload) {
+                const payload = data.payload;
+                const dataIndex = payload.dataIndex !== undefined ? payload.dataIndex : 
+                                 payload.index !== undefined ? payload.index : 0;
+                onClick(data, dataIndex);
               }
             }}
           />
