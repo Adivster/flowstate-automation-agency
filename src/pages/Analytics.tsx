@@ -133,7 +133,7 @@ const Analytics = () => {
     { name: "Day 7", value: 246 },
   ];
 
-  const handleDataPointClick = useCallback((data, index, chartTitle) => {
+  const handleDataPointClick = useCallback((data: any, index: number, chartTitle: string) => {
     toast({
       title: `${chartTitle} - ${data.name}`,
       description: `Value: ${data.value}`,
@@ -468,7 +468,7 @@ const Analytics = () => {
                         areaOpacity={0.15}
                         referenceLineY={500}
                         referenceLineLabel="Target"
-                        domain={null}
+                        domain={[0, 1000]}
                         onClick={(data, index) => handleDataPointClick(data, index, "Performance Trends")}
                       />
                     </Section>

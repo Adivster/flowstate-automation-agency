@@ -35,10 +35,7 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
       
       {selectedAgentObject && showInfoPanel && (
         <AgentInfoPanel
-          agent={{
-            ...selectedAgentObject,
-            status: selectedAgentObject.status as 'working' | 'idle' | 'paused' | 'error'
-          }}
+          agent={selectedAgentObject}
           onClose={onClose}
         />
       )}

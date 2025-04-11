@@ -21,7 +21,6 @@ const ResourceUsageSection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'division' | 'performance'>('division');
   const { toast } = useToast();
 
-  // State for expanded chart view
   const [expandedChart, setExpandedChart] = useState<{
     title: string;
     data: any[];
@@ -29,10 +28,8 @@ const ResourceUsageSection: React.FC = () => {
     colors?: string[];
   } | null>(null);
 
-  // Use performance data hook for consistent data
   const performanceData = usePerformanceData();
 
-  // Additional data for resource allocation
   const resourceTypeData = [
     { name: 'Computing', value: 42, description: 'Processing power for AI operations' },
     { name: 'Storage', value: 28, description: 'Data storage and retrieval systems' },
@@ -40,7 +37,6 @@ const ResourceUsageSection: React.FC = () => {
     { name: 'Network', value: 12, description: 'Bandwidth for internal/external communications' },
   ];
 
-  // Data for performance metrics chart with more variance
   const perfMetricsData = [
     { name: 'Workflow', value: performanceData.efficiency },
     { name: 'Response', value: Math.round(parseFloat(performanceData.averageResponseTime) * 30) + (Math.random() * 5 - 2.5) },
@@ -49,7 +45,6 @@ const ResourceUsageSection: React.FC = () => {
     { name: 'Tasks', value: Math.min(Math.round(performanceData.tasksCompleted / 2), 100) + (Math.random() * 8 - 4) },
   ];
 
-  // Division data with more meaningful labels
   const divisionResourceData = [
     { name: 'Knowledge Base', value: 32, description: 'Content management and retrieval systems' },
     { name: 'Marketing', value: 25, description: 'Campaign automation and analytics' },
@@ -58,7 +53,6 @@ const ResourceUsageSection: React.FC = () => {
     { name: 'Support', value: 8, description: 'Customer ticketing and feedback analysis' },
   ];
 
-  // Handle chart data point click
   const handleDataPointClick = (data: any, index: number, chartTitle: string) => {
     toast({
       title: `${chartTitle} - ${data.name}`,
@@ -67,7 +61,6 @@ const ResourceUsageSection: React.FC = () => {
     });
   };
 
-  // Handle chart expand button click
   const handleExpandChart = (title: string, data: any[], type: 'pie' | 'bar' | 'line', colors?: string[]) => {
     setExpandedChart({
       title,
@@ -77,9 +70,7 @@ const ResourceUsageSection: React.FC = () => {
     });
   };
 
-  // Handle export data
   const handleExportData = (title: string, data: any[]) => {
-    // In a real app, this would export to CSV/Excel
     const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
       JSON.stringify(data, null, 2)
     )}`;
@@ -96,7 +87,6 @@ const ResourceUsageSection: React.FC = () => {
     });
   };
 
-  // Handle share data
   const handleShareData = (title: string) => {
     toast({
       title: "Share Feature",
@@ -105,14 +95,12 @@ const ResourceUsageSection: React.FC = () => {
     });
   };
 
-  // Helper function to get status color
   const getStatusColor = (value: number) => {
     if (value > 80) return 'text-green-500';
     if (value > 60) return 'text-yellow-500';
     return 'text-red-500';
   };
 
-  // Function to render chart actions
   const renderChartActions = (title: string, data: any[], type: 'pie' | 'bar' | 'line', colors?: string[]) => (
     <div className="absolute top-2 right-2 flex space-x-1 opacity-50 hover:opacity-100 transition-opacity z-10">
       <Button 
@@ -322,7 +310,6 @@ const ResourceUsageSection: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Expanded Chart Dialog */}
       <Dialog open={!!expandedChart} onOpenChange={() => setExpandedChart(null)}>
         <DialogContent className="max-w-3xl h-[70vh] overflow-hidden p-0">
           <DialogHeader className="px-6 pt-4">

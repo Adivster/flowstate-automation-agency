@@ -35,57 +35,55 @@ import {
   Lightbulb
 } from 'lucide-react';
 import { LineChart } from '@/components/ui/chart';
+import { statusColors, getDivisionColorScheme } from '@/utils/colorSystem';
 
-const AgentInfoPanel = () => {
-  // Sample data for the agent info panel
-  const agent = {
-    id: "agent-1",
-    name: "Alex Data",
-    avatar: "/placeholder.svg",
-    role: "Data Analysis Specialist",
-    status: "active",
-    efficiency: 87,
+interface AgentInfoPanelProps {
+  agent: {
+    id: string;
+    name: string;
+    avatar: string;
+    role: string;
+    status: 'active' | 'idle' | 'paused' | 'error';
+    efficiency: number;
     tasks: {
-      completed: 42,
-      inProgress: 3,
-      total: 48
-    },
-    workstationId: "ws-analytics-3",
-    division: "analytics",
-    uptime: "3d 7h 23m",
-    specialty: "Pattern Recognition",
-    skills: ["Data Mining", "Statistical Analysis", "Visualization", "ML Models"],
-    currentTask: "Analyzing Q2 Performance Metrics",
-    recentActivities: [
-      { type: "task", description: "Completed trend analysis for Q1 data", time: "2h ago" },
-      { type: "collaboration", description: "Shared insights with Strategic Planning team", time: "4h ago" },
-      { type: "system", description: "Optimized data processing algorithm", time: "yesterday" },
-      { type: "learning", description: "Acquired new skills in advanced forecasting", time: "2d ago" },
-    ],
-    performanceMetrics: [
-      { metric: "Accuracy", value: 92, change: 3.5, trend: "up" },
-      { metric: "Speed", value: 83, change: -1.2, trend: "down" },
-      { metric: "Resource Efficiency", value: 78, change: 5.7, trend: "up" },
-      { metric: "Learning Rate", value: 95, change: 2.1, trend: "up" },
-    ],
-    collaborationData: [
-      { name: "Jan", value: 12 },
-      { name: "Feb", value: 15 },
-      { name: "Mar", value: 18 },
-      { name: "Apr", value: 20 },
-      { name: "May", value: 23 },
-      { name: "Jun", value: 19 }
-    ]
+      completed: number;
+      inProgress: number;
+      total: number;
+    };
+    workstationId: string;
+    division: string;
+    uptime: string;
+    specialty: string;
+    skills: string[];
+    currentTask: string;
+    recentActivities: {
+      type: string;
+      description: string;
+      time: string;
+    }[];
+    performanceMetrics: {
+      metric: string;
+      value: number;
+      change: number;
+      trend: string;
+    }[];
+    collaborationData: {
+      name: string;
+      value: number;
+    }[];
   };
+  onClose: () => void;
+}
 
+const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({ agent, onClose }) => {
   const getTrendIcon = (trend: string) => {
     switch (trend) {
       case "up":
         return <span className="text-green-500 flex items-center"><ArrowRight className="w-3 h-3 rotate-[-45deg]" /></span>;
       case "down":
-        return <span className="text-red-500 flex items-center"><ArrowRight className="w-3 h-3 rotate-45deg]" /></span>;
+        return <span className="text-red-500 flex items-center"><ArrowRight className="w-3 h-3 rotate-45deg" /></span>;
       default:
-        return <span className="text-gray-500 flex items-center"><ArrowRight className="w-3 h-3 rotate-0deg]" /></span>;
+        return <span className="text-gray-500 flex items-center"><ArrowRight className="w-3 h-3 rotate-0deg" /></span>;
     }
   };
 
@@ -118,6 +116,9 @@ const AgentInfoPanel = () => {
         return <Clock className="w-4 h-4 text-gray-500" />;
     }
   };
+  
+  // Get the color scheme based on the agent's division
+  const divisionColorScheme = getDivisionColorScheme(agent.division);
 
   return (
     <div className="fixed right-0 top-0 h-full w-96 bg-flow-background/95 border-l border-flow-border shadow-lg backdrop-blur-md overflow-y-auto z-50 custom-scrollbar animate-slide-in-right">
@@ -128,7 +129,7 @@ const AgentInfoPanel = () => {
             <BrainCircuit className="w-5 h-5 text-flow-accent mr-2" />
             <h2 className="text-lg font-semibold">Agent Details</h2>
           </div>
-          <Button variant="ghost" size="icon" className="text-flow-foreground/70 hover:text-flow-foreground">
+          <Button variant="ghost" size="icon" className="text-flow-foreground/70 hover:text-flow-foreground" onClick={onClose}>
             <ArrowRight className="h-5 w-5" />
           </Button>
         </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   ResponsiveContainer, 
@@ -21,7 +20,6 @@ import {
   ReferenceLine
 } from "recharts";
 
-// Sample data for testing
 const sampleData = [
   { name: "Jan", value: 400 },
   { name: "Feb", value: 300 },
@@ -65,7 +63,25 @@ export const BarChart = ({ data = sampleData, ...props }) => {
   );
 };
 
-export const LineChart = ({ 
+interface LineChartProps {
+  data?: { name: string; value: number }[];
+  lineColor?: string;
+  dotColor?: string;
+  height?: number;
+  showArea?: boolean;
+  areaOpacity?: number;
+  animate?: boolean;
+  focusAnimation?: boolean;
+  referenceLineY?: number | null;
+  referenceLineLabel?: string;
+  referenceLineColor?: string;
+  domain?: [number, number] | null;
+  onClick?: (data: any, index: number) => void;
+  showGrid?: boolean;
+  [x: string]: any;
+}
+
+export const LineChart: React.FC<LineChartProps> = ({ 
   data = sampleData, 
   lineColor = "#8884d8", 
   dotColor = "#ffffff",
@@ -98,7 +114,7 @@ export const LineChart = ({
     return [lowerBound, upperBound];
   })();
   
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: any) => {
     if (focusAnimation && e && e.activeTooltipIndex !== undefined) {
       setActiveIndex(e.activeTooltipIndex);
     }
@@ -110,7 +126,7 @@ export const LineChart = ({
     }
   };
   
-  const handleClick = (data, index) => {
+  const handleClick = (data: any, index: number) => {
     if (onClick) {
       onClick(data, index);
     }
@@ -123,7 +139,7 @@ export const LineChart = ({
         margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        onClick={handleClick}
+        onClick={(data, index) => handleClick(data, index)}
       >
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="0">
@@ -150,7 +166,7 @@ export const LineChart = ({
           tickLine={false} 
           axisLine={{ stroke: '#33333350' }}
           width={25}
-          domain={effectiveDomain}
+          domain={effectiveDomain as any}
         />
         {showGrid && (
           <CartesianGrid 
@@ -199,8 +215,7 @@ export const LineChart = ({
           dataKey="value" 
           stroke={`url(#${gradientId})`}
           strokeWidth={2.5}
-          dot={(props) => {
-            // Fix the type error by checking if index exists
+          dot={(props: any) => {
             const { cx, cy, payload, dataIndex } = props;
             const index = dataIndex !== undefined ? dataIndex : -1;
             const size = index === activeIndex ? 6 : 4;
