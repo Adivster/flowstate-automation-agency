@@ -70,10 +70,20 @@ const QuickAccess: React.FC<QuickAccessProps> = ({ documents, onSelectDocument }
           return (
             <Card 
               key={`quick-${doc.id}`} 
-              className={`bg-flow-background/30 border-flow-border/50 hover:border-${colorScheme.text}/50 hover:shadow-[0_0_15px_${colorScheme.glow}] transition-all duration-300 cursor-pointer group overflow-hidden`}
+              className={`relative overflow-hidden bg-flow-background/30 border-flow-border/50 hover:border-${colorScheme.text}/50 hover:shadow-[0_0_15px_${colorScheme.glow}] transition-all duration-300 cursor-pointer group`}
               onClick={() => onSelectDocument(doc)}
             >
-              <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-${colorScheme.text} to-${colorScheme.secondary}`}></div>
+              <div className={`absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-${colorScheme.text} to-${colorScheme.secondary}`}></div>
+              
+              {/* Subtle background pattern */}
+              <div 
+                className="absolute inset-0 opacity-5 pointer-events-none" 
+                style={{ 
+                  backgroundImage: `${colorScheme.pattern}`,
+                  backgroundSize: 'cover'
+                }}
+              />
+              
               <CardHeader className="pb-2 relative">
                 <div className="flex justify-between">
                   <span className={`text-${colorScheme.text} font-medium text-sm flex items-center gap-1.5`}>
@@ -96,6 +106,17 @@ const QuickAccess: React.FC<QuickAccessProps> = ({ documents, onSelectDocument }
                   ) : null}
                   {doc.title}
                 </CardTitle>
+                
+                {/* Add a small stats indicator */}
+                <div className="mt-3 flex justify-between items-center text-xs text-flow-foreground/50">
+                  <span>Updated: {doc.updatedAt}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-1">
+                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                      {doc.likes}
+                    </span>
+                  </div>
+                </div>
               </CardHeader>
             </Card>
           );
