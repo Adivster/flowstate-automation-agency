@@ -140,7 +140,7 @@ export const Chart: FC<ChartProps> = ({
               strokeWidth={2}
               activeDot={{ r: 8 }}
               dot={{ r: 4, fill: dotColor || lineColor || colors[0] }}
-              onClick={(e) => {
+              onClick={(e: any) => {
                 if (e && e.payload && onClick) {
                   onClick(e.payload, 0);
                 }
@@ -179,7 +179,7 @@ export const Chart: FC<ChartProps> = ({
             <Bar 
               dataKey="value" 
               fill={lineColor || colors[0]} 
-              onClick={(e) => {
+              onClick={(e: any) => {
                 if (e && e.payload && onClick) {
                   onClick(e.payload, 0);
                 }
@@ -219,7 +219,7 @@ export const Chart: FC<ChartProps> = ({
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorValue)"
-              onClick={(e) => {
+              onClick={(e: any) => {
                 if (e && e.payload && onClick) {
                   onClick(e.payload, 0);
                 }
@@ -239,8 +239,8 @@ export const Chart: FC<ChartProps> = ({
               fill="#8884d8"
               dataKey="value"
               innerRadius={donut ? outerRadius * 0.6 : 0}
-              label={showLabel ? ({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%` : undefined}
-              onClick={(e) => {
+              label={showLabel ? ({ name, percent }: { name: string; percent: number }) => `${name}: ${(percent * 100).toFixed(0)}%` : undefined}
+              onClick={(e: any) => {
                 if (e && onClick) {
                   onClick(e, e.index || 0);
                 }
