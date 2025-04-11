@@ -115,7 +115,7 @@ export const Chart: FC<ChartProps> = ({
   return (
     <div style={{ width: width || "100%", height }} className={className}>
       <ResponsiveContainer width="100%" height="100%">
-        {type === "line" && (
+        {type === "line" ? (
           <RLineChart
             data={data}
             margin={{
@@ -156,9 +156,7 @@ export const Chart: FC<ChartProps> = ({
               />
             )}
           </RLineChart>
-        )}
-
-        {type === "bar" && (
+        ) : type === "bar" ? (
           <RBarChart
             data={data}
             margin={{
@@ -186,9 +184,7 @@ export const Chart: FC<ChartProps> = ({
               }}
             />
           </RBarChart>
-        )}
-
-        {type === "area" && (
+        ) : type === "area" ? (
           <RLineChart
             data={data}
             margin={{
@@ -226,9 +222,7 @@ export const Chart: FC<ChartProps> = ({
               }}
             />
           </RLineChart>
-        )}
-
-        {type === "pie" && (
+        ) : (
           <RPieChart>
             <Pie
               data={data}
@@ -298,3 +292,4 @@ export const AreaChart: FC<Omit<ChartProps, "type">> = (props) => (
 // For backward compatibility, add LineChart and BarChart as aliases of LineChart2 and BarChart2
 export const LineChart = LineChart2;
 export const BarChart = BarChart2;
+
