@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { BarChart, ChevronDown, Activity, PieChart as PieChartIcon, Laptop, Server, Workflow, Zap, Download, Share2, Maximize2 } from 'lucide-react';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
@@ -354,6 +353,10 @@ const ResourceUsageSection: React.FC = () => {
                   height={500}
                   showArea={true}
                   areaOpacity={0.2}
+                  referenceLineY={null}
+                  referenceLineLabel=""
+                  domain={null}
+                  onClick={(data, index) => handleDataPointClick(data, index, expandedChart.title)}
                 />
               )}
             </div>

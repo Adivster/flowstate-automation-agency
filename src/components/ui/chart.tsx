@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { 
   ResponsiveContainer, 
@@ -73,11 +74,11 @@ export const LineChart = ({
   areaOpacity = 0.1,
   animate = true,
   focusAnimation = true,
-  referenceLineY,
-  referenceLineLabel,
+  referenceLineY = null,
+  referenceLineLabel = "",
   referenceLineColor = "#ff7300",
-  domain,
-  onClick,
+  domain = null,
+  onClick = () => {},
   showGrid = true,
   ...props 
 }) => {
@@ -199,7 +200,9 @@ export const LineChart = ({
           stroke={`url(#${gradientId})`}
           strokeWidth={2.5}
           dot={(props) => {
-            const { cx, cy, index } = props;
+            // Fix the type error by checking if index exists
+            const { cx, cy, payload, dataIndex } = props;
+            const index = dataIndex !== undefined ? dataIndex : -1;
             const size = index === activeIndex ? 6 : 4;
             const strokeWidth = index === activeIndex ? 2.5 : 2;
             

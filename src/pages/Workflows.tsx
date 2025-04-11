@@ -417,6 +417,10 @@ const Workflows = () => {
                       <LineChart 
                         data={workflow.performance} 
                         lineColor={workflow.color}
+                        referenceLineY={null}
+                        referenceLineLabel=""
+                        domain={null}
+                        onClick={() => {}}
                       />
                     </div>
                     
@@ -538,6 +542,10 @@ const Workflows = () => {
                             <LineChart 
                               data={selectedWorkflow.performance} 
                               lineColor={selectedWorkflow.color}
+                              referenceLineY={null}
+                              referenceLineLabel=""
+                              domain={null}
+                              onClick={() => {}}
                             />
                           </div>
                         </div>

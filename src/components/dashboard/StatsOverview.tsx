@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Activity, Zap, Clock, Server, TrendingUp, TrendingDown, ArrowRight, Maximize2, Download, Share2 } from 'lucide-react';
 import TransitionWrapper from '../ui/TransitionWrapper';
@@ -103,6 +102,9 @@ const StatItem: React.FC<StatItemProps> = ({
               showArea={true}
               areaOpacity={0.15}
               showGrid={false}
+              referenceLineY={null}
+              referenceLineLabel=""
+              domain={null}
               onClick={handleDataPointClick}
             />
           </div>
@@ -120,7 +122,6 @@ const StatsOverview: React.FC = () => {
     color: string;
   } | null>(null);
   
-  // Enhanced chart data with more variance and realistic fluctuations
   const agentData = [
     { name: "Mon", value: 18 },
     { name: "Tue", value: 20 },
@@ -141,7 +142,6 @@ const StatsOverview: React.FC = () => {
     { name: "Sun", value: 1310 },
   ];
   
-  // Add more variance to the response time data
   const responseData = [
     { name: "Mon", value: 1.8 },
     { name: "Tue", value: 1.5 },
@@ -152,7 +152,6 @@ const StatsOverview: React.FC = () => {
     { name: "Sun", value: 1.0 },
   ];
   
-  // Add more variance to the system load data
   const loadData = [
     { name: "Mon", value: 40 },
     { name: "Tue", value: 38 },
@@ -163,7 +162,6 @@ const StatsOverview: React.FC = () => {
     { name: "Sun", value: 36 },
   ];
   
-  // Handle chart data point click
   const handleDataPointClick = (data: any, index: number, chartTitle: string) => {
     toast({
       title: `${chartTitle} - ${data.name}`,
@@ -172,7 +170,6 @@ const StatsOverview: React.FC = () => {
     });
   };
   
-  // Handle expand chart
   const handleExpandChart = (title: string, data: any[], color: string) => {
     setExpandedChart({
       title,
@@ -181,9 +178,7 @@ const StatsOverview: React.FC = () => {
     });
   };
   
-  // Handle export data
   const handleExportData = (title: string, data: any[]) => {
-    // In a real app, this would export to CSV/Excel
     const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
       JSON.stringify(data, null, 2)
     )}`;
@@ -200,7 +195,6 @@ const StatsOverview: React.FC = () => {
     });
   };
   
-  // Handle share data
   const handleShareData = (title: string) => {
     toast({
       title: "Share Feature",
@@ -377,7 +371,6 @@ const StatsOverview: React.FC = () => {
         </TransitionWrapper>
       </div>
 
-      {/* Expanded Chart Dialog */}
       <Dialog open={!!expandedChart} onOpenChange={() => setExpandedChart(null)}>
         <DialogContent className="max-w-3xl h-[70vh] overflow-hidden p-0">
           <DialogHeader className="px-6 pt-4">
@@ -391,7 +384,10 @@ const StatsOverview: React.FC = () => {
                 height={500}
                 showArea={true}
                 areaOpacity={0.2}
-                onClick={(data, index) => expandedChart && handleDataPointClick(data, index, expandedChart.title)}
+                referenceLineY={null}
+                referenceLineLabel=""
+                domain={null}
+                onClick={(data, index) => handleDataPointClick(data, index, expandedChart?.title || "")}
               />
             </div>
             <div className="flex justify-end mt-4 gap-2">

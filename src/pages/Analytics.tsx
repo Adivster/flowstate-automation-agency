@@ -299,6 +299,8 @@ const Analytics = () => {
                     areaOpacity={0.2}
                     domain={[85, 100]}
                     showGrid={false}
+                    referenceLineY={null}
+                    referenceLineLabel=""
                     onClick={(data, index) => handleDataPointClick(data, index, "Task Completion Rate")}
                   />
                 </div>
@@ -329,6 +331,8 @@ const Analytics = () => {
                     areaOpacity={0.2}
                     domain={[0.5, 2.5]}
                     showGrid={false}
+                    referenceLineY={null}
+                    referenceLineLabel=""
                     onClick={(data, index) => handleDataPointClick(data, index, "Response Time")}
                   />
                 </div>
@@ -359,6 +363,8 @@ const Analytics = () => {
                     areaOpacity={0.2}
                     domain={[180, 260]}
                     showGrid={false}
+                    referenceLineY={null}
+                    referenceLineLabel=""
                     onClick={(data, index) => handleDataPointClick(data, index, "Active Users")}
                   />
                 </div>
@@ -462,6 +468,7 @@ const Analytics = () => {
                         areaOpacity={0.15}
                         referenceLineY={500}
                         referenceLineLabel="Target"
+                        domain={null}
                         onClick={(data, index) => handleDataPointClick(data, index, "Performance Trends")}
                       />
                     </Section>
@@ -623,6 +630,9 @@ const Analytics = () => {
                   showArea={true}
                   areaOpacity={0.2}
                   height={500}
+                  referenceLineY={null}
+                  referenceLineLabel=""
+                  domain={null}
                   onClick={(data, index) => handleDataPointClick(data, index, expandedChart.title)}
                 />
               )}
