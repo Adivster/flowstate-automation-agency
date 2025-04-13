@@ -4,28 +4,10 @@ import { Card } from '@/components/ui/card';
 import { ChevronRight, BarChart, Activity, Clock, Users, TrendingUp, TrendingDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AreaChart } from '@/components/ui/chart';
+import { usePerformanceData } from '@/hooks/usePerformanceData';
 
 const PerformanceMap: React.FC = () => {
-  // Mock data for performance metrics
-  const tasksData = [
-    { name: 'Mon', value: 45 },
-    { name: 'Tue', value: 52 },
-    { name: 'Wed', value: 49 },
-    { name: 'Thu', value: 63 },
-    { name: 'Fri', value: 59 },
-    { name: 'Sat', value: 37 },
-    { name: 'Sun', value: 42 },
-  ];
-
-  const responseTimeData = [
-    { name: '1h', value: 320 },
-    { name: '2h', value: 350 },
-    { name: '3h', value: 310 },
-    { name: '4h', value: 290 },
-    { name: '5h', value: 280 },
-    { name: '6h', value: 300 },
-    { name: 'Now', value: 270 },
-  ];
+  const performanceData = usePerformanceData();
 
   const StatCard = ({ icon: Icon, title, value, trend, trendValue, upward = false }) => (
     <div className="bg-black/20 border border-flow-border/10 rounded-md p-3">
@@ -97,12 +79,15 @@ const PerformanceMap: React.FC = () => {
           icon={Users} 
           title="Active Agents" 
           value="14" 
+          trend="daily" 
+          trendValue="+2" 
+          upward={true}
         />
       </div>
       
       <div className="h-24 mt-3 mb-2">
         <AreaChart 
-          data={tasksData}
+          data={performanceData.historicalData.taskCompletion}
           showGrid={false}
           showLegend={false}
           showXAxis={true}

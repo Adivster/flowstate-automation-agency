@@ -115,14 +115,14 @@ const Analytics = () => {
   
   const enhancedTaskCompletionData = performanceData.historicalData.taskCompletion.map((value, index) => ({
     name: `Day ${index + 1}`,
-    value: value + (Math.random() * 5 - 2.5)
+    value: value.value + (Math.random() * 5 - 2.5)
   }));
   
   const enhancedResponseTimeData = performanceData.historicalData.responseTime.map((value, index) => ({
     name: `Day ${index + 1}`,
-    value: value * (1 + (Math.random() * 0.4 - 0.2))
+    value: value.value * (1 + (Math.random() * 0.4 - 0.2))
   }));
-  
+
   const enhancedUserData = [
     { name: "Day 1", value: 198 },
     { name: "Day 2", value: 210 },
@@ -178,13 +178,13 @@ const Analytics = () => {
   const getTrendInsight = () => {
     const trends = performanceData.historicalData.efficiency;
     const lastIndex = trends.length - 1;
-    const currentValue = trends[lastIndex];
-    const previousValue = trends[lastIndex - 1];
+    const currentValue = trends[lastIndex].value;
+    const previousValue = trends[lastIndex - 1].value;
     const change = currentValue - previousValue;
     const isPositive = change >= 0;
     
     return {
-      value: `${isPositive ? '+' : ''}${change}%`,
+      value: `${isPositive ? '+' : ''}${change.toFixed(1)}%`,
       text: isPositive 
         ? 'Improvement in overall efficiency' 
         : 'Decrease in overall efficiency',

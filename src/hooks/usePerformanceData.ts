@@ -15,10 +15,13 @@ interface PerformanceData {
   efficiency: number;
   averageResponseTime: string;
   uptime: number;
-  historicalData?: {
+  historicalData: {
     tasks: { name: string; value: number }[];
     response: { name: string; value: number }[];
     resource: { name: string; value: number }[];
+    taskCompletion: { name: string; value: number }[];
+    responseTime: { name: string; value: number }[];
+    efficiency: { name: string; value: number }[];
   };
 }
 
@@ -37,7 +40,10 @@ export const usePerformanceData = (divisionId?: string): PerformanceData => {
     historicalData: {
       tasks: [],
       response: [],
-      resource: []
+      resource: [],
+      taskCompletion: [],
+      responseTime: [],
+      efficiency: []
     }
   });
   
@@ -83,7 +89,10 @@ export const usePerformanceData = (divisionId?: string): PerformanceData => {
       historicalData: {
         tasks: generateHistoricalData(5, 30, 7, 10),
         response: generateHistoricalData(0.8, 2.2, 7, 20),
-        resource: generateHistoricalData(20, 60, 7, 30)
+        resource: generateHistoricalData(20, 60, 7, 30),
+        taskCompletion: generateHistoricalData(75, 98, 7, 40),
+        responseTime: generateHistoricalData(0.8, 2.2, 7, 50),
+        efficiency: generateHistoricalData(60, 95, 7, 60)
       }
     });
     
