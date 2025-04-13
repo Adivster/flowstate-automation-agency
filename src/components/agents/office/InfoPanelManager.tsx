@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -10,17 +11,20 @@ import {
   Zap, 
   AlertTriangle, 
   Clock, 
-  CheckCircle, 
+  CheckCircle,
   ChevronRight,
   Minimize2,
-  Maximize2
+  Maximize2,
+  Headphones,
+  Brain
 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { usePerformanceData } from '@/hooks/usePerformanceData';
 import { AreaChart } from '@/components/ui/chart';
-import { getDivisionColorScheme } from '@/utils/colorSystem';
+import { getDivisionColorScheme, getDivisionHexColors } from '@/utils/colorSystem';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 
 interface InfoPanelManagerProps {
   selectedDivision: string | null;
@@ -76,13 +80,20 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
     } else if (selectedAgent && selectedAgentObject && selectedAgentObject.division) {
       return getDivisionColorScheme(selectedAgentObject.division);
     }
-    return { primary: 'bg-flow-accent', border: 'border-flow-accent', text: 'text-flow-accent' };
+    return { primary: 'bg-flow-accent', border: 'border-flow-accent', text: 'text-flow-accent', glow: 'rgba(139, 92, 246, 0.4)', pattern: 'bg-gradient-to-br from-flow-accent/10 to-indigo-700/10' };
   };
 
   const colorScheme = getColorScheme();
-  const headerBgClass = colorScheme.primary.replace('bg-', 'bg-') + '/20';
+  const headerBgClass = colorScheme.primary.replace('bg-', 'bg-');
   const borderClass = colorScheme.border.replace('border-', 'border-');
   const textClass = colorScheme.text;
+  
+  // Get hex colors for styling
+  const hexColors = selectedDivision 
+    ? getDivisionHexColors(selectedDivision) 
+    : selectedAgent && selectedAgentObject?.division 
+      ? getDivisionHexColors(selectedAgentObject.division)
+      : { primary: '#8b5cf6', shadow: '#8b5cf640' };
   
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -95,25 +106,37 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
   };
   
   return (
-    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" onClick={handleBackgroundClick}>
+    <div 
+      className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50" 
+      onClick={handleBackgroundClick}
+    >
       <AnimatePresence>
         <motion.div
-          className={`absolute right-0 top-0 ${minimized ? 'w-64 h-12' : 'w-full md:w-96 h-full'} bg-black/80 border-l ${borderClass}/30 backdrop-blur-xl z-40 overflow-hidden transition-all duration-300`}
+          className={`absolute right-0 top-0 ${minimized ? 'w-64 h-12' : 'w-full md:w-96 h-full'} bg-black/80 border-l ${borderClass} backdrop-blur-xl z-50 overflow-hidden transition-all duration-300`}
           initial={{ x: '100%', opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: '100%', opacity: 0 }}
           transition={{ type: 'spring', damping: 20 }}
           onClick={(e) => e.stopPropagation()}
+          style={{ 
+            boxShadow: `0 0 25px ${hexColors.shadow}`,
+          }}
         >
-          <div className={`p-3 flex justify-between items-center ${headerBgClass} border-b ${borderClass}/20`}>
-            <h3 className={`text-lg font-medium ${textClass}`}>
+          <div 
+            className={`p-3 flex justify-between items-center ${headerBgClass} border-b ${borderClass}`}
+            style={{ 
+              background: `linear-gradient(to right, ${hexColors.primary}40, ${hexColors.primary}20)`,
+              boxShadow: `0 2px 10px ${hexColors.shadow}`
+            }}
+          >
+            <h3 className={`text-lg font-medium ${textClass} drop-shadow-md`}>
               {selectedDivision ? selectedDivisionObject?.name : selectedAgentObject?.name}
             </h3>
-            <div className="flex items-center space-x-1">
-              <Button variant="ghost" size="icon" onClick={toggleMinimize} className="h-7 w-7 hover:bg-white/10">
+            <div className="flex items-center space-x-2">
+              <Button variant="ghost" size="icon" onClick={toggleMinimize} className="h-7 w-7 hover:bg-white/10 text-white/90">
                 {minimized ? <Maximize2 className="h-3.5 w-3.5" /> : <Minimize2 className="h-3.5 w-3.5" />}
               </Button>
-              <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7 hover:bg-white/10">
+              <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7 hover:bg-white/10 text-white/90">
                 <X className="h-3.5 w-3.5" />
               </Button>
             </div>
@@ -126,20 +149,35 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                 onValueChange={setActiveTab}
                 className="w-full"
               >
-                <TabsList className={`grid grid-cols-3 mb-4 bg-black/50 border ${borderClass}/20`}>
-                  <TabsTrigger value="overview" className={`data-[state=active]:${textClass} data-[state=active]:shadow-[inset_0_-1px_0] data-[state=active]:shadow-current`}>Overview</TabsTrigger>
-                  <TabsTrigger value="stats" className={`data-[state=active]:${textClass} data-[state=active]:shadow-[inset_0_-1px_0] data-[state=active]:shadow-current`}>Stats</TabsTrigger>
-                  <TabsTrigger value="actions" className={`data-[state=active]:${textClass} data-[state=active]:shadow-[inset_0_-1px_0] data-[state=active]:shadow-current`}>Actions</TabsTrigger>
+                <TabsList className={`grid grid-cols-3 mb-4 bg-black/50 border ${borderClass}/50`}>
+                  <TabsTrigger 
+                    value="overview" 
+                    className={`data-[state=active]:${textClass} data-[state=active]:shadow-[inset_0_-1px_0] data-[state=active]:shadow-current data-[state=active]:bg-black/30`}
+                  >
+                    Overview
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="stats" 
+                    className={`data-[state=active]:${textClass} data-[state=active]:shadow-[inset_0_-1px_0] data-[state=active]:shadow-current data-[state=active]:bg-black/30`}
+                  >
+                    Stats
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="actions" 
+                    className={`data-[state=active]:${textClass} data-[state=active]:shadow-[inset_0_-1px_0] data-[state=active]:shadow-current data-[state=active]:bg-black/30`}
+                  >
+                    Actions
+                  </TabsTrigger>
                 </TabsList>
                 
                 {/* Overview Tab */}
                 <TabsContent value="overview" className="space-y-4">
                   {selectedDivision && selectedDivisionObject && (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       <div className="flex items-center">
                         <div 
                           className="w-3 h-3 rounded-full animate-pulse mr-2"
-                          style={{ backgroundColor: selectedDivisionObject.borderColor || '#8b5cf6' }}
+                          style={{ backgroundColor: hexColors.primary }}
                         ></div>
                         <span className="text-sm text-flow-foreground/70">
                           {divisionAgents.length} Agents Active
@@ -161,6 +199,39 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                         </div>
                       </div>
                       
+                      {/* Contact Division Manager - Prominent Section */}
+                      <div 
+                        className="bg-black/40 border rounded-lg p-3"
+                        style={{ 
+                          borderColor: hexColors.primary,
+                          boxShadow: `0 0 15px ${hexColors.shadow}` 
+                        }}
+                      >
+                        <div className="flex items-center gap-2 mb-3">
+                          <Headphones className={`h-5 w-5 ${textClass}`} />
+                          <h3 className="font-medium text-white">Division Manager</h3>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <Button 
+                            className="flex-1 bg-white/10 hover:bg-white/20 text-white border-white/20"
+                            onClick={() => handleAction('Message')}
+                            size="sm"
+                          >
+                            <MessageCircle className="h-4 w-4 mr-1" />
+                            Message
+                          </Button>
+                          <Button 
+                            className="flex-1 bg-white/10 hover:bg-white/20 text-white border-white/20"
+                            onClick={() => handleAction('Call')}
+                            size="sm"
+                          >
+                            <Headphones className="h-4 w-4 mr-1" />
+                            Call
+                          </Button>
+                        </div>
+                      </div>
+                      
                       <div className="bg-black/30 border border-flow-border/20 rounded-md p-3">
                         <div className="text-sm font-medium mb-2">Performance Trend</div>
                         <div className="h-28">
@@ -169,12 +240,37 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                             showGrid={false}
                             showXAxis={true}
                             showYAxis={false}
-                            lineColor={selectedDivisionObject.borderColor || '#8b5cf6'}
+                            lineColor={hexColors.primary}
                           />
                         </div>
                         <div className="text-xs text-center mt-1 text-flow-foreground/60">
                           Weekly Task Completion
                         </div>
+                      </div>
+                      
+                      {/* Division Insights - Prominent Section */}
+                      <div 
+                        className="bg-black/40 border rounded-lg p-3"
+                        style={{ 
+                          borderColor: hexColors.primary,
+                          boxShadow: `0 0 15px ${hexColors.shadow}` 
+                        }}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <Brain className={`h-5 w-5 ${textClass}`} />
+                          <h3 className="font-medium text-white">Division Insights</h3>
+                        </div>
+                        
+                        <Button 
+                          className={`w-full ${headerBgClass} hover:opacity-90 border border-white/10 text-white`}
+                          style={{ 
+                            background: `linear-gradient(to right, ${hexColors.primary}60, ${hexColors.primary}40)`,
+                          }}
+                          onClick={() => handleAction('GetInsights')}
+                        >
+                          <Zap className="h-4 w-4 mr-1" />
+                          Get Division Insights
+                        </Button>
                       </div>
                       
                       <div className="space-y-2">
@@ -183,7 +279,10 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                           {divisionAgents.map(agent => (
                             <div 
                               key={agent.id}
-                              className="flex items-center p-2 hover:bg-flow-accent/10 rounded-md cursor-pointer"
+                              className="flex items-center p-2 hover:bg-white/10 rounded-md cursor-pointer"
+                              style={{
+                                boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.1)'
+                              }}
                             >
                               <div className={`w-2 h-2 rounded-full mr-2 ${
                                 agent.status === 'working' ? 'bg-green-500' : 
@@ -201,7 +300,7 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                   )}
                   
                   {selectedAgent && selectedAgentObject && (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       <div className="flex items-center text-sm text-flow-foreground/70">
                         <div 
                           className={`w-2 h-2 rounded-full mr-2 ${
@@ -217,6 +316,39 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                       <div>
                         <div className="text-xs text-flow-foreground/60">Role</div>
                         <div className="text-sm">{selectedAgentObject.role || 'Unknown Role'}</div>
+                      </div>
+                      
+                      {/* Contact Agent - Prominent Section */}
+                      <div 
+                        className="bg-black/40 border rounded-lg p-3"
+                        style={{ 
+                          borderColor: hexColors.primary,
+                          boxShadow: `0 0 15px ${hexColors.shadow}` 
+                        }}
+                      >
+                        <div className="flex items-center gap-2 mb-3">
+                          <Headphones className={`h-5 w-5 ${textClass}`} />
+                          <h3 className="font-medium text-white">Contact Agent</h3>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <Button 
+                            className="flex-1 bg-white/10 hover:bg-white/20 text-white border-white/20"
+                            onClick={() => handleAction('Message')}
+                            size="sm"
+                          >
+                            <MessageCircle className="h-4 w-4 mr-1" />
+                            Message
+                          </Button>
+                          <Button 
+                            className="flex-1 bg-white/10 hover:bg-white/20 text-white border-white/20"
+                            onClick={() => handleAction('Call')}
+                            size="sm"
+                          >
+                            <Headphones className="h-4 w-4 mr-1" />
+                            Call
+                          </Button>
+                        </div>
                       </div>
                       
                       <div className="grid grid-cols-2 gap-2">
@@ -253,6 +385,31 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                           </div>
                           <div className="text-xs text-flow-foreground/60">Alerts</div>
                         </div>
+                      </div>
+                      
+                      {/* Agent Insights - Prominent Section */}
+                      <div 
+                        className="bg-black/40 border rounded-lg p-3"
+                        style={{ 
+                          borderColor: hexColors.primary,
+                          boxShadow: `0 0 15px ${hexColors.shadow}` 
+                        }}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <Brain className={`h-5 w-5 ${textClass}`} />
+                          <h3 className="font-medium text-white">Agent Insights</h3>
+                        </div>
+                        
+                        <Button 
+                          className={`w-full ${headerBgClass} hover:opacity-90 border border-white/10 text-white`}
+                          style={{ 
+                            background: `linear-gradient(to right, ${hexColors.primary}60, ${hexColors.primary}40)`,
+                          }}
+                          onClick={() => handleAction('GetAgentInsights')}
+                        >
+                          <Zap className="h-4 w-4 mr-1" />
+                          Get Agent Insights
+                        </Button>
                       </div>
                       
                       <div className="bg-black/30 border border-flow-border/20 rounded-md p-2">
@@ -411,7 +568,11 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                   {selectedDivision && (
                     <div className="space-y-3">
                       <Button 
-                        className={`w-full flex justify-between items-center ${colorScheme.primary}/20 hover:${colorScheme.primary}/30 border-${colorScheme.border}/30`}
+                        className="w-full flex justify-between items-center bg-gradient-to-r hover:opacity-90 text-white border-white/10"
+                        style={{ 
+                          backgroundImage: `linear-gradient(to right, ${hexColors.primary}50, ${hexColors.primary}30)`,
+                          boxShadow: `0 3px 10px ${hexColors.shadow}`
+                        }}
                         onClick={() => handleAction('Optimize')}
                       >
                         <div className="flex items-center">
@@ -422,7 +583,7 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                       </Button>
                       
                       <Button 
-                        className={`w-full flex justify-between items-center ${colorScheme.primary}/20 hover:${colorScheme.primary}/30 border-${colorScheme.border}/30`}
+                        className="w-full flex justify-between items-center bg-white/10 hover:bg-white/15 text-white border-white/10"
                         onClick={() => handleAction('Analyze')}
                       >
                         <div className="flex items-center">
@@ -433,7 +594,7 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                       </Button>
                       
                       <Button 
-                        className={`w-full flex justify-between items-center ${colorScheme.primary}/20 hover:${colorScheme.primary}/30 border-${colorScheme.border}/30`}
+                        className="w-full flex justify-between items-center bg-white/10 hover:bg-white/15 text-white border-white/10"
                         onClick={() => handleAction('Configure')}
                       >
                         <div className="flex items-center">
@@ -444,7 +605,7 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                       </Button>
                       
                       <Button 
-                        className={`w-full flex justify-between items-center ${colorScheme.primary}/20 hover:${colorScheme.primary}/30 border-${colorScheme.border}/30`}
+                        className="w-full flex justify-between items-center bg-white/10 hover:bg-white/15 text-white border-white/10"
                         onClick={() => handleAction('AddAgent')}
                       >
                         <div className="flex items-center">
@@ -498,7 +659,11 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                       )}
                       
                       <Button 
-                        className={`w-full flex justify-between items-center ${colorScheme.primary}/20 hover:${colorScheme.primary}/30 border-${colorScheme.border}/30`}
+                        className="w-full flex justify-between items-center bg-gradient-to-r hover:opacity-90 text-white border-white/10"
+                        style={{ 
+                          backgroundImage: `linear-gradient(to right, ${hexColors.primary}50, ${hexColors.primary}30)`,
+                          boxShadow: `0 3px 10px ${hexColors.shadow}`
+                        }}
                         onClick={() => handleAction('Message')}
                       >
                         <div className="flex items-center">
@@ -509,7 +674,7 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                       </Button>
                       
                       <Button 
-                        className={`w-full flex justify-between items-center ${colorScheme.primary}/20 hover:${colorScheme.primary}/30 border-${colorScheme.border}/30`}
+                        className="w-full flex justify-between items-center bg-white/10 hover:bg-white/15 text-white border-white/10"
                         onClick={() => handleAction('Tune')}
                       >
                         <div className="flex items-center">
@@ -520,7 +685,7 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                       </Button>
                       
                       <Button 
-                        className={`w-full flex justify-between items-center ${colorScheme.primary}/20 hover:${colorScheme.primary}/30 border-${colorScheme.border}/30`}
+                        className="w-full flex justify-between items-center bg-white/10 hover:bg-white/15 text-white border-white/10"
                         onClick={() => handleAction('History')}
                       >
                         <div className="flex items-center">

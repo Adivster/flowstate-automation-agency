@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ZIndexLayers } from './types/officeTypes';
 import DivisionDecoration from './DivisionDecoration';
-import { getDivisionStyle } from '@/utils/colorSystem';
+import { getDivisionStyle, getDivisionHexColors } from '@/utils/colorSystem';
 
 interface DivisionProps {
   division: {
@@ -48,20 +48,12 @@ const Division: React.FC<DivisionProps> = ({
   // Get division style from our division styles
   const divStyle = getDivisionStyle(division.id);
   
+  // Get hex colors for styling
+  const hexColors = getDivisionHexColors(division.id);
+  
   // Use custom position if provided, otherwise use division's position
   const xPos = customPosition?.x !== undefined ? customPosition.x : division.position.x;
   const yPos = customPosition?.y !== undefined ? customPosition.y : division.position.y;
-  
-  // Calculate box shadow based on state
-  const getBoxShadow = () => {
-    if (isSelected) {
-      return `0 0 30px ${divStyle.glow}, inset 0 0 20px ${divStyle.glow}`;
-    }
-    if (isPulsing || isHovered) {
-      return `0 0 15px ${divStyle.glow}`;
-    }
-    return `0 0 5px ${divStyle.glow}`;
-  };
   
   // Calculate z-index based on state
   const getZIndex = () => {
@@ -97,9 +89,13 @@ const Division: React.FC<DivisionProps> = ({
         height: `${division.position.height}%`,
         backgroundColor: divStyle.bg,
         borderColor: divStyle.border,
-        boxShadow: getBoxShadow(),
+        boxShadow: isSelected 
+          ? `0 0 30px ${hexColors.shadow}, inset 0 0 20px ${hexColors.shadow}` 
+          : isHovered || isPulsing
+          ? `0 0 15px ${hexColors.shadow}` 
+          : `0 0 5px ${hexColors.shadow}`,
         zIndex: getZIndex(),
-        backgroundImage: divStyle.pattern
+        backgroundImage: divStyle.pattern,
       }}
       initial={{
         opacity: 0,
@@ -108,7 +104,11 @@ const Division: React.FC<DivisionProps> = ({
       animate={{
         opacity: 1,
         scale: 1,
-        boxShadow: getBoxShadow()
+        boxShadow: isSelected 
+          ? `0 0 30px ${hexColors.shadow}, inset 0 0 20px ${hexColors.shadow}` 
+          : isHovered || isPulsing
+          ? `0 0 15px ${hexColors.shadow}` 
+          : `0 0 5px ${hexColors.shadow}`,
       }}
       transition={{
         duration: 0.5,
@@ -146,13 +146,25 @@ const Division: React.FC<DivisionProps> = ({
       <div className="h-full w-full p-4 flex flex-col justify-between">
         <div className="flex items-start justify-between">
           <div className="flex items-center">
-            <div className={`p-1.5 rounded-md flex items-center justify-center bg-white/10`} style={{ boxShadow: `0 0 8px ${divStyle.glow}` }}>
-              <Icon className="h-4 w-4 text-white" style={{ color: divStyle.text }} />
+            <div 
+              className="p-1.5 rounded-md flex items-center justify-center bg-white/10" 
+              style={{ 
+                boxShadow: `0 0 8px ${hexColors.shadow}`,
+                background: isSelected ? `linear-gradient(135deg, ${hexColors.primary}40, ${hexColors.primary}20)` : 'rgba(255, 255, 255, 0.1)'
+              }}
+            >
+              <Icon className="h-4 w-4 text-white drop-shadow-md" style={{ color: hexColors.primary }} />
             </div>
             <h3 className="text-sm font-medium ml-2 tracking-wide text-white drop-shadow-md font-cyber">{division.name}</h3>
           </div>
           
-          <div className="bg-black/30 backdrop-blur-sm rounded-full text-xs px-2 py-0.5 flex items-center gap-1 border border-white/10">
+          <div 
+            className="backdrop-blur-sm rounded-full text-xs px-2 py-0.5 flex items-center gap-1 border"
+            style={{
+              borderColor: `${hexColors.primary}40`,
+              background: `${hexColors.primary}20`,
+            }}
+          >
             <span className="text-white">{agentCount}</span>
             <span className="opacity-70 text-white/80">AI</span>
           </div>
@@ -162,13 +174,16 @@ const Division: React.FC<DivisionProps> = ({
         <div className="flex-1 flex items-center justify-center">
           {isSelected && (
             <motion.div 
-              className="rounded-full w-12 h-12 bg-white/5 flex items-center justify-center"
+              className="rounded-full w-12 h-12 flex items-center justify-center"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.3 }}
-              style={{ boxShadow: `0 0 15px ${divStyle.glow}` }}
+              style={{ 
+                boxShadow: `0 0 15px ${hexColors.shadow}`,
+                background: `linear-gradient(135deg, ${hexColors.primary}30, ${hexColors.primary}10)`,
+              }}
             >
-              <Icon className="h-6 w-6" style={{ color: divStyle.text }} />
+              <Icon className="h-6 w-6" style={{ color: hexColors.primary }} />
             </motion.div>
           )}
         </div>
@@ -190,7 +205,10 @@ const Division: React.FC<DivisionProps> = ({
           <div className="flex items-center gap-1.5">
             <div 
               className={`h-1.5 w-1.5 rounded-full ${isPulsing || isHovered ? 'animate-pulse-subtle' : ''}`}
-              style={{ backgroundColor: divStyle.text, boxShadow: `0 0 5px ${divStyle.glow}` }}
+              style={{ 
+                backgroundColor: hexColors.primary, 
+                boxShadow: `0 0 5px ${hexColors.shadow}` 
+              }}
             ></div>
             <span className="text-[0.65rem] text-white/70">Status: Active</span>
           </div>
@@ -215,8 +233,8 @@ const Division: React.FC<DivisionProps> = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             style={{ 
-              borderColor: divStyle.border,
-              boxShadow: `0 0 15px ${divStyle.glow}, inset 0 0 10px ${divStyle.glow}`
+              borderColor: hexColors.primary,
+              boxShadow: `0 0 15px ${hexColors.shadow}, inset 0 0 10px ${hexColors.shadow}`
             }}
           />
         )}
