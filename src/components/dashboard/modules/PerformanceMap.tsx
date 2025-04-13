@@ -27,7 +27,7 @@ const PerformanceMap: React.FC = () => {
     { name: 'Now', value: 270 },
   ];
 
-  const StatCard = ({ icon: Icon, title, value, trend, trendValue, upward }) => (
+  const StatCard = ({ icon: Icon, title, value, trend, trendValue, upward = false }) => (
     <div className="bg-black/20 border border-flow-border/10 rounded-md p-3">
       <div className="flex justify-between items-start">
         <div>

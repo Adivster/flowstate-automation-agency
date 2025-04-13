@@ -125,7 +125,7 @@ export const Chart: FC<ChartProps> = ({
             {showYAxis && <YAxis domain={domain || ['auto', 'auto']} />}
             {showTooltip && <Tooltip />}
             {showLegend && <Legend />}
-            {referenceLineY !== null && (
+            {referenceLineY !== null && showYAxis && (
               <ReferenceLine y={referenceLineY} label={referenceLineLabel} stroke="#888" strokeDasharray="3 3" />
             )}
             <Line
@@ -164,7 +164,7 @@ export const Chart: FC<ChartProps> = ({
             {showYAxis && <YAxis domain={domain || ['auto', 'auto']} />}
             {showTooltip && <Tooltip />}
             {showLegend && <Legend />}
-            {referenceLineY !== null && (
+            {referenceLineY !== null && showYAxis && (
               <ReferenceLine y={referenceLineY} label={referenceLineLabel} stroke="#888" strokeDasharray="3 3" />
             )}
             <Bar 
@@ -190,7 +190,7 @@ export const Chart: FC<ChartProps> = ({
             {showYAxis && <YAxis domain={domain || ['auto', 'auto']} />}
             {showTooltip && <Tooltip />}
             {showLegend && <Legend />}
-            {referenceLineY !== null && (
+            {referenceLineY !== null && showYAxis && (
               <ReferenceLine y={referenceLineY} label={referenceLineLabel} stroke="#888" strokeDasharray="3 3" />
             )}
             <defs>
