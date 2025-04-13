@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Settings, MessageCircle, BarChart2, History, PieChart, Zap, AlertTriangle, Clock, CheckCircle } from 'lucide-react';
+import { X, Settings, MessageCircle, BarChart2, History, PieChart, Zap, AlertTriangle, Clock, CheckCircle, ChevronRight } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -488,7 +488,7 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
             </Tabs>
           </div>
           
-          <style jsx>{`
+          <style>{`
             .custom-scrollbar::-webkit-scrollbar {
               width: 4px;
             }

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LucideIcon, Play, Pause, MessageCircle, MoreHorizontal, AlertTriangle, Activity, Zap } from 'lucide-react';
+import { LucideIcon, Play, Pause, MessageCircle, MoreHorizontal, AlertTriangle, Activity, Zap, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import GlassMorphism from '@/components/ui/GlassMorphism';
