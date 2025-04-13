@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LucideIcon, Play, Pause, MessageCircle, MoreHorizontal, AlertTriangle, Activity, Zap, Settings } from 'lucide-react';
+import { LucideIcon, Play, Pause, MessageCircle, MoreHorizontal, AlertTriangle, Activity, Zap, Settings, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import GlassMorphism from '@/components/ui/GlassMorphism';
@@ -50,14 +50,28 @@ const AgentListItem: React.FC<AgentListItemProps> = ({
     return 'bg-gray-500 text-white';
   };
   
+  // Apply division-specific glow effect 
+  const getGlowStyle = () => {
+    const glowColor = colors.text.replace('text-', '');
+    let colorValue = '#8b5cf6'; // Default purple
+
+    if (glowColor.includes('green')) colorValue = '#22c55e';
+    else if (glowColor.includes('blue')) colorValue = '#3b82f6';
+    else if (glowColor.includes('amber')) colorValue = '#f59e0b';
+    else if (glowColor.includes('pink')) colorValue = '#ec4899';
+
+    return { boxShadow: `0 0 8px 0 ${colorValue}40` };
+  };
+  
   return (
     <motion.div
       whileHover={{ scale: 1.01, y: -2 }}
       transition={{ type: 'spring', stiffness: 400, damping: 17 }}
     >
       <GlassMorphism 
-        className="border border-flow-border/50 hover:border-flow-accent/50 transition-all duration-200 hover:shadow-[0_0_15px_rgba(85,120,255,0.15)] rounded-lg p-3 cursor-pointer"
+        className={`border border-flow-border/50 hover:border-${colors.text.replace('text-', '')}/60 transition-all duration-200 hover:shadow-[0_0_15px_rgba(85,120,255,0.15)] rounded-lg p-3 cursor-pointer`}
         onClick={() => handleExpandAgent(agent.id)}
+        style={getGlowStyle()}
       >
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center space-x-3">
@@ -67,7 +81,7 @@ const AgentListItem: React.FC<AgentListItemProps> = ({
             
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="font-medium">{agent.name}</h3>
+                <h3 className={`font-medium ${colors.text}`}>{agent.name}</h3>
                 <Badge className={`${getStatusBg(agent.status)} text-xs`}>
                   {agent.status}
                 </Badge>
@@ -94,7 +108,7 @@ const AgentListItem: React.FC<AgentListItemProps> = ({
                 <Button
                   variant="ghost" 
                   size="sm"
-                  className="h-7 px-2 text-xs"
+                  className={`h-7 px-2 text-xs border border-transparent hover:border-${colors.text.replace('text-', '')}/30 hover:bg-${colors.text.replace('text-', '')}/10`}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleAgentAction('pause', agent);
@@ -107,7 +121,7 @@ const AgentListItem: React.FC<AgentListItemProps> = ({
                 <Button
                   variant="ghost" 
                   size="sm"
-                  className="h-7 px-2 text-xs"
+                  className={`h-7 px-2 text-xs border border-transparent hover:border-${colors.text.replace('text-', '')}/30 hover:bg-${colors.text.replace('text-', '')}/10`}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleAgentAction('resume', agent);
@@ -134,7 +148,7 @@ const AgentListItem: React.FC<AgentListItemProps> = ({
               <Button
                 variant="outline" 
                 size="sm"
-                className="h-7 px-2 text-xs border-flow-border"
+                className={`h-7 px-2 text-xs border-flow-border hover:bg-${colors.text.replace('text-', '')}/10 hover:border-${colors.text.replace('text-', '')}/40`}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleAgentAction('message', agent);
@@ -199,7 +213,7 @@ const AgentListItem: React.FC<AgentListItemProps> = ({
         {agent.status === 'working' && (
           <div className="mt-3 h-1 w-full bg-black/30 rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-green-500/70 to-green-300"
+              className={`h-full ${colors.bg.replace('bg', 'bg-gradient-to-r from')}/70 to-${colors.bg.replace('bg-', '')}/30`}
               initial={{ width: 0 }}
               animate={{ 
                 width: ['20%', '60%', '40%', '75%', '55%', '90%'],

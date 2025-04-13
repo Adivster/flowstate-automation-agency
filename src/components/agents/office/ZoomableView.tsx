@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 interface ZoomableViewProps {
@@ -7,122 +7,109 @@ interface ZoomableViewProps {
   zoomLevel: number;
   minZoom?: number;
   maxZoom?: number;
+  panEnabled?: boolean;
+  initialPanOffset?: { x: number, y: number };
 }
 
-const ZoomableView: React.FC<ZoomableViewProps> = ({ 
-  children, 
-  zoomLevel, 
-  minZoom = 0.5, 
-  maxZoom = 3 
+/**
+ * A component that allows zooming and panning functionality
+ */
+const ZoomableView: React.FC<ZoomableViewProps> = ({
+  children,
+  zoomLevel,
+  minZoom = 0.5,
+  maxZoom = 2,
+  panEnabled = true,
+  initialPanOffset = { x: 0, y: 0 }
 }) => {
-  const [isPanning, setIsPanning] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Reset position when zoom level changes
+  const [isPanning, setIsPanning] = useState(false);
+  const [panOffset, setPanOffset] = useState(initialPanOffset);
+  const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
+  
+  // Handle initial zoom scale
   useEffect(() => {
-    // Center the view when zooming
-    setPosition({ x: 0, y: 0 });
-  }, [zoomLevel]);
+    // Constrain zoom level to min/max
+    const constrainedZoom = Math.max(minZoom, Math.min(maxZoom, zoomLevel));
+    
+    // If there's a big zoom change, reset panning to prevent content from getting lost
+    if (Math.abs(zoomLevel - 1) > 0.3) {
+      setPanOffset(initialPanOffset);
+    }
+    
+  }, [zoomLevel, minZoom, maxZoom, initialPanOffset]);
   
-  const handleMouseDown = (e: React.MouseEvent) => {
-    // Only pan with middle mouse button (button 1) or if alt/option key is pressed
-    if (e.button === 1 || e.altKey) {
+  // Handle mouse down for pan start
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!panEnabled) return;
+    
+    // Only start panning on alt key or middle mouse button
+    if (e.altKey || e.button === 1) {
+      e.preventDefault();
       setIsPanning(true);
-      setStartPos({
-        x: e.clientX - position.x,
-        y: e.clientY - position.y
+      setStartPoint({
+        x: e.clientX - panOffset.x,
+        y: e.clientY - panOffset.y
       });
-      e.preventDefault();
     }
   };
   
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (isPanning) {
-      setPosition({
-        x: e.clientX - startPos.x,
-        y: e.clientY - startPos.y
-      });
-      e.preventDefault();
-    }
+  // Handle mouse move for panning
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isPanning || !panEnabled) return;
+    
+    setPanOffset({
+      x: e.clientX - startPoint.x,
+      y: e.clientY - startPoint.y
+    });
   };
   
+  // Handle mouse up to end panning
   const handleMouseUp = () => {
     setIsPanning(false);
   };
   
-  // Handle touch events for mobile
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length === 2) {
-      setIsPanning(true);
-      setStartPos({
-        x: e.touches[0].clientX - position.x,
-        y: e.touches[0].clientY - position.y
-      });
-    }
-  };
-  
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (isPanning && e.touches.length === 2) {
-      setPosition({
-        x: e.touches[0].clientX - startPos.x,
-        y: e.touches[0].clientY - startPos.y
-      });
-    }
-  };
-  
-  const handleTouchEnd = () => {
+  // Handle mouse leave to end panning
+  const handleMouseLeave = () => {
     setIsPanning(false);
   };
   
-  // Add a double click handler to reset the view
-  const handleDoubleClick = () => {
-    setPosition({ x: 0, y: 0 });
+  // Handle double click to reset
+  const handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget) return;
+    
+    setPanOffset(initialPanOffset);
   };
   
+  // Calculate constrained zoom level
+  const constrainedZoom = Math.max(minZoom, Math.min(maxZoom, zoomLevel));
+  
   return (
-    <div 
+    <div
       ref={containerRef}
-      className="w-full h-full overflow-hidden relative"
-      style={{ cursor: isPanning ? 'grabbing' : 'default' }}
+      className="absolute inset-0 overflow-hidden"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
+      onMouseLeave={handleMouseLeave}
       onDoubleClick={handleDoubleClick}
+      style={{ cursor: isPanning ? 'grabbing' : 'default' }}
     >
       <motion.div
-        className="w-full h-full"
+        className="absolute inset-0 will-change-transform"
         style={{
+          scale: constrainedZoom,
+          x: panOffset.x,
+          y: panOffset.y,
           transformOrigin: 'center',
-          cursor: isPanning ? 'grabbing' : 'default',
-        }}
-        animate={{
-          x: position.x,
-          y: position.y,
-          scale: zoomLevel
         }}
         transition={{
-          x: { type: 'spring', stiffness: 300, damping: 30 },
-          y: { type: 'spring', stiffness: 300, damping: 30 },
-          scale: { type: 'spring', stiffness: 300, damping: 30 }
+          type: 'tween',
+          duration: isPanning ? 0 : 0.3,
         }}
       >
         {children}
       </motion.div>
-      
-      {/* Info text for how to pan and zoom */}
-      <div className="absolute bottom-2 left-2 right-2 text-xs text-center text-flow-foreground/50 bg-black/30 backdrop-blur-sm rounded-md py-1 px-2 pointer-events-none opacity-70">
-        <span className="mr-2">Use Alt + Drag to pan</span>
-        <span className="mr-2">•</span>
-        <span className="mr-2">Double-click to reset view</span>
-        <span className="mr-2">•</span>
-        <span>Zoom: {Math.round(zoomLevel * 100)}%</span>
-      </div>
     </div>
   );
 };

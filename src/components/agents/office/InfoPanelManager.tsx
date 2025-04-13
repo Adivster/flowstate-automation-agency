@@ -1,12 +1,26 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Settings, MessageCircle, BarChart2, History, PieChart, Zap, AlertTriangle, Clock, CheckCircle, ChevronRight } from 'lucide-react';
+import { 
+  X, 
+  Settings, 
+  MessageCircle, 
+  BarChart2, 
+  History, 
+  PieChart, 
+  Zap, 
+  AlertTriangle, 
+  Clock, 
+  CheckCircle, 
+  ChevronRight,
+  Minimize2,
+  Maximize2
+} from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { usePerformanceData } from '@/hooks/usePerformanceData';
 import { AreaChart } from '@/components/ui/chart';
+import { getDivisionColorScheme } from '@/utils/colorSystem';
 
 interface InfoPanelManagerProps {
   selectedDivision: string | null;
@@ -28,6 +42,7 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
   onClose
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [minimized, setMinimized] = useState(false);
   const { toast } = useToast();
   const performanceData = usePerformanceData(selectedDivision);
   
@@ -53,440 +68,473 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
       duration: 3000,
     });
   };
+
+  // Get color scheme based on division or agent
+  const getColorScheme = () => {
+    if (selectedDivision && selectedDivisionObject) {
+      return getDivisionColorScheme(selectedDivision);
+    } else if (selectedAgent && selectedAgentObject && selectedAgentObject.division) {
+      return getDivisionColorScheme(selectedAgentObject.division);
+    }
+    return { primary: 'bg-flow-accent', border: 'border-flow-accent', text: 'text-flow-accent' };
+  };
+
+  const colorScheme = getColorScheme();
+  const headerBgClass = colorScheme.primary.replace('bg-', 'bg-') + '/20';
+  const borderClass = colorScheme.border.replace('border-', 'border-');
+  const textClass = colorScheme.text;
+  
+  const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  const toggleMinimize = () => {
+    setMinimized(!minimized);
+  };
   
   return (
-    <AnimatePresence>
-      {showInfoPanel && (
+    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40" onClick={handleBackgroundClick}>
+      <AnimatePresence>
         <motion.div
-          className="absolute right-0 top-0 w-full md:w-96 h-full bg-black/80 border-l border-flow-accent/30 backdrop-blur-xl z-40 overflow-y-auto"
+          className={`absolute right-0 top-0 ${minimized ? 'w-64 h-12' : 'w-full md:w-96 h-full'} bg-black/80 border-l ${borderClass}/30 backdrop-blur-xl z-40 overflow-hidden transition-all duration-300`}
           initial={{ x: '100%', opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: '100%', opacity: 0 }}
           transition={{ type: 'spring', damping: 20 }}
+          onClick={(e) => e.stopPropagation()}
         >
-          <div className="p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium text-flow-accent">
-                {selectedDivision ? selectedDivisionObject?.name : selectedAgentObject?.name}
-              </h3>
-              <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
-                <X className="h-4 w-4" />
+          <div className={`p-3 flex justify-between items-center ${headerBgClass} border-b ${borderClass}/20`}>
+            <h3 className={`text-lg font-medium ${textClass}`}>
+              {selectedDivision ? selectedDivisionObject?.name : selectedAgentObject?.name}
+            </h3>
+            <div className="flex items-center space-x-1">
+              <Button variant="ghost" size="icon" onClick={toggleMinimize} className="h-7 w-7 hover:bg-white/10">
+                {minimized ? <Maximize2 className="h-3.5 w-3.5" /> : <Minimize2 className="h-3.5 w-3.5" />}
+              </Button>
+              <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7 hover:bg-white/10">
+                <X className="h-3.5 w-3.5" />
               </Button>
             </div>
-            
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="w-full"
-            >
-              <TabsList className="grid grid-cols-3 mb-4 bg-black/50">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="stats">Stats</TabsTrigger>
-                <TabsTrigger value="actions">Actions</TabsTrigger>
-              </TabsList>
-              
-              {/* Overview Tab */}
-              <TabsContent value="overview" className="space-y-4">
-                {selectedDivision && selectedDivisionObject && (
-                  <div className="space-y-3">
-                    <div className="flex items-center">
-                      <div 
-                        className="w-3 h-3 rounded-full animate-pulse mr-2"
-                        style={{ backgroundColor: selectedDivisionObject.borderColor || '#8b5cf6' }}
-                      ></div>
-                      <span className="text-sm text-flow-foreground/70">
-                        {divisionAgents.length} Agents Active
-                      </span>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="bg-black/30 border border-flow-border/30 rounded-md p-2">
-                        <div className="text-xs text-flow-foreground/60">Efficiency</div>
-                        <div className="text-lg font-medium mt-1 font-mono">
-                          {performanceData.efficiency}%
-                        </div>
-                      </div>
-                      <div className="bg-black/30 border border-flow-border/30 rounded-md p-2">
-                        <div className="text-xs text-flow-foreground/60">Workload</div>
-                        <div className="text-lg font-medium mt-1 font-mono">
-                          {performanceData.resourceUtilization}%
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-black/30 border border-flow-border/20 rounded-md p-3">
-                      <div className="text-sm font-medium mb-2">Performance Trend</div>
-                      <div className="h-28">
-                        <AreaChart
-                          data={performanceData.historicalData.taskCompletion}
-                          showGrid={false}
-                          showXAxis={true}
-                          showYAxis={false}
-                          lineColor={selectedDivisionObject.borderColor || '#8b5cf6'}
-                        />
-                      </div>
-                      <div className="text-xs text-center mt-1 text-flow-foreground/60">
-                        Weekly Task Completion
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <div className="text-sm font-medium">Division Agents</div>
-                      <div className="space-y-1.5 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
-                        {divisionAgents.map(agent => (
-                          <div 
-                            key={agent.id}
-                            className="flex items-center p-2 hover:bg-flow-accent/10 rounded-md cursor-pointer"
-                          >
-                            <div className={`w-2 h-2 rounded-full mr-2 ${
-                              agent.status === 'working' ? 'bg-green-500' : 
-                              agent.status === 'paused' ? 'bg-amber-500' : 
-                              agent.status === 'error' ? 'bg-red-500' : 
-                              'bg-gray-500'
-                            }`}></div>
-                            <div className="text-sm">{agent.name}</div>
-                            <div className="text-xs text-flow-foreground/60 ml-auto">{agent.status}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
+          </div>
+          
+          {!minimized && (
+            <div className="p-4 h-[calc(100%-44px)] overflow-y-auto custom-scrollbar">
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
+                className="w-full"
+              >
+                <TabsList className={`grid grid-cols-3 mb-4 bg-black/50 border ${borderClass}/20`}>
+                  <TabsTrigger value="overview" className={`data-[state=active]:${textClass} data-[state=active]:shadow-[inset_0_-1px_0] data-[state=active]:shadow-current`}>Overview</TabsTrigger>
+                  <TabsTrigger value="stats" className={`data-[state=active]:${textClass} data-[state=active]:shadow-[inset_0_-1px_0] data-[state=active]:shadow-current`}>Stats</TabsTrigger>
+                  <TabsTrigger value="actions" className={`data-[state=active]:${textClass} data-[state=active]:shadow-[inset_0_-1px_0] data-[state=active]:shadow-current`}>Actions</TabsTrigger>
+                </TabsList>
                 
-                {selectedAgent && selectedAgentObject && (
-                  <div className="space-y-3">
-                    <div className="flex items-center text-sm text-flow-foreground/70">
-                      <div 
-                        className={`w-2 h-2 rounded-full mr-2 ${
-                          selectedAgentObject.status === 'working' ? 'bg-green-500' : 
-                          selectedAgentObject.status === 'paused' ? 'bg-amber-500' : 
-                          selectedAgentObject.status === 'error' ? 'bg-red-500' : 
-                          'bg-gray-500'
-                        }`}
-                      ></div>
-                      <span>Status: {selectedAgentObject.status}</span>
-                    </div>
-                    
-                    <div>
-                      <div className="text-xs text-flow-foreground/60">Role</div>
-                      <div className="text-sm">{selectedAgentObject.role || 'Unknown Role'}</div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="bg-black/30 border border-flow-border/30 rounded-md p-2">
-                        <div className="text-xs text-flow-foreground/60">Efficiency</div>
-                        <div className="text-lg font-medium mt-1 font-mono">
-                          {selectedAgentObject.efficiency || 0}%
-                        </div>
-                      </div>
-                      <div className="bg-black/30 border border-flow-border/30 rounded-md p-2">
-                        <div className="text-xs text-flow-foreground/60">Last Active</div>
-                        <div className="text-sm font-medium mt-1">
-                          {selectedAgentObject.lastActive || 'Unknown'}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      <div className="flex-1 bg-black/30 border border-flow-border/20 rounded-md p-2 text-center">
-                        <div className="text-2xl font-bold text-green-400">
-                          {Math.round(Math.random() * 200) + 50}
-                        </div>
-                        <div className="text-xs text-flow-foreground/60">Completed Tasks</div>
-                      </div>
-                      <div className="flex-1 bg-black/30 border border-flow-border/20 rounded-md p-2 text-center">
-                        <div className="text-2xl font-bold text-amber-400">
-                          {Math.round(Math.random() * 10) + 2}
-                        </div>
-                        <div className="text-xs text-flow-foreground/60">Current Tasks</div>
-                      </div>
-                      <div className="flex-1 bg-black/30 border border-flow-border/20 rounded-md p-2 text-center">
-                        <div className="text-2xl font-bold text-blue-400">
-                          {Math.round(Math.random() * 5)}
-                        </div>
-                        <div className="text-xs text-flow-foreground/60">Alerts</div>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-black/30 border border-flow-border/20 rounded-md p-2">
-                      <div className="mb-1 text-sm">Current Status</div>
-                      <div className="flex items-center gap-2">
-                        {selectedAgentObject.status === 'working' && (
-                          <>
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                            <span className="text-xs">Processing tasks normally</span>
-                          </>
-                        )}
-                        {selectedAgentObject.status === 'paused' && (
-                          <>
-                            <Clock className="h-4 w-4 text-amber-500" />
-                            <span className="text-xs">Operations temporarily suspended</span>
-                          </>
-                        )}
-                        {selectedAgentObject.status === 'error' && (
-                          <>
-                            <AlertTriangle className="h-4 w-4 text-red-500" />
-                            <span className="text-xs">Attention required: System error</span>
-                          </>
-                        )}
-                        {selectedAgentObject.status === 'idle' && (
-                          <>
-                            <Clock className="h-4 w-4 text-blue-500" />
-                            <span className="text-xs">Standing by for tasks</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </TabsContent>
-              
-              {/* Stats Tab */}
-              <TabsContent value="stats" className="space-y-4">
-                {selectedDivision && (
-                  <>
-                    <div className="bg-black/30 border border-flow-border/20 rounded-md p-3">
-                      <div className="text-sm font-medium mb-2">Resource Utilization</div>
-                      <div className="h-28">
-                        <AreaChart
-                          data={performanceData.historicalData.resource}
-                          showGrid={false}
-                          showXAxis={true}
-                          showYAxis={true}
-                          lineColor="#22c55e"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="bg-black/30 border border-flow-border/20 rounded-md p-3">
-                      <div className="text-sm font-medium mb-2">Response Times</div>
-                      <div className="h-28">
-                        <AreaChart
-                          data={performanceData.historicalData.responseTime}
-                          showGrid={false}
-                          showXAxis={true}
-                          showYAxis={true}
-                          lineColor="#3b82f6"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="bg-black/30 border border-flow-border/30 rounded-md p-3 text-center">
-                        <div className="text-xs text-flow-foreground/60 mb-1">Avg. Response</div>
-                        <div className="text-lg font-medium">{performanceData.averageResponseTime}</div>
-                      </div>
-                      <div className="bg-black/30 border border-flow-border/30 rounded-md p-3 text-center">
-                        <div className="text-xs text-flow-foreground/60 mb-1">Uptime</div>
-                        <div className="text-lg font-medium">{performanceData.uptime}%</div>
-                      </div>
-                    </div>
-                  </>
-                )}
-                
-                {selectedAgent && (
-                  <>
-                    <div className="bg-black/30 border border-flow-border/20 rounded-md p-3">
-                      <div className="text-sm font-medium mb-2">Performance History</div>
-                      <div className="h-32">
-                        <AreaChart
-                          data={[
-                            { name: 'Day 1', value: Math.round(Math.random() * 30) + 60 },
-                            { name: 'Day 2', value: Math.round(Math.random() * 30) + 60 },
-                            { name: 'Day 3', value: Math.round(Math.random() * 30) + 60 },
-                            { name: 'Day 4', value: Math.round(Math.random() * 30) + 60 },
-                            { name: 'Day 5', value: Math.round(Math.random() * 30) + 60 },
-                            { name: 'Day 6', value: Math.round(Math.random() * 30) + 60 },
-                            { name: 'Day 7', value: Math.round(Math.random() * 30) + 60 }
-                          ]}
-                          showGrid={false}
-                          showXAxis={true}
-                          showYAxis={true}
-                          lineColor="#8b5cf6"
-                        />
-                      </div>
-                      <div className="text-xs text-center mt-1 text-flow-foreground/60">
-                        Weekly Performance
-                      </div>
-                    </div>
-                    
+                {/* Overview Tab */}
+                <TabsContent value="overview" className="space-y-4">
+                  {selectedDivision && selectedDivisionObject && (
                     <div className="space-y-3">
-                      <div className="text-sm font-medium">Performance Metrics</div>
+                      <div className="flex items-center">
+                        <div 
+                          className="w-3 h-3 rounded-full animate-pulse mr-2"
+                          style={{ backgroundColor: selectedDivisionObject.borderColor || '#8b5cf6' }}
+                        ></div>
+                        <span className="text-sm text-flow-foreground/70">
+                          {divisionAgents.length} Agents Active
+                        </span>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="bg-black/30 border border-flow-border/30 rounded-md p-2">
+                          <div className="text-xs text-flow-foreground/60">Efficiency</div>
+                          <div className="text-lg font-medium mt-1 font-mono">
+                            {performanceData.efficiency}%
+                          </div>
+                        </div>
+                        <div className="bg-black/30 border border-flow-border/30 rounded-md p-2">
+                          <div className="text-xs text-flow-foreground/60">Workload</div>
+                          <div className="text-lg font-medium mt-1 font-mono">
+                            {performanceData.resourceUtilization}%
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-black/30 border border-flow-border/20 rounded-md p-3">
+                        <div className="text-sm font-medium mb-2">Performance Trend</div>
+                        <div className="h-28">
+                          <AreaChart
+                            data={performanceData.historicalData.taskCompletion}
+                            showGrid={false}
+                            showXAxis={true}
+                            showYAxis={false}
+                            lineColor={selectedDivisionObject.borderColor || '#8b5cf6'}
+                          />
+                        </div>
+                        <div className="text-xs text-center mt-1 text-flow-foreground/60">
+                          Weekly Task Completion
+                        </div>
+                      </div>
                       
                       <div className="space-y-2">
-                        <div>
-                          <div className="flex justify-between text-xs mb-1">
-                            <span>Task Completion Rate</span>
-                            <span className="text-green-400">92%</span>
-                          </div>
-                          <div className="h-1.5 bg-black/40 rounded-full overflow-hidden">
-                            <div className="bg-green-500 h-full rounded-full" style={{ width: '92%' }}></div>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <div className="flex justify-between text-xs mb-1">
-                            <span>Response Accuracy</span>
-                            <span className="text-blue-400">87%</span>
-                          </div>
-                          <div className="h-1.5 bg-black/40 rounded-full overflow-hidden">
-                            <div className="bg-blue-500 h-full rounded-full" style={{ width: '87%' }}></div>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <div className="flex justify-between text-xs mb-1">
-                            <span>Resource Efficiency</span>
-                            <span className="text-purple-400">78%</span>
-                          </div>
-                          <div className="h-1.5 bg-black/40 rounded-full overflow-hidden">
-                            <div className="bg-purple-500 h-full rounded-full" style={{ width: '78%' }}></div>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <div className="flex justify-between text-xs mb-1">
-                            <span>Learning Rate</span>
-                            <span className="text-amber-400">95%</span>
-                          </div>
-                          <div className="h-1.5 bg-black/40 rounded-full overflow-hidden">
-                            <div className="bg-amber-500 h-full rounded-full" style={{ width: '95%' }}></div>
-                          </div>
+                        <div className="text-sm font-medium">Division Agents</div>
+                        <div className="space-y-1.5 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
+                          {divisionAgents.map(agent => (
+                            <div 
+                              key={agent.id}
+                              className="flex items-center p-2 hover:bg-flow-accent/10 rounded-md cursor-pointer"
+                            >
+                              <div className={`w-2 h-2 rounded-full mr-2 ${
+                                agent.status === 'working' ? 'bg-green-500' : 
+                                agent.status === 'paused' ? 'bg-amber-500' : 
+                                agent.status === 'error' ? 'bg-red-500' : 
+                                'bg-gray-500'
+                              }`}></div>
+                              <div className="text-sm">{agent.name}</div>
+                              <div className="text-xs text-flow-foreground/60 ml-auto">{agent.status}</div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>
-                  </>
-                )}
-              </TabsContent>
-              
-              {/* Actions Tab */}
-              <TabsContent value="actions" className="space-y-4">
-                {selectedDivision && (
-                  <div className="space-y-3">
-                    <Button 
-                      className="w-full flex justify-between items-center bg-flow-accent/20 hover:bg-flow-accent/30 border-flow-accent/30"
-                      onClick={() => handleAction('Optimize')}
-                    >
-                      <div className="flex items-center">
-                        <Zap className="h-4 w-4 mr-2" />
-                        <span>Optimize Division</span>
+                  )}
+                  
+                  {selectedAgent && selectedAgentObject && (
+                    <div className="space-y-3">
+                      <div className="flex items-center text-sm text-flow-foreground/70">
+                        <div 
+                          className={`w-2 h-2 rounded-full mr-2 ${
+                            selectedAgentObject.status === 'working' ? 'bg-green-500' : 
+                            selectedAgentObject.status === 'paused' ? 'bg-amber-500' : 
+                            selectedAgentObject.status === 'error' ? 'bg-red-500' : 
+                            'bg-gray-500'
+                          }`}
+                        ></div>
+                        <span>Status: {selectedAgentObject.status}</span>
                       </div>
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                    
-                    <Button 
-                      className="w-full flex justify-between items-center bg-flow-accent/20 hover:bg-flow-accent/30 border-flow-accent/30" 
-                      onClick={() => handleAction('Analyze')}
-                    >
-                      <div className="flex items-center">
-                        <BarChart2 className="h-4 w-4 mr-2" />
-                        <span>Analyze Performance</span>
+                      
+                      <div>
+                        <div className="text-xs text-flow-foreground/60">Role</div>
+                        <div className="text-sm">{selectedAgentObject.role || 'Unknown Role'}</div>
                       </div>
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                    
-                    <Button 
-                      className="w-full flex justify-between items-center bg-flow-accent/20 hover:bg-flow-accent/30 border-flow-accent/30" 
-                      onClick={() => handleAction('Configure')}
-                    >
-                      <div className="flex items-center">
-                        <Settings className="h-4 w-4 mr-2" />
-                        <span>Configure Settings</span>
-                      </div>
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                    
-                    <Button 
-                      className="w-full flex justify-between items-center bg-flow-accent/20 hover:bg-flow-accent/30 border-flow-accent/30" 
-                      onClick={() => handleAction('AddAgent')}
-                    >
-                      <div className="flex items-center">
-                        <PieChart className="h-4 w-4 mr-2" />
-                        <span>Add New Agent</span>
-                      </div>
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
-                
-                {selectedAgent && (
-                  <div className="space-y-3">
-                    {selectedAgentObject?.status === 'working' && (
-                      <Button 
-                        className="w-full flex justify-between items-center bg-amber-500/20 hover:bg-amber-500/30 border-amber-500/30" 
-                        onClick={() => handleAction('Pause')}
-                      >
-                        <div className="flex items-center">
-                          <Clock className="h-4 w-4 mr-2" />
-                          <span>Pause Agent</span>
+                      
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="bg-black/30 border border-flow-border/30 rounded-md p-2">
+                          <div className="text-xs text-flow-foreground/60">Efficiency</div>
+                          <div className="text-lg font-medium mt-1 font-mono">
+                            {selectedAgentObject.efficiency || 0}%
+                          </div>
                         </div>
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    )}
-                    
-                    {selectedAgentObject?.status === 'paused' && (
+                        <div className="bg-black/30 border border-flow-border/30 rounded-md p-2">
+                          <div className="text-xs text-flow-foreground/60">Last Active</div>
+                          <div className="text-sm font-medium mt-1">
+                            {selectedAgentObject.lastActive || 'Unknown'}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <div className="flex-1 bg-black/30 border border-flow-border/20 rounded-md p-2 text-center">
+                          <div className="text-2xl font-bold text-green-400">
+                            {Math.round(Math.random() * 200) + 50}
+                          </div>
+                          <div className="text-xs text-flow-foreground/60">Completed Tasks</div>
+                        </div>
+                        <div className="flex-1 bg-black/30 border border-flow-border/20 rounded-md p-2 text-center">
+                          <div className="text-2xl font-bold text-amber-400">
+                            {Math.round(Math.random() * 10) + 2}
+                          </div>
+                          <div className="text-xs text-flow-foreground/60">Current Tasks</div>
+                        </div>
+                        <div className="flex-1 bg-black/30 border border-flow-border/20 rounded-md p-2 text-center">
+                          <div className="text-2xl font-bold text-blue-400">
+                            {Math.round(Math.random() * 5)}
+                          </div>
+                          <div className="text-xs text-flow-foreground/60">Alerts</div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-black/30 border border-flow-border/20 rounded-md p-2">
+                        <div className="mb-1 text-sm">Current Status</div>
+                        <div className="flex items-center gap-2">
+                          {selectedAgentObject.status === 'working' && (
+                            <>
+                              <CheckCircle className="h-4 w-4 text-green-500" />
+                              <span className="text-xs">Processing tasks normally</span>
+                            </>
+                          )}
+                          {selectedAgentObject.status === 'paused' && (
+                            <>
+                              <Clock className="h-4 w-4 text-amber-500" />
+                              <span className="text-xs">Operations temporarily suspended</span>
+                            </>
+                          )}
+                          {selectedAgentObject.status === 'error' && (
+                            <>
+                              <AlertTriangle className="h-4 w-4 text-red-500" />
+                              <span className="text-xs">Attention required: System error</span>
+                            </>
+                          )}
+                          {selectedAgentObject.status === 'idle' && (
+                            <>
+                              <Clock className="h-4 w-4 text-blue-500" />
+                              <span className="text-xs">Standing by for tasks</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </TabsContent>
+                
+                {/* Stats Tab */}
+                <TabsContent value="stats" className="space-y-4">
+                  {selectedDivision && (
+                    <>
+                      <div className="bg-black/30 border border-flow-border/20 rounded-md p-3">
+                        <div className="text-sm font-medium mb-2">Resource Utilization</div>
+                        <div className="h-28">
+                          <AreaChart
+                            data={performanceData.historicalData.resource}
+                            showGrid={false}
+                            showXAxis={true}
+                            showYAxis={true}
+                            lineColor="#22c55e"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="bg-black/30 border border-flow-border/20 rounded-md p-3">
+                        <div className="text-sm font-medium mb-2">Response Times</div>
+                        <div className="h-28">
+                          <AreaChart
+                            data={performanceData.historicalData.responseTime}
+                            showGrid={false}
+                            showXAxis={true}
+                            showYAxis={true}
+                            lineColor="#3b82f6"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="bg-black/30 border border-flow-border/30 rounded-md p-3 text-center">
+                          <div className="text-xs text-flow-foreground/60 mb-1">Avg. Response</div>
+                          <div className="text-lg font-medium">{performanceData.averageResponseTime}</div>
+                        </div>
+                        <div className="bg-black/30 border border-flow-border/30 rounded-md p-3 text-center">
+                          <div className="text-xs text-flow-foreground/60 mb-1">Uptime</div>
+                          <div className="text-lg font-medium">{performanceData.uptime}%</div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  
+                  {selectedAgent && (
+                    <>
+                      <div className="bg-black/30 border border-flow-border/20 rounded-md p-3">
+                        <div className="text-sm font-medium mb-2">Performance History</div>
+                        <div className="h-32">
+                          <AreaChart
+                            data={[
+                              { name: 'Day 1', value: Math.round(Math.random() * 30) + 60 },
+                              { name: 'Day 2', value: Math.round(Math.random() * 30) + 60 },
+                              { name: 'Day 3', value: Math.round(Math.random() * 30) + 60 },
+                              { name: 'Day 4', value: Math.round(Math.random() * 30) + 60 },
+                              { name: 'Day 5', value: Math.round(Math.random() * 30) + 60 },
+                              { name: 'Day 6', value: Math.round(Math.random() * 30) + 60 },
+                              { name: 'Day 7', value: Math.round(Math.random() * 30) + 60 }
+                            ]}
+                            showGrid={false}
+                            showXAxis={true}
+                            showYAxis={true}
+                            lineColor="#8b5cf6"
+                          />
+                        </div>
+                        <div className="text-xs text-center mt-1 text-flow-foreground/60">
+                          Weekly Performance
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div className="text-sm font-medium">Performance Metrics</div>
+                        
+                        <div className="space-y-2">
+                          <div>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>Task Completion Rate</span>
+                              <span className="text-green-400">92%</span>
+                            </div>
+                            <div className="h-1.5 bg-black/40 rounded-full overflow-hidden">
+                              <div className="bg-green-500 h-full rounded-full" style={{ width: '92%' }}></div>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>Response Accuracy</span>
+                              <span className="text-blue-400">87%</span>
+                            </div>
+                            <div className="h-1.5 bg-black/40 rounded-full overflow-hidden">
+                              <div className="bg-blue-500 h-full rounded-full" style={{ width: '87%' }}></div>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>Resource Efficiency</span>
+                              <span className="text-purple-400">78%</span>
+                            </div>
+                            <div className="h-1.5 bg-black/40 rounded-full overflow-hidden">
+                              <div className="bg-purple-500 h-full rounded-full" style={{ width: '78%' }}></div>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span>Learning Rate</span>
+                              <span className="text-amber-400">95%</span>
+                            </div>
+                            <div className="h-1.5 bg-black/40 rounded-full overflow-hidden">
+                              <div className="bg-amber-500 h-full rounded-full" style={{ width: '95%' }}></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </TabsContent>
+                
+                {/* Actions Tab */}
+                <TabsContent value="actions" className="space-y-4">
+                  {selectedDivision && (
+                    <div className="space-y-3">
                       <Button 
-                        className="w-full flex justify-between items-center bg-green-500/20 hover:bg-green-500/30 border-green-500/30" 
-                        onClick={() => handleAction('Resume')}
+                        className={`w-full flex justify-between items-center ${colorScheme.primary}/20 hover:${colorScheme.primary}/30 border-${colorScheme.border}/30`}
+                        onClick={() => handleAction('Optimize')}
                       >
                         <div className="flex items-center">
                           <Zap className="h-4 w-4 mr-2" />
-                          <span>Resume Agent</span>
+                          <span>Optimize Division</span>
                         </div>
                         <ChevronRight className="h-4 w-4" />
                       </Button>
-                    )}
-                    
-                    {selectedAgentObject?.status === 'error' && (
+                      
                       <Button 
-                        className="w-full flex justify-between items-center bg-red-500/20 hover:bg-red-500/30 border-red-500/30" 
-                        onClick={() => handleAction('Restart')}
+                        className={`w-full flex justify-between items-center ${colorScheme.primary}/20 hover:${colorScheme.primary}/30 border-${colorScheme.border}/30`}
+                        onClick={() => handleAction('Analyze')}
                       >
                         <div className="flex items-center">
-                          <AlertTriangle className="h-4 w-4 mr-2" />
-                          <span>Restart Agent</span>
+                          <BarChart2 className="h-4 w-4 mr-2" />
+                          <span>Analyze Performance</span>
                         </div>
                         <ChevronRight className="h-4 w-4" />
                       </Button>
-                    )}
-                    
-                    <Button 
-                      className="w-full flex justify-between items-center bg-flow-accent/20 hover:bg-flow-accent/30 border-flow-accent/30" 
-                      onClick={() => handleAction('Message')}
-                    >
-                      <div className="flex items-center">
-                        <MessageCircle className="h-4 w-4 mr-2" />
-                        <span>Message Agent</span>
-                      </div>
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                    
-                    <Button 
-                      className="w-full flex justify-between items-center bg-flow-accent/20 hover:bg-flow-accent/30 border-flow-accent/30" 
-                      onClick={() => handleAction('Tune')}
-                    >
-                      <div className="flex items-center">
-                        <Settings className="h-4 w-4 mr-2" />
-                        <span>Tune Agent</span>
-                      </div>
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                    
-                    <Button 
-                      className="w-full flex justify-between items-center bg-flow-accent/20 hover:bg-flow-accent/30 border-flow-accent/30" 
-                      onClick={() => handleAction('History')}
-                    >
-                      <div className="flex items-center">
-                        <History className="h-4 w-4 mr-2" />
-                        <span>View History</span>
-                      </div>
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
-          </div>
+                      
+                      <Button 
+                        className={`w-full flex justify-between items-center ${colorScheme.primary}/20 hover:${colorScheme.primary}/30 border-${colorScheme.border}/30`}
+                        onClick={() => handleAction('Configure')}
+                      >
+                        <div className="flex items-center">
+                          <Settings className="h-4 w-4 mr-2" />
+                          <span>Configure Settings</span>
+                        </div>
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                      
+                      <Button 
+                        className={`w-full flex justify-between items-center ${colorScheme.primary}/20 hover:${colorScheme.primary}/30 border-${colorScheme.border}/30`}
+                        onClick={() => handleAction('AddAgent')}
+                      >
+                        <div className="flex items-center">
+                          <PieChart className="h-4 w-4 mr-2" />
+                          <span>Add New Agent</span>
+                        </div>
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {selectedAgent && (
+                    <div className="space-y-3">
+                      {selectedAgentObject?.status === 'working' && (
+                        <Button 
+                          className="w-full flex justify-between items-center bg-amber-500/20 hover:bg-amber-500/30 border-amber-500/30" 
+                          onClick={() => handleAction('Pause')}
+                        >
+                          <div className="flex items-center">
+                            <Clock className="h-4 w-4 mr-2" />
+                            <span>Pause Agent</span>
+                          </div>
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      )}
+                      
+                      {selectedAgentObject?.status === 'paused' && (
+                        <Button 
+                          className="w-full flex justify-between items-center bg-green-500/20 hover:bg-green-500/30 border-green-500/30" 
+                          onClick={() => handleAction('Resume')}
+                        >
+                          <div className="flex items-center">
+                            <Zap className="h-4 w-4 mr-2" />
+                            <span>Resume Agent</span>
+                          </div>
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      )}
+                      
+                      {selectedAgentObject?.status === 'error' && (
+                        <Button 
+                          className="w-full flex justify-between items-center bg-red-500/20 hover:bg-red-500/30 border-red-500/30" 
+                          onClick={() => handleAction('Restart')}
+                        >
+                          <div className="flex items-center">
+                            <AlertTriangle className="h-4 w-4 mr-2" />
+                            <span>Restart Agent</span>
+                          </div>
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      )}
+                      
+                      <Button 
+                        className={`w-full flex justify-between items-center ${colorScheme.primary}/20 hover:${colorScheme.primary}/30 border-${colorScheme.border}/30`}
+                        onClick={() => handleAction('Message')}
+                      >
+                        <div className="flex items-center">
+                          <MessageCircle className="h-4 w-4 mr-2" />
+                          <span>Message Agent</span>
+                        </div>
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                      
+                      <Button 
+                        className={`w-full flex justify-between items-center ${colorScheme.primary}/20 hover:${colorScheme.primary}/30 border-${colorScheme.border}/30`}
+                        onClick={() => handleAction('Tune')}
+                      >
+                        <div className="flex items-center">
+                          <Settings className="h-4 w-4 mr-2" />
+                          <span>Tune Agent</span>
+                        </div>
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                      
+                      <Button 
+                        className={`w-full flex justify-between items-center ${colorScheme.primary}/20 hover:${colorScheme.primary}/30 border-${colorScheme.border}/30`}
+                        onClick={() => handleAction('History')}
+                      >
+                        <div className="flex items-center">
+                          <History className="h-4 w-4 mr-2" />
+                          <span>View History</span>
+                        </div>
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
+            </div>
+          )}
           
           <style>{`
             .custom-scrollbar::-webkit-scrollbar {
@@ -503,8 +551,8 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
             }
           `}</style>
         </motion.div>
-      )}
-    </AnimatePresence>
+      </AnimatePresence>
+    </div>
   );
 };
 
