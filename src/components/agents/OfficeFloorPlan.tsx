@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Pencil, Save, RotateCcw, X, ZoomIn, ZoomOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
+import ZoomableView from './office/ZoomableView';
 
 const OfficeFloorPlan: React.FC = () => {
   // Component state
@@ -362,8 +363,6 @@ const OfficeFloorPlan: React.FC = () => {
           style={{ 
             backgroundImage: 'linear-gradient(to right, rgba(156, 163, 175, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(156, 163, 175, 0.1) 1px, transparent 1px)',
             backgroundSize: '20px 20px',
-            transform: `scale(${zoomLevel})`,
-            transformOrigin: 'center'
           }}
         />
         
@@ -373,13 +372,8 @@ const OfficeFloorPlan: React.FC = () => {
           <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-blue-500/5 blur-3xl"></div>
         </div>
         
-        <div
-          style={{
-            transform: `scale(${zoomLevel})`,
-            transformOrigin: 'center'
-          }}
-          className="absolute inset-0"
-        >
+        {/* Use ZoomableView for enhanced interaction */}
+        <ZoomableView zoomLevel={zoomLevel}>
           {/* Data transmission lines */}
           <DataTransmissionManager transmissions={dataTransmissions} />
           
@@ -401,8 +395,9 @@ const OfficeFloorPlan: React.FC = () => {
             editMode={editMode}
             onDivisionDragEnd={handleDivisionDragEnd}
             divisionPositions={divisionPositions}
+            zoomLevel={zoomLevel}
           />
-        </div>
+        </ZoomableView>
         
         {/* Control buttons and UI */}
         <OfficeControls translationFunction={t} />

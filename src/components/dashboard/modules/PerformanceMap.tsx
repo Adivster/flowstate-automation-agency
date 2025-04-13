@@ -6,10 +6,19 @@ import { motion } from 'framer-motion';
 import { AreaChart } from '@/components/ui/chart';
 import { usePerformanceData } from '@/hooks/usePerformanceData';
 
+interface StatCardProps {
+  icon: React.ElementType;
+  title: string;
+  value: string;
+  trend: string;
+  trendValue: string;
+  upward?: boolean;
+}
+
 const PerformanceMap: React.FC = () => {
   const performanceData = usePerformanceData();
 
-  const StatCard = ({ icon: Icon, title, value, trend, trendValue, upward = false }) => (
+  const StatCard = ({ icon: Icon, title, value, trend, trendValue, upward = false }: StatCardProps) => (
     <div className="bg-black/20 border border-flow-border/10 rounded-md p-3">
       <div className="flex justify-between items-start">
         <div>
@@ -91,7 +100,7 @@ const PerformanceMap: React.FC = () => {
           showGrid={false}
           showLegend={false}
           showXAxis={true}
-          showYAxis={false}
+          showYAxis={true}
           referenceLineY={50}
           referenceLineLabel="Target"
           lineColor="#f97316"

@@ -1,9 +1,10 @@
 
 import React from 'react';
-import { LucideIcon, Play, Pause, MessageCircle, MoreHorizontal, AlertTriangle } from 'lucide-react';
+import { LucideIcon, Play, Pause, MessageCircle, MoreHorizontal, AlertTriangle, Activity, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import GlassMorphism from '@/components/ui/GlassMorphism';
+import { motion } from 'framer-motion';
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -50,140 +51,170 @@ const AgentListItem: React.FC<AgentListItemProps> = ({
   };
   
   return (
-    <GlassMorphism 
-      className="border border-flow-border/50 hover:border-flow-accent/50 transition-all duration-200 hover:shadow-[0_0_15px_rgba(85,120,255,0.15)] rounded-lg p-3 cursor-pointer"
-      onClick={() => handleExpandAgent(agent.id)}
+    <motion.div
+      whileHover={{ scale: 1.01, y: -2 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div className="flex items-center space-x-3">
-          <div className={`p-2 rounded-lg ${colors.bg} ${agent.status === 'working' ? 'animate-pulse-subtle' : ''}`}>
-            <agent.icon className={`h-4 w-4 ${colors.text}`} />
-          </div>
-          
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-medium">{agent.name}</h3>
-              <Badge className={`${getStatusBg(agent.status)} text-xs`}>
-                {agent.status}
-              </Badge>
+      <GlassMorphism 
+        className="border border-flow-border/50 hover:border-flow-accent/50 transition-all duration-200 hover:shadow-[0_0_15px_rgba(85,120,255,0.15)] rounded-lg p-3 cursor-pointer"
+        onClick={() => handleExpandAgent(agent.id)}
+      >
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center space-x-3">
+            <div className={`p-2 rounded-lg ${colors.bg} ${agent.status === 'working' ? 'animate-pulse-subtle' : ''}`}>
+              <agent.icon className={`h-4 w-4 ${colors.text}`} />
             </div>
-            <p className="text-xs text-flow-foreground/70">{agent.role}</p>
-          </div>
-        </div>
-        
-        <div className="flex flex-col-reverse sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
-          <div className="hidden sm:flex items-center space-x-2">
-            <span className="text-xs text-flow-foreground/70">Efficiency:</span>
-            <span className={`text-xs font-medium ${getEfficiencyColor(agent.efficiency)}`}>
-              {agent.efficiency}%
-            </span>
-          </div>
-          
-          <div className="hidden md:flex items-center space-x-1">
-            <span className="text-xs text-flow-foreground/70">Last active:</span>
-            <span className="text-xs">{agent.lastActive}</span>
+            
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-medium">{agent.name}</h3>
+                <Badge className={`${getStatusBg(agent.status)} text-xs`}>
+                  {agent.status}
+                </Badge>
+              </div>
+              <p className="text-xs text-flow-foreground/70">{agent.role}</p>
+            </div>
           </div>
           
-          <div className="flex items-center space-x-2 ml-auto">
-            {agent.status === 'working' ? (
-              <Button
-                variant="ghost" 
-                size="sm"
-                className="h-7 px-2 text-xs"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAgentAction('pause', agent);
-                }}
-              >
-                <Pause className="h-3 w-3 mr-1" />
-                Pause
-              </Button>
-            ) : agent.status === 'paused' ? (
-              <Button
-                variant="ghost" 
-                size="sm"
-                className="h-7 px-2 text-xs"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAgentAction('resume', agent);
-                }}
-              >
-                <Play className="h-3 w-3 mr-1" />
-                Resume
-              </Button>
-            ) : agent.status === 'error' ? (
+          <div className="flex flex-col-reverse sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+            <div className="hidden sm:flex items-center space-x-2">
+              <span className="text-xs text-flow-foreground/70">Efficiency:</span>
+              <span className={`text-xs font-medium ${getEfficiencyColor(agent.efficiency)}`}>
+                {agent.efficiency}%
+              </span>
+            </div>
+            
+            <div className="hidden md:flex items-center space-x-1">
+              <span className="text-xs text-flow-foreground/70">Last active:</span>
+              <span className="text-xs">{agent.lastActive}</span>
+            </div>
+            
+            <div className="flex items-center space-x-2 ml-auto">
+              {agent.status === 'working' ? (
+                <Button
+                  variant="ghost" 
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAgentAction('pause', agent);
+                  }}
+                >
+                  <Pause className="h-3 w-3 mr-1" />
+                  Pause
+                </Button>
+              ) : agent.status === 'paused' ? (
+                <Button
+                  variant="ghost" 
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAgentAction('resume', agent);
+                  }}
+                >
+                  <Play className="h-3 w-3 mr-1" />
+                  Resume
+                </Button>
+              ) : agent.status === 'error' ? (
+                <Button
+                  variant="outline" 
+                  size="sm"
+                  className="h-7 px-2 text-xs border-red-500/50 text-red-500 hover:bg-red-500/10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAgentAction('restart', agent);
+                  }}
+                >
+                  <AlertTriangle className="h-3 w-3 mr-1" />
+                  Restart
+                </Button>
+              ) : null}
+              
               <Button
                 variant="outline" 
                 size="sm"
-                className="h-7 px-2 text-xs border-red-500/50 text-red-500 hover:bg-red-500/10"
+                className="h-7 px-2 text-xs border-flow-border"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleAgentAction('restart', agent);
+                  handleAgentAction('message', agent);
                 }}
               >
-                <AlertTriangle className="h-3 w-3 mr-1" />
-                Restart
+                <MessageCircle className="h-3 w-3 mr-1" />
+                Message
               </Button>
-            ) : null}
-            
-            <Button
-              variant="outline" 
-              size="sm"
-              className="h-7 px-2 text-xs border-flow-border"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleAgentAction('message', agent);
-              }}
-            >
-              <MessageCircle className="h-3 w-3 mr-1" />
-              Message
-            </Button>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  className="h-7 w-7 rounded-full"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <MoreHorizontal className="h-3 w-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-flow-background/80 backdrop-blur-md border-flow-border">
-                <DropdownMenuItem 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleAgentAction('details', agent);
-                  }}
-                >
-                  View Details
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleAgentAction('assign', agent);
-                  }}
-                >
-                  Assign Task
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleAgentAction('configure', agent);
-                  }}
-                >
-                  Configure Agent
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="h-7 w-7 rounded-full"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <MoreHorizontal className="h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48 bg-flow-background/80 backdrop-blur-md border-flow-border">
+                  <DropdownMenuItem 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAgentAction('details', agent);
+                    }}
+                    className="flex items-center text-xs py-1.5 cursor-pointer"
+                  >
+                    <Activity className="h-3.5 w-3.5 mr-2" />
+                    View Details
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAgentAction('assign', agent);
+                    }}
+                    className="flex items-center text-xs py-1.5 cursor-pointer"
+                  >
+                    <Zap className="h-3.5 w-3.5 mr-2" />
+                    Assign Task
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAgentAction('configure', agent);
+                    }}
+                    className="flex items-center text-xs py-1.5 cursor-pointer"
+                  >
+                    <Settings className="h-3.5 w-3.5 mr-2" />
+                    Configure Agent
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
-      </div>
-    </GlassMorphism>
+        
+        {/* Animated progress bar at the bottom */}
+        {agent.status === 'working' && (
+          <div className="mt-3 h-1 w-full bg-black/30 rounded-full overflow-hidden">
+            <motion.div
+              className="h-full bg-gradient-to-r from-green-500/70 to-green-300"
+              initial={{ width: 0 }}
+              animate={{ 
+                width: ['20%', '60%', '40%', '75%', '55%', '90%'],
+                transition: { 
+                  repeat: Infinity, 
+                  repeatType: 'reverse',
+                  duration: 15,
+                  ease: 'easeInOut'
+                }
+              }}
+            />
+          </div>
+        )}
+      </GlassMorphism>
+    </motion.div>
   );
 };
 

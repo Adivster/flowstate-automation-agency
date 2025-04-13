@@ -95,32 +95,14 @@ const Analytics = () => {
     { name: "Development", value: 42 },
   ];
 
-  const enhanceHistoricalData = (data: number[]) => {
-    if (!data || data.length === 0) return data;
-    
-    const min = Math.min(...data);
-    const max = Math.max(...data);
-    const range = max - min;
-    
-    if (range < 10) {
-      const enhancedData = data.map(value => {
-        const randomVariance = (Math.random() - 0.5) * (range * 0.8);
-        return Math.max(0, value + randomVariance);
-      });
-      return enhancedData;
-    }
-    
-    return data;
-  };
-  
-  const enhancedTaskCompletionData = performanceData.historicalData.taskCompletion.map((value, index) => ({
+  const enhancedTaskCompletionData = performanceData.historicalData.taskCompletion.map((item, index) => ({
     name: `Day ${index + 1}`,
-    value: value.value + (Math.random() * 5 - 2.5)
+    value: item.value + (Math.random() * 5 - 2.5)
   }));
-  
-  const enhancedResponseTimeData = performanceData.historicalData.responseTime.map((value, index) => ({
+
+  const enhancedResponseTimeData = performanceData.historicalData.responseTime.map((item, index) => ({
     name: `Day ${index + 1}`,
-    value: value.value * (1 + (Math.random() * 0.4 - 0.2))
+    value: item.value * (1 + (Math.random() * 0.4 - 0.2))
   }));
 
   const enhancedUserData = [
@@ -133,6 +115,25 @@ const Analytics = () => {
     { name: "Day 7", value: 246 },
   ];
 
+  const getTrendInsight = () => {
+    const trends = performanceData.historicalData.efficiency;
+    const lastIndex = trends.length - 1;
+    const currentValue = trends[lastIndex].value;
+    const previousValue = trends[lastIndex - 1].value;
+    const change = currentValue - previousValue;
+    const isPositive = change >= 0;
+    
+    return {
+      value: `${isPositive ? '+' : ''}${change.toFixed(1)}%`,
+      text: isPositive 
+        ? 'Improvement in overall efficiency' 
+        : 'Decrease in overall efficiency',
+      isPositive
+    };
+  };
+
+  const insight = getTrendInsight();
+  
   const handleDataPointClick = useCallback((data: any, index: number, chartTitle: string) => {
     toast({
       title: `${chartTitle} - ${data.name}`,
@@ -175,26 +176,6 @@ const Analytics = () => {
     });
   }, [toast]);
 
-  const getTrendInsight = () => {
-    const trends = performanceData.historicalData.efficiency;
-    const lastIndex = trends.length - 1;
-    const currentValue = trends[lastIndex].value;
-    const previousValue = trends[lastIndex - 1].value;
-    const change = currentValue - previousValue;
-    const isPositive = change >= 0;
-    
-    return {
-      value: `${isPositive ? '+' : ''}${change.toFixed(1)}%`,
-      text: isPositive 
-        ? 'Improvement in overall efficiency' 
-        : 'Decrease in overall efficiency',
-      trend: isPositive ? 'positive' : 'negative',
-      action: isPositive ? 'Maintain current workflows' : 'Review process bottlenecks'
-    };
-  };
-
-  const insight = getTrendInsight();
-  
   const renderChartActions = (title, data, type, color) => (
     <div className="absolute top-4 right-4 flex space-x-1 opacity-50 hover:opacity-100 transition-opacity">
       <Button 
@@ -422,7 +403,7 @@ const Analytics = () => {
                       </span>
                     </h3>
                     <p className="text-sm text-flow-foreground/70 mt-1">
-                      {insight.text}: <span className={`font-medium ${insight.trend === 'positive' ? 'text-green-400' : 'text-red-400'}`}>{insight.value}</span>
+                      {insight.text}: <span className={`font-medium ${insight.isPositive ? 'text-green-400' : 'text-red-400'}`}>{insight.value}</span>
                     </p>
                     <p className="text-sm text-flow-foreground/70 mt-1">
                       Recommended action: {insight.action}
