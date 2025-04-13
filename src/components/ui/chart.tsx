@@ -14,11 +14,9 @@ import {
   CartesianGrid, 
   Tooltip, 
   Legend, 
-  TooltipProps,
   Area,
   ReferenceLine
 } from "recharts";
-import { curveCardinal } from "d3-shape";
 
 // Type for data points
 interface DataPoint {
@@ -101,21 +99,18 @@ export const Chart: FC<ChartProps> = ({
   domain = null,
   onClick,
 }) => {
-  // Line area generator using cardinal curve
-  const cardinal = curveCardinal.tension(0.2);
-  
-  // Event handler adapter for recharts onClick event
-  const handleClick = (data: any, index: number) => {
-    if (onClick && interactive) {
-      onClick(data, index);
+  // Event handler for line/dot click
+  const handleLineElementClick = (e: any) => {
+    if (e && e.payload && onClick) {
+      onClick(e.payload, 0);
     }
   };
 
-  // Responsive wrapper to ensure chart fits container
-  return (
-    <div style={{ width: width || "100%", height }} className={className}>
-      <ResponsiveContainer width="100%" height="100%">
-        {type === "line" ? (
+  // Render the appropriate chart based on type
+  const renderChart = () => {
+    switch (type) {
+      case "line":
+        return (
           <RLineChart
             data={data}
             margin={{
@@ -140,11 +135,7 @@ export const Chart: FC<ChartProps> = ({
               strokeWidth={2}
               activeDot={{ r: 8 }}
               dot={{ r: 4, fill: dotColor || lineColor || colors[0] }}
-              onClick={(e: any) => {
-                if (e && e.payload && onClick) {
-                  onClick(e.payload, 0);
-                }
-              }}
+              onClick={handleLineElementClick}
             />
             {showArea && (
               <Area 
@@ -156,7 +147,9 @@ export const Chart: FC<ChartProps> = ({
               />
             )}
           </RLineChart>
-        ) : type === "bar" ? (
+        );
+      case "bar":
+        return (
           <RBarChart
             data={data}
             margin={{
@@ -177,14 +170,12 @@ export const Chart: FC<ChartProps> = ({
             <Bar 
               dataKey="value" 
               fill={lineColor || colors[0]} 
-              onClick={(e: any) => {
-                if (e && e.payload && onClick) {
-                  onClick(e.payload, 0);
-                }
-              }}
+              onClick={handleLineElementClick}
             />
           </RBarChart>
-        ) : type === "area" ? (
+        );
+      case "area":
+        return (
           <RLineChart
             data={data}
             margin={{
@@ -215,14 +206,12 @@ export const Chart: FC<ChartProps> = ({
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorValue)"
-              onClick={(e: any) => {
-                if (e && e.payload && onClick) {
-                  onClick(e.payload, 0);
-                }
-              }}
+              onClick={handleLineElementClick}
             />
           </RLineChart>
-        ) : (
+        );
+      case "pie":
+        return (
           <RPieChart>
             <Pie
               data={data}
@@ -234,9 +223,9 @@ export const Chart: FC<ChartProps> = ({
               dataKey="value"
               innerRadius={donut ? outerRadius * 0.6 : 0}
               label={showLabel ? ({ name, percent }: { name: string; percent: number }) => `${name}: ${(percent * 100).toFixed(0)}%` : undefined}
-              onClick={(e: any) => {
-                if (e && onClick) {
-                  onClick(e, e.index || 0);
+              onClick={(data: any) => {
+                if (data && onClick) {
+                  onClick(data, data.index || 0);
                 }
               }}
             >
@@ -266,7 +255,17 @@ export const Chart: FC<ChartProps> = ({
             )}
             {showTooltip && <Tooltip />}
           </RPieChart>
-        )}
+        );
+      default:
+        return null;
+    }
+  };
+
+  // Responsive wrapper to ensure chart fits container
+  return (
+    <div style={{ width: width || "100%", height }} className={className}>
+      <ResponsiveContainer width="100%" height="100%">
+        {renderChart()}
       </ResponsiveContainer>
     </div>
   );
@@ -292,4 +291,3 @@ export const AreaChart: FC<Omit<ChartProps, "type">> = (props) => (
 // For backward compatibility, add LineChart and BarChart as aliases of LineChart2 and BarChart2
 export const LineChart = LineChart2;
 export const BarChart = BarChart2;
-

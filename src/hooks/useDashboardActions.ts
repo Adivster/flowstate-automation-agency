@@ -85,6 +85,18 @@ export const useDashboardActions = () => {
     window.dispatchEvent(event);
   };
 
+  const handleCreateDivision = () => {
+    toast({
+      title: "Create Division",
+      description: "Opening division creation interface...",
+      duration: 3000
+    });
+    
+    setTimeout(() => {
+      navigate('/divisions');
+    }, 800);
+  };
+
   return {
     handleCreateAgent,
     handleStartWorkflow,
@@ -92,6 +104,7 @@ export const useDashboardActions = () => {
     handleOptimizeResources,
     handleRunAnalysis,
     handleSystemAlert,
-    handleAiConsult
+    handleAiConsult,
+    handleCreateDivision
   };
 };

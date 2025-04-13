@@ -1,17 +1,26 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AgencyDashboard from '@/components/dashboard/AgencyDashboard';
 import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { LayoutDashboard } from 'lucide-react';
+import { LayoutDashboard, Zap } from 'lucide-react';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 
 const Index: React.FC = () => {
+  const [theme, setTheme] = useState<'default' | 'retro' | 'vapor' | 'tactical'>('default');
+  
+  // Function to switch themes
+  const switchTheme = (newTheme: 'default' | 'retro' | 'vapor' | 'tactical') => {
+    setTheme(newTheme);
+    // This would normally apply different CSS classes or variables
+  };
+  
   return (
-    <div className="min-h-screen flex flex-col bg-flow-background circuit-background">
+    <div className={`min-h-screen flex flex-col bg-flow-background circuit-background ${theme}`}>
       <Navbar />
       
       {/* Main Content */}
@@ -83,13 +92,43 @@ const Index: React.FC = () => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
+              className="flex flex-wrap items-center justify-between mb-4"
             >
               <PageHeader 
                 title="Mission Control"
                 description="Welcome to your Agency HQ. Monitor performance, manage divisions, and optimize workflows from this central command center."
                 icon={<LayoutDashboard className="h-8 w-8 text-purple-500 drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]" />}
-                className="mb-4"
               />
+              
+              <div className="flex items-center gap-2 mt-4 md:mt-0">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="bg-black/20 border-flow-border/30 text-xs"
+                  onClick={() => switchTheme('default')}
+                >
+                  <Zap className="h-3.5 w-3.5 mr-1.5 text-indigo-400" />
+                  Default
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="bg-black/20 border-flow-border/30 text-xs"
+                  onClick={() => switchTheme('retro')}
+                >
+                  <Zap className="h-3.5 w-3.5 mr-1.5 text-green-400" />
+                  Retro
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="bg-black/20 border-flow-border/30 text-xs"
+                  onClick={() => switchTheme('vapor')}
+                >
+                  <Zap className="h-3.5 w-3.5 mr-1.5 text-pink-400" />
+                  Vapor
+                </Button>
+              </div>
             </motion.div>
             
             <GlassMorphism 
