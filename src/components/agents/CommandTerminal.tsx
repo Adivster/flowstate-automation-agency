@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Terminal, X, Send, Download, RotateCcw, Plus, Code, MessageCircle, ChevronDown, Bot } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -278,7 +279,7 @@ const CommandTerminal = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
             transition={{ type: 'spring', damping: 20 }}
-            className="fixed bottom-4 right-4 w-full max-w-lg z-50"
+            className="fixed bottom-4 left-4 w-full max-w-lg z-50"
           >
             <div className="rounded-lg overflow-hidden shadow-[0_0_20px_rgba(139,92,246,0.5)] border border-indigo-500/60 animate-glow-pulse">
               <GlassMorphism intensity="medium" className="bg-flow-background/80 backdrop-blur-lg">

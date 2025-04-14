@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Terminal, ChevronRight, ArrowRight, Maximize2 } from 'lucide-react';
