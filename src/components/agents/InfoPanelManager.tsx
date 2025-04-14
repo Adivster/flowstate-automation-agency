@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -533,7 +534,7 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                     </div>
                   </TabsContent>
                   
-                  <TabsContent value="actions" className="space-y-3">
+                  <TabsContent value="actions" className="space-y-3 p-4">
                     {selectedDivision && (
                       <>
                         <Button 

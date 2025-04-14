@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { usePerformanceData } from '@/hooks/usePerformanceData';
 import { PieChart } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 interface Division {
   id: string;
@@ -33,6 +34,7 @@ const DivisionInfoPanel: React.FC<DivisionInfoPanelProps> = ({
   const { t } = useLanguage();
   const panelRef = useRef<HTMLDivElement>(null);
   const [minimized, setMinimized] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState("overview");
   
   // Pass division ID to get consistent performance data
   const performanceData = usePerformanceData(division.id);
@@ -113,75 +115,82 @@ const DivisionInfoPanel: React.FC<DivisionInfoPanelProps> = ({
       
       {!minimized && (
         <div className="p-4 overflow-y-auto" style={{ maxHeight: 'calc(100% - 40px)' }}>
-          <p className="text-white/80 text-sm mb-4">
-            {division.description}
-          </p>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-            <div className={`${division.borderColor ? `bg-[${division.borderColor}]/10` : 'bg-white/10'} rounded p-2 text-center`}>
-              <div className="text-white text-sm font-semibold">
-                {agentsInDivision.length}
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="w-full mb-4">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="agents">Agents</TabsTrigger>
+              <TabsTrigger value="performance">Performance</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview">
+              <p className="text-white/80 text-sm mb-4">
+                {division.description}
+              </p>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div className={`${division.borderColor ? `bg-[${division.borderColor}]/10` : 'bg-white/10'} rounded p-2 text-center`}>
+                  <div className="text-white text-sm font-semibold">
+                    {agentsInDivision.length}
+                  </div>
+                  <div className="text-white/70 text-xs flex items-center justify-center">
+                    <Users className="h-3 w-3 mr-1" />
+                    Active Agents
+                  </div>
+                </div>
+                
+                <div className={`${division.borderColor ? `bg-[${division.borderColor}]/10` : 'bg-white/10'} rounded p-2 text-center`}>
+                  <div className="text-white text-sm font-semibold">
+                    {performanceData.taskCompletion}%
+                  </div>
+                  <div className="text-white/70 text-xs flex items-center justify-center">
+                    <Activity className="h-3 w-3 mr-1" />
+                    Task Completion
+                  </div>
+                </div>
+                
+                <div className={`${division.borderColor ? `bg-[${division.borderColor}]/10` : 'bg-white/10'} rounded p-2 text-center`}>
+                  <div className="text-white text-sm font-semibold">
+                    {performanceData.efficiency}%
+                  </div>
+                  <div className="text-white/70 text-xs flex items-center justify-center">
+                    <BarChart className="h-3 w-3 mr-1" />
+                    Efficiency
+                  </div>
+                </div>
+                
+                <div className={`${division.borderColor ? `bg-[${division.borderColor}]/10` : 'bg-white/10'} rounded p-2 text-center`}>
+                  <div className="text-white text-sm font-semibold">
+                    {performanceData.tasksCompleted}
+                  </div>
+                  <div className="text-white/70 text-xs flex items-center justify-center">
+                    <Activity className="h-3 w-3 mr-1" />
+                    Tasks Completed
+                  </div>
+                </div>
               </div>
-              <div className="text-white/70 text-xs flex items-center justify-center">
-                <Users className="h-3 w-3 mr-1" />
-                Active Agents
+              
+              <div className={`${division.borderColor ? `bg-[${division.borderColor}]/5` : 'bg-white/5'} rounded-md p-3 mb-4`}>
+                <h4 className="text-white/90 text-xs font-medium mb-2 flex items-center">
+                  <PieChartIcon className="h-3 w-3 mr-1" />
+                  Resource Utilization
+                </h4>
+                <div className="h-[150px]">
+                  <PieChart 
+                    data={resourceData} 
+                    colors={resourceData.map(item => item.color)}
+                    donut={true} 
+                    gradient={true}
+                    interactive={true}
+                    height={150}
+                    outerRadius={50}
+                    legendPosition="bottom"
+                  />
+                </div>
               </div>
-            </div>
-            
-            <div className={`${division.borderColor ? `bg-[${division.borderColor}]/10` : 'bg-white/10'} rounded p-2 text-center`}>
-              <div className="text-white text-sm font-semibold">
-                {performanceData.taskCompletion}%
-              </div>
-              <div className="text-white/70 text-xs flex items-center justify-center">
-                <Activity className="h-3 w-3 mr-1" />
-                Task Completion
-              </div>
-            </div>
-            
-            <div className={`${division.borderColor ? `bg-[${division.borderColor}]/10` : 'bg-white/10'} rounded p-2 text-center`}>
-              <div className="text-white text-sm font-semibold">
-                {performanceData.efficiency}%
-              </div>
-              <div className="text-white/70 text-xs flex items-center justify-center">
-                <BarChart className="h-3 w-3 mr-1" />
-                Efficiency
-              </div>
-            </div>
-            
-            <div className={`${division.borderColor ? `bg-[${division.borderColor}]/10` : 'bg-white/10'} rounded p-2 text-center`}>
-              <div className="text-white text-sm font-semibold">
-                {performanceData.tasksCompleted}
-              </div>
-              <div className="text-white/70 text-xs flex items-center justify-center">
-                <Activity className="h-3 w-3 mr-1" />
-                Tasks Completed
-              </div>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div className={`${division.borderColor ? `bg-[${division.borderColor}]/5` : 'bg-white/5'} rounded-md p-3`}>
-              <h4 className="text-white/90 text-xs font-medium mb-2 flex items-center">
-                <PieChartIcon className="h-3 w-3 mr-1" />
-                Resource Utilization
-              </h4>
-              <div className="h-[150px]">
-                <PieChart 
-                  data={resourceData} 
-                  colors={resourceData.map(item => item.color)}
-                  donut={true} 
-                  gradient={true}
-                  interactive={true}
-                  height={150}
-                  outerRadius={50}
-                  legendPosition="bottom"
-                />
-              </div>
-            </div>
-            
-            <div className={`${division.borderColor ? `bg-[${division.borderColor}]/5` : 'bg-white/5'} rounded-md p-3`}>
-              <h4 className="text-white/90 text-xs font-medium mb-2">Active Agents</h4>
-              <div className="space-y-2 overflow-y-auto max-h-[150px] pr-1 custom-scrollbar">
+            </TabsContent>
+
+            <TabsContent value="agents">
+              <div className="space-y-2 overflow-y-auto max-h-[300px] pr-1 custom-scrollbar">
                 {agentsInDivision.length > 0 ? (
                   agentsInDivision.map((agent, index) => (
                     <div 
@@ -202,10 +211,45 @@ const DivisionInfoPanel: React.FC<DivisionInfoPanelProps> = ({
                   <div className="text-white/50 text-xs text-center py-4">No agents assigned</div>
                 )}
               </div>
-            </div>
-          </div>
+            </TabsContent>
+
+            <TabsContent value="performance">
+              <h4 className="text-white/90 text-sm font-medium mb-2">Performance Metrics</h4>
+              <div className="space-y-3">
+                <div className="bg-white/5 p-3 rounded">
+                  <div className="flex justify-between text-xs text-white/70 mb-1">
+                    <span>Efficiency</span>
+                    <span>{performanceData.efficiency}%</span>
+                  </div>
+                  <div className="w-full bg-white/10 rounded-full h-2">
+                    <div className="bg-green-500 rounded-full h-2" style={{ width: `${performanceData.efficiency}%` }}></div>
+                  </div>
+                </div>
+                
+                <div className="bg-white/5 p-3 rounded">
+                  <div className="flex justify-between text-xs text-white/70 mb-1">
+                    <span>Task Completion</span>
+                    <span>{performanceData.taskCompletion}%</span>
+                  </div>
+                  <div className="w-full bg-white/10 rounded-full h-2">
+                    <div className="bg-blue-500 rounded-full h-2" style={{ width: `${performanceData.taskCompletion}%` }}></div>
+                  </div>
+                </div>
+                
+                <div className="bg-white/5 p-3 rounded">
+                  <div className="flex justify-between text-xs text-white/70 mb-1">
+                    <span>Resource Utilization</span>
+                    <span>{performanceData.resourceUtilization}%</span>
+                  </div>
+                  <div className="w-full bg-white/10 rounded-full h-2">
+                    <div className="bg-amber-500 rounded-full h-2" style={{ width: `${performanceData.resourceUtilization}%` }}></div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
           
-          <div className="flex justify-end">
+          <div className="flex justify-end mt-4">
             <button 
               className={`text-xs ${division.borderColor ? `bg-[${division.borderColor}]/80 hover:bg-[${division.borderColor}]` : 'bg-flow-accent/90 hover:bg-flow-accent'} text-white px-3 py-1.5 rounded transition-colors duration-150 flex items-center`}
             >
