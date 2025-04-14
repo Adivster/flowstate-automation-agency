@@ -1,17 +1,20 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { LucideIcon } from 'lucide-react';
 
 interface InfoChipProps {
   label: string;
   className?: string;
   variant?: 'default' | 'subtle' | 'outline' | 'accent';
+  icon?: LucideIcon;
 }
 
 export const InfoChip: React.FC<InfoChipProps> = ({
   label,
   className,
   variant = 'default',
+  icon: Icon,
 }) => {
   const variantClasses = {
     default: 'bg-flow-muted text-flow-muted-foreground',
@@ -28,6 +31,7 @@ export const InfoChip: React.FC<InfoChipProps> = ({
         className
       )}
     >
+      {Icon && <Icon className="mr-1 h-3 w-3" />}
       {label}
     </span>
   );
