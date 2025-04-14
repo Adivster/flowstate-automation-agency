@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Terminal, X, Send, Download, RotateCcw, Plus, Code, MessageCircle, ChevronDown, Bot } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -495,7 +494,7 @@ const CommandTerminal = () => {
       <Button
         variant="outline"
         size="sm"
-        className="fixed bottom-4 right-4 z-40 terminal-toggle-btn rounded-full h-12 w-12 bg-black/70 border border-indigo-500/30 hover:bg-indigo-900/30 hover:border-indigo-400/60 transition-all duration-300"
+        className="fixed bottom-4 left-4 z-40 terminal-toggle-btn rounded-full h-12 w-12 bg-black/70 border border-indigo-500/30 hover:bg-indigo-900/30 hover:border-indigo-400/60 transition-all duration-300"
         onClick={() => setIsVisible(!isVisible)}
       >
         <Terminal className="h-5 w-5 text-cyan-300" />
