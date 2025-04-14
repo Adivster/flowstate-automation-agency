@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -21,7 +22,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { LineChart as ChartLine } from '@/components/ui/chart';
-import GlassMorphism from '@/components/ui/GlassMorphism';
+import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import { toast } from 'sonner';
 import type { LucideIcon } from 'lucide-react';
