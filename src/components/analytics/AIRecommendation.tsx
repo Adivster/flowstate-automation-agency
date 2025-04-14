@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -92,7 +91,7 @@ const AIRecommendation: React.FC<AIRecommendationProps> = ({
                 <>
                   <Button 
                     variant="ghost" 
-                    size="xs" 
+                    size="sm"
                     className="h-6 text-[10px] hover:bg-green-500/20 hover:text-green-400"
                     onClick={() => handleFeedback('helpful')}
                   >
@@ -100,7 +99,7 @@ const AIRecommendation: React.FC<AIRecommendationProps> = ({
                   </Button>
                   <Button 
                     variant="ghost" 
-                    size="xs" 
+                    size="sm"
                     className="h-6 text-[10px] hover:bg-red-500/20 hover:text-red-400"
                     onClick={() => handleFeedback('not-helpful')}
                   >
@@ -118,7 +117,7 @@ const AIRecommendation: React.FC<AIRecommendationProps> = ({
             {(impact || actions.length > 0) && (
               <Button 
                 variant="ghost" 
-                size="xs" 
+                size="sm"
                 className="h-6 text-[10px] text-flow-accent"
                 onClick={() => setExpanded(!expanded)}
               >
@@ -137,7 +136,7 @@ const AIRecommendation: React.FC<AIRecommendationProps> = ({
                 <Button 
                   key={index}
                   variant="outline" 
-                  size="xs"
+                  size="sm"
                   className="h-7 text-xs border-flow-accent/30 text-flow-accent hover:bg-flow-accent/10"
                   onClick={action.onClick}
                   asChild={!!action.link}

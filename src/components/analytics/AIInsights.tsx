@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -35,7 +34,6 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
   const [showAnomalyDetails, setShowAnomalyDetails] = useState<number | null>(null);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState<Set<number>>(new Set());
   
-  // Enhanced mock data for AI insights with anomaly detection and predictions
   const insights = [
     {
       id: 1,
@@ -162,7 +160,6 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
     });
   };
 
-  // Severity badge styling
   const getSeverityBadge = (severity: string) => {
     switch(severity) {
       case 'high':
@@ -241,7 +238,6 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
                     transition={{ duration: 0.3 }}
                     className="mt-2 pt-2 border-t border-flow-border/20"
                   >
-                    {/* Confidence indicator */}
                     <div className="mb-3">
                       <div className="flex items-center justify-between text-xs mb-1">
                         <span className="text-flow-foreground/60">AI Confidence</span>
@@ -258,13 +254,11 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
                       />
                     </div>
                     
-                    {/* Additional info */}
                     <p className="text-xs text-flow-foreground/80 bg-flow-background/40 p-2 rounded-md">
                       <BadgeCheck className="h-3 w-3 inline-block mr-1 text-flow-accent" />
                       {insight.additionalInfo}
                     </p>
                     
-                    {/* Anomaly details */}
                     {insight.type === 'anomaly' && insight.metrics && (
                       <div className="mt-2">
                         <button 
@@ -302,7 +296,6 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
                       </div>
                     )}
                     
-                    {/* Recommendations */}
                     {insight.recommendations && (
                       <div className="mt-3">
                         <div className="text-xs font-medium mb-1 flex items-center">
@@ -320,14 +313,13 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
                       </div>
                     )}
                     
-                    {/* Action buttons */}
                     <div className="mt-3 flex justify-between">
                       <div className="flex gap-1">
                         {!feedbackSubmitted.has(insight.id) ? (
                           <>
                             <Button 
                               variant="ghost" 
-                              size="xs"
+                              size="sm"
                               className="h-7 text-[10px]"
                               onClick={(e) => handleFeedback(insight.id, true, e)}
                             >
@@ -335,7 +327,7 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
                             </Button>
                             <Button 
                               variant="ghost" 
-                              size="xs"
+                              size="sm"
                               className="h-7 text-[10px]"
                               onClick={(e) => handleFeedback(insight.id, false, e)}
                             >
@@ -353,7 +345,7 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
                       <Link to={insight.action}>
                         <Button 
                           variant="outline" 
-                          size="xs"
+                          size="sm"
                           className="h-7 text-[10px] border-flow-accent/30 text-flow-accent hover:bg-flow-accent/10"
                           onClick={(e) => {
                             e.stopPropagation();
