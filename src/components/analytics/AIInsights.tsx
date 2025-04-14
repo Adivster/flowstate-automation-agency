@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -192,8 +193,8 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-lg font-medium">AI Insights</h3>
-          <p className="text-xs text-flow-foreground/60">Auto-detected patterns & recommendations</p>
+          <h3 className="text-lg font-medium font-cyber text-flow-accent animate-text-glow">AI Insights</h3>
+          <p className="text-xs text-flow-foreground/60 font-ibm-mono">Auto-detected patterns & recommendations</p>
         </div>
         <InfoChip icon={Brain} label="AI Powered" />
       </div>
@@ -205,10 +206,10 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className={`p-3 rounded-lg border ${
-              insight.type === 'anomaly' ? 'border-red-500/30 bg-red-500/5' : 
-              insight.type === 'prediction' ? 'border-purple-500/30 bg-purple-500/5' : 
-              'border-flow-border/30 bg-flow-background/40'
+            className={`p-3 rounded-lg border backdrop-blur-sm ${
+              insight.type === 'anomaly' ? 'border-red-500/30 bg-red-500/5 hover:neon-border-orange' : 
+              insight.type === 'prediction' ? 'border-purple-500/30 bg-purple-500/5 hover:neon-border-purple' : 
+              'border-flow-border/30 bg-flow-background/40 hover:neon-border-blue'
             } hover:bg-flow-card/30 transition-all cursor-pointer group ${expandedInsight === insight.id ? 'bg-flow-card/40' : ''}`}
             onClick={() => toggleExpand(insight.id)}
           >
@@ -223,13 +224,13 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
               
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-medium group-hover:text-flow-accent truncate">{insight.title}</h4>
+                  <h4 className="text-sm font-medium group-hover:text-flow-accent truncate font-cyber">{insight.title}</h4>
                   <span className={`text-[10px] ml-2 px-1.5 py-0.5 rounded-full border ${getSeverityBadge(insight.severity)}`}>
                     {insight.severity === 'high' ? 'High Priority' : insight.severity === 'medium' ? 'Medium' : 'Low'}
                   </span>
                 </div>
                 
-                <p className="text-xs text-flow-foreground/70 mt-0.5">{insight.description}</p>
+                <p className="text-xs text-flow-foreground/70 mt-0.5 font-ibm-mono">{insight.description}</p>
                 
                 {expandedInsight === insight.id && (
                   <motion.div 
@@ -254,7 +255,7 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
                       />
                     </div>
                     
-                    <p className="text-xs text-flow-foreground/80 bg-flow-background/40 p-2 rounded-md">
+                    <p className="text-xs text-flow-foreground/80 bg-flow-background/40 p-2 rounded-md font-ibm-mono">
                       <BadgeCheck className="h-3 w-3 inline-block mr-1 text-flow-accent" />
                       {insight.additionalInfo}
                     </p>
@@ -263,7 +264,7 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
                       <div className="mt-2">
                         <button 
                           onClick={(e) => handleAnomalyDetails(insight.id, e)}
-                          className="text-xs flex items-center text-flow-accent bg-flow-accent/10 px-2 py-1 rounded-md w-full justify-between"
+                          className="text-xs flex items-center text-flow-accent bg-flow-accent/10 px-2 py-1 rounded-md w-full justify-between font-ibm-mono hover:neon-border"
                         >
                           <span>Anomaly Details</span>
                           {showAnomalyDetails === insight.id ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
@@ -275,19 +276,19 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
                             animate={{ opacity: 1 }}
                             className="mt-2 grid grid-cols-2 gap-2"
                           >
-                            <div className="bg-flow-background/30 p-2 rounded-md">
+                            <div className="bg-flow-background/30 p-2 rounded-md border border-flow-border/10">
                               <p className="text-[10px] text-flow-foreground/60">Current</p>
                               <p className="text-sm">{insight.metrics.current}%</p>
                             </div>
-                            <div className="bg-flow-background/30 p-2 rounded-md">
+                            <div className="bg-flow-background/30 p-2 rounded-md border border-flow-border/10">
                               <p className="text-[10px] text-flow-foreground/60">Previous</p>
                               <p className="text-sm">{insight.metrics.previous}%</p>
                             </div>
-                            <div className="bg-flow-background/30 p-2 rounded-md">
+                            <div className="bg-flow-background/30 p-2 rounded-md border border-flow-border/10">
                               <p className="text-[10px] text-flow-foreground/60">Change</p>
                               <p className="text-sm text-red-400">{insight.metrics.change}%</p>
                             </div>
-                            <div className="bg-flow-background/30 p-2 rounded-md">
+                            <div className="bg-flow-background/30 p-2 rounded-md border border-flow-border/10">
                               <p className="text-[10px] text-flow-foreground/60">Historical Avg</p>
                               <p className="text-sm">{insight.metrics.historicalAvg}%</p>
                             </div>
@@ -298,11 +299,11 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
                     
                     {insight.recommendations && (
                       <div className="mt-3">
-                        <div className="text-xs font-medium mb-1 flex items-center">
+                        <div className="text-xs font-medium mb-1 flex items-center font-cyber">
                           <Lightbulb className="h-3 w-3 mr-1 text-amber-400" />
                           Recommended Actions
                         </div>
-                        <ul className="text-xs space-y-1">
+                        <ul className="text-xs space-y-1 font-ibm-mono">
                           {insight.recommendations.map((rec, idx) => (
                             <li key={idx} className="flex items-center">
                               <span className="h-1 w-1 bg-flow-accent mr-2 rounded-full"></span>
@@ -320,7 +321,7 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
                             <Button 
                               variant="ghost" 
                               size="sm"
-                              className="h-7 text-[10px]"
+                              className="h-7 text-[10px] hover:bg-green-500/20 hover:text-green-400"
                               onClick={(e) => handleFeedback(insight.id, true, e)}
                             >
                               👍 Helpful
@@ -328,7 +329,7 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
                             <Button 
                               variant="ghost" 
                               size="sm"
-                              className="h-7 text-[10px]"
+                              className="h-7 text-[10px] hover:bg-red-500/20 hover:text-red-400"
                               onClick={(e) => handleFeedback(insight.id, false, e)}
                             >
                               👎 Not helpful
@@ -346,7 +347,7 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          className="h-7 text-[10px] border-flow-accent/30 text-flow-accent hover:bg-flow-accent/10"
+                          className="h-7 text-[10px] border-flow-accent/30 text-flow-accent hover:bg-flow-accent/10 hover:neon-border"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleInsightAction(insight);
@@ -367,7 +368,7 @@ const AIInsights: React.FC<AIInsightsProps> = ({ data, timeRange }) => {
       
       <div className="pt-2 border-t border-flow-border/10 mt-3">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-flow-foreground/60 flex items-center">
+          <span className="text-xs text-flow-foreground/60 flex items-center font-ibm-mono">
             <Sparkles className="h-3 w-3 mr-1 text-amber-400" />
             AI-powered insights based on your data
           </span>

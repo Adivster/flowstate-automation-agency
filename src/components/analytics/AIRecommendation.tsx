@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -6,7 +7,8 @@ import {
   ThumbsDown, 
   ChevronRight, 
   BadgeCheck,
-  Sparkles
+  Sparkles,
+  Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -62,27 +64,32 @@ const AIRecommendation: React.FC<AIRecommendationProps> = ({
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`border border-flow-accent/30 bg-flow-background/30 rounded-lg p-3 ${className}`}
+      className={`border border-flow-accent/30 bg-flow-background/30 rounded-lg p-3 backdrop-blur-sm neon-border-purple scan-lines ${className}`}
     >
       <div className="flex gap-3 items-start">
-        <div className="p-1.5 bg-amber-500/20 rounded-full">
-          <Lightbulb className="h-4 w-4 text-amber-400" />
+        <div className="p-1.5 bg-amber-500/20 rounded-full animate-pulse-subtle">
+          <Zap className="h-4 w-4 text-amber-400" />
         </div>
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium">{title}</h3>
+            <h3 className="text-sm font-medium font-cyber animate-text-glow text-flow-accent">{title}</h3>
             <span className={`text-xs ${confidenceColor} flex items-center`}>
               <Sparkles className="h-3 w-3 mr-1" />
               {confidenceLabel} confidence ({confidence}%)
             </span>
           </div>
           
-          <p className="text-xs text-flow-foreground/70 mt-1">{description}</p>
+          <p className="text-xs text-flow-foreground/70 mt-1 font-ibm-mono">{description}</p>
           
           {impact && expanded && (
-            <div className="mt-2 bg-flow-background/40 p-2 rounded text-xs text-flow-foreground/80">
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              transition={{ duration: 0.3 }}
+              className="mt-2 bg-flow-background/40 p-2 rounded text-xs text-flow-foreground/80 border border-flow-accent/10"
+            >
               <strong className="font-medium">Potential impact:</strong> {impact}
-            </div>
+            </motion.div>
           )}
           
           <div className="flex items-center justify-between mt-2">
@@ -118,7 +125,7 @@ const AIRecommendation: React.FC<AIRecommendationProps> = ({
               <Button 
                 variant="ghost" 
                 size="sm"
-                className="h-6 text-[10px] text-flow-accent"
+                className="h-6 text-[10px] text-flow-accent hover:bg-flow-accent/10"
                 onClick={() => setExpanded(!expanded)}
               >
                 {expanded ? 'Less details' : 'More details'} <ChevronRight className={`h-3 w-3 ml-0.5 transition-transform ${expanded ? 'rotate-90' : ''}`} />
@@ -137,7 +144,7 @@ const AIRecommendation: React.FC<AIRecommendationProps> = ({
                   key={index}
                   variant="outline" 
                   size="sm"
-                  className="h-7 text-xs border-flow-accent/30 text-flow-accent hover:bg-flow-accent/10"
+                  className="h-7 text-xs border-flow-accent/30 text-flow-accent hover:bg-flow-accent/10 hover:neon-border"
                   onClick={action.onClick}
                   asChild={!!action.link}
                 >

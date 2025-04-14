@@ -33,7 +33,7 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
   
   const variantClasses = {
     default: 'shadow-sm',
-    accent: 'shadow-md border-flow-accent/30',
+    accent: 'shadow-md border-flow-accent/40',
     muted: 'shadow-none opacity-80',
   };
   
@@ -41,8 +41,46 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
     ? 'transition-all duration-300 hover:bg-white/15 hover:border-white/30 hover:shadow-lg' 
     : 'transition-all duration-300';
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Add glowing effect on mouse movement
+  useEffect(() => {
+    if (!hoverEffect || !containerRef.current) return;
+    
+    const container = containerRef.current;
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      container.style.background = `
+        radial-gradient(
+          circle at ${x}px ${y}px, 
+          rgba(255, 255, 255, 0.08) 0%, 
+          rgba(255, 255, 255, 0.03) 40%, 
+          rgba(255, 255, 255, 0) 70%
+        ),
+        rgba(255, 255, 255, 0.1)
+      `;
+    };
+    
+    const handleMouseLeave = () => {
+      container.style.background = '';
+    };
+    
+    container.addEventListener('mousemove', handleMouseMove);
+    container.addEventListener('mouseleave', handleMouseLeave);
+    
+    return () => {
+      container.removeEventListener('mousemove', handleMouseMove);
+      container.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [hoverEffect]);
+
   return (
     <div
+      ref={containerRef}
       className={cn(
         'glass',
         intensityClasses[intensity],
@@ -53,7 +91,10 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      style={style}
+      style={{
+        boxShadow: variant === 'accent' ? '0 0 15px rgba(147, 51, 234, 0.15)' : '',
+        ...style
+      }}
     >
       {children}
     </div>
