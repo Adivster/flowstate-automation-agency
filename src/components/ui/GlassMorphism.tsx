@@ -11,6 +11,7 @@ type GlassMorphismProps = {
   blur?: boolean;
   borderOpacity?: number;
   hoverEffect?: boolean;
+  style?: React.CSSProperties; // Added style prop support
 };
 
 export const GlassMorphism: React.FC<GlassMorphismProps> = ({
@@ -21,6 +22,7 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
   blur = true,
   borderOpacity = 0.2,
   hoverEffect = false,
+  style, // Added style prop
 }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -106,8 +108,10 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
         getHoverEffect(),
         className
       )}
+      style={style} // Apply the style prop
     >
       {children}
     </div>
   );
 };
+

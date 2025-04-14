@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Activity, Zap, Clock, Server, TrendingUp, TrendingDown, ArrowRight, Maximize2, Download, Share2 } from 'lucide-react';
 import TransitionWrapper from '../ui/TransitionWrapper';
-import GlassMorphism from '../ui/GlassMorphism';
+import { GlassMorphism } from '../ui/GlassMorphism';
 import { cn } from '@/lib/utils';
 import { LineChart } from '../ui/chart';
 import { Badge } from '../ui/badge';

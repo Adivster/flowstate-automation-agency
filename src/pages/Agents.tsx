@@ -1,4 +1,3 @@
-
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect, useRef } from 'react';
 import Navbar from '@/components/layout/Navbar';
@@ -33,7 +32,6 @@ const Agents = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const contentLoaded = useRef(false);
   
-  // Agent statistics
   const agentStats = useMemo(() => ({
     total: 24,
     active: 14,
@@ -42,12 +40,9 @@ const Agents = () => {
     error: 1
   }), []);
   
-  // Load only once to prevent blinking
   useEffect(() => {
-    // Skip re-render if already loaded
     if (contentLoaded.current) return;
     
-    // Set a timeout to allow for immediate rendering without perceived delay
     setTimeout(() => {
       contentLoaded.current = true;
       setLoaded(true);
@@ -71,7 +66,6 @@ const Agents = () => {
     });
   };
   
-  // Show loading placeholder only on initial load
   if (!loaded) {
     return (
       <div className="fixed inset-0 bg-flow-background flex flex-col items-center justify-center z-50">
@@ -127,7 +121,6 @@ const Agents = () => {
               />
             </motion.div>
             
-            {/* Agent Status Summary Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -251,7 +244,6 @@ const Agents = () => {
                     </div>
                   </div>
                   
-                  {/* Fixed height container for floor plan */}
                   <div className="min-h-[550px] h-[550px] relative">
                     <OfficeFloorPlan />
                   </div>
@@ -264,7 +256,6 @@ const Agents = () => {
                 </TabsContent>
                 
                 <TabsContent value="agents" className="space-y-6">
-                  {/* Set proper height for scrollable content */}
                   <div className="h-[60vh] overflow-y-auto pr-1 custom-scrollbar">
                     <AgentGrid />
                   </div>
@@ -313,7 +304,6 @@ const Agents = () => {
                     </div>
                   </GlassMorphism>
                   
-                  {/* Fixed height container */}
                   <div className="min-h-[550px] h-[550px] relative">
                     <AgencyMetrics />
                   </div>
@@ -326,7 +316,6 @@ const Agents = () => {
       
       <Footer />
       
-      {/* Background ambient effects */}
       <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
         <motion.div
           className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full"

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
-import GlassMorphism from '@/components/ui/GlassMorphism';
+import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { 
   Select,
   SelectContent,

@@ -2,7 +2,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { LucideIcon } from 'lucide-react';
-import GlassMorphism from '../ui/GlassMorphism';
+import { GlassMorphism } from '../ui/GlassMorphism';
 import InfoChip from '../ui/InfoChip';
 import TransitionWrapper from '../ui/TransitionWrapper';
 import { usePerformanceData } from '@/hooks/usePerformanceData';

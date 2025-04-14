@@ -15,10 +15,11 @@ const WelcomeHeader: React.FC = () => {
     <TransitionWrapper>
       <GlassMorphism 
         className="p-5 rounded-xl border-flow-accent/30 mb-4 relative overflow-hidden"
-        style={{
-          backgroundImage: 'linear-gradient(135deg, rgba(139, 92, 246, 0.07) 0%, rgba(217, 70, 239, 0.05) 100%)',
-        }}
+        variant="default"
       >
+        {/* We'll move the gradient to a className instead of inline style */}
+        <div className="absolute inset-0 bg-gradient-to-br from-flow-accent/7 to-purple-500/5 z-0"></div>
+        
         {/* Animated background elements */}
         <motion.div 
           className="absolute top-0 right-0 w-64 h-64 bg-flow-accent/5 rounded-full blur-3xl"

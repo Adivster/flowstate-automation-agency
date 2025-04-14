@@ -18,7 +18,7 @@ import {
   Area
 } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import GlassMorphism from '@/components/ui/GlassMorphism';
+import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 // Sample data for charts

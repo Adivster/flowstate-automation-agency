@@ -972,10 +972,10 @@ const Workflows = () => {
                                   >
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-4 ${
                                       isCompleted
-                                        ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                                        : isInProgress
-                                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 animate-pulse'
-                                          : 'bg-flow-muted/20 text-flow-foreground/40 border border-flow-border/30'
+                                        ? 'bg-green-500/20 text-green-400' :
+                                      isInProgress
+                                        ? 'bg-blue-500/20 text-blue-400' :
+                                      'bg-flow-muted/20 text-flow-foreground/40 border border-flow-border/30'
                                     }`}>
                                       {getStepStatusIcon(step.status)}
                                     </div>

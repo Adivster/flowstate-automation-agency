@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -13,19 +12,15 @@ import { Button } from '@/components/ui/button';
 const Index: React.FC = () => {
   const [theme, setTheme] = useState<'default' | 'retro' | 'vapor' | 'tactical'>('default');
   
-  // Function to switch themes
   const switchTheme = (newTheme: 'default' | 'retro' | 'vapor' | 'tactical') => {
     setTheme(newTheme);
-    // This would normally apply different CSS classes or variables
   };
   
   return (
     <div className={`min-h-screen flex flex-col bg-flow-background circuit-background ${theme}`}>
       <Navbar />
       
-      {/* Main Content */}
       <main className="flex-1 mt-8 px-4 sm:px-6 pb-12 overflow-hidden relative">
-        {/* Ambient background effects */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
           <motion.div
             className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full"
@@ -46,10 +41,8 @@ const Index: React.FC = () => {
             transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
           />
           
-          {/* Grid lines */}
           <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
           
-          {/* Particle drift effect */}
           <div className="absolute inset-0">
             {[...Array(20)].map((_, i) => (
               <motion.div
@@ -132,11 +125,7 @@ const Index: React.FC = () => {
             </motion.div>
             
             <GlassMorphism 
-              className="rounded-2xl shadow-xl border-flow-border/30 scan-lines bg-flow-background/20 backdrop-blur-lg overflow-hidden"
-              style={{
-                boxShadow: "0 10px 30px -10px rgba(139, 92, 246, 0.3)",
-                backgroundImage: "radial-gradient(circle at top right, rgba(139, 92, 246, 0.05), transparent 500px)"
-              }}
+              className="rounded-2xl shadow-xl border-flow-border/30 scan-lines bg-flow-background/20 backdrop-blur-lg overflow-hidden bg-glassmorphism-gradient"
             >
               <AgencyDashboard />
             </GlassMorphism>

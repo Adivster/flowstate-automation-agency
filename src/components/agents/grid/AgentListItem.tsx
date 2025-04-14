@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { LucideIcon, Play, Pause, MessageCircle, MoreHorizontal, AlertTriangle, Activity, Zap, Settings, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import GlassMorphism from '@/components/ui/GlassMorphism';
+import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { motion } from 'framer-motion';
 import { 
   DropdownMenu,
@@ -50,10 +49,9 @@ const AgentListItem: React.FC<AgentListItemProps> = ({
     return 'bg-gray-500 text-white';
   };
   
-  // Apply division-specific glow effect 
   const getGlowStyle = () => {
     const glowColor = colors.text.replace('text-', '');
-    let colorValue = '#8b5cf6'; // Default purple
+    let colorValue = '#8b5cf6';
 
     if (glowColor.includes('green')) colorValue = '#22c55e';
     else if (glowColor.includes('blue')) colorValue = '#3b82f6';
@@ -209,7 +207,6 @@ const AgentListItem: React.FC<AgentListItemProps> = ({
           </div>
         </div>
         
-        {/* Animated progress bar at the bottom */}
         {agent.status === 'working' && (
           <div className="mt-3 h-1 w-full bg-black/30 rounded-full overflow-hidden">
             <motion.div

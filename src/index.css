@@ -123,7 +123,7 @@
     /* Status colors - dark mode */
     --flow-success: 142 76% 45%;
     --flow-warning: 38 92% 50%;
-    --flow-error: 0 84% 60%;
+    --flow-error: 0 70% 50%;
     --flow-info: 199 89% 48%;
   }
 }
@@ -782,4 +782,14 @@
   100% {
     text-shadow: 0 0 4px rgba(52, 211, 153, 0.5);
   }
+}
+
+/* Glassmorphism gradients */
+.bg-glassmorphism-gradient {
+  background-image: radial-gradient(circle at top right, rgba(139, 92, 246, 0.05), transparent 500px);
+  box-shadow: 0 10px 30px -10px rgba(139, 92, 246, 0.3);
+}
+
+.bg-welcome-header-gradient {
+  background-image: linear-gradient(135deg, rgba(139, 92, 246, 0.07) 0%, rgba(217, 70, 239, 0.05) 100%);
 }
