@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { ZoomIn, ZoomOut, Maximize, Settings } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ZoomableViewProps {
@@ -123,41 +123,9 @@ const ZoomableView: React.FC<ZoomableViewProps> = ({
         {children}
       </motion.div>
       
-      {/* Only show zoom controls if explicitly enabled via props */}
+      {/* Remove duplicate zoom controls - only Settings button remains */}
       {showControls && (
-        <div className="absolute bottom-4 right-4 z-[100] flex flex-col gap-2">
-          <div className="bg-black/60 backdrop-blur-md p-1 rounded-lg border border-white/10 flex flex-col gap-1">
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-8 w-8 bg-white/10 hover:bg-white/20 text-white"
-              onClick={onZoomIn}
-              disabled={constrainedZoom >= maxZoom}
-            >
-              <ZoomIn className="h-4 w-4" />
-            </Button>
-            
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-8 w-8 bg-white/10 hover:bg-white/20 text-white"
-              onClick={onZoomOut}
-              disabled={constrainedZoom <= minZoom}
-            >
-              <ZoomOut className="h-4 w-4" />
-            </Button>
-            
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-8 w-8 bg-white/10 hover:bg-white/20 text-white"
-              onClick={onReset}
-            >
-              <Maximize className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Settings/Customize Button - Separated to avoid overlapping */}
+        <div className="absolute bottom-4 right-4 z-[100]">
           <Popover>
             <PopoverTrigger asChild>
               <Button

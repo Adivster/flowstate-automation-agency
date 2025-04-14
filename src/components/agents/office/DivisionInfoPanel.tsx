@@ -85,7 +85,7 @@ const DivisionInfoPanel: React.FC<DivisionInfoPanelProps> = ({
       initial={{ y: 50, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 50, opacity: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.2 }}
     >
       <div className={`flex justify-between items-center p-2 ${division.borderColor ? `bg-[${division.borderColor}]/20` : 'bg-flow-accent/10'} border-b border-flow-border/30`}>
         <h3 className="text-white text-sm font-medium flex items-center">

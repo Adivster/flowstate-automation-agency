@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -470,7 +469,7 @@ const OfficeFloorPlan: React.FC = () => {
           )}
         </div>
         
-        {/* Zoom Controls - Only one set of controls */}
+        {/* Centralized Zoom Controls - only one set of controls */}
         <div className="absolute bottom-3 right-3 flex items-center gap-2 z-40">
           <Button
             size="sm"
