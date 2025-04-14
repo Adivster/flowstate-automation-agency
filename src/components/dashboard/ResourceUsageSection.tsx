@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { BarChart, ChevronDown, Activity, PieChart as PieChartIcon, Laptop, Server, Workflow, Zap, Download, Share2, Maximize2 } from 'lucide-react';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
@@ -208,26 +209,28 @@ const ResourceUsageSection: React.FC = () => {
                     transition={{ duration: 0.3 }}
                     className="h-[260px]"
                   >
-                    <TabsContent value="division" className="h-full mt-0">
-                      <PieChart 
-                        data={divisionResourceData} 
-                        donut={true} 
-                        gradient={true}
-                        interactive={true}
-                        colors={['#6366f1', '#f97316', '#0ea5e9', '#8b5cf6', '#22c55e']}
-                        onClick={(data, index) => handleDataPointClick(data, index, "Division Resource Allocation")}
-                      />
-                    </TabsContent>
-                    <TabsContent value="performance" className="h-full mt-0">
-                      <PieChart 
-                        data={resourceTypeData} 
-                        donut={true} 
-                        gradient={true}
-                        interactive={true}
-                        colors={['#22c55e', '#f59e0b', '#0ea5e9', '#8b5cf6']}
-                        onClick={(data, index) => handleDataPointClick(data, index, "Resource Type Allocation")}
-                      />
-                    </TabsContent>
+                    <Tabs value={activeTab}>
+                      <TabsContent value="division" className="h-full mt-0">
+                        <PieChart 
+                          data={divisionResourceData} 
+                          donut={true} 
+                          gradient={true}
+                          interactive={true}
+                          colors={['#6366f1', '#f97316', '#0ea5e9', '#8b5cf6', '#22c55e']}
+                          onClick={(data, index) => handleDataPointClick(data, index, "Division Resource Allocation")}
+                        />
+                      </TabsContent>
+                      <TabsContent value="performance" className="h-full mt-0">
+                        <PieChart 
+                          data={resourceTypeData} 
+                          donut={true} 
+                          gradient={true}
+                          interactive={true}
+                          colors={['#22c55e', '#f59e0b', '#0ea5e9', '#8b5cf6']}
+                          onClick={(data, index) => handleDataPointClick(data, index, "Resource Type Allocation")}
+                        />
+                      </TabsContent>
+                    </Tabs>
                   </motion.div>
 
                   <div className="mt-2">
