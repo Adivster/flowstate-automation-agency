@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -339,6 +340,10 @@ const OfficeFloorPlan: React.FC = () => {
     setZoomLevel(prev => Math.max(prev - 0.1, 0.8));
   };
   
+  const handleResetZoom = () => {
+    setZoomLevel(1);
+  };
+  
   // Loading state
   if (!isLoaded) {
     return (
@@ -372,8 +377,13 @@ const OfficeFloorPlan: React.FC = () => {
           <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-blue-500/5 blur-3xl"></div>
         </div>
         
-        {/* Use ZoomableView for enhanced interaction */}
-        <ZoomableView zoomLevel={zoomLevel}>
+        {/* Use ZoomableView without its own controls */}
+        <ZoomableView 
+          zoomLevel={zoomLevel}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onReset={handleResetZoom}
+        >
           {/* Data transmission lines */}
           <DataTransmissionManager transmissions={dataTransmissions} />
           
@@ -460,12 +470,12 @@ const OfficeFloorPlan: React.FC = () => {
           )}
         </div>
         
-        {/* Zoom Controls */}
+        {/* Zoom Controls - Only one set of controls */}
         <div className="absolute bottom-3 right-3 flex items-center gap-2 z-40">
           <Button
             size="sm"
             variant="outline"
-            className="h-8 w-8 p-0 bg-gray-800/70 backdrop-blur-sm text-white border-gray-600 hover:bg-gray-700/80"
+            className="h-8 w-8 p-0 bg-gray-800/80 backdrop-blur-md text-white border-gray-600 hover:bg-gray-700/80"
             onClick={handleZoomOut}
           >
             <ZoomOut className="h-3.5 w-3.5" />
@@ -474,8 +484,8 @@ const OfficeFloorPlan: React.FC = () => {
           <Button 
             size="sm"
             variant="outline"
-            className="h-8 bg-gray-800/70 backdrop-blur-sm text-white border-gray-600 hover:bg-gray-700/80 px-2"
-            onClick={() => setZoomLevel(1)}
+            className="h-8 bg-gray-800/80 backdrop-blur-md text-white border-gray-600 hover:bg-gray-700/80 px-2 font-mono"
+            onClick={handleResetZoom}
           >
             {Math.round(zoomLevel * 100)}%
           </Button>
@@ -483,7 +493,7 @@ const OfficeFloorPlan: React.FC = () => {
           <Button
             size="sm"
             variant="outline"
-            className="h-8 w-8 p-0 bg-gray-800/70 backdrop-blur-sm text-white border-gray-600 hover:bg-gray-700/80"
+            className="h-8 w-8 p-0 bg-gray-800/80 backdrop-blur-md text-white border-gray-600 hover:bg-gray-700/80"
             onClick={handleZoomIn}
           >
             <ZoomIn className="h-3.5 w-3.5" />

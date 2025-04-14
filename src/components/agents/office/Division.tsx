@@ -79,6 +79,16 @@ const Division: React.FC<DivisionProps> = ({
   
   const Icon = division.icon;
   
+  // Enhanced styling for selection state
+  const getBorderEffect = () => {
+    if (isSelected) {
+      return `0 0 0 2px ${hexColors.primary}, 0 0 30px ${hexColors.shadow}, inset 0 0 20px ${hexColors.shadow}`;
+    } else if (isHovered || isPulsing) {
+      return `0 0 15px ${hexColors.shadow}`;
+    }
+    return `0 0 5px ${hexColors.shadow}`;
+  };
+  
   return (
     <motion.div
       className="absolute rounded-xl border overflow-hidden cursor-pointer transition-all"
@@ -89,11 +99,7 @@ const Division: React.FC<DivisionProps> = ({
         height: `${division.position.height}%`,
         backgroundColor: divStyle.bg,
         borderColor: divStyle.border,
-        boxShadow: isSelected 
-          ? `0 0 30px ${hexColors.shadow}, inset 0 0 20px ${hexColors.shadow}` 
-          : isHovered || isPulsing
-          ? `0 0 15px ${hexColors.shadow}` 
-          : `0 0 5px ${hexColors.shadow}`,
+        boxShadow: getBorderEffect(),
         zIndex: getZIndex(),
         backgroundImage: divStyle.pattern,
       }}
@@ -104,14 +110,10 @@ const Division: React.FC<DivisionProps> = ({
       animate={{
         opacity: 1,
         scale: 1,
-        boxShadow: isSelected 
-          ? `0 0 30px ${hexColors.shadow}, inset 0 0 20px ${hexColors.shadow}` 
-          : isHovered || isPulsing
-          ? `0 0 15px ${hexColors.shadow}` 
-          : `0 0 5px ${hexColors.shadow}`,
+        boxShadow: getBorderEffect(),
       }}
       transition={{
-        duration: 0.5,
+        duration: 0.4,
         boxShadow: {
           duration: 2,
           repeat: isPulsing ? Infinity : 0,
@@ -143,6 +145,7 @@ const Division: React.FC<DivisionProps> = ({
         }
       }}
     >
+      {/* Division content */}
       <div className="h-full w-full p-4 flex flex-col justify-between">
         <div className="flex items-start justify-between">
           <div className="flex items-center">
@@ -177,7 +180,7 @@ const Division: React.FC<DivisionProps> = ({
               className="rounded-full w-12 h-12 flex items-center justify-center"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.3 }}
+              transition={{ delay: 0.1, duration: 0.2 }}
               style={{ 
                 boxShadow: `0 0 15px ${hexColors.shadow}`,
                 background: `linear-gradient(135deg, ${hexColors.primary}30, ${hexColors.primary}10)`,

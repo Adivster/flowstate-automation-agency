@@ -16,7 +16,9 @@ import {
   Minimize2,
   Maximize2,
   Headphones,
-  Brain
+  Brain,
+  Award,
+  ExternalLink
 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -112,11 +114,11 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
     >
       <AnimatePresence>
         <motion.div
-          className={`absolute right-0 top-0 ${minimized ? 'w-64 h-12' : 'w-full md:w-96 h-full'} bg-black/80 border-l ${borderClass} backdrop-blur-xl z-50 overflow-hidden transition-all duration-300`}
+          className={`absolute right-0 top-0 ${minimized ? 'w-64 h-12' : 'w-full md:w-96 h-full'} bg-black/80 border-l ${borderClass} backdrop-blur-xl z-50 overflow-hidden`}
           initial={{ x: '100%', opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: '100%', opacity: 0 }}
-          transition={{ type: 'spring', damping: 20 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 25 }} // Faster animation
           onClick={(e) => e.stopPropagation()}
           style={{ 
             boxShadow: `0 0 25px ${hexColors.shadow}`,
@@ -129,9 +131,15 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
               boxShadow: `0 2px 10px ${hexColors.shadow}`
             }}
           >
-            <h3 className={`text-lg font-medium ${textClass} drop-shadow-md`}>
-              {selectedDivision ? selectedDivisionObject?.name : selectedAgentObject?.name}
-            </h3>
+            <div className="flex items-center gap-2">
+              <div 
+                className="w-2 h-2 rounded-full animate-pulse"
+                style={{ backgroundColor: hexColors.primary }}
+              />
+              <h3 className={`text-lg font-medium ${textClass} drop-shadow-md`}>
+                {selectedDivision ? selectedDivisionObject?.name : selectedAgentObject?.name}
+              </h3>
+            </div>
             <div className="flex items-center space-x-2">
               <Button variant="ghost" size="icon" onClick={toggleMinimize} className="h-7 w-7 hover:bg-white/10 text-white/90">
                 {minimized ? <Maximize2 className="h-3.5 w-3.5" /> : <Minimize2 className="h-3.5 w-3.5" />}
@@ -144,27 +152,71 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
           
           {!minimized && (
             <div className="p-4 h-[calc(100%-44px)] overflow-y-auto custom-scrollbar">
+              {/* PROMINENT CONTACT SECTION - Always visible at the top */}
+              <div 
+                className="bg-black/40 backdrop-blur-sm border rounded-lg p-3 mb-4"
+                style={{ 
+                  borderColor: hexColors.primary,
+                  boxShadow: `0 0 15px ${hexColors.shadow}`,
+                  background: `linear-gradient(to bottom right, ${hexColors.primary}30, rgba(0,0,0,0.6))`
+                }}
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <Headphones 
+                    className="h-5 w-5"
+                    style={{ color: hexColors.primary }}
+                  />
+                  <h3 className="font-medium text-white">
+                    {selectedDivision ? "Contact Division Manager" : "Contact Agent"}
+                  </h3>
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button 
+                    className="flex-1 bg-white/20 hover:bg-white/30 text-white border-white/20"
+                    onClick={() => handleAction('Message')}
+                  >
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Message
+                  </Button>
+                  <Button 
+                    className="flex-1"
+                    style={{ 
+                      background: `linear-gradient(to right, ${hexColors.primary}90, ${hexColors.primary}70)`,
+                      borderColor: `${hexColors.primary}40`,
+                    }}
+                    onClick={() => handleAction('Call')}
+                  >
+                    <Headphones className="h-4 w-4 mr-2" />
+                    Call
+                  </Button>
+                </div>
+              </div>
+              
               <Tabs
                 value={activeTab}
                 onValueChange={setActiveTab}
                 className="w-full"
               >
-                <TabsList className={`grid grid-cols-3 mb-4 bg-black/50 border ${borderClass}/50`}>
+                <TabsList 
+                  className="grid grid-cols-3 mb-4 bg-black/50 border border-white/10 rounded-lg overflow-hidden p-0"
+                  style={{ boxShadow: `0 0 10px rgba(0,0,0,0.5)` }}
+                >
                   <TabsTrigger 
                     value="overview" 
-                    className={`data-[state=active]:${textClass} data-[state=active]:shadow-[inset_0_-1px_0] data-[state=active]:shadow-current data-[state=active]:bg-black/30`}
+                    className={`rounded-none border-r border-white/10 data-[state=active]:${textClass} data-[state=active]:shadow-[inset_0_-2px_0] data-[state=active]:shadow-current data-[state=active]:bg-black/30 py-2`}
                   >
                     Overview
                   </TabsTrigger>
                   <TabsTrigger 
                     value="stats" 
-                    className={`data-[state=active]:${textClass} data-[state=active]:shadow-[inset_0_-1px_0] data-[state=active]:shadow-current data-[state=active]:bg-black/30`}
+                    className={`rounded-none border-r border-white/10 data-[state=active]:${textClass} data-[state=active]:shadow-[inset_0_-2px_0] data-[state=active]:shadow-current data-[state=active]:bg-black/30 py-2`}
                   >
                     Stats
                   </TabsTrigger>
                   <TabsTrigger 
                     value="actions" 
-                    className={`data-[state=active]:${textClass} data-[state=active]:shadow-[inset_0_-1px_0] data-[state=active]:shadow-current data-[state=active]:bg-black/30`}
+                    className={`rounded-none data-[state=active]:${textClass} data-[state=active]:shadow-[inset_0_-2px_0] data-[state=active]:shadow-current data-[state=active]:bg-black/30 py-2`}
                   >
                     Actions
                   </TabsTrigger>
@@ -185,13 +237,13 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                       </div>
                       
                       <div className="grid grid-cols-2 gap-2">
-                        <div className="bg-black/30 border border-flow-border/30 rounded-md p-2">
+                        <div className="bg-black/30 border border-white/20 rounded-md p-2">
                           <div className="text-xs text-flow-foreground/60">Efficiency</div>
                           <div className="text-lg font-medium mt-1 font-mono">
                             {performanceData.efficiency}%
                           </div>
                         </div>
-                        <div className="bg-black/30 border border-flow-border/30 rounded-md p-2">
+                        <div className="bg-black/30 border border-white/20 rounded-md p-2">
                           <div className="text-xs text-flow-foreground/60">Workload</div>
                           <div className="text-lg font-medium mt-1 font-mono">
                             {performanceData.resourceUtilization}%
@@ -199,41 +251,40 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                         </div>
                       </div>
                       
-                      {/* Contact Division Manager - Prominent Section */}
+                      {/* PROMINENT INSIGHTS SECTION */}
                       <div 
-                        className="bg-black/40 border rounded-lg p-3"
+                        className="bg-black/40 backdrop-blur-sm border rounded-lg p-3"
                         style={{ 
                           borderColor: hexColors.primary,
-                          boxShadow: `0 0 15px ${hexColors.shadow}` 
+                          boxShadow: `0 0 15px ${hexColors.shadow}`,
+                          background: `linear-gradient(to bottom right, ${hexColors.primary}30, rgba(0,0,0,0.6))`
                         }}
                       >
-                        <div className="flex items-center gap-2 mb-3">
-                          <Headphones className={`h-5 w-5 ${textClass}`} />
-                          <h3 className="font-medium text-white">Division Manager</h3>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Brain 
+                            className="h-5 w-5"
+                            style={{ color: hexColors.primary }}
+                          />
+                          <h3 className="font-medium text-white">Division Insights</h3>
                         </div>
                         
-                        <div className="flex gap-2">
-                          <Button 
-                            className="flex-1 bg-white/10 hover:bg-white/20 text-white border-white/20"
-                            onClick={() => handleAction('Message')}
-                            size="sm"
-                          >
-                            <MessageCircle className="h-4 w-4 mr-1" />
-                            Message
-                          </Button>
-                          <Button 
-                            className="flex-1 bg-white/10 hover:bg-white/20 text-white border-white/20"
-                            onClick={() => handleAction('Call')}
-                            size="sm"
-                          >
-                            <Headphones className="h-4 w-4 mr-1" />
-                            Call
-                          </Button>
-                        </div>
+                        <Button 
+                          className="w-full text-white font-medium border border-white/20 mt-1"
+                          style={{ 
+                            background: `linear-gradient(to right, ${hexColors.primary}90, ${hexColors.primary}70)`,
+                          }}
+                          onClick={() => handleAction('GetInsights')}
+                        >
+                          <Zap className="h-4 w-4 mr-2" />
+                          Get Division Insights
+                        </Button>
                       </div>
                       
-                      <div className="bg-black/30 border border-flow-border/20 rounded-md p-3">
-                        <div className="text-sm font-medium mb-2">Performance Trend</div>
+                      <div className="bg-black/30 border border-white/20 rounded-md p-3">
+                        <div className="text-sm font-medium mb-2 flex items-center">
+                          <BarChart2 className="h-4 w-4 mr-1 text-white/70" />
+                          <span>Performance Trend</span>
+                        </div>
                         <div className="h-28">
                           <AreaChart
                             data={performanceData.historicalData.taskCompletion}
@@ -248,52 +299,46 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                         </div>
                       </div>
                       
-                      {/* Division Insights - Prominent Section */}
-                      <div 
-                        className="bg-black/40 border rounded-lg p-3"
-                        style={{ 
-                          borderColor: hexColors.primary,
-                          boxShadow: `0 0 15px ${hexColors.shadow}` 
-                        }}
-                      >
-                        <div className="flex items-center gap-2 mb-2">
-                          <Brain className={`h-5 w-5 ${textClass}`} />
-                          <h3 className="font-medium text-white">Division Insights</h3>
-                        </div>
-                        
-                        <Button 
-                          className={`w-full ${headerBgClass} hover:opacity-90 border border-white/10 text-white`}
-                          style={{ 
-                            background: `linear-gradient(to right, ${hexColors.primary}60, ${hexColors.primary}40)`,
-                          }}
-                          onClick={() => handleAction('GetInsights')}
-                        >
-                          <Zap className="h-4 w-4 mr-1" />
-                          Get Division Insights
-                        </Button>
-                      </div>
-                      
                       <div className="space-y-2">
-                        <div className="text-sm font-medium">Division Agents</div>
+                        <div className="text-sm font-medium flex items-center">
+                          <Award className="h-4 w-4 mr-1 text-white/70" />
+                          <span>Top Performing Agents</span>
+                        </div>
                         <div className="space-y-1.5 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
-                          {divisionAgents.map(agent => (
+                          {divisionAgents.sort((a, b) => b.efficiency - a.efficiency).slice(0, 3).map((agent, index) => (
                             <div 
                               key={agent.id}
-                              className="flex items-center p-2 hover:bg-white/10 rounded-md cursor-pointer"
+                              className="flex items-center p-2 hover:bg-white/10 rounded-md cursor-pointer transition-colors"
                               style={{
-                                boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.1)'
+                                boxShadow: 'inset 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                                background: `linear-gradient(to right, rgba(0,0,0,0.2), ${hexColors.primary}10)`
                               }}
                             >
-                              <div className={`w-2 h-2 rounded-full mr-2 ${
-                                agent.status === 'working' ? 'bg-green-500' : 
-                                agent.status === 'paused' ? 'bg-amber-500' : 
-                                agent.status === 'error' ? 'bg-red-500' : 
-                                'bg-gray-500'
-                              }`}></div>
+                              <div 
+                                className={`w-5 h-5 rounded-full mr-2 flex items-center justify-center text-xs font-medium`}
+                                style={{ 
+                                  backgroundColor: index === 0 ? '#ffc107' : index === 1 ? '#9e9e9e' : '#cd7f32',
+                                  color: '#000'
+                                }}
+                              >
+                                {index+1}
+                              </div>
                               <div className="text-sm">{agent.name}</div>
-                              <div className="text-xs text-flow-foreground/60 ml-auto">{agent.status}</div>
+                              <div className="text-xs ml-auto font-mono flex items-center">
+                                {agent.efficiency}%
+                                <div className="h-1.5 w-1.5 rounded-full bg-green-500 ml-1.5"></div>
+                              </div>
                             </div>
                           ))}
+                          
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="w-full text-xs text-white/70 hover:text-white flex items-center justify-center mt-1"
+                          >
+                            View All Agents 
+                            <ExternalLink className="h-3 w-3 ml-1" />
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -318,47 +363,43 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                         <div className="text-sm">{selectedAgentObject.role || 'Unknown Role'}</div>
                       </div>
                       
-                      {/* Contact Agent - Prominent Section */}
+                      {/* PROMINENT AGENT INSIGHTS SECTION */}
                       <div 
-                        className="bg-black/40 border rounded-lg p-3"
+                        className="bg-black/40 backdrop-blur-sm border rounded-lg p-3"
                         style={{ 
                           borderColor: hexColors.primary,
-                          boxShadow: `0 0 15px ${hexColors.shadow}` 
+                          boxShadow: `0 0 15px ${hexColors.shadow}`,
+                          background: `linear-gradient(to bottom right, ${hexColors.primary}30, rgba(0,0,0,0.6))`
                         }}
                       >
-                        <div className="flex items-center gap-2 mb-3">
-                          <Headphones className={`h-5 w-5 ${textClass}`} />
-                          <h3 className="font-medium text-white">Contact Agent</h3>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Brain 
+                            className="h-5 w-5"
+                            style={{ color: hexColors.primary }}
+                          />
+                          <h3 className="font-medium text-white">Agent Insights</h3>
                         </div>
                         
-                        <div className="flex gap-2">
-                          <Button 
-                            className="flex-1 bg-white/10 hover:bg-white/20 text-white border-white/20"
-                            onClick={() => handleAction('Message')}
-                            size="sm"
-                          >
-                            <MessageCircle className="h-4 w-4 mr-1" />
-                            Message
-                          </Button>
-                          <Button 
-                            className="flex-1 bg-white/10 hover:bg-white/20 text-white border-white/20"
-                            onClick={() => handleAction('Call')}
-                            size="sm"
-                          >
-                            <Headphones className="h-4 w-4 mr-1" />
-                            Call
-                          </Button>
-                        </div>
+                        <Button 
+                          className="w-full text-white font-medium border border-white/20 mt-1"
+                          style={{ 
+                            background: `linear-gradient(to right, ${hexColors.primary}90, ${hexColors.primary}70)`,
+                          }}
+                          onClick={() => handleAction('GetAgentInsights')}
+                        >
+                          <Zap className="h-4 w-4 mr-2" />
+                          Get Agent Insights
+                        </Button>
                       </div>
                       
                       <div className="grid grid-cols-2 gap-2">
-                        <div className="bg-black/30 border border-flow-border/30 rounded-md p-2">
+                        <div className="bg-black/30 border border-white/20 rounded-md p-2">
                           <div className="text-xs text-flow-foreground/60">Efficiency</div>
                           <div className="text-lg font-medium mt-1 font-mono">
                             {selectedAgentObject.efficiency || 0}%
                           </div>
                         </div>
-                        <div className="bg-black/30 border border-flow-border/30 rounded-md p-2">
+                        <div className="bg-black/30 border border-white/20 rounded-md p-2">
                           <div className="text-xs text-flow-foreground/60">Last Active</div>
                           <div className="text-sm font-medium mt-1">
                             {selectedAgentObject.lastActive || 'Unknown'}
@@ -367,19 +408,19 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                       </div>
                       
                       <div className="flex gap-2">
-                        <div className="flex-1 bg-black/30 border border-flow-border/20 rounded-md p-2 text-center">
-                          <div className="text-2xl font-bold text-green-400">
+                        <div className="flex-1 bg-black/30 border border-white/10 rounded-md p-2 text-center">
+                          <div className="text-2xl font-bold" style={{ color: hexColors.primary }}>
                             {Math.round(Math.random() * 200) + 50}
                           </div>
                           <div className="text-xs text-flow-foreground/60">Completed Tasks</div>
                         </div>
-                        <div className="flex-1 bg-black/30 border border-flow-border/20 rounded-md p-2 text-center">
+                        <div className="flex-1 bg-black/30 border border-white/10 rounded-md p-2 text-center">
                           <div className="text-2xl font-bold text-amber-400">
                             {Math.round(Math.random() * 10) + 2}
                           </div>
                           <div className="text-xs text-flow-foreground/60">Current Tasks</div>
                         </div>
-                        <div className="flex-1 bg-black/30 border border-flow-border/20 rounded-md p-2 text-center">
+                        <div className="flex-1 bg-black/30 border border-white/10 rounded-md p-2 text-center">
                           <div className="text-2xl font-bold text-blue-400">
                             {Math.round(Math.random() * 5)}
                           </div>
@@ -387,34 +428,12 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                         </div>
                       </div>
                       
-                      {/* Agent Insights - Prominent Section */}
-                      <div 
-                        className="bg-black/40 border rounded-lg p-3"
-                        style={{ 
-                          borderColor: hexColors.primary,
-                          boxShadow: `0 0 15px ${hexColors.shadow}` 
-                        }}
-                      >
-                        <div className="flex items-center gap-2 mb-2">
-                          <Brain className={`h-5 w-5 ${textClass}`} />
-                          <h3 className="font-medium text-white">Agent Insights</h3>
+                      <div className="bg-black/30 border border-white/10 rounded-md p-2">
+                        <div className="mb-1 text-sm flex items-center">
+                          <Clock className="h-4 w-4 mr-1 text-white/70" />
+                          Current Status
                         </div>
-                        
-                        <Button 
-                          className={`w-full ${headerBgClass} hover:opacity-90 border border-white/10 text-white`}
-                          style={{ 
-                            background: `linear-gradient(to right, ${hexColors.primary}60, ${hexColors.primary}40)`,
-                          }}
-                          onClick={() => handleAction('GetAgentInsights')}
-                        >
-                          <Zap className="h-4 w-4 mr-1" />
-                          Get Agent Insights
-                        </Button>
-                      </div>
-                      
-                      <div className="bg-black/30 border border-flow-border/20 rounded-md p-2">
-                        <div className="mb-1 text-sm">Current Status</div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 p-2 rounded bg-black/20">
                           {selectedAgentObject.status === 'working' && (
                             <>
                               <CheckCircle className="h-4 w-4 text-green-500" />
@@ -449,8 +468,11 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                 <TabsContent value="stats" className="space-y-4">
                   {selectedDivision && (
                     <>
-                      <div className="bg-black/30 border border-flow-border/20 rounded-md p-3">
-                        <div className="text-sm font-medium mb-2">Resource Utilization</div>
+                      <div className="bg-black/30 border border-white/10 rounded-md p-3">
+                        <div className="text-sm font-medium mb-2 flex items-center">
+                          <BarChart2 className="h-4 w-4 mr-1 text-white/70" />
+                          <span>Resource Utilization</span>
+                        </div>
                         <div className="h-28">
                           <AreaChart
                             data={performanceData.historicalData.resource}
@@ -462,8 +484,11 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                         </div>
                       </div>
                       
-                      <div className="bg-black/30 border border-flow-border/20 rounded-md p-3">
-                        <div className="text-sm font-medium mb-2">Response Times</div>
+                      <div className="bg-black/30 border border-white/10 rounded-md p-3">
+                        <div className="text-sm font-medium mb-2 flex items-center">
+                          <Clock className="h-4 w-4 mr-1 text-white/70" />
+                          <span>Response Times</span>
+                        </div>
                         <div className="h-28">
                           <AreaChart
                             data={performanceData.historicalData.responseTime}
@@ -475,14 +500,32 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                         </div>
                       </div>
                       
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="bg-black/30 border border-flow-border/30 rounded-md p-3 text-center">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div 
+                          className="border rounded-md p-3 text-center"
+                          style={{ 
+                            background: `linear-gradient(to bottom, rgba(0,0,0,0.3), ${hexColors.primary}20)`,
+                            borderColor: `${hexColors.primary}40`,
+                            boxShadow: `0 3px 10px rgba(0,0,0,0.2), inset 0 1px 0 ${hexColors.primary}20`
+                          }}
+                        >
                           <div className="text-xs text-flow-foreground/60 mb-1">Avg. Response</div>
-                          <div className="text-lg font-medium">{performanceData.averageResponseTime}</div>
+                          <div className="text-xl font-medium" style={{ color: hexColors.primary }}>
+                            {performanceData.averageResponseTime}
+                          </div>
                         </div>
-                        <div className="bg-black/30 border border-flow-border/30 rounded-md p-3 text-center">
+                        <div 
+                          className="border rounded-md p-3 text-center"
+                          style={{ 
+                            background: `linear-gradient(to bottom, rgba(0,0,0,0.3), ${hexColors.primary}20)`,
+                            borderColor: `${hexColors.primary}40`,
+                            boxShadow: `0 3px 10px rgba(0,0,0,0.2), inset 0 1px 0 ${hexColors.primary}20`
+                          }}
+                        >
                           <div className="text-xs text-flow-foreground/60 mb-1">Uptime</div>
-                          <div className="text-lg font-medium">{performanceData.uptime}%</div>
+                          <div className="text-xl font-medium" style={{ color: hexColors.primary }}>
+                            {performanceData.uptime}%
+                          </div>
                         </div>
                       </div>
                     </>
@@ -490,8 +533,11 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                   
                   {selectedAgent && (
                     <>
-                      <div className="bg-black/30 border border-flow-border/20 rounded-md p-3">
-                        <div className="text-sm font-medium mb-2">Performance History</div>
+                      <div className="bg-black/30 border border-white/10 rounded-md p-3">
+                        <div className="text-sm font-medium mb-2 flex items-center">
+                          <BarChart2 className="h-4 w-4 mr-1 text-white/70" />
+                          <span>Performance History</span>
+                        </div>
                         <div className="h-32">
                           <AreaChart
                             data={[
@@ -506,7 +552,7 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                             showGrid={false}
                             showXAxis={true}
                             showYAxis={true}
-                            lineColor="#8b5cf6"
+                            lineColor={hexColors.primary}
                           />
                         </div>
                         <div className="text-xs text-center mt-1 text-flow-foreground/60">
@@ -515,15 +561,24 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                       </div>
                       
                       <div className="space-y-3">
-                        <div className="text-sm font-medium">Performance Metrics</div>
+                        <div className="text-sm font-medium flex items-center">
+                          <BarChart2 className="h-4 w-4 mr-1 text-white/70" />
+                          <span>Performance Metrics</span>
+                        </div>
                         
-                        <div className="space-y-2">
+                        <div 
+                          className="space-y-3 border rounded-md p-3"
+                          style={{
+                            background: 'rgba(0,0,0,0.2)',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                          }}
+                        >
                           <div>
                             <div className="flex justify-between text-xs mb-1">
                               <span>Task Completion Rate</span>
                               <span className="text-green-400">92%</span>
                             </div>
-                            <div className="h-1.5 bg-black/40 rounded-full overflow-hidden">
+                            <div className="h-2 bg-black/40 rounded-full overflow-hidden">
                               <div className="bg-green-500 h-full rounded-full" style={{ width: '92%' }}></div>
                             </div>
                           </div>
@@ -533,7 +588,7 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                               <span>Response Accuracy</span>
                               <span className="text-blue-400">87%</span>
                             </div>
-                            <div className="h-1.5 bg-black/40 rounded-full overflow-hidden">
+                            <div className="h-2 bg-black/40 rounded-full overflow-hidden">
                               <div className="bg-blue-500 h-full rounded-full" style={{ width: '87%' }}></div>
                             </div>
                           </div>
@@ -543,8 +598,14 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                               <span>Resource Efficiency</span>
                               <span className="text-purple-400">78%</span>
                             </div>
-                            <div className="h-1.5 bg-black/40 rounded-full overflow-hidden">
-                              <div className="bg-purple-500 h-full rounded-full" style={{ width: '78%' }}></div>
+                            <div className="h-2 bg-black/40 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full rounded-full" 
+                                style={{ 
+                                  width: '78%',
+                                  backgroundColor: hexColors.primary 
+                                }}
+                              ></div>
                             </div>
                           </div>
                           
@@ -553,7 +614,7 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                               <span>Learning Rate</span>
                               <span className="text-amber-400">95%</span>
                             </div>
-                            <div className="h-1.5 bg-black/40 rounded-full overflow-hidden">
+                            <div className="h-2 bg-black/40 rounded-full overflow-hidden">
                               <div className="bg-amber-500 h-full rounded-full" style={{ width: '95%' }}></div>
                             </div>
                           </div>
@@ -568,7 +629,7 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                   {selectedDivision && (
                     <div className="space-y-3">
                       <Button 
-                        className="w-full flex justify-between items-center bg-gradient-to-r hover:opacity-90 text-white border-white/10"
+                        className="w-full flex justify-between items-center text-white border-white/10"
                         style={{ 
                           backgroundImage: `linear-gradient(to right, ${hexColors.primary}50, ${hexColors.primary}30)`,
                           boxShadow: `0 3px 10px ${hexColors.shadow}`
@@ -659,7 +720,7 @@ const InfoPanelManager: React.FC<InfoPanelManagerProps> = ({
                       )}
                       
                       <Button 
-                        className="w-full flex justify-between items-center bg-gradient-to-r hover:opacity-90 text-white border-white/10"
+                        className="w-full flex justify-between items-center text-white border-white/10"
                         style={{ 
                           backgroundImage: `linear-gradient(to right, ${hexColors.primary}50, ${hexColors.primary}30)`,
                           boxShadow: `0 3px 10px ${hexColors.shadow}`

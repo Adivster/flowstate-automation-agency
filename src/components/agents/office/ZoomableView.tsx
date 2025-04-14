@@ -15,6 +15,7 @@ interface ZoomableViewProps {
   onZoomIn?: () => void;
   onZoomOut?: () => void;
   onReset?: () => void;
+  showControls?: boolean;
 }
 
 /**
@@ -29,7 +30,8 @@ const ZoomableView: React.FC<ZoomableViewProps> = ({
   initialPanOffset = { x: 0, y: 0 },
   onZoomIn,
   onZoomOut,
-  onReset
+  onReset,
+  showControls = false
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isPanning, setIsPanning] = useState(false);
@@ -115,87 +117,89 @@ const ZoomableView: React.FC<ZoomableViewProps> = ({
         }}
         transition={{
           type: 'tween',
-          duration: isPanning ? 0 : 0.3,
+          duration: isPanning ? 0 : 0.2, // Reduced for faster response
         }}
       >
         {children}
       </motion.div>
       
-      {/* Zoom Controls - Positioned at bottom right with higher z-index */}
-      <div className="absolute bottom-4 right-4 z-[100] flex flex-col gap-2">
-        <div className="bg-black/60 backdrop-blur-md p-1 rounded-lg border border-white/10 flex flex-col gap-1">
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-8 w-8 bg-white/10 hover:bg-white/20 text-white"
-            onClick={onZoomIn}
-            disabled={constrainedZoom >= maxZoom}
-          >
-            <ZoomIn className="h-4 w-4" />
-          </Button>
-          
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-8 w-8 bg-white/10 hover:bg-white/20 text-white"
-            onClick={onZoomOut}
-            disabled={constrainedZoom <= minZoom}
-          >
-            <ZoomOut className="h-4 w-4" />
-          </Button>
-          
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-8 w-8 bg-white/10 hover:bg-white/20 text-white"
-            onClick={onReset}
-          >
-            <Maximize className="h-4 w-4" />
-          </Button>
-        </div>
-
-        {/* Settings/Customize Button - Separated to avoid overlapping */}
-        <Popover>
-          <PopoverTrigger asChild>
+      {/* Only show zoom controls if explicitly enabled via props */}
+      {showControls && (
+        <div className="absolute bottom-4 right-4 z-[100] flex flex-col gap-2">
+          <div className="bg-black/60 backdrop-blur-md p-1 rounded-lg border border-white/10 flex flex-col gap-1">
             <Button
               size="icon"
               variant="ghost"
-              className="h-8 w-8 bg-black/60 backdrop-blur-md hover:bg-white/20 text-white border border-white/10"
+              className="h-8 w-8 bg-white/10 hover:bg-white/20 text-white"
+              onClick={onZoomIn}
+              disabled={constrainedZoom >= maxZoom}
             >
-              <Settings className="h-4 w-4" />
+              <ZoomIn className="h-4 w-4" />
             </Button>
-          </PopoverTrigger>
-          <PopoverContent side="left" className="w-64 bg-black/60 backdrop-blur-lg border-white/10 text-white p-3">
-            <h4 className="font-medium mb-2">Display Settings</h4>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Show Agent Status</span>
-                <div className="w-8 h-4 bg-purple-900/50 rounded-full relative">
-                  <div className="absolute w-3 h-3 bg-purple-500 rounded-full top-0.5 right-0.5"></div>
+            
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8 bg-white/10 hover:bg-white/20 text-white"
+              onClick={onZoomOut}
+              disabled={constrainedZoom <= minZoom}
+            >
+              <ZoomOut className="h-4 w-4" />
+            </Button>
+            
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8 bg-white/10 hover:bg-white/20 text-white"
+              onClick={onReset}
+            >
+              <Maximize className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Settings/Customize Button - Separated to avoid overlapping */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 bg-black/60 backdrop-blur-md hover:bg-white/20 text-white border border-white/10"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent side="left" className="w-64 bg-black/60 backdrop-blur-lg border-white/10 text-white p-3">
+              <h4 className="font-medium mb-2">Display Settings</h4>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Show Agent Status</span>
+                  <div className="w-8 h-4 bg-purple-900/50 rounded-full relative">
+                    <div className="absolute w-3 h-3 bg-purple-500 rounded-full top-0.5 right-0.5"></div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Show Division Names</span>
+                  <div className="w-8 h-4 bg-purple-900/50 rounded-full relative">
+                    <div className="absolute w-3 h-3 bg-purple-500 rounded-full top-0.5 right-0.5"></div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Data Paths</span>
+                  <div className="w-8 h-4 bg-purple-900/50 rounded-full relative">
+                    <div className="absolute w-3 h-3 bg-purple-500 rounded-full top-0.5 right-0.5"></div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Animations</span>
+                  <div className="w-8 h-4 bg-purple-900/50 rounded-full relative">
+                    <div className="absolute w-3 h-3 bg-purple-500 rounded-full top-0.5 right-0.5"></div>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Show Division Names</span>
-                <div className="w-8 h-4 bg-purple-900/50 rounded-full relative">
-                  <div className="absolute w-3 h-3 bg-purple-500 rounded-full top-0.5 right-0.5"></div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Data Paths</span>
-                <div className="w-8 h-4 bg-purple-900/50 rounded-full relative">
-                  <div className="absolute w-3 h-3 bg-purple-500 rounded-full top-0.5 right-0.5"></div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Animations</span>
-                <div className="w-8 h-4 bg-purple-900/50 rounded-full relative">
-                  <div className="absolute w-3 h-3 bg-purple-500 rounded-full top-0.5 right-0.5"></div>
-                </div>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+      )}
     </div>
   );
 };
