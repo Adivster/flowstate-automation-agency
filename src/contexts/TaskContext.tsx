@@ -17,6 +17,10 @@ export interface Task {
   assignedTo: string;
   division: string;
   dueDate?: string;
+  tags?: string[];
+  attachments?: { name: string; url: string }[];
+  subtasks?: { id: string; title: string; completed: boolean }[];
+  comments?: { id: string; author: string; text: string; timestamp: string }[];
 }
 
 interface TaskContextType {
@@ -31,7 +35,7 @@ const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [tasks, setTasks] = useState<Task[]>([
-    // Sample task data - same as what was in TaskManagement component
+    // Sample task data - same as what was in TaskManagement component but with expanded properties
     {
       id: 'task-1',
       title: 'Data Analysis for Client XYZ',
@@ -44,6 +48,15 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       assignedTo: 'Data Analyst',
       division: 'research',
       dueDate: '2023-06-20T00:00:00Z',
+      tags: ['analysis', 'client-xyz', 'priority'],
+      subtasks: [
+        { id: 'st-1-1', title: 'Data collection', completed: true },
+        { id: 'st-1-2', title: 'Initial analysis', completed: true },
+        { id: 'st-1-3', title: 'Generate report', completed: false },
+      ],
+      comments: [
+        { id: 'c-1-1', author: 'Project Manager', text: 'Please prioritize the demographic insights', timestamp: '2023-06-16T08:30:00Z' }
+      ]
     },
     {
       id: 'task-2',
@@ -57,6 +70,12 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       assignedTo: 'Security Lead',
       division: 'compliance',
       dueDate: '2023-06-25T00:00:00Z',
+      tags: ['security', 'protocol', 'update'],
+      subtasks: [
+        { id: 'st-2-1', title: 'Review current protocols', completed: true },
+        { id: 'st-2-2', title: 'Develop updates', completed: false },
+        { id: 'st-2-3', title: 'Test implementation', completed: false },
+      ]
     },
     {
       id: 'task-3',
@@ -70,6 +89,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       assignedTo: 'Senior Dev',
       division: 'development',
       dueDate: '2023-06-18T00:00:00Z',
+      tags: ['api', 'integration', 'client-abc'],
     },
     {
       id: 'task-4',
@@ -96,6 +116,19 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       assignedTo: 'Research Lead',
       division: 'knowledge',
       dueDate: '2023-06-22T00:00:00Z',
+    },
+    {
+      id: 'task-6',
+      title: 'Quarterly Performance Review',
+      description: 'Complete performance evaluations for all team members',
+      status: 'in-progress',
+      progress: 20,
+      createdAt: '2023-06-10T09:00:00Z',
+      updatedAt: '2023-06-10T15:45:00Z',
+      priority: 'medium',
+      assignedTo: 'Team Lead',
+      division: 'management',
+      dueDate: '2023-06-23T00:00:00Z',
     }
   ]);
 

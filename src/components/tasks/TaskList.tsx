@@ -8,9 +8,15 @@ interface TaskListProps {
   priorityFilter: string | null;
   statusFilter: string | null;
   divisionFilter: string | null;
+  isGridView?: boolean;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ priorityFilter, statusFilter, divisionFilter }) => {
+const TaskList: React.FC<TaskListProps> = ({ 
+  priorityFilter, 
+  statusFilter, 
+  divisionFilter,
+  isGridView = false
+}) => {
   const { tasks } = useTaskStore();
   
   const filteredTasks = tasks.filter(task => {
@@ -29,6 +35,20 @@ const TaskList: React.FC<TaskListProps> = ({ priorityFilter, statusFilter, divis
     );
   }
 
+  // If grid view, render in a grid layout with isGridView prop
+  if (isGridView) {
+    return (
+      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4`}>
+        {filteredTasks.map((task, index) => (
+          <TransitionWrapper key={task.id} delay={50 * index}>
+            <TaskItem task={task} isGridView={true} />
+          </TransitionWrapper>
+        ))}
+      </div>
+    );
+  }
+
+  // Default list view
   return (
     <div className="space-y-4">
       {filteredTasks.map((task, index) => (
