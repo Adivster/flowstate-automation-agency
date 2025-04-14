@@ -17,6 +17,7 @@ import EngagementDashboard from '@/components/analytics/EngagementDashboard';
 import ExportOptions from '@/components/analytics/ExportOptions';
 import AIRecommendation from '@/components/analytics/AIRecommendation';
 import { useToast } from '@/hooks/use-toast';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 const Analytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState<string>('7d');
@@ -42,7 +43,7 @@ const Analytics: React.FC = () => {
       
       {/* Floating Particles */}
       <motion.div 
-        className="fixed top-20 right-20 h-24 w-24 rounded-full bg-flow-accent/5 backdrop-blur-xl border border-flow-accent/20"
+        className="fixed top-20 right-20 h-24 w-24 rounded-full bg-flow-accent/5 backdrop-blur-xl border border-flow-accent/20 dark:bg-flow-accent/5 dark:border-flow-accent/20 light:bg-amber-400/5 light:border-amber-400/20"
         animate={{ 
           y: [0, -15, 0], 
           boxShadow: ['0 0 10px rgba(147, 51, 234, 0.3)', '0 0 20px rgba(147, 51, 234, 0.5)', '0 0 10px rgba(147, 51, 234, 0.3)']
@@ -90,6 +91,11 @@ const Analytics: React.FC = () => {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
+            
+            {/* Theme Toggle */}
+            <div className="ml-2">
+              <ThemeToggle />
+            </div>
           </div>
           <p className="text-flow-foreground/70 mt-1 font-ibm-mono">
             <span className="text-flow-accent animate-text-glow">Comprehensive insights</span> and performance metrics for your agency

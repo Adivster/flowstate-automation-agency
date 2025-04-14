@@ -4,52 +4,66 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Light mode / Solarpunk variables */
+    --background: 60 30% 96%;
+    --foreground: 142 30% 20%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 60 30% 96%;
+    --card-foreground: 142 30% 20%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 60 30% 96%;
+    --popover-foreground: 142 30% 20%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 142 60% 40%;
+    --primary-foreground: 60 30% 96%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 50 80% 85%;
+    --secondary-foreground: 142 30% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 50 40% 90%;
+    --muted-foreground: 142 20% 40%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 35 80% 65%;
+    --accent-foreground: 142 30% 20%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 40.6%;
+    --destructive-foreground: 60 30% 96%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 142 30% 80%;
+    --input: 142 30% 80%;
+    --ring: 142 60% 40%;
 
     --radius: 0.75rem;
-    
-    /* FlowState specific colors */
-    --flow-background: 210 40% 98%;
-    --flow-foreground: 222.2 84% 4.9%;
-    --flow-card: 0 0% 100%;
-    --flow-card-foreground: 222.2 47.4% 11.2%;
-    --flow-accent: 210 100% 50%;
-    --flow-accent-foreground: 210 40% 98%;
-    --flow-muted: 210 40% 96.1%; 
-    --flow-muted-foreground: 215.4 16.3% 46.9%;
-    --flow-border: 214.3 31.8% 91.4%;
-    
-    /* Status colors */
-    --flow-success: 142 71% 45%;
+
+    /* SolarPunk specific colors */
+    --solarpunk-background: 60 30% 96%;
+    --solarpunk-foreground: 142 30% 20%;
+    --solarpunk-card: 60 25% 98%;
+    --solarpunk-card-foreground: 142 30% 20%;
+    --solarpunk-accent: 35 80% 65%;
+    --solarpunk-accent-foreground: 142 30% 20%;
+    --solarpunk-muted: 50 40% 90%;
+    --solarpunk-muted-foreground: 142 20% 40%;
+    --solarpunk-border: 142 30% 80%;
+    --solarpunk-success: 142 70% 45%;
+    --solarpunk-warning: 45 93% 47%;
+    --solarpunk-error: 0 70% 50%;
+    --solarpunk-info: 200 80% 50%;
+
+    /* FlowState specific colors for light mode */
+    --flow-background: 60 30% 96%;
+    --flow-foreground: 142 30% 20%;
+    --flow-card: 60 25% 98%;
+    --flow-card-foreground: 142 30% 20%;
+    --flow-accent: 142 60% 40%;
+    --flow-accent-foreground: 60 30% 96%;
+    --flow-muted: 50 40% 90%;
+    --flow-muted-foreground: 142 20% 40%;
+    --flow-border: 142 30% 80%;
+    --flow-success: 142 70% 45%;
     --flow-warning: 45 93% 47%;
-    --flow-error: 0 84% 60%;
-    --flow-info: 210 100% 50%;
+    --flow-error: 0 70% 50%;
+    --flow-info: 200 80% 50%;
     
     /* Standardized spacing */
     --space-xs: 0.25rem;
@@ -162,6 +176,10 @@
   .dark .glass {
     @apply bg-black/10 border-white/10;
   }
+
+  .light .glass {
+    @apply bg-white/40 backdrop-blur-md border border-white/40;
+  }
   
   /* Animations for page transitions */
   .page-enter {
@@ -201,6 +219,12 @@
     text-shadow: 0 0 5px #d946ef, 
                  0 0 8px #d946ef;
   }
+
+  .light .neon-text {
+    @apply text-solarpunk-foreground;
+    text-shadow: 0 0 5px rgba(52, 211, 153, 0.7), 
+                 0 0 8px rgba(52, 211, 153, 0.5);
+  }
   
   /* Cyberpunk neon text variations */
   .neon-text-blue {
@@ -209,10 +233,22 @@
                  0 0 8px #0ea5e9;
   }
   
+  .light .neon-text-blue {
+    @apply text-solarpunk-foreground;
+    text-shadow: 0 0 5px rgba(14, 165, 233, 0.7), 
+                 0 0 8px rgba(14, 165, 233, 0.5);
+  }
+  
   .neon-text-green {
     @apply text-white;
     text-shadow: 0 0 5px #22c55e, 
                  0 0 8px #22c55e;
+  }
+  
+  .light .neon-text-green {
+    @apply text-solarpunk-foreground;
+    text-shadow: 0 0 5px rgba(34, 197, 94, 0.7), 
+                 0 0 8px rgba(34, 197, 94, 0.5);
   }
   
   .neon-text-orange {
@@ -221,19 +257,41 @@
                  0 0 8px #f97316;
   }
   
+  .light .neon-text-orange {
+    @apply text-solarpunk-foreground;
+    text-shadow: 0 0 5px rgba(249, 115, 22, 0.7), 
+                 0 0 8px rgba(249, 115, 22, 0.5);
+  }
+  
   .neon-text-pink {
     @apply text-white;
     text-shadow: 0 0 5px #ec4899, 
                  0 0 8px #ec4899;
   }
   
+  .light .neon-text-pink {
+    @apply text-solarpunk-foreground;
+    text-shadow: 0 0 5px rgba(236, 72, 153, 0.7), 
+                 0 0 8px rgba(236, 72, 153, 0.5);
+  }
+
+  /* Solarpunk specific styles */
+  .light .eco-gradient {
+    background: linear-gradient(135deg, rgba(242, 252, 226, 0.9), rgba(210, 250, 215, 0.8));
+  }
+
+  .light .leaf-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 5C16.2 5 5 16.2 5 30s11.2 25 25 25 25-11.2 25-25S43.8 5 30 5zm0 45c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20z' fill='rgba(52, 211, 153, 0.1)'/%3E%3C/svg%3E");
+    background-size: 60px 60px;
+  }
+
   /* Section headers */
   .section-header {
     @apply text-xl font-medium mb-2;
     color: #c8c8c9;
   }
   
-  /* Game UI specific styles */
+  /* Cyberpunk UI elements */
   .pixel-corners {
     clip-path: polygon(
       0 4px, 4px 0, calc(100% - 4px) 0, 100% 4px,
@@ -260,6 +318,43 @@
     border-image-outset: 0;
     border-image-source: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='6'><path d='M0 2h2v2H0zM2 0h2v2H2zM4 2h2v2H4zM2 4h2v2H2z' fill='%23999' /></svg>");
     pointer-events: none;
+  }
+
+  /* Solarpunk UI elements */
+  .light .solar-button {
+    @apply bg-gradient-to-r from-amber-400 to-emerald-400 text-white rounded-full px-4 py-2 shadow-lg hover:shadow-xl transition-all;
+  }
+
+  .light .eco-card {
+    @apply bg-gradient-to-br from-amber-50 to-lime-50 rounded-lg border border-emerald-200 shadow-sm hover:shadow-md transition-all;
+  }
+
+  .light .solar-input {
+    @apply bg-white/80 border border-emerald-200 rounded-full px-4 py-2 focus:ring-2 focus:ring-amber-300 focus:border-amber-300;
+  }
+
+  /* Circuit and organic patterns */
+  .light .bg-grid-pattern {
+    background-image: 
+      linear-gradient(to right, rgba(52, 211, 153, 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(52, 211, 153, 0.07) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .light .scan-lines::before {
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      rgba(52, 211, 153, 0.03) 50%
+    );
+    background-size: 100% 4px;
+  }
+
+  .light .scan-lines::after {
+    background: linear-gradient(
+      rgba(250, 250, 250, 0),
+      rgba(250, 250, 250, 0.1)
+    );
   }
 }
 
@@ -292,10 +387,22 @@
   border: 1px solid theme('colors.flow.accent');
 }
 
+.light .neon-border {
+  box-shadow: 0 0 5px rgba(52, 211, 153, 0.7), 
+              0 0 10px rgba(52, 211, 153, 0.3);
+  border: 1px solid rgba(52, 211, 153, 0.5);
+}
+
 .neon-border-blue {
   box-shadow: 0 0 5px #0ea5e9, 
               0 0 10px #0ea5e9;
   border: 1px solid rgba(14, 165, 233, 0.5);
+}
+
+.light .neon-border-blue {
+  box-shadow: 0 0 5px rgba(14, 165, 233, 0.5), 
+              0 0 10px rgba(14, 165, 233, 0.2);
+  border: 1px solid rgba(14, 165, 233, 0.3);
 }
 
 .neon-border-green {
@@ -304,16 +411,34 @@
   border: 1px solid rgba(34, 197, 94, 0.5);
 }
 
+.light .neon-border-green {
+  box-shadow: 0 0 5px rgba(34, 197, 94, 0.5), 
+              0 0 10px rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
 .neon-border-orange {
   box-shadow: 0 0 5px #f97316, 
               0 0 10px #f97316;
   border: 1px solid rgba(249, 115, 22, 0.5);
 }
 
+.light .neon-border-orange {
+  box-shadow: 0 0 5px rgba(249, 115, 22, 0.5), 
+              0 0 10px rgba(249, 115, 22, 0.2);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
 .neon-border-purple {
   box-shadow: 0 0 5px #8b5cf6, 
               0 0 10px #8b5cf6;
   border: 1px solid rgba(139, 92, 246, 0.5);
+}
+
+.light .neon-border-purple {
+  box-shadow: 0 0 5px rgba(139, 92, 246, 0.5), 
+              0 0 10px rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.3);
 }
 
 /* Cyberpunk button styles */
@@ -355,7 +480,7 @@
 .terminal-button {
   position: fixed;
   bottom: 70px;
-  right: 20px;
+  left: 20px;
   z-index: 50;
 }
 
@@ -623,4 +748,38 @@
 
 .page-content {
   @apply flex-1 mt-20 px-4 sm:px-6 pb-12;
+}
+
+/* Solarpunk glow animations */
+.light .animate-glow-pulse {
+  animation: solarpunk-glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes solarpunk-glow-pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(52, 211, 153, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(52, 211, 153, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(52, 211, 153, 0.5);
+  }
+}
+
+.light .animate-text-glow {
+  animation: solarpunk-text-glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes solarpunk-text-glow-pulse {
+  0% {
+    text-shadow: 0 0 4px rgba(52, 211, 153, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 8px rgba(52, 211, 153, 0.8),
+                0 0 12px rgba(52, 211, 153, 0.3);
+  }
+  100% {
+    text-shadow: 0 0 4px rgba(52, 211, 153, 0.5);
+  }
 }

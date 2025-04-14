@@ -55,7 +55,7 @@ const TaskCreatorEventHandler = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <HelmetProvider>
-      <ThemeProvider attribute="class" defaultTheme="dark">
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
         <LanguageProvider>
           <TaskProvider>
             <BrowserRouter>

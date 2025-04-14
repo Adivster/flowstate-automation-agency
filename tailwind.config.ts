@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -96,6 +95,21 @@ export default {
 					warning: 'hsl(var(--flow-warning))',
 					error: 'hsl(var(--flow-error))',
 					info: 'hsl(var(--flow-info))',
+				},
+				solarpunk: {
+					background: 'hsl(var(--solarpunk-background))',
+					foreground: 'hsl(var(--solarpunk-foreground))',
+					card: 'hsl(var(--solarpunk-card))',
+					'card-foreground': 'hsl(var(--solarpunk-card-foreground))',
+					accent: 'hsl(var(--solarpunk-accent))',
+					'accent-foreground': 'hsl(var(--solarpunk-accent-foreground))',
+					muted: 'hsl(var(--solarpunk-muted))',
+					'muted-foreground': 'hsl(var(--solarpunk-muted-foreground))',
+					border: 'hsl(var(--solarpunk-border))',
+					success: 'hsl(var(--solarpunk-success))',
+					warning: 'hsl(var(--solarpunk-warning))',
+					error: 'hsl(var(--solarpunk-error))',
+					info: 'hsl(var(--solarpunk-info))',
 				}
 			},
 			borderRadius: {
