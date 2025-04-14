@@ -5,12 +5,12 @@ import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { PieChart, BarChart as BarChartComponent, LineChart } from '@/components/ui/chart';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+} from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePerformanceData } from '@/hooks/usePerformanceData';
 import { Badge } from '@/components/ui/badge';
@@ -55,11 +55,13 @@ const ResourceUsageSection: React.FC = () => {
   ];
 
   const handleDataPointClick = (data: any, index: number, chartTitle: string) => {
-    toast({
-      title: `${chartTitle} - ${data.name}`,
-      description: `Value: ${data.value}`,
-      duration: 3000
-    });
+    if (toast) {
+      toast({
+        title: `${chartTitle} - ${data.name}`,
+        description: `Value: ${data.value}`,
+        duration: 3000
+      });
+    }
   };
 
   const handleExpandChart = (title: string, data: any[], type: 'pie' | 'bar' | 'line', colors?: string[]) => {
@@ -81,19 +83,23 @@ const ResourceUsageSection: React.FC = () => {
     link.download = `${title.toLowerCase().replace(/\s+/g, '-')}-data.json`;
     link.click();
     
-    toast({
-      title: "Data Exported",
-      description: `${title} data has been exported successfully`,
-      duration: 3000
-    });
+    if (toast) {
+      toast({
+        title: "Data Exported",
+        description: `${title} data has been exported successfully`,
+        duration: 3000
+      });
+    }
   };
 
   const handleShareData = (title: string) => {
-    toast({
-      title: "Share Feature",
-      description: `Sharing ${title} data (would open sharing dialog in production)`,
-      duration: 3000
-    });
+    if (toast) {
+      toast({
+        title: "Share Feature",
+        description: `Sharing ${title} data (would open sharing dialog in production)`,
+        duration: 3000
+      });
+    }
   };
 
   const getStatusColor = (value: number) => {
@@ -353,14 +359,14 @@ const ResourceUsageSection: React.FC = () => {
             <div className="flex justify-end mt-4 gap-2">
               <Button 
                 variant="outline" 
-                onClick={() => handleExportData(expandedChart.title, expandedChart.data)}
+                onClick={() => expandedChart && handleExportData(expandedChart.title, expandedChart.data)}
               >
                 <Download className="mr-2 h-4 w-4" />
                 Export
               </Button>
               <Button 
                 variant="outline"
-                onClick={() => handleShareData(expandedChart.title)}
+                onClick={() => expandedChart && handleShareData(expandedChart.title)}
               >
                 <Share2 className="mr-2 h-4 w-4" />
                 Share
