@@ -215,7 +215,7 @@ const ResourceUsageSection: React.FC = () => {
                     transition={{ duration: 0.3 }}
                     className="h-[260px]"
                   >
-                    <Tabs value={activeTab}>
+                    <Tabs value={activeTab} defaultValue={activeTab}>
                       <TabsContent value="division" className="h-full mt-0">
                         <PieChart 
                           data={divisionResourceData} 
