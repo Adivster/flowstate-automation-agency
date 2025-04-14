@@ -29,7 +29,7 @@ interface DataPoint {
 // Chart Component Props
 interface ChartProps {
   data: DataPoint[];
-  type: "line" | "bar" | "pie" | "area";
+  type?: "line" | "bar" | "pie" | "area";
   height?: number;
   width?: number;
   colors?: string[];
@@ -74,7 +74,7 @@ const defaultColors = [
 
 export const Chart: FC<ChartProps> = ({
   data,
-  type,
+  type = "line",
   height = 300,
   width,
   colors = defaultColors,

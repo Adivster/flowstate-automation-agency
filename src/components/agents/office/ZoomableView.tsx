@@ -123,7 +123,7 @@ const ZoomableView: React.FC<ZoomableViewProps> = ({
         {children}
       </motion.div>
       
-      {/* Remove duplicate zoom controls - only Settings button remains */}
+      {/* Settings button only */}
       {showControls && (
         <div className="absolute bottom-4 right-4 z-[100]">
           <Popover>

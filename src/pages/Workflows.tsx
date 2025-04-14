@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
@@ -25,6 +24,7 @@ import { LineChart as ChartLine } from '@/components/ui/chart';
 import GlassMorphism from '@/components/ui/GlassMorphism';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import { toast } from 'sonner';
+import type { LucideIcon } from 'lucide-react';
 
 // Define workflow interfaces
 interface WorkflowStep {
@@ -62,7 +62,7 @@ interface Workflow {
   completion: number;
   division: string;
   color: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   connected_agents: number[];
   performance: Array<{ name: string; value: number }>;
   schedule?: WorkflowSchedule;
@@ -84,7 +84,7 @@ const Workflows = () => {
   const [activeTab, setActiveTab] = useState('overview');
 
   // Enhanced workflow data with more details for the redesign
-  const allWorkflows = [
+  const allWorkflows: Workflow[] = [
     {
       id: 'wf-1',
       name: 'Content Automation',
@@ -631,7 +631,6 @@ const Workflows = () => {
                         showTooltip={true}
                         showGrid={false}
                         showLegend={false}
-                        type="line"
                       />
                     </div>
                     
@@ -863,7 +862,6 @@ const Workflows = () => {
                               data={selectedWorkflow.performance} 
                               lineColor={selectedWorkflow.color}
                               showTooltip={true}
-                              type="line"
                             />
                           </div>
                         </div>
