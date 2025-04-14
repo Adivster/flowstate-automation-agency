@@ -158,7 +158,7 @@ const AgencyDashboard: React.FC = () => {
 
       {/* Main Dashboard Content */}
       <Tabs value={activeTab} defaultValue={activeTab}>
-        <TabsContent value="mission-control" className="mt-0">
+        <TabsContent value="mission-control">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
             {/* System Status Module */}
             <SystemStatusModule systemHealth={systemHealth} />
