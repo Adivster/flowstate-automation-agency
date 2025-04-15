@@ -49,10 +49,12 @@ export interface VisualizationLayerData {
     showSparklines: boolean;
     showEfficiency: boolean;
     chartStyle?: 'minimal' | 'detailed';
+    position?: 'bottom-right' | 'top-right' | 'bottom-left' | 'top-left';
   };
   quickActions: {
     active: boolean;
     style?: 'icon' | 'text' | 'both';
+    position?: 'bottom-right' | 'top-right' | 'bottom-left' | 'top-left';
   };
   grid?: {
     active: boolean;
@@ -68,7 +70,7 @@ export interface VisualizationLayerData {
   };
   analytics: {
     active: boolean;
-    position: 'bottom-left' | 'top-right';
+    position: 'bottom-left' | 'top-right' | 'bottom-right';
     showLabels: boolean;
     showTrends: boolean;
   };

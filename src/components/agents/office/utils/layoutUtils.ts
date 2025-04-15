@@ -7,8 +7,8 @@ export const checkOverlap = (div1: Division, div2: Division, positions: Record<s
   const div1Pos = positions[div1.id] || { x: div1.position.x, y: div1.position.y };
   const div2Pos = positions[div2.id] || { x: div2.position.x, y: div2.position.y };
   
-  // Increase buffer to ensure at least 3 grid squares (15%) spacing
-  const buffer = 15;
+  // Increase buffer to ensure at least 5 grid squares (25%) spacing
+  const buffer = 25;
   
   // Calculate edges with buffer
   const div1Left = div1Pos.x - buffer;
@@ -35,7 +35,7 @@ export const fixOverlaps = (divisions: Division[], positions: Record<string, {x:
   const fixedPositions = {...positions};
   let overlapsExist = true;
   let iterationCount = 0;
-  const maxIterations = 150; // Increase max iterations for better results
+  const maxIterations = 200; // Increase max iterations for better results
   
   while (overlapsExist && iterationCount < maxIterations) {
     overlapsExist = false;
@@ -74,15 +74,15 @@ export const fixOverlaps = (divisions: Division[], positions: Record<string, {x:
             Math.abs(div2Pos.y + div2.position.height - div1Pos.y)
           );
           
-          // Use a larger push amount to ensure at least 3 grid squares (15%) spacing
-          const pushAmount = Math.max(overlapX, overlapY) + 20; // Increased from 15 to 20
+          // Use a larger push amount to ensure at least 5 grid squares (25%) spacing
+          const pushAmount = Math.max(overlapX, overlapY) + 30; // Increased from 20 to 30
           
           // Adjust position along the axis with smaller overlap
           if (overlapX <= overlapY) {
             // Push horizontally
             const moveAmount = pushAmount;
             const newX = dirX > 0 
-              ? Math.min(90 - div2.position.width, div2Pos.x + moveAmount)
+              ? Math.min(80 - div2.position.width, div2Pos.x + moveAmount)
               : Math.max(5, div2Pos.x - moveAmount);
               
             fixedPositions[div2.id] = { x: newX, y: div2Pos.y };
@@ -90,7 +90,7 @@ export const fixOverlaps = (divisions: Division[], positions: Record<string, {x:
             // Push vertically
             const moveAmount = pushAmount;
             const newY = dirY > 0
-              ? Math.min(80 - div2.position.height, div2Pos.y + moveAmount)
+              ? Math.min(70 - div2.position.height, div2Pos.y + moveAmount)
               : Math.max(5, div2Pos.y - moveAmount);
               
             fixedPositions[div2.id] = { x: div2Pos.x, y: newY };
@@ -106,8 +106,8 @@ export const fixOverlaps = (divisions: Division[], positions: Record<string, {x:
     if (!division) continue;
     
     fixedPositions[divId] = {
-      x: Math.max(0, Math.min(95 - division.position.width, fixedPositions[divId].x)),
-      y: Math.max(0, Math.min(85 - division.position.height, fixedPositions[divId].y))
+      x: Math.max(0, Math.min(90 - division.position.width, fixedPositions[divId].x)),
+      y: Math.max(0, Math.min(75 - division.position.height, fixedPositions[divId].y))
     };
   }
   
@@ -116,12 +116,12 @@ export const fixOverlaps = (divisions: Division[], positions: Record<string, {x:
 
 // Optimize layout for better visualization and organization
 export const optimizeLayout = (divisions: Division[], defaultPositions: Record<string, {x: number, y: number}>) => {
-  // Define ideal positions with better spacing (at least 3 grid squares apart)
+  // Define ideal positions with better spacing (at least 5 grid squares apart)
   const idealPositions = {
-    kb: { x: 10, y: 15 },
-    analytics: { x: 65, y: 15 },
-    operations: { x: 10, y: 60 },
-    strategy: { x: 65, y: 60 }
+    kb: { x: 5, y: 10 },
+    analytics: { x: 70, y: 10 },
+    operations: { x: 5, y: 50 },
+    strategy: { x: 70, y: 50 }
   };
   
   // Apply ideal positioning
@@ -151,7 +151,7 @@ export const calculateSafePosition = (
   // Try to find a position without overlaps
   let attempts = 0;
   let hasOverlap = true;
-  const gridSize = 15; // Increase grid size to 15% (3 grid squares) for better spacing
+  const gridSize = 25; // Increase grid size to 25% (5 grid squares) for better spacing
   
   while (hasOverlap && attempts < 200) { // More attempts for better placement
     hasOverlap = false;
@@ -166,9 +166,9 @@ export const calculateSafePosition = (
         
         // Try positions in a more structured way
         // Start from center and spiral outward with larger jumps
-        const centerX = 50;
-        const centerY = 50;
-        const radius = Math.floor(attempts / 8) * 15; // Increase radius by 15% every 8 attempts
+        const centerX = 45;
+        const centerY = 40;
+        const radius = Math.floor(attempts / 8) * 20; // Increase radius by 20% every 8 attempts
         const angle = (attempts % 8) * Math.PI / 4; // 8 directions
         
         safePosition = {
@@ -181,8 +181,8 @@ export const calculateSafePosition = (
         safePosition.y = Math.round(safePosition.y / gridSize) * gridSize;
         
         // Ensure within bounds
-        safePosition.x = Math.max(5, Math.min(90 - newDivision.position.width, safePosition.x));
-        safePosition.y = Math.max(5, Math.min(80 - newDivision.position.height, safePosition.y));
+        safePosition.x = Math.max(5, Math.min(85 - newDivision.position.width, safePosition.x));
+        safePosition.y = Math.max(5, Math.min(70 - newDivision.position.height, safePosition.y));
         
         break;
       }
@@ -209,11 +209,11 @@ export const calculateOptimalPosition = (
   // Mark occupied grid cells and their buffer zones
   divisions.forEach(div => {
     const pos = currentPositions[div.id] || { x: div.position.x, y: div.position.y };
-    // Expand the area to include buffer zones (3 grid squares)
-    const startCol = Math.max(0, Math.floor((pos.x - 15) / gridCellWidth));
-    const endCol = Math.min(gridCols - 1, Math.floor((pos.x + div.position.width + 15) / gridCellWidth));
-    const startRow = Math.max(0, Math.floor((pos.y - 15) / gridCellHeight));
-    const endRow = Math.min(gridRows - 1, Math.floor((pos.y + div.position.height + 15) / gridCellHeight));
+    // Expand the area to include buffer zones (5 grid squares)
+    const startCol = Math.max(0, Math.floor((pos.x - 25) / gridCellWidth));
+    const endCol = Math.min(gridCols - 1, Math.floor((pos.x + div.position.width + 25) / gridCellWidth));
+    const startRow = Math.max(0, Math.floor((pos.y - 25) / gridCellHeight));
+    const endRow = Math.min(gridRows - 1, Math.floor((pos.y + div.position.height + 25) / gridCellHeight));
     
     for (let row = startRow; row <= endRow; row++) {
       for (let col = startCol; col <= endCol; col++) {
@@ -235,5 +235,5 @@ export const calculateOptimalPosition = (
   }
   
   // If no empty cell, return a default position
-  return { x: 50, y: 50 };
+  return { x: 45, y: 40 };
 };

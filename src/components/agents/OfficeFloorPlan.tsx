@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -704,18 +703,18 @@ const OfficeFloorPlan: React.FC = () => {
           onClose={handleCloseInfoPanel}
         />
         
-        {/* AI Insight Prompt */}
+        {/* AI Insight Prompt - Repositioned to bottom right */}
         <AnimatePresence>
           {aiPromptVisible && aiPrompt && (
             <motion.div 
-              className="absolute top-1/3 left-1/2 transform -translate-x-1/2 z-50"
-              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              className="absolute bottom-16 right-4 z-50"
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
               transition={{ duration: 0.3, type: "spring" }}
               style={{
                 maxWidth: "90%",
-                width: "380px",
+                width: "320px",
                 filter: "drop-shadow(0 10px 25px rgba(0,0,0,0.5))"
               }}
             >
