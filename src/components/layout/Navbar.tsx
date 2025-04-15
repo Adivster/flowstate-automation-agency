@@ -1,6 +1,7 @@
+
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { BookOpen, BarChart, LayoutGrid, Compass, GraduationCap, CheckSquare, Menu, X, Building2 } from "lucide-react";
+import { BookOpen, BarChart, LayoutGrid, Compass, GraduationCap, CheckSquare, Menu, X, Building2, Workflow } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,7 +23,7 @@ const navItems = [
   {
     name: "workflows",
     link: "/workflows",
-    icon: GraduationCap,
+    icon: Workflow, // Changed from GraduationCap to Workflow
   },
   {
     name: "tasks",
@@ -35,14 +36,14 @@ const navItems = [
     icon: BookOpen,
   },
   {
-    name: "courses",
-    link: "/courses",
-    icon: GraduationCap,
-  },
-  {
     name: "analytics",
     link: "/analytics",
     icon: BarChart,
+  },
+  {
+    name: "courses",
+    link: "/courses",
+    icon: GraduationCap, // Moved to the last position with original icon
   },
 ];
 
