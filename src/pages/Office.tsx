@@ -1,4 +1,3 @@
-
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
@@ -131,7 +130,6 @@ const Office = () => {
     setSelectedAgentInfo(null);
   };
   
-  // Function to toggle between Cyberpunk and Solarpunk themes
   const toggleTheme = () => {
     setTheme(isDark ? 'light' : 'dark');
     
@@ -149,9 +147,7 @@ const Office = () => {
       duration: 3000,
     });
     
-    // If action is 'details' for an agent, show agent info panel
     if (action === 'details' && entityType === 'agent') {
-      // Mock agent data
       const mockAgent = {
         id: entityId,
         name: `Agent ${entityId}`,
@@ -256,7 +252,6 @@ const Office = () => {
     );
   }
   
-  // Custom background styles based on theme
   const backgroundStyle = isDark 
     ? "bg-gray-900 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/10 via-gray-900 to-gray-900"
     : "bg-emerald-50 bg-[url('/patterns/woven-light.png')] bg-repeat bg-opacity-30";
@@ -833,7 +828,6 @@ const Office = () => {
               </Tabs>
             </SolarpunkPanel>
             
-            {/* Visualization Controls Panel */}
             <AnimatePresence>
               {showVisualizationControls && (
                 <motion.div 
@@ -853,7 +847,6 @@ const Office = () => {
           </div>
         </div>
         
-        {/* Agent Info Panel */}
         <AnimatePresence>
           {selectedAgentInfo && (
             <AgentInfoPanel 
@@ -866,8 +859,8 @@ const Office = () => {
       
       <Footer />
       
-      {/* Add custom scrollbar styles */}
-      <style jsx global>{`
+      <style>
+        {`
         .scrollbar-dark::-webkit-scrollbar {
           width: 6px;
         }
@@ -912,7 +905,8 @@ const Office = () => {
           0%, 100% { opacity: 0.8; }
           50% { opacity: 1; }
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
