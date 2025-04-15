@@ -23,24 +23,42 @@ export interface VisualizationLayerData {
   heatmap: {
     active: boolean;
     data: HeatMapData[];
+    intensity?: number;
+    blendMode?: 'screen' | 'overlay' | 'multiply';
   };
   statusMarkers: {
     active: boolean;
     data: StatusMarker[];
+    style?: 'minimal' | 'detailed';
   };
   hotspots: {
     active: boolean;
     divisionHotspots: boolean;
     workstationHotspots: boolean;
     serverHotspots: boolean;
+    glowIntensity?: number;
   };
   performance: {
     active: boolean;
     showSparklines: boolean;
     showEfficiency: boolean;
+    chartStyle?: 'minimal' | 'detailed';
   };
   quickActions: {
     active: boolean;
+    style?: 'icon' | 'text' | 'both';
+  };
+  grid?: {
+    active: boolean;
+    size?: number;
+    color?: string;
+    opacity?: number;
+  };
+  ambientEffects?: {
+    active: boolean;
+    scanlines?: boolean;
+    noise?: boolean;
+    glow?: boolean;
   };
 }
 

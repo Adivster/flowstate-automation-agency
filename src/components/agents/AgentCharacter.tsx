@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, AlertCircle, PauseCircle, GhostIcon, MessageCircle } from 'lucide-react';
@@ -137,13 +136,24 @@ const AgentCharacter: React.FC<AgentProps> = ({
       duration: 3000,
     });
   };
-  
+
+  const getStatusColor = () => {
+    switch(agent.status) {
+      case 'working': return 'rgba(34, 197, 94, 0.9)'; // Green
+      case 'idle': return 'rgba(148, 163, 184, 0.9)'; // Gray
+      case 'paused': return 'rgba(245, 158, 11, 0.9)'; // Amber
+      case 'error': return 'rgba(239, 68, 68, 0.9)'; // Red
+      default: return 'rgba(148, 163, 184, 0.9)';
+    }
+  };
+
   return (
     <motion.div
-      className="absolute" 
+      className="absolute"
       style={{ 
         left: `${agentPos.x}%`, 
         top: `${agentPos.y}%`,
+        filter: 'drop-shadow(0 0 8px rgba(0, 0, 0, 0.25))',
         ...style
       }}
       animate={{
@@ -159,84 +169,97 @@ const AgentCharacter: React.FC<AgentProps> = ({
     >
       <motion.div 
         className={`cursor-pointer ${isSelected ? 'relative z-10' : ''}`}
-        animate={getAnimationState()}
-        transition={{
-          boxShadow: {
-            repeat: Infinity,
-            duration: 2
-          }
-        }}
-        onClick={() => onAgentClick && onAgentClick(agent.id)}
         whileHover={{ scale: 1.1 }}
+        onClick={() => onAgentClick && onAgentClick(agent.id)}
         title={`${agent.name} - ${t(agent.status)}`}
       >
-        <div className={`relative rounded-full p-1 bg-flow-background/90 border ${borderColor} ${
-          isSelected ? 'ring-2 ring-flow-accent' : ''
+        <div className={`relative rounded-full p-1.5 backdrop-blur-sm border-2 ${
+          isSelected ? 'border-flow-accent shadow-lg shadow-flow-accent/20' : 'border-transparent'
         }`}>
-          <div className="relative">
-            <div className={`rounded-full p-1.5 ${
-              agent.status === 'working' ? bgColor : 
-              agent.status === 'idle' ? 'bg-gray-500/10' : 
-              agent.status === 'paused' ? 'bg-amber-500/10' : 
-              'bg-red-500/10'
-            }`}>
-              <AgentIcon className={`w-5 h-5 ${
-                agent.status === 'working' ? textColor : 
-                agent.status === 'idle' ? 'text-gray-500' : 
-                agent.status === 'paused' ? 'text-amber-500' : 
-                'text-red-500'
-              }`} />
-              
-              {/* Task completion indicator - clearer ring around agent */}
-              {agent.workload !== undefined && agent.status === 'working' && (
-                <svg className="absolute inset-0 w-full h-full -rotate-90">
-                  <circle 
-                    cx="50%" 
-                    cy="50%" 
-                    r="47%" 
-                    fill="none" 
-                    strokeWidth="2"
-                    stroke={agent.workload > 90 ? '#ef4444' : 
-                           agent.workload > 75 ? '#f97316' : 
-                           agent.workload > 50 ? '#eab308' : 
-                           agent.workload > 25 ? '#22c55e' : 
-                           '#3b82f6'}
-                    strokeDasharray={`${agent.workload} 100`}
-                    className="opacity-90"
-                  />
-                </svg>
-              )}
-            </div>
-            <span className={`absolute -top-1 -right-1 w-2 h-2 ${statusColor} rounded-full border border-gray-700 ${agent.status === 'working' ? 'animate-pulse' : ''}`}></span>
+          <div className={`relative rounded-full p-2.5 bg-gray-950/90 group transition-all duration-300 ease-out
+            ${isSelected ? 'ring-2 ring-offset-1 ring-offset-black ring-flow-accent' : ''}
+          `}>
+            {/* Neon glow background */}
+            <div 
+              className="absolute inset-0 rounded-full opacity-75 blur-sm transition-opacity duration-300"
+              style={{ 
+                backgroundColor: getStatusColor(),
+                opacity: agent.status === 'working' ? 0.5 : 0.3
+              }}
+            />
             
-            {/* Chat button */}
+            {/* Agent icon with neon effect */}
+            <div className="relative z-10">
+              <AgentIcon className={`w-6 h-6 transition-transform duration-300 ${
+                agent.status === 'working' ? 'text-green-400' : 
+                agent.status === 'idle' ? 'text-gray-400' : 
+                agent.status === 'paused' ? 'text-amber-400' : 
+                'text-red-400'
+              }`} />
+            </div>
+
+            {/* Outer ring progress indicator */}
+            {agent.workload !== undefined && agent.status === 'working' && (
+              <svg className="absolute inset-0 w-full h-full -rotate-90">
+                <circle 
+                  cx="50%" 
+                  cy="50%" 
+                  r="47%" 
+                  fill="none" 
+                  strokeWidth="2.5"
+                  stroke={getStatusColor()}
+                  strokeDasharray={`${agent.workload} 100`}
+                  className="opacity-90"
+                />
+              </svg>
+            )}
+
+            {/* Status indicator dot */}
+            <span 
+              className={`absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-gray-950 
+                ${agent.status === 'working' ? 'bg-green-500 animate-pulse' : 
+                  agent.status === 'idle' ? 'bg-gray-500' : 
+                  agent.status === 'paused' ? 'bg-amber-500' : 
+                  'bg-red-500'}
+              `}
+            />
+
+            {/* Chat button with neon effect */}
             <AnimatePresence>
               {isSelected && (
                 <motion.button
-                  className="absolute -bottom-1 -right-1 bg-flow-accent text-white rounded-full p-0.5 hover:bg-flow-accent/80 transition-colors"
+                  className="absolute -bottom-1 -right-1 bg-flow-accent text-white rounded-full p-1.5 
+                    hover:bg-flow-accent/80 transition-colors shadow-lg shadow-flow-accent/20"
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.5 }}
                   onClick={handleChatClick}
                   title="Chat with agent"
                 >
-                  <MessageCircle className="h-3 w-3" />
+                  <MessageCircle className="h-3.5 w-3.5" />
                 </motion.button>
               )}
             </AnimatePresence>
           </div>
         </div>
-        
-        {isSelected && (
-          <motion.div 
-            className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-xs font-medium text-white bg-flow-accent/90 px-1.5 py-0.5 rounded whitespace-nowrap"
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-          >
-            {agent.name}
-          </motion.div>
-        )}
+
+        {/* Agent name tag with neon effect */}
+        <AnimatePresence>
+          {isSelected && (
+            <motion.div 
+              className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 px-2 py-1 
+                bg-gray-950/90 border border-flow-accent/50 rounded-md backdrop-blur-sm
+                shadow-lg shadow-flow-accent/20"
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+            >
+              <span className="text-xs font-medium text-flow-accent">
+                {agent.name}
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </motion.div>
   );
