@@ -1,13 +1,12 @@
-
 import React, { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Clock, CheckSquare, AlertCircle, CalendarDays, CheckCircle2, CircleDashed, CircleDot } from 'lucide-react';
-import { useTaskContext, Task, TaskStatus } from '@/contexts/TaskContext';
+import { useTaskContext } from '@/contexts/TaskContext';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 const TaskBoard = () => {
   const { theme } = useTheme();
