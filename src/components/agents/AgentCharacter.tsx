@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, AlertCircle, PauseCircle, GhostIcon, MessageCircle } from 'lucide-react';
+import { 
+  CheckCircle, AlertCircle, PauseCircle, GhostIcon, MessageCircle,
+  Book, BookOpen, Lightbulb, Beaker, Mail, Pen, FileText, FileSearch, FileCode
+} from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { AgentMood } from './office/types/officeTypes';
 import { useToast } from '@/hooks/use-toast';
@@ -20,6 +23,10 @@ interface AgentProps {
     division?: string;
     mood?: AgentMood;
     workload?: number;
+    currentTask?: {
+      type: 'reading' | 'analyzing' | 'experimenting' | 'emailing' | 'writing' | 'searching' | 'coding';
+      description: string;
+    };
   };
   isSelected?: boolean;
   onAgentClick?: (id: number) => void;
@@ -47,7 +54,6 @@ const AgentCharacter: React.FC<AgentProps> = ({
   const [currentPosition, setCurrentPosition] = useState(0);
   const [isTraveling, setIsTraveling] = useState(false);
   
-  // Use division colors or fallback to default colors
   const bgColor = divisionColor ? divisionColor.bg : 'bg-flow-accent/20';
   const textColor = divisionColor ? divisionColor.text : 'text-flow-accent';
   const borderColor = divisionColor ? `border-${divisionColor.primary}` : 'border-flow-accent/50';
@@ -61,10 +67,9 @@ const AgentCharacter: React.FC<AgentProps> = ({
         setIsTraveling(true);
         setCurrentPosition(prev => (prev + 1) % routePath.length);
         
-        // Set traveling to false briefly after position change for animation
         setTimeout(() => setIsTraveling(false), 800);
       }
-    }, 25000); // Move every 25 seconds
+    }, 25000);
     
     return () => clearInterval(travelInterval);
   }, [agent.status, routePath]);
@@ -81,7 +86,6 @@ const AgentCharacter: React.FC<AgentProps> = ({
     }
   };
   
-  // Set animation state based on agent status
   const getAnimationState = () => {
     const baseAnimation = { 
       scale: isSelected ? 1.1 : 1, 
@@ -128,6 +132,31 @@ const AgentCharacter: React.FC<AgentProps> = ({
     agent.workload && agent.workload > 25 ? 'bg-green-500' :
     'bg-blue-500';
   
+  const getTaskIcon = () => {
+    if (!agent.currentTask) return null;
+    
+    switch(agent.currentTask.type) {
+      case 'reading': return <Book className="w-3 h-3" />;
+      case 'analyzing': return <Lightbulb className="w-3 h-3" />;
+      case 'experimenting': return <Beaker className="w-3 h-3" />;
+      case 'emailing': return <Mail className="w-3 h-3" />;
+      case 'writing': return <Pen className="w-3 h-3" />;
+      case 'searching': return <FileSearch className="w-3 h-3" />;
+      case 'coding': return <FileCode className="w-3 h-3" />;
+      default: return null;
+    }
+  };
+
+  const getStatusColor = () => {
+    switch(agent.status) {
+      case 'working': return 'rgba(34, 197, 94, 0.9)';
+      case 'idle': return 'rgba(148, 163, 184, 0.9)';
+      case 'paused': return 'rgba(245, 158, 11, 0.9)';
+      case 'error': return 'rgba(239, 68, 68, 0.9)';
+      default: return 'rgba(148, 163, 184, 0.9)';
+    }
+  };
+
   const handleChatClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     toast({
@@ -135,16 +164,6 @@ const AgentCharacter: React.FC<AgentProps> = ({
       description: `Opening communication channel with ${agent.name}`,
       duration: 3000,
     });
-  };
-
-  const getStatusColor = () => {
-    switch(agent.status) {
-      case 'working': return 'rgba(34, 197, 94, 0.9)'; // Green
-      case 'idle': return 'rgba(148, 163, 184, 0.9)'; // Gray
-      case 'paused': return 'rgba(245, 158, 11, 0.9)'; // Amber
-      case 'error': return 'rgba(239, 68, 68, 0.9)'; // Red
-      default: return 'rgba(148, 163, 184, 0.9)';
-    }
   };
 
   return (
@@ -171,60 +190,50 @@ const AgentCharacter: React.FC<AgentProps> = ({
         className={`cursor-pointer ${isSelected ? 'relative z-10' : ''}`}
         whileHover={{ scale: 1.1 }}
         onClick={() => onAgentClick && onAgentClick(agent.id)}
-        title={`${agent.name} - ${t(agent.status)}`}
+        title={`${agent.name} - ${t(agent.status)}${agent.currentTask ? ` - ${agent.currentTask.description}` : ''}`}
       >
         <div className={`relative rounded-full p-1.5 backdrop-blur-sm border-2 ${
-          isSelected ? 'border-flow-accent shadow-lg shadow-flow-accent/20' : 'border-transparent'
+          isSelected ? `border-${divisionColor?.primary || 'flow-accent'} shadow-lg` : 'border-transparent'
         }`}>
           <div className={`relative rounded-full p-2.5 bg-gray-950/90 group transition-all duration-300 ease-out
-            ${isSelected ? 'ring-2 ring-offset-1 ring-offset-black ring-flow-accent' : ''}
+            ${isSelected ? `ring-2 ring-offset-1 ring-offset-black ring-${divisionColor?.primary || 'flow-accent'}` : ''}
           `}>
-            {/* Neon glow background */}
             <div 
               className="absolute inset-0 rounded-full opacity-75 blur-sm transition-opacity duration-300"
               style={{ 
-                backgroundColor: getStatusColor(),
+                backgroundColor: divisionColor?.glow || getStatusColor(),
                 opacity: agent.status === 'working' ? 0.5 : 0.3
               }}
             />
             
-            {/* Agent icon with neon effect */}
             <div className="relative z-10">
               <AgentIcon className={`w-6 h-6 transition-transform duration-300 ${
-                agent.status === 'working' ? 'text-green-400' : 
-                agent.status === 'idle' ? 'text-gray-400' : 
-                agent.status === 'paused' ? 'text-amber-400' : 
-                'text-red-400'
+                divisionColor?.text || (
+                  agent.status === 'working' ? 'text-green-400' : 
+                  agent.status === 'idle' ? 'text-gray-400' : 
+                  agent.status === 'paused' ? 'text-amber-400' : 
+                  'text-red-400'
+                )
               }`} />
             </div>
 
-            {/* Outer ring progress indicator */}
-            {agent.workload !== undefined && agent.status === 'working' && (
-              <svg className="absolute inset-0 w-full h-full -rotate-90">
-                <circle 
-                  cx="50%" 
-                  cy="50%" 
-                  r="47%" 
-                  fill="none" 
-                  strokeWidth="2.5"
-                  stroke={getStatusColor()}
-                  strokeDasharray={`${agent.workload} 100`}
-                  className="opacity-90"
-                />
-              </svg>
+            {agent.currentTask && (
+              <div 
+                className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-gray-950/90 border-2 border-gray-800 
+                  flex items-center justify-center cursor-help transition-colors hover:bg-gray-900/90"
+                title={agent.currentTask.description}
+              >
+                {getTaskIcon()}
+              </div>
             )}
 
-            {/* Status indicator dot */}
             <span 
               className={`absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-gray-950 
-                ${agent.status === 'working' ? 'bg-green-500 animate-pulse' : 
-                  agent.status === 'idle' ? 'bg-gray-500' : 
-                  agent.status === 'paused' ? 'bg-amber-500' : 
-                  'bg-red-500'}
+                ${statusColor}
+                ${agent.status === 'working' ? 'animate-pulse' : ''}
               `}
             />
 
-            {/* Chat button with neon effect */}
             <AnimatePresence>
               {isSelected && (
                 <motion.button
@@ -243,7 +252,6 @@ const AgentCharacter: React.FC<AgentProps> = ({
           </div>
         </div>
 
-        {/* Agent name tag with neon effect */}
         <AnimatePresence>
           {isSelected && (
             <motion.div 

@@ -1,4 +1,3 @@
-
 import { SparklineData } from '../MiniSparkline';
 import { HeatMapData } from '../HeatMapOverlay';
 import { StatusMarker } from '../StatusMarkersOverlay';
@@ -17,6 +16,12 @@ export interface AgentMetrics {
   efficiency: number;
   tasks: number;
   status: 'normal' | 'warning' | 'critical';
+  currentTask?: {
+    type: 'reading' | 'analyzing' | 'experimenting' | 'emailing' | 'writing' | 'searching' | 'coding';
+    description: string;
+    startTime?: Date;
+    expectedDuration?: number;
+  };
 }
 
 export interface VisualizationLayerData {
@@ -59,6 +64,12 @@ export interface VisualizationLayerData {
     scanlines?: boolean;
     noise?: boolean;
     glow?: boolean;
+  };
+  analytics: {
+    active: boolean;
+    position: 'bottom-left' | 'top-right';
+    showLabels: boolean;
+    showTrends: boolean;
   };
 }
 
