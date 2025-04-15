@@ -28,3 +28,24 @@ export type CommandHistoryItem = {
   content: string;
   timestamp?: Date;
 };
+
+// Control panel types
+export interface ControlAction {
+  id: string;
+  label: string;
+  icon?: string;
+  action: 'optimize' | 'diagnose' | 'reassign' | 'tune' | 'simulate' | 'report';
+  entityType?: string;
+  entityId?: string;
+  severity?: 'low' | 'medium' | 'high';
+}
+
+export interface SystemMetric {
+  id: string;
+  label: string;
+  value: number;
+  previousValue?: number;
+  unit: string;
+  trend?: 'up' | 'down' | 'stable';
+  status?: 'normal' | 'warning' | 'critical';
+}
