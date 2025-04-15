@@ -284,56 +284,85 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 5C16.2 5 5 16.2 5 30s11.2 25 25 25 25-11.2 25-25S43.8 5 30 5zm0 45c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20z' fill='rgba(52, 211, 153, 0.1)'/%3E%3C/svg%3E");
     background-size: 60px 60px;
   }
+  
+  /* Enhanced Solarpunk UI elements */
+  .light .eco-card {
+    @apply bg-gradient-to-br from-white/80 to-emerald-50/70 border-emerald-100 shadow-sm hover:shadow-md transition-all;
+  }
+  
+  .light .solar-button {
+    @apply bg-gradient-to-r from-amber-400 to-emerald-400 text-white rounded-full px-4 py-2 shadow-lg hover:shadow-xl transition-all;
+  }
 
-  /* Section headers */
-  .section-header {
-    @apply text-xl font-medium mb-2;
-    color: #c8c8c9;
+  .light .solar-input {
+    @apply bg-white/80 border border-emerald-200 rounded-full px-4 py-2 focus:ring-2 focus:ring-amber-300 focus:border-amber-300;
   }
   
-  /* Cyberpunk UI elements */
-  .pixel-corners {
-    clip-path: polygon(
-      0 4px, 4px 0, calc(100% - 4px) 0, 100% 4px,
-      100% calc(100% - 4px), calc(100% - 4px) 100%,
-      4px 100%, 0 calc(100% - 4px)
-    );
+  .light .eco-badge {
+    @apply bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 text-xs font-medium rounded-full;
   }
   
-  .pixel-border {
+  .light .sunflower-badge {
+    @apply bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 text-xs font-medium rounded-full;
+  }
+  
+  .light .solar-highlight {
+    @apply bg-gradient-to-r from-amber-100 to-amber-50 border-l-4 border-amber-400 pl-4 py-2 rounded-r;
+  }
+  
+  /* Enhanced organic patterns for solarpunk theme */
+  .light .organic-pattern {
+    background-size: 20px 20px;
+    background-image: radial-gradient(circle, rgba(16, 185, 129, 0.1) 1px, transparent 1px);
+  }
+  
+  .light .sunbeam-pattern {
+    background-image: 
+      linear-gradient(45deg, rgba(251, 191, 36, 0.05) 25%, transparent 25%),
+      linear-gradient(-45deg, rgba(251, 191, 36, 0.05) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, rgba(251, 191, 36, 0.05) 75%),
+      linear-gradient(-45deg, transparent 75%, rgba(251, 191, 36, 0.05) 75%);
+    background-size: 20px 20px;
+  }
+  
+  .light .water-ripple {
     position: relative;
   }
   
-  .pixel-border::after {
+  .light .water-ripple::after {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: transparent;
-    border: 2px solid;
-    border-image-slice: 2;
-    border-image-width: 2;
-    border-image-outset: 0;
-    border-image-source: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='6'><path d='M0 2h2v2H0zM2 0h2v2H2zM4 2h2v2H4zM2 4h2v2H2z' fill='%23999' /></svg>");
+    background: radial-gradient(
+      circle,
+      rgba(56, 189, 248, 0) 0%,
+      rgba(56, 189, 248, 0.05) 50%,
+      rgba(56, 189, 248, 0) 100%
+    );
+    background-size: 50px 50px;
+    animation: ripple 8s ease-in-out infinite;
     pointer-events: none;
+    z-index: 1;
   }
-
-  /* Solarpunk UI elements */
-  .light .solar-button {
-    @apply bg-gradient-to-r from-amber-400 to-emerald-400 text-white rounded-full px-4 py-2 shadow-lg hover:shadow-xl transition-all;
+  
+  @keyframes ripple {
+    0% {
+      background-size: 50px 50px;
+      opacity: 0.3;
+    }
+    50% {
+      background-size: 80px 80px;
+      opacity: 0.6;
+    }
+    100% {
+      background-size: 50px 50px;
+      opacity: 0.3;
+    }
   }
-
-  .light .eco-card {
-    @apply bg-gradient-to-br from-amber-50 to-lime-50 rounded-lg border border-emerald-200 shadow-sm hover:shadow-md transition-all;
-  }
-
-  .light .solar-input {
-    @apply bg-white/80 border border-emerald-200 rounded-full px-4 py-2 focus:ring-2 focus:ring-amber-300 focus:border-amber-300;
-  }
-
-  /* Circuit and organic patterns */
+  
   .light .bg-grid-pattern {
     background-image: 
       linear-gradient(to right, rgba(52, 211, 153, 0.07) 1px, transparent 1px),
@@ -792,4 +821,63 @@
 
 .bg-welcome-header-gradient {
   background-image: linear-gradient(135deg, rgba(139, 92, 246, 0.07) 0%, rgba(217, 70, 239, 0.05) 100%);
+}
+
+/* Solarpunk decorative gradients */
+.bg-solarpunk-gradient {
+  background-image: linear-gradient(120deg, rgba(252, 211, 77, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+}
+
+.bg-natural-header-gradient {
+  background-image: linear-gradient(135deg, rgba(167, 243, 208, 0.2) 0%, rgba(253, 230, 138, 0.15) 100%);
+}
+
+/* Solarpunk-specific decor elements */
+.flower-decor {
+  position: relative;
+}
+
+.flower-decor::before {
+  content: '✿';
+  position: absolute;
+  font-size: 1.25rem;
+  color: rgba(16, 185, 129, 0.6);
+  top: -0.5rem;
+  right: -0.5rem;
+}
+
+.light .leaf-highlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.light .leaf-highlight::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(16, 185, 129, 0.15) 0%,
+    rgba(16, 185, 129, 0) 70%
+  );
+  opacity: 0;
+  animation: leaf-pulse 4s ease-in-out infinite;
+}
+
+@keyframes leaf-pulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
 }

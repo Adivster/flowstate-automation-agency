@@ -6,13 +6,13 @@ import { useTheme } from 'next-themes';
 type GlassMorphismProps = {
   children: React.ReactNode;
   className?: string;
-  variant?: 'default' | 'accent' | 'dark' | 'light' | 'success' | 'warning' | 'error';
+  variant?: 'default' | 'accent' | 'dark' | 'light' | 'success' | 'warning' | 'error' | 'nature' | 'sunlit' | 'sky';
   intensity?: 'low' | 'medium' | 'high';
   blur?: boolean;
   borderOpacity?: number;
   hoverEffect?: boolean;
   style?: React.CSSProperties;
-  onClick?: () => void; // Add onClick prop support
+  onClick?: () => void; // Support for onClick prop
 };
 
 export const GlassMorphism: React.FC<GlassMorphismProps> = ({
@@ -31,6 +31,7 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
   
   const getBackgroundVariant = () => {
     if (isDark) {
+      // Cyberpunk theme variants (dark mode)
       switch (variant) {
         case 'accent':
           return 'bg-flow-accent/10 border-flow-accent/30';
@@ -44,6 +45,12 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
           return 'bg-amber-500/10 border-amber-500/30';
         case 'error':
           return 'bg-red-500/10 border-red-500/30';
+        case 'nature':
+          return 'bg-emerald-600/10 border-emerald-400/30';
+        case 'sunlit':
+          return 'bg-amber-500/10 border-amber-400/30';
+        case 'sky':
+          return 'bg-sky-500/10 border-sky-400/30';
         default:
           return 'bg-black/30 border-flow-border/30';
       }
@@ -62,6 +69,12 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
           return 'bg-amber-50/80 border-amber-300';
         case 'error':
           return 'bg-red-50/80 border-red-300';
+        case 'nature':
+          return 'bg-emerald-50/70 border-emerald-300/80';
+        case 'sunlit':
+          return 'bg-amber-50/80 border-amber-200';
+        case 'sky':
+          return 'bg-sky-50/70 border-sky-300/60';
         default:
           return 'bg-white/70 border-emerald-100';
       }
@@ -111,7 +124,7 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
         className
       )}
       style={style}
-      onClick={onClick} // Add onClick handler
+      onClick={onClick}
     >
       {children}
     </div>

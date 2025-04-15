@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Check, Clock, AlertCircle, Play, Pause, X, RotateCcw, Edit, MoreVertical, Calendar } from 'lucide-react';
+import { Check, Clock, AlertCircle, Play, Pause, X, RotateCcw, Edit, MoreVertical, Calendar, Leaf } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
+import { useTheme } from 'next-themes';
 
 interface TaskItemProps {
   task: Task;
@@ -25,6 +26,8 @@ interface TaskItemProps {
 
 const TaskItem: React.FC<TaskItemProps> = ({ task, isGridView = false }) => {
   const { updateTask, deleteTask } = useTaskStore();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   
   // Handle status change
   const handleStatusChange = (newStatus: TaskStatus) => {
@@ -48,13 +51,13 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isGridView = false }) => {
   const getStatusIcon = (status: TaskStatus) => {
     switch (status) {
       case 'completed':
-        return <Check className="h-4 w-4 text-green-500" />;
+        return <Check className={`h-4 w-4 ${isDark ? 'text-green-500' : 'text-emerald-600'}`} />;
       case 'in-progress':
-        return <Clock className="h-4 w-4 text-blue-500 animate-pulse" />;
+        return <Clock className={`h-4 w-4 ${isDark ? 'text-blue-500' : 'text-sky-600'} animate-pulse`} />;
       case 'paused':
-        return <Pause className="h-4 w-4 text-yellow-500" />;
+        return <Pause className={`h-4 w-4 ${isDark ? 'text-yellow-500' : 'text-amber-600'}`} />;
       case 'failed':
-        return <AlertCircle className="h-4 w-4 text-red-500" />;
+        return <AlertCircle className={`h-4 w-4 ${isDark ? 'text-red-500' : 'text-rose-600'}`} />;
       default:
         return null;
     }
@@ -77,10 +80,10 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isGridView = false }) => {
   
   // Get progress color based on status
   const getProgressColor = () => {
-    if (task.status === 'completed') return '#22c55e';
-    if (task.status === 'failed') return '#ef4444';
-    if (isOverdue) return '#f97316';
-    return divisionColorScheme?.primary || '#3b82f6';
+    if (task.status === 'completed') return isDark ? '#22c55e' : '#059669';
+    if (task.status === 'failed') return isDark ? '#ef4444' : '#dc2626';
+    if (isOverdue) return isDark ? '#f97316' : '#ea580c';
+    return divisionColorScheme?.primary || (isDark ? '#3b82f6' : '#0ea5e9');
   };
   
   // Actions menu
@@ -92,7 +95,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isGridView = false }) => {
           <span className="sr-only">Open menu</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
+      <DropdownMenuContent align="end" className={`w-48 ${!isDark && 'border-emerald-100 bg-white/90 backdrop-blur-sm'}`}>
         <DropdownMenuLabel>Task Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => toast.info('Edit task')}>
@@ -157,8 +160,10 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isGridView = false }) => {
     return (
       <div 
         className={cn(
-          "border rounded-lg p-4 bg-flow-card/50 space-y-3 hover:shadow-md transition-all h-full flex flex-col",
-          task.division && `hover:shadow-[0_0_15px_${divisionColorScheme?.glow || 'rgba(85,120,255,0.2)'}]`
+          "border rounded-lg p-4 space-y-3 hover:shadow-md transition-all h-full flex flex-col",
+          isDark 
+            ? `bg-flow-card/50 ${task.division && `hover:shadow-[0_0_15px_${divisionColorScheme?.glow || 'rgba(85,120,255,0.2)'}]`}`
+            : `bg-white/70 backdrop-blur-md shadow-sm hover:shadow ${task.division && 'hover:shadow-emerald-100'}`
         )}
         style={divisionBorderStyle}
       >
@@ -181,8 +186,13 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isGridView = false }) => {
             value={task.progress} 
             className={cn(
               "h-2", 
-              task.status === 'failed' ? "bg-red-200" : "bg-flow-muted",
-              task.status === 'completed' ? "bg-green-200" : "",
+              isDark ? (
+                task.status === 'failed' ? "bg-red-200" : "bg-flow-muted",
+                task.status === 'completed' ? "bg-green-200" : ""
+              ) : (
+                task.status === 'failed' ? "bg-red-100" : "bg-emerald-100",
+                task.status === 'completed' ? "bg-emerald-100" : ""
+              ),
               divisionColorScheme && `overflow-hidden rounded-full`
             )}
           >
@@ -200,7 +210,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isGridView = false }) => {
         <div className="flex flex-col gap-1 pt-2 text-xs text-flow-foreground/70">
           <div className="flex items-center">
             <Calendar className="h-3 w-3 mr-1" />
-            <span className={cn(isOverdue && "text-orange-400")}>
+            <span className={cn(isOverdue && (isDark ? "text-orange-400" : "text-orange-600"))}>
               {dueDateFormatted}
             </span>
           </div>
@@ -218,8 +228,10 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isGridView = false }) => {
   return (
     <div 
       className={cn(
-        "border rounded-lg p-4 bg-flow-card/50 space-y-3 hover:shadow-md transition-all",
-        task.division && `hover:shadow-[0_0_15px_${divisionColorScheme?.glow || 'rgba(85,120,255,0.2)'}]`
+        "border rounded-lg p-4 space-y-3 hover:shadow-md transition-all",
+        isDark 
+          ? `bg-flow-card/50 ${task.division && `hover:shadow-[0_0_15px_${divisionColorScheme?.glow || 'rgba(85,120,255,0.2)'}]`}`
+          : `bg-white/70 backdrop-blur-md shadow-sm hover:shadow ${task.division && 'hover:shadow-emerald-100'}`
       )}
       style={divisionBorderStyle}
     >
@@ -243,8 +255,13 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isGridView = false }) => {
           value={task.progress} 
           className={cn(
             "h-2", 
-            task.status === 'failed' ? "bg-red-200" : "bg-flow-muted",
-            task.status === 'completed' ? "bg-green-200" : "",
+            isDark ? (
+              task.status === 'failed' ? "bg-red-200" : "bg-flow-muted",
+              task.status === 'completed' ? "bg-green-200" : ""
+            ) : (
+              task.status === 'failed' ? "bg-red-100" : "bg-emerald-100",
+              task.status === 'completed' ? "bg-emerald-100" : ""
+            ),
             divisionColorScheme && `overflow-hidden rounded-full`
           )}
         >
@@ -262,7 +279,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isGridView = false }) => {
       <div className="flex justify-between items-center pt-2">
         <div className="flex flex-col text-xs text-flow-foreground/70">
           <span>Assigned to: <span className="font-medium">{task.assignedTo}</span></span>
-          <span className={cn("flex items-center", isOverdue && "text-orange-400")}>
+          <span className={cn("flex items-center", isOverdue && (isDark ? "text-orange-400" : "text-orange-600"))}>
             <Calendar className="h-3 w-3 mr-1" />
             {dueDateFormatted}
           </span>
@@ -276,7 +293,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isGridView = false }) => {
                 color: divisionColorScheme.text
               } : {}}
             >
-              {task.division}
+              {task.division || "General"}
             </span>
           </span>
         </div>
