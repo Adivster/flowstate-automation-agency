@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Settings } from 'lucide-react';
+import { Settings, ZoomIn, ZoomOut, Maximize2, Move } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 interface ZoomableViewProps {
   children: React.ReactNode;
@@ -18,9 +19,6 @@ interface ZoomableViewProps {
   showControls?: boolean;
 }
 
-/**
- * A component that allows zooming and panning functionality
- */
 const ZoomableView: React.FC<ZoomableViewProps> = ({
   children,
   zoomLevel,
@@ -37,24 +35,21 @@ const ZoomableView: React.FC<ZoomableViewProps> = ({
   const [isPanning, setIsPanning] = useState(false);
   const [panOffset, setPanOffset] = useState(initialPanOffset);
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
+  const [showPanIndicator, setShowPanIndicator] = useState(false);
   
   // Handle initial zoom scale
   useEffect(() => {
-    // Constrain zoom level to min/max
     const constrainedZoom = Math.max(minZoom, Math.min(maxZoom, zoomLevel));
     
-    // If there's a big zoom change, reset panning to prevent content from getting lost
     if (Math.abs(zoomLevel - 1) > 0.3) {
       setPanOffset(initialPanOffset);
     }
-    
   }, [zoomLevel, minZoom, maxZoom, initialPanOffset]);
   
   // Handle mouse down for pan start
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!panEnabled) return;
     
-    // Only start panning on alt key or middle mouse button
     if (e.altKey || e.button === 1) {
       e.preventDefault();
       setIsPanning(true);
@@ -62,27 +57,38 @@ const ZoomableView: React.FC<ZoomableViewProps> = ({
         x: e.clientX - panOffset.x,
         y: e.clientY - panOffset.y
       });
+      setShowPanIndicator(true);
     }
   };
   
-  // Handle mouse move for panning
+  // Handle mouse move for panning with smoother motion
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isPanning || !panEnabled) return;
     
+    const newX = e.clientX - startPoint.x;
+    const newY = e.clientY - startPoint.y;
+    
+    // Add bounds to prevent excessive panning
+    const maxPan = 1000; // Adjust this value based on your needs
+    const boundedX = Math.max(-maxPan, Math.min(maxPan, newX));
+    const boundedY = Math.max(-maxPan, Math.min(maxPan, newY));
+    
     setPanOffset({
-      x: e.clientX - startPoint.x,
-      y: e.clientY - startPoint.y
+      x: boundedX,
+      y: boundedY
     });
   };
   
   // Handle mouse up to end panning
   const handleMouseUp = () => {
     setIsPanning(false);
+    setShowPanIndicator(false);
   };
   
-  // Handle mouse leave to end panning
+  // Handle mouse leave
   const handleMouseLeave = () => {
     setIsPanning(false);
+    setShowPanIndicator(false);
   };
   
   // Handle double click to reset
@@ -107,6 +113,25 @@ const ZoomableView: React.FC<ZoomableViewProps> = ({
       onDoubleClick={handleDoubleClick}
       style={{ cursor: isPanning ? 'grabbing' : 'default' }}
     >
+      <AnimatePresence>
+        {showPanIndicator && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50"
+          >
+            <Badge 
+              variant="secondary" 
+              className="bg-black/60 backdrop-blur-md text-white border-white/10 flex items-center gap-2"
+            >
+              <Move className="h-3 w-3" />
+              Panning Mode
+            </Badge>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <motion.div
         className="absolute inset-0 will-change-transform"
         style={{
@@ -116,16 +141,17 @@ const ZoomableView: React.FC<ZoomableViewProps> = ({
           transformOrigin: 'center',
         }}
         transition={{
-          type: 'tween',
-          duration: isPanning ? 0 : 0.2, // Reduced for faster response
+          type: "spring",
+          stiffness: 300,
+          damping: 30,
+          mass: 1,
         }}
       >
         {children}
       </motion.div>
       
-      {/* Settings button only */}
       {showControls && (
-        <div className="absolute bottom-4 right-4 z-[100]">
+        <div className="absolute bottom-4 right-4 z-[100] flex flex-col gap-2">
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -166,7 +192,38 @@ const ZoomableView: React.FC<ZoomableViewProps> = ({
               </div>
             </PopoverContent>
           </Popover>
+
+          <div className="flex flex-col gap-1">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8 bg-black/60 backdrop-blur-md hover:bg-white/20 text-white border border-white/10"
+              onClick={onZoomIn}
+            >
+              <ZoomIn className="h-4 w-4" />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8 bg-black/60 backdrop-blur-md hover:bg-white/20 text-white border border-white/10"
+              onClick={onZoomOut}
+            >
+              <ZoomOut className="h-4 w-4" />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8 bg-black/60 backdrop-blur-md hover:bg-white/20 text-white border border-white/10"
+              onClick={onReset}
+            >
+              <Maximize2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
+      )}
+      
+      {isPanning && (
+        <div className="fixed inset-0 bg-black/5 backdrop-blur-[1px] pointer-events-none" />
       )}
     </div>
   );
