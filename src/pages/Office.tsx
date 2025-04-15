@@ -1,3 +1,4 @@
+
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect, useRef } from 'react';
 import Navbar from '@/components/layout/Navbar';
@@ -14,11 +15,14 @@ import { useToast } from '@/hooks/use-toast';
 import { GlassMorphism } from '@/components/ui/GlassMorphism'; 
 import { Badge } from '@/components/ui/badge';
 import PageHeader from '@/components/ui/design-system/PageHeader';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import ThemedBackground from '@/components/ui/ThemedBackground';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
+import VisualizationControls from '@/components/agents/office/VisualizationControls';
+import AgentInfoPanel from '@/components/agents/office/AgentInfoPanel';
+import { VisualizationState } from '@/components/agents/office/types/visualizationTypes';
 
 const Office = () => {
   const { t } = useLanguage();
@@ -34,6 +38,39 @@ const Office = () => {
   const [activeTab, setActiveTab] = useState('office');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const contentLoaded = useRef(false);
+  const [showVisualizationControls, setShowVisualizationControls] = useState(false);
+  const [selectedAgentInfo, setSelectedAgentInfo] = useState<any>(null);
+  const [visualizationState, setVisualizationState] = useState<VisualizationState>({
+    activeLayerIds: [],
+    layers: [],
+    layerData: {
+      heatmap: { active: false, data: [] },
+      statusMarkers: { active: false, data: [] },
+      hotspots: { 
+        active: false,
+        divisionHotspots: true,
+        workstationHotspots: true,
+        serverHotspots: true
+      },
+      performance: {
+        active: false,
+        showSparklines: true,
+        showEfficiency: true,
+        position: 'bottom-right'
+      },
+      quickActions: {
+        active: false,
+        style: 'icon',
+        position: 'bottom-right'
+      },
+      analytics: {
+        active: false,
+        position: 'bottom-right',
+        showLabels: true,
+        showTrends: true
+      }
+    }
+  });
   
   const agentStats = {
     total: 24,
@@ -67,6 +104,111 @@ const Office = () => {
       description: `Filtering agents by ${key}: ${value}`,
       duration: 3000,
     });
+  };
+
+  const handleToggleVisualization = () => {
+    setShowVisualizationControls(!showVisualizationControls);
+  };
+  
+  const updateVisualizationState = (newState: Partial<VisualizationState>) => {
+    setVisualizationState(prev => ({
+      ...prev,
+      ...newState
+    }));
+  };
+  
+  const handleAgentClick = (agent: any) => {
+    setSelectedAgentInfo(agent);
+  };
+  
+  const handleCloseAgentInfo = () => {
+    setSelectedAgentInfo(null);
+  };
+  
+  const handleHotspotAction = (action: string, entityId: string, entityType: string) => {
+    toast({
+      title: `${action} - ${entityType}`,
+      description: `Performing ${action} on ${entityType} ${entityId}`,
+      duration: 3000,
+    });
+    
+    // If action is 'details' for an agent, show agent info panel
+    if (action === 'details' && entityType === 'agent') {
+      // Mock agent data
+      const mockAgent = {
+        id: entityId,
+        name: `Agent ${entityId}`,
+        avatar: '/assets/agent-avatar.png',
+        role: 'Knowledge Assistant',
+        status: 'active',
+        efficiency: 87,
+        tasks: {
+          completed: 42,
+          inProgress: 5,
+          total: 50
+        },
+        workstationId: 'WS-12',
+        division: 'knowledge',
+        uptime: '12d 4h',
+        specialty: 'Data Analysis',
+        skills: ['NLP', 'Information Retrieval', 'Summarization', 'Content Creation'],
+        currentTask: 'Analyzing customer feedback reports for sentiment trends',
+        recentActivities: [
+          {
+            type: 'task',
+            description: 'Completed knowledge base update',
+            time: '2 hours ago'
+          },
+          {
+            type: 'collaboration',
+            description: 'Assisted Agent 3 with data correlation',
+            time: '4 hours ago'
+          },
+          {
+            type: 'system',
+            description: 'Resource allocation optimized',
+            time: '1 day ago'
+          }
+        ],
+        performanceMetrics: [
+          {
+            metric: 'Accuracy',
+            value: 95,
+            change: 2.5,
+            trend: 'up'
+          },
+          {
+            metric: 'Response Time',
+            value: 85,
+            change: -1.2,
+            trend: 'down'
+          },
+          {
+            metric: 'Task Completion',
+            value: 92,
+            change: 5.0,
+            trend: 'up'
+          },
+          {
+            metric: 'Resource Usage',
+            value: 78,
+            change: 3.4,
+            trend: 'up'
+          }
+        ],
+        collaborationData: [
+          { name: 'Mon', value: 30 },
+          { name: 'Tue', value: 45 },
+          { name: 'Wed', value: 60 },
+          { name: 'Thu', value: 40 },
+          { name: 'Fri', value: 70 },
+          { name: 'Sat', value: 25 },
+          { name: 'Sun', value: 15 }
+        ]
+      };
+      
+      setSelectedAgentInfo(mockAgent);
+    }
   };
   
   if (!loaded) {
@@ -109,6 +251,11 @@ const Office = () => {
                         ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
                         : "bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700"
                     )}
+                    onClick={() => toast({
+                      title: "Reorganize Office",
+                      description: "Office reorganization feature can be added here",
+                      duration: 3000,
+                    })}
                   >
                     <Grid className="h-4 w-4 mr-2" />
                     Reorganize Office
@@ -122,9 +269,20 @@ const Office = () => {
                         ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
                         : "bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700"
                     )}
+                    onClick={() => {
+                      if (selectedAgentInfo) {
+                        handleCloseAgentInfo();
+                      } else {
+                        toast({
+                          title: "View Agent Details",
+                          description: "Select an agent to view their details",
+                          duration: 3000,
+                        });
+                      }
+                    }}
                   >
                     <Users className="h-4 w-4 mr-2" />
-                    View Agent Details
+                    {selectedAgentInfo ? 'Close Agent Details' : 'View Agent Details'}
                   </Button>
                   
                   <Button 
@@ -135,22 +293,30 @@ const Office = () => {
                         ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
                         : "bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700"
                     )}
+                    onClick={() => toast({
+                      title: "Refreshing Status",
+                      description: "Updating latest agent and system status",
+                      duration: 3000,
+                    })}
                   >
                     <RefreshCw className="h-4 w-4 mr-2" />
                     Refresh Status
                   </Button>
                   
                   <Button 
-                    variant="outline" 
+                    variant={showVisualizationControls ? "default" : "outline"}
                     size="sm"
                     className={cn(
-                      isDark 
-                        ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
-                        : "bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700"
+                      showVisualizationControls
+                        ? "bg-purple-500 hover:bg-purple-600 text-white"
+                        : isDark 
+                          ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
+                          : "bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700"
                     )}
+                    onClick={handleToggleVisualization}
                   >
                     <Layers className="h-4 w-4 mr-2" />
-                    Toggle Heatmap
+                    Visualization Controls
                   </Button>
                 </div>
               }
@@ -231,158 +397,187 @@ const Office = () => {
             </motion.div>
           </div>
           
-          <SolarpunkPanel accentColor="lavender" className="overflow-hidden hover-scale">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 p-6">
-              <TabsList className={cn(
-                "grid w-full max-w-md grid-cols-3",
-                isDark 
-                  ? "bg-flow-background/30 border border-flow-border/50" 
-                  : "bg-white/60 border border-purple-200"
-              )}>
-                <TabsTrigger 
-                  value="office" 
-                  className={cn(
-                    "flex items-center gap-2",
-                    "data-[state=active]:bg-purple-500 data-[state=active]:text-white",
-                    isDark 
-                      ? "data-[state=inactive]:text-gray-300"
-                      : "data-[state=inactive]:text-purple-700"
-                  )}
-                >
-                  <Briefcase className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('officeView')}</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="agents" 
-                  className={cn(
-                    "flex items-center gap-2",
-                    "data-[state=active]:bg-purple-500 data-[state=active]:text-white",
-                    isDark 
-                      ? "data-[state=inactive]:text-gray-300"
-                      : "data-[state=inactive]:text-purple-700"
-                  )}
-                >
-                  <Users className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('agentList')}</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="metrics" 
-                  className={cn(
-                    "flex items-center gap-2",
-                    "data-[state=active]:bg-purple-500 data-[state=active]:text-white",
-                    isDark 
-                      ? "data-[state=inactive]:text-gray-300"
-                      : "data-[state=inactive]:text-purple-700"
-                  )}
-                >
-                  <Cpu className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('systemMetrics')}</span>
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="office" className="space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm mb-4">
-                  <div className={cn("flex items-center", isDark ? "text-flow-foreground/60" : "text-gray-600")}>
-                    <Zap className="h-4 w-4 mr-2 text-flow-accent" />
-                    {t('interactiveOffice')}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
-                    <Select onValueChange={(value) => handleFilterChange('division', value)}>
-                      <SelectTrigger className="w-[140px] h-8 text-xs bg-flow-background/30 border-flow-border/50">
-                        <SelectValue placeholder="Filter Division" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-flow-background/90 backdrop-blur-md border-flow-border">
-                        <SelectItem value="all">All Divisions</SelectItem>
-                        <SelectItem value="kb">Knowledge Base</SelectItem>
-                        <SelectItem value="analytics">Analytics</SelectItem>
-                        <SelectItem value="operations">Operations</SelectItem>
-                        <SelectItem value="strategy">Strategy</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="h-8 px-2 text-xs flex items-center gap-1 bg-flow-background/30 border-flow-border/50"
-                      onClick={() => toast({
-                        title: "View Controls",
-                        description: "Customize the office view with additional controls",
-                        duration: 3000,
-                      })}
-                    >
-                      <Filter className="h-3 w-3" />
-                      View
-                    </Button>
-                  </div>
-                </div>
+          <div className="relative">
+            <SolarpunkPanel accentColor="lavender" className="overflow-hidden hover-scale">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 p-6">
+                <TabsList className={cn(
+                  "grid w-full max-w-md grid-cols-3",
+                  isDark 
+                    ? "bg-flow-background/30 border border-flow-border/50" 
+                    : "bg-white/60 border border-purple-200"
+                )}>
+                  <TabsTrigger 
+                    value="office" 
+                    className={cn(
+                      "flex items-center gap-2",
+                      "data-[state=active]:bg-purple-500 data-[state=active]:text-white",
+                      isDark 
+                        ? "data-[state=inactive]:text-gray-300"
+                        : "data-[state=inactive]:text-purple-700"
+                    )}
+                  >
+                    <Briefcase className="h-4 w-4" />
+                    <span className="hidden sm:inline">{t('officeView')}</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="agents" 
+                    className={cn(
+                      "flex items-center gap-2",
+                      "data-[state=active]:bg-purple-500 data-[state=active]:text-white",
+                      isDark 
+                        ? "data-[state=inactive]:text-gray-300"
+                        : "data-[state=inactive]:text-purple-700"
+                    )}
+                  >
+                    <Users className="h-4 w-4" />
+                    <span className="hidden sm:inline">{t('agentList')}</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="metrics" 
+                    className={cn(
+                      "flex items-center gap-2",
+                      "data-[state=active]:bg-purple-500 data-[state=active]:text-white",
+                      isDark 
+                        ? "data-[state=inactive]:text-gray-300"
+                        : "data-[state=inactive]:text-purple-700"
+                    )}
+                  >
+                    <Cpu className="h-4 w-4" />
+                    <span className="hidden sm:inline">{t('systemMetrics')}</span>
+                  </TabsTrigger>
+                </TabsList>
                 
-                <div className="min-h-[550px] h-[550px] relative">
-                  <OfficeFloorPlan />
-                </div>
-                
-                <div className="flex justify-end items-center mt-2">
-                  <div className={cn("text-xs px-3 py-1.5 bg-flow-background/30 backdrop-blur-sm rounded-full border border-flow-accent/30 animate-pulse-subtle", isDark ? "text-flow-foreground/60" : "text-gray-600")}>
-                    <span className="text-flow-accent">{t('proTip')}</span> {t('openTerminal')}
-                  </div>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="agents" className="space-y-6">
-                <div className="h-[60vh] overflow-y-auto pr-1 custom-scrollbar">
-                  <AgentGrid />
-                </div>
-                
-                <div className="flex justify-center mt-4">
-                  <Button variant="outline" className="border-flow-accent/50 bg-flow-accent/10 hover:bg-flow-accent/20 text-flow-accent">
-                    <Zap className="h-4 w-4 mr-2" />
-                    Deploy New Agent
-                  </Button>
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="metrics" className="space-y-6">
-                <GlassMorphism intensity="low" className="p-4 rounded-xl border-flow-border/30 mb-4">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm">
-                    <div className={cn("flex items-center", isDark ? "text-flow-foreground/70" : "text-gray-600")}>
-                      <Cpu className="h-4 w-4 mr-2 text-cyan-400" />
-                      {t('performanceMetrics')}
+                <TabsContent value="office" className="space-y-6">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm mb-4">
+                    <div className={cn("flex items-center", isDark ? "text-flow-foreground/60" : "text-gray-600")}>
+                      <Zap className="h-4 w-4 mr-2 text-flow-accent" />
+                      {t('interactiveOffice')}
                     </div>
-                    <div className="flex flex-wrap items-center gap-2 mt-3 sm:mt-0">
-                      <Select defaultValue="7d">
+                    <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
+                      <Select onValueChange={(value) => handleFilterChange('division', value)}>
                         <SelectTrigger className="w-[140px] h-8 text-xs bg-flow-background/30 border-flow-border/50">
-                          <SelectValue placeholder="Time Period" />
+                          <SelectValue placeholder="Filter Division" />
                         </SelectTrigger>
                         <SelectContent className="bg-flow-background/90 backdrop-blur-md border-flow-border">
-                          <SelectItem value="24h">Last 24 Hours</SelectItem>
-                          <SelectItem value="7d">Last 7 Days</SelectItem>
-                          <SelectItem value="30d">Last 30 Days</SelectItem>
-                          <SelectItem value="90d">Last Quarter</SelectItem>
+                          <SelectItem value="all">All Divisions</SelectItem>
+                          <SelectItem value="kb">Knowledge Base</SelectItem>
+                          <SelectItem value="analytics">Analytics</SelectItem>
+                          <SelectItem value="operations">Operations</SelectItem>
+                          <SelectItem value="strategy">Strategy</SelectItem>
                         </SelectContent>
                       </Select>
                       
                       <Button 
                         variant="outline" 
                         size="sm"
-                        className="h-8 px-2 text-xs bg-flow-background/30 border-flow-border/50"
-                        onClick={() => toast({
-                          title: "Export Data",
-                          description: "Metrics data export functionality can be added here",
-                          duration: 3000,
-                        })}
+                        className="h-8 px-2 text-xs flex items-center gap-1 bg-flow-background/30 border-flow-border/50"
+                        onClick={handleToggleVisualization}
                       >
-                        Export
+                        <Filter className="h-3 w-3" />
+                        View
                       </Button>
                     </div>
                   </div>
-                </GlassMorphism>
+                  
+                  <div className="min-h-[550px] h-[550px] relative">
+                    <OfficeFloorPlan 
+                      visualizationState={visualizationState}
+                      onHotspotAction={handleHotspotAction}
+                    />
+                  </div>
+                  
+                  <div className="flex justify-end items-center mt-2">
+                    <div className={cn("text-xs px-3 py-1.5 bg-flow-background/30 backdrop-blur-sm rounded-full border border-flow-accent/30 animate-pulse-subtle", isDark ? "text-flow-foreground/60" : "text-gray-600")}>
+                      <span className="text-flow-accent">{t('proTip')}</span> {t('openTerminal')}
+                    </div>
+                  </div>
+                </TabsContent>
                 
-                <div className="min-h-[550px] h-[550px] relative">
-                  <AgencyMetrics />
-                </div>
-              </TabsContent>
-            </Tabs>
-          </SolarpunkPanel>
+                <TabsContent value="agents" className="space-y-6">
+                  <div className="h-[60vh] overflow-y-auto pr-1 custom-scrollbar">
+                    <AgentGrid />
+                  </div>
+                  
+                  <div className="flex justify-center mt-4">
+                    <Button variant="outline" className="border-flow-accent/50 bg-flow-accent/10 hover:bg-flow-accent/20 text-flow-accent">
+                      <Zap className="h-4 w-4 mr-2" />
+                      Deploy New Agent
+                    </Button>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="metrics" className="space-y-6">
+                  <GlassMorphism intensity="low" className="p-4 rounded-xl border-flow-border/30 mb-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm">
+                      <div className={cn("flex items-center", isDark ? "text-flow-foreground/70" : "text-gray-600")}>
+                        <Cpu className="h-4 w-4 mr-2 text-cyan-400" />
+                        {t('performanceMetrics')}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2 mt-3 sm:mt-0">
+                        <Select defaultValue="7d">
+                          <SelectTrigger className="w-[140px] h-8 text-xs bg-flow-background/30 border-flow-border/50">
+                            <SelectValue placeholder="Time Period" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-flow-background/90 backdrop-blur-md border-flow-border">
+                            <SelectItem value="24h">Last 24 Hours</SelectItem>
+                            <SelectItem value="7d">Last 7 Days</SelectItem>
+                            <SelectItem value="30d">Last 30 Days</SelectItem>
+                            <SelectItem value="90d">Last Quarter</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="h-8 px-2 text-xs bg-flow-background/30 border-flow-border/50"
+                          onClick={() => toast({
+                            title: "Export Data",
+                            description: "Metrics data export functionality can be added here",
+                            duration: 3000,
+                          })}
+                        >
+                          Export
+                        </Button>
+                      </div>
+                    </div>
+                  </GlassMorphism>
+                  
+                  <div className="min-h-[550px] h-[550px] relative">
+                    <AgencyMetrics />
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </SolarpunkPanel>
+            
+            {/* Visualization Controls Panel */}
+            <AnimatePresence>
+              {showVisualizationControls && (
+                <motion.div 
+                  className="absolute top-4 right-4 z-50"
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 100 }}
+                >
+                  <VisualizationControls
+                    visualizationState={visualizationState}
+                    updateVisualizationState={updateVisualizationState}
+                    onClose={() => setShowVisualizationControls(false)}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
+        
+        {/* Agent Info Panel */}
+        <AnimatePresence>
+          {selectedAgentInfo && (
+            <AgentInfoPanel 
+              agent={selectedAgentInfo} 
+              onClose={handleCloseAgentInfo} 
+            />
+          )}
+        </AnimatePresence>
       </main>
       
       <Footer />

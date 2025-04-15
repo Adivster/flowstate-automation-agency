@@ -1,202 +1,429 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Layers, Activity, AlertTriangle, Gauge, User, Grid3X3, Settings } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuPortal,
-  DropdownMenuSubContent
-} from '@/components/ui/dropdown-menu';
+import { Eye, EyeOff, Grid, Layers, Activity, Cpu, Zap, AlertCircle, BadgeInfo, ScanLine, MapPin } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
-import { VisualizationLayerData } from './types/visualizationTypes';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { VisualizationState } from './types/visualizationTypes';
 
-export type VisualizationLayer = {
+export interface VisualizationLayer {
   id: string;
   name: string;
-  active: boolean;
-  icon?: React.ReactNode;
-  count?: number;
-  color?: string;
-};
+  icon: React.ReactNode;
+  description: string;
+}
 
 interface VisualizationControlsProps {
-  layers: VisualizationLayer[];
-  onToggleLayer: (layerId: string) => void;
-  className?: string;
-  layerData?: VisualizationLayerData;
-  onUpdateLayerOptions?: (layerId: string, options: any) => void;
+  visualizationState: VisualizationState;
+  updateVisualizationState: (state: Partial<VisualizationState>) => void;
+  onClose?: () => void;
 }
 
 const VisualizationControls: React.FC<VisualizationControlsProps> = ({
-  layers,
-  onToggleLayer,
-  className = '',
-  layerData,
-  onUpdateLayerOptions
+  visualizationState,
+  updateVisualizationState,
+  onClose
 }) => {
-  const getDefaultIcon = (layerId: string) => {
-    switch (layerId) {
-      case 'heatmap':
-        return <Activity className="h-4 w-4" />;
-      case 'statusMarkers':
-        return <AlertTriangle className="h-4 w-4" />;
-      case 'performance':
-        return <Gauge className="h-4 w-4" />;
-      case 'hotspots':
-        return <User className="h-4 w-4" />;
-      case 'quickActions':
-        return <Settings className="h-4 w-4" />;
-      case 'grid':
-        return <Grid3X3 className="h-4 w-4" />;
-      default:
-        return <Eye className="h-4 w-4" />;
+  const availableLayers: VisualizationLayer[] = [
+    {
+      id: 'heatmap',
+      name: 'Activity Heatmap',
+      icon: <Layers className="h-4 w-4" />,
+      description: 'Shows areas of high agent activity and system load'
+    },
+    {
+      id: 'statusMarkers',
+      name: 'Status Markers',
+      icon: <AlertCircle className="h-4 w-4" />,
+      description: 'Displays alerts and notifications in the workspace'
+    },
+    {
+      id: 'hotspots',
+      name: 'Interactive Hotspots',
+      icon: <MapPin className="h-4 w-4" />,
+      description: 'Clickable points that provide quick actions and information'
+    },
+    {
+      id: 'performance',
+      name: 'Performance Metrics',
+      icon: <Activity className="h-4 w-4" />,
+      description: 'Visual indicators of agent and division performance'
+    },
+    {
+      id: 'quickActions',
+      name: 'Quick Actions',
+      icon: <Zap className="h-4 w-4" />,
+      description: 'Access to common actions for divisions and agents'
+    },
+    {
+      id: 'grid',
+      name: 'Grid Overlay',
+      icon: <Grid className="h-4 w-4" />,
+      description: 'Display a reference grid over the workspace'
+    },
+    {
+      id: 'ambientEffects',
+      name: 'Ambient Effects',
+      icon: <ScanLine className="h-4 w-4" />,
+      description: 'Visual embellishments like scanlines and glow effects'
     }
-  };
-
-  const handlePositionChange = (layerId: string, position: 'bottom-right' | 'top-right' | 'bottom-left' | 'top-left') => {
-    if (onUpdateLayerOptions) {
-      if (layerId === 'performance') {
-        onUpdateLayerOptions('performance', { position });
-      } else if (layerId === 'quickActions') {
-        onUpdateLayerOptions('quickActions', { position });
+  ];
+  
+  const toggleLayer = (layerId: string) => {
+    const isCurrentlyActive = visualizationState.activeLayerIds.includes(layerId);
+    
+    const newActiveLayerIds = isCurrentlyActive
+      ? visualizationState.activeLayerIds.filter(id => id !== layerId)
+      : [...visualizationState.activeLayerIds, layerId];
+    
+    updateVisualizationState({ 
+      activeLayerIds: newActiveLayerIds,
+      layerData: {
+        ...visualizationState.layerData,
+        [layerId]: {
+          ...visualizationState.layerData[layerId as keyof typeof visualizationState.layerData],
+          active: !isCurrentlyActive
+        }
       }
-    }
+    });
   };
   
+  const updateLayerOption = (layerId: string, optionKey: string, value: any) => {
+    updateVisualizationState({
+      layerData: {
+        ...visualizationState.layerData,
+        [layerId]: {
+          ...visualizationState.layerData[layerId as keyof typeof visualizationState.layerData],
+          [optionKey]: value
+        }
+      }
+    });
+  };
+
   return (
-    <div className={`${className}`}>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button 
-            size="sm"
-            variant="outline" 
-            className="h-8 gap-2 bg-black/70 backdrop-blur-md hover:bg-black/90 text-white border-white/10"
-          >
-            <Layers className="h-4 w-4" />
-            <span className="hidden sm:inline">Visualization Layers</span>
-            <span className="inline sm:hidden">Layers</span>
-            {layers.filter(l => l.active).length > 0 && (
-              <Badge className="h-5 min-w-5 flex items-center justify-center p-0 text-xs bg-white text-black">
-                {layers.filter(l => l.active).length}
-              </Badge>
-            )}
-          </Button>
-        </DropdownMenuTrigger>
-        
-        <DropdownMenuContent className="min-w-[220px] bg-black/90 backdrop-blur-lg border-white/10 text-white">
-          <DropdownMenuLabel className="text-xs text-white/70">Toggle Visualization Layers</DropdownMenuLabel>
-          <DropdownMenuSeparator className="bg-white/10" />
-          
-          {layers.map((layer) => (
-            <React.Fragment key={layer.id}>
-              {(layer.id === 'performance' || layer.id === 'quickActions') ? (
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger className="flex items-center justify-between cursor-pointer group">
-                    <div className="flex items-center gap-2">
-                      <div className={`p-1 rounded ${layer.color || (layer.active ? 'text-white' : 'text-white/50')}`}>
-                        {layer.icon || getDefaultIcon(layer.id)}
-                      </div>
-                      <span className={layer.active ? 'text-white' : 'text-white/50'}>
-                        {layer.name}
-                      </span>
-                      {layer.count !== undefined && (
-                        <Badge className="ml-1 h-4 flex items-center justify-center bg-white/10 text-white/70 text-[10px]">
-                          {layer.count}
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    <Switch
-                      checked={layer.active}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleLayer(layer.id);
-                      }}
-                      className="data-[state=checked]:bg-blue-600"
-                    />
-                  </DropdownMenuSubTrigger>
-                  
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent className="min-w-[180px] bg-black/90 backdrop-blur-lg border-white/10 text-white">
-                      <DropdownMenuLabel className="text-xs text-white/60">Position</DropdownMenuLabel>
-                      <DropdownMenuItem 
-                        className="flex items-center gap-2 cursor-pointer"
-                        onClick={() => handlePositionChange(layer.id, 'bottom-right')}
-                      >
-                        <div className="w-4 h-4 border border-white/20 rounded-sm relative">
-                          <div className="absolute bottom-0 right-0 w-1.5 h-1.5 bg-blue-500 rounded-sm"></div>
-                        </div>
-                        <span>Bottom Right</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        className="flex items-center gap-2 cursor-pointer"
-                        onClick={() => handlePositionChange(layer.id, 'top-right')}
-                      >
-                        <div className="w-4 h-4 border border-white/20 rounded-sm relative">
-                          <div className="absolute top-0 right-0 w-1.5 h-1.5 bg-blue-500 rounded-sm"></div>
-                        </div>
-                        <span>Top Right</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        className="flex items-center gap-2 cursor-pointer"
-                        onClick={() => handlePositionChange(layer.id, 'bottom-left')}
-                      >
-                        <div className="w-4 h-4 border border-white/20 rounded-sm relative">
-                          <div className="absolute bottom-0 left-0 w-1.5 h-1.5 bg-blue-500 rounded-sm"></div>
-                        </div>
-                        <span>Bottom Left</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        className="flex items-center gap-2 cursor-pointer"
-                        onClick={() => handlePositionChange(layer.id, 'top-left')}
-                      >
-                        <div className="w-4 h-4 border border-white/20 rounded-sm relative">
-                          <div className="absolute top-0 left-0 w-1.5 h-1.5 bg-blue-500 rounded-sm"></div>
-                        </div>
-                        <span>Top Left</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
-              ) : (
-                <DropdownMenuItem 
-                  className="flex items-center justify-between cursor-pointer group"
-                  onClick={() => onToggleLayer(layer.id)}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className={`p-1 rounded ${layer.color || (layer.active ? 'text-white' : 'text-white/50')}`}>
-                      {layer.icon || getDefaultIcon(layer.id)}
-                    </div>
-                    <span className={layer.active ? 'text-white' : 'text-white/50'}>
-                      {layer.name}
-                    </span>
-                    {layer.count !== undefined && (
-                      <Badge className="ml-1 h-4 flex items-center justify-center bg-white/10 text-white/70 text-[10px]">
-                        {layer.count}
-                      </Badge>
-                    )}
+    <div className="p-4 bg-black/80 backdrop-blur-md text-white rounded-lg border border-white/10 w-80 max-h-[80vh] overflow-auto">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="font-semibold flex items-center gap-2">
+          <Eye className="h-4 w-4" /> Visualization Controls
+        </h3>
+        <Button variant="ghost" size="sm" className="text-white/70 hover:text-white" onClick={onClose}>
+          <EyeOff className="h-4 w-4" />
+        </Button>
+      </div>
+      
+      <div className="space-y-6">
+        {/* Available Layers */}
+        <div>
+          <h4 className="text-sm text-white/80 mb-3 border-b border-white/10 pb-1">Visualization Layers</h4>
+          <div className="space-y-3">
+            {availableLayers.map((layer) => (
+              <div key={layer.id} className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="h-7 w-7 bg-white/10 rounded-full flex items-center justify-center mr-3">
+                    {layer.icon}
                   </div>
-                  
-                  <Switch
-                    checked={layer.active}
-                    className="data-[state=checked]:bg-blue-600"
-                  />
-                </DropdownMenuItem>
-              )}
-            </React.Fragment>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+                  <div>
+                    <div className="text-sm font-medium">{layer.name}</div>
+                    <div className="text-xs text-white/60">{layer.description}</div>
+                  </div>
+                </div>
+                <Switch 
+                  checked={visualizationState.activeLayerIds.includes(layer.id)}
+                  onCheckedChange={() => toggleLayer(layer.id)}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Layer Configuration - Heat Map */}
+        {visualizationState.layerData.heatmap.active && (
+          <LayerConfigSection title="Heat Map Options">
+            <div className="space-y-3">
+              <div>
+                <div className="flex justify-between mb-1">
+                  <Label className="text-xs">Heat Intensity</Label>
+                  <span className="text-xs text-white/60">
+                    {visualizationState.layerData.heatmap.intensity || 50}%
+                  </span>
+                </div>
+                <Slider
+                  value={[visualizationState.layerData.heatmap.intensity || 50]}
+                  min={10}
+                  max={100}
+                  step={5}
+                  onValueChange={(value) => updateLayerOption('heatmap', 'intensity', value[0])}
+                />
+              </div>
+              
+              <div>
+                <Label className="text-xs mb-1 block">Blend Mode</Label>
+                <Select
+                  value={visualizationState.layerData.heatmap.blendMode || 'screen'}
+                  onValueChange={(value) => updateLayerOption('heatmap', 'blendMode', value)}
+                >
+                  <SelectTrigger className="bg-black/50 border-white/20 text-xs h-7">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-black/90 border-white/20">
+                    <SelectItem value="screen">Screen (Lighter)</SelectItem>
+                    <SelectItem value="overlay">Overlay (Contrast)</SelectItem>
+                    <SelectItem value="multiply">Multiply (Darker)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </LayerConfigSection>
+        )}
+        
+        {/* Layer Configuration - Status Markers */}
+        {visualizationState.layerData.statusMarkers.active && (
+          <LayerConfigSection title="Status Marker Options">
+            <div className="space-y-3">
+              <div>
+                <Label className="text-xs mb-1 block">Marker Style</Label>
+                <Select
+                  value={visualizationState.layerData.statusMarkers.style || 'minimal'}
+                  onValueChange={(value) => updateLayerOption('statusMarkers', 'style', value)}
+                >
+                  <SelectTrigger className="bg-black/50 border-white/20 text-xs h-7">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-black/90 border-white/20">
+                    <SelectItem value="minimal">Minimal</SelectItem>
+                    <SelectItem value="detailed">Detailed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </LayerConfigSection>
+        )}
+        
+        {/* Layer Configuration - Hotspots */}
+        {visualizationState.layerData.hotspots.active && (
+          <LayerConfigSection title="Hotspot Options">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs">Division Hotspots</Label>
+                <Switch 
+                  checked={visualizationState.layerData.hotspots.divisionHotspots}
+                  onCheckedChange={(checked) => updateLayerOption('hotspots', 'divisionHotspots', checked)}
+                  size="sm"
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <Label className="text-xs">Workstation Hotspots</Label>
+                <Switch 
+                  checked={visualizationState.layerData.hotspots.workstationHotspots}
+                  onCheckedChange={(checked) => updateLayerOption('hotspots', 'workstationHotspots', checked)}
+                  size="sm"
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <Label className="text-xs">Server Hotspots</Label>
+                <Switch 
+                  checked={visualizationState.layerData.hotspots.serverHotspots}
+                  onCheckedChange={(checked) => updateLayerOption('hotspots', 'serverHotspots', checked)}
+                  size="sm"
+                />
+              </div>
+              
+              <div>
+                <div className="flex justify-between mb-1">
+                  <Label className="text-xs">Glow Intensity</Label>
+                  <span className="text-xs text-white/60">
+                    {visualizationState.layerData.hotspots.glowIntensity || 50}%
+                  </span>
+                </div>
+                <Slider
+                  value={[visualizationState.layerData.hotspots.glowIntensity || 50]}
+                  min={10}
+                  max={100}
+                  step={5}
+                  onValueChange={(value) => updateLayerOption('hotspots', 'glowIntensity', value[0])}
+                />
+              </div>
+            </div>
+          </LayerConfigSection>
+        )}
+        
+        {/* Layer Configuration - Performance */}
+        {visualizationState.layerData.performance.active && (
+          <LayerConfigSection title="Performance Metrics Options">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs">Show Sparklines</Label>
+                <Switch 
+                  checked={visualizationState.layerData.performance.showSparklines}
+                  onCheckedChange={(checked) => updateLayerOption('performance', 'showSparklines', checked)}
+                  size="sm"
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <Label className="text-xs">Show Efficiency</Label>
+                <Switch 
+                  checked={visualizationState.layerData.performance.showEfficiency}
+                  onCheckedChange={(checked) => updateLayerOption('performance', 'showEfficiency', checked)}
+                  size="sm"
+                />
+              </div>
+              
+              <div>
+                <Label className="text-xs mb-1 block">Chart Style</Label>
+                <Select
+                  value={visualizationState.layerData.performance.chartStyle || 'minimal'}
+                  onValueChange={(value) => updateLayerOption('performance', 'chartStyle', value)}
+                >
+                  <SelectTrigger className="bg-black/50 border-white/20 text-xs h-7">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-black/90 border-white/20">
+                    <SelectItem value="minimal">Minimal</SelectItem>
+                    <SelectItem value="detailed">Detailed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </LayerConfigSection>
+        )}
+        
+        {/* Layer Configuration - Grid */}
+        {visualizationState.layerData.grid?.active && (
+          <LayerConfigSection title="Grid Options">
+            <div className="space-y-3">
+              <div>
+                <div className="flex justify-between mb-1">
+                  <Label className="text-xs">Grid Size</Label>
+                  <span className="text-xs text-white/60">
+                    {visualizationState.layerData.grid?.size || 20}px
+                  </span>
+                </div>
+                <Slider
+                  value={[visualizationState.layerData.grid?.size || 20]}
+                  min={10}
+                  max={50}
+                  step={5}
+                  onValueChange={(value) => updateLayerOption('grid', 'size', value[0])}
+                />
+              </div>
+              
+              <div>
+                <div className="flex justify-between mb-1">
+                  <Label className="text-xs">Opacity</Label>
+                  <span className="text-xs text-white/60">
+                    {visualizationState.layerData.grid?.opacity || 0.2}
+                  </span>
+                </div>
+                <Slider
+                  value={[visualizationState.layerData.grid?.opacity || 0.2]}
+                  min={0.1}
+                  max={1}
+                  step={0.1}
+                  onValueChange={(value) => updateLayerOption('grid', 'opacity', value[0])}
+                />
+              </div>
+            </div>
+          </LayerConfigSection>
+        )}
+        
+        {/* Layer Configuration - Ambient Effects */}
+        {visualizationState.layerData.ambientEffects?.active && (
+          <LayerConfigSection title="Ambient Effects Options">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs">Scanlines</Label>
+                <Switch 
+                  checked={visualizationState.layerData.ambientEffects?.scanlines}
+                  onCheckedChange={(checked) => updateLayerOption('ambientEffects', 'scanlines', checked)}
+                  size="sm"
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <Label className="text-xs">Noise Effect</Label>
+                <Switch 
+                  checked={visualizationState.layerData.ambientEffects?.noise}
+                  onCheckedChange={(checked) => updateLayerOption('ambientEffects', 'noise', checked)}
+                  size="sm"
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <Label className="text-xs">Glow Effect</Label>
+                <Switch 
+                  checked={visualizationState.layerData.ambientEffects?.glow}
+                  onCheckedChange={(checked) => updateLayerOption('ambientEffects', 'glow', checked)}
+                  size="sm"
+                />
+              </div>
+            </div>
+          </LayerConfigSection>
+        )}
+        
+        {/* Reset Button */}
+        <div className="pt-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full bg-white/5 border-white/20 hover:bg-white/10 text-xs"
+            onClick={() => updateVisualizationState({
+              activeLayerIds: [],
+              layerData: {
+                heatmap: { active: false, data: [] },
+                statusMarkers: { active: false, data: [] },
+                hotspots: { 
+                  active: false,
+                  divisionHotspots: true,
+                  workstationHotspots: true,
+                  serverHotspots: true
+                },
+                performance: {
+                  active: false,
+                  showSparklines: true,
+                  showEfficiency: true,
+                  position: 'bottom-right'
+                },
+                quickActions: {
+                  active: false,
+                  style: 'icon',
+                  position: 'bottom-right'
+                },
+                analytics: {
+                  active: false,
+                  position: 'bottom-right',
+                  showLabels: true,
+                  showTrends: true
+                }
+              }
+            })}
+          >
+            Reset All Visualizations
+          </Button>
+        </div>
+      </div>
     </div>
+  );
+};
+
+// Helper component for layer config sections
+const LayerConfigSection: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, height: 0, overflow: 'hidden' }}
+      animate={{ opacity: 1, height: 'auto', overflow: 'visible' }}
+      exit={{ opacity: 0, height: 0, overflow: 'hidden' }}
+      transition={{ duration: 0.2 }}
+      className="border-t border-white/10 pt-3"
+    >
+      <h5 className="text-xs font-medium text-white/80 mb-3">{title}</h5>
+      {children}
+    </motion.div>
   );
 };
 

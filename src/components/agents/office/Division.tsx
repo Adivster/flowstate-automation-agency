@@ -2,34 +2,34 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ZIndexLayers } from './types/officeTypes';
-import DivisionDecoration from './DivisionDecoration';
-import { getDivisionStyle, getDivisionHexColors } from '@/utils/colorSystem';
-import MiniSparkline from './MiniSparkline';
-import { Activity, Gauge, Plus, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import MiniSparkline, { SparklineData } from './MiniSparkline';
+import { Activity, BarChart2, ZapOff, Settings } from 'lucide-react';
 
 interface DivisionProps {
   division: {
     id: string;
     name: string;
-    icon: any;
     position: {
       x: number;
       y: number;
       width: number;
       height: number;
     };
-    backgroundColor: string;
     borderColor: string;
-    zIndex?: number;
+    backgroundColor: string;
+    textColor: string;
+    agentIds?: number[];
   };
-  isSelected?: boolean;
-  isPulsing?: boolean;
-  onDivisionClick?: (id: string) => void;
+  isSelected: boolean;
+  isPulsing: boolean;
+  onDivisionClick: (id: string) => void;
+  agents?: any[];
   isDraggable?: boolean;
   onDragEnd?: (id: string, x: number, y: number) => void;
-  customPosition?: { x: number; y: number };
-  agents?: Array<any>;
+  customPosition?: {
+    x: number;
+    y: number;
+  };
   performanceData?: number[];
   activityLevel?: number;
   showQuickActions?: boolean;
@@ -38,292 +38,228 @@ interface DivisionProps {
 
 const Division: React.FC<DivisionProps> = ({
   division,
-  isSelected = false,
-  isPulsing = false,
+  isSelected,
+  isPulsing,
   onDivisionClick,
+  agents = [],
   isDraggable = false,
   onDragEnd,
   customPosition,
-  agents = [],
   performanceData,
-  activityLevel = 0,
+  activityLevel,
   showQuickActions = false,
   onQuickAction
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   
-  // Get agents that belong to this division
+  const position = {
+    x: customPosition?.x !== undefined ? customPosition.x : division.position.x,
+    y: customPosition?.y !== undefined ? customPosition.y : division.position.y
+  };
+
+  // Count agents in this division
   const divisionAgents = agents.filter(agent => agent.division === division.id);
-  const agentCount = divisionAgents.length;
+  const workingAgents = divisionAgents.filter(agent => agent.status === 'working').length;
+  const totalAgents = divisionAgents.length;
   
-  // Get division style from our division styles
-  const divStyle = getDivisionStyle(division.id);
+  // Calculate metrics
+  const utilization = totalAgents > 0 ? (workingAgents / totalAgents) * 100 : 0;
   
-  // Get hex colors for styling
-  const hexColors = getDivisionHexColors(division.id);
-  
-  // Use custom position if provided, otherwise use division's position
-  const xPos = customPosition?.x !== undefined ? customPosition.x : division.position.x;
-  const yPos = customPosition?.y !== undefined ? customPosition.y : division.position.y;
-  
-  // Calculate z-index based on state
-  const getZIndex = () => {
-    if (isSelected) {
-      return ZIndexLayers.DIVISION_SELECTED;
+  // Handle drag end
+  const handleDragEnd = (event: any, info: any) => {
+    if (onDragEnd) {
+      // Calculate the percentage move based on the container
+      const container = document.querySelector('.office-container');
+      if (container) {
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+        
+        // Convert pixels to percentage
+        const deltaXPercent = (info.offset.x / containerWidth) * 100;
+        const deltaYPercent = (info.offset.y / containerHeight) * 100;
+        
+        // New position in percentage
+        const newX = position.x + deltaXPercent;
+        const newY = position.y + deltaYPercent;
+        
+        onDragEnd(division.id, newX, newY);
+      }
     }
-    if (isHovered) {
-      return ZIndexLayers.DIVISION_HOVERED;
-    }
-    return division.zIndex || ZIndexLayers.DIVISION;
-  };
-  
-  // Decorations for the division
-  const decorations = [
-    { type: 'light', x: 30, y: 30 },
-    { type: division.id === 'kb' ? 'boards' : 
-            division.id === 'analytics' ? 'chart' :
-            division.id === 'operations' ? 'server' :
-            division.id === 'strategy' ? 'desk' :
-            division.id === 'research' ? 'monitor' :
-            'coffee', x: 70, y: 70 }
-  ];
-  
-  const Icon = division.icon;
-  
-  // Enhanced styling for selection state
-  const getBorderEffect = () => {
-    if (isSelected) {
-      return `0 0 0 2px ${hexColors.primary}, 0 0 30px ${hexColors.shadow}, inset 0 0 20px ${hexColors.shadow}`;
-    } else if (isHovered || isPulsing) {
-      return `0 0 15px ${hexColors.shadow}`;
-    }
-    return `0 0 5px ${hexColors.shadow}`;
+    setIsDragging(false);
   };
 
-  const getActivityIndicator = () => {
-    if (activityLevel > 75) return "bg-red-500";
-    if (activityLevel > 50) return "bg-amber-500";
-    if (activityLevel > 30) return "bg-green-500";
-    return "bg-blue-500";
-  };
-
-  const handleQuickAction = (e: React.MouseEvent, action: string) => {
-    e.stopPropagation();
-    if (onQuickAction) {
-      onQuickAction(division.id, action);
-    }
+  const getEfficiencyColor = (level?: number) => {
+    if (level === undefined) return 'text-gray-500';
+    if (level >= 80) return 'text-green-500';
+    if (level >= 50) return 'text-amber-500';
+    return 'text-red-500';
   };
   
+  // Determine activity status
+  const getActivityStatus = (level?: number) => {
+    if (level === undefined) return 'normal';
+    if (level >= 80) return 'high';
+    if (level <= 30) return 'low';
+    return 'normal';
+  };
+  
+  const activityStatus = getActivityStatus(activityLevel);
+
   return (
     <motion.div
-      className="absolute rounded-xl border overflow-hidden cursor-pointer transition-all"
+      className="absolute rounded-xl overflow-hidden"
       style={{
-        left: `${xPos}%`,
-        top: `${yPos}%`,
+        left: `${position.x}%`,
+        top: `${position.y}%`,
         width: `${division.position.width}%`,
         height: `${division.position.height}%`,
-        backgroundColor: divStyle.bg,
-        borderColor: divStyle.border,
-        boxShadow: getBorderEffect(),
-        zIndex: getZIndex(),
-        backgroundImage: divStyle.pattern,
+        backgroundColor: division.backgroundColor,
+        border: `2px solid ${division.borderColor}`,
+        zIndex: isDragging ? ZIndexLayers.DIVISION_DRAGGING : isSelected ? ZIndexLayers.DIVISION_SELECTED : ZIndexLayers.DIVISION,
+        boxShadow: isSelected ? `0 0 15px ${division.borderColor}` : isPulsing ? `0 0 10px ${division.borderColor}80` : 'none',
+        cursor: isDraggable ? 'move' : 'pointer',
       }}
-      initial={{
-        opacity: 0,
-        scale: 0.9
-      }}
+      onClick={() => !isDragging && onDivisionClick(division.id)}
+      drag={isDraggable}
+      onDragStart={() => setIsDragging(true)}
+      onDragEnd={handleDragEnd}
+      dragMomentum={false}
+      dragElastic={0.1}
+      whileHover={{ boxShadow: `0 0 10px ${division.borderColor}80` }}
       animate={{
-        opacity: 1,
-        scale: 1,
-        boxShadow: getBorderEffect(),
+        boxShadow: isPulsing && !isSelected ? [
+          `0 0 5px ${division.borderColor}50`,
+          `0 0 15px ${division.borderColor}90`,
+          `0 0 5px ${division.borderColor}50`
+        ] : isSelected ? `0 0 15px ${division.borderColor}` : 'none'
       }}
       transition={{
-        duration: 0.4,
         boxShadow: {
+          repeat: isPulsing && !isSelected ? Infinity : 0,
           duration: 2,
-          repeat: isPulsing ? Infinity : 0,
-          repeatType: "reverse"
-        }
-      }}
-      whileHover={{ scale: 1.02 }}
-      onClick={() => onDivisionClick && onDivisionClick(division.id)}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      drag={isDraggable}
-      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-      dragElastic={0.2}
-      dragMomentum={false}
-      onDragEnd={(event, info) => {
-        if (onDragEnd) {
-          // Convert pixel offsets to percentage of container
-          const container = (event.target as HTMLElement).parentElement;
-          if (container) {
-            const containerWidth = container.clientWidth;
-            const containerHeight = container.clientHeight;
-            
-            // Current position in percentage plus delta in percentage
-            const newX = xPos + (info.offset.x / containerWidth * 100);
-            const newY = yPos + (info.offset.y / containerHeight * 100);
-            
-            onDragEnd(division.id, newX, newY);
-          }
+          ease: "easeInOut",
         }
       }}
     >
-      {/* Division content */}
-      <div className="h-full w-full p-4 flex flex-col justify-between">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center">
-            <div 
-              className="p-1.5 rounded-md flex items-center justify-center bg-white/10" 
-              style={{ 
-                boxShadow: `0 0 8px ${hexColors.shadow}`,
-                background: isSelected ? `linear-gradient(135deg, ${hexColors.primary}40, ${hexColors.primary}20)` : 'rgba(255, 255, 255, 0.1)'
-              }}
-            >
-              <Icon className="h-4 w-4 text-white drop-shadow-md" style={{ color: hexColors.primary }} />
-            </div>
-            <h3 className="text-sm font-medium ml-2 tracking-wide text-white drop-shadow-md font-cyber">{division.name}</h3>
-          </div>
-          
+      {/* Division name and metrics */}
+      <div className="absolute top-0 left-0 p-2 z-10 flex flex-col">
+        <div className="flex items-center mb-1">
           <div 
-            className="backdrop-blur-sm rounded-full text-xs px-2 py-0.5 flex items-center gap-1 border"
+            className="h-2 w-2 rounded-full mr-1.5"
             style={{
-              borderColor: `${hexColors.primary}40`,
-              background: `${hexColors.primary}20`,
+              backgroundColor: activityStatus === 'high' ? '#10B981' : 
+                               activityStatus === 'low' ? '#F59E0B' : 
+                               '#6B7280'
+            }}
+          />
+          <h3 className="text-xs font-semibold" style={{ color: division.textColor }}>
+            {division.name}
+          </h3>
+        </div>
+        
+        {/* Mini metrics label */}
+        {performanceData && (
+          <div 
+            className="bg-black/40 backdrop-blur-sm rounded px-1.5 py-1 flex items-center gap-1 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowStats(!showStats);
             }}
           >
-            <span className="text-white">{agentCount}</span>
-            <span className="opacity-70 text-white/80">AI</span>
+            <Activity className="h-2.5 w-2.5 text-white/70" />
+            <span className="text-[9px] text-white/70">Metrics</span>
           </div>
-        </div>
-        
-        {/* Activity indicator */}
-        <div className="flex-1 relative">
-          {/* Central division content area - can be extended with more info */}
-          {isSelected && (
-            <motion.div 
-              className="rounded-full w-12 h-12 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.1, duration: 0.2 }}
-              style={{ 
-                boxShadow: `0 0 15px ${hexColors.shadow}`,
-                background: `linear-gradient(135deg, ${hexColors.primary}30, ${hexColors.primary}10)`,
-              }}
-            >
-              <Icon className="h-6 w-6" style={{ color: hexColors.primary }} />
-            </motion.div>
-          )}
-
-          {/* Activity level indicator (circular pulsing dot) */}
-          {activityLevel > 0 && (
-            <div className="absolute bottom-0 right-0 flex items-center gap-1">
-              <div className={`h-2 w-2 rounded-full ${getActivityIndicator()} animate-pulse`}></div>
-            </div>
-          )}
-          
-          {/* Performance sparkline - only show when not selected to avoid cluttering */}
-          {performanceData && !isSelected && (
-            <div className="absolute bottom-0 left-0 bg-black/30 p-1 rounded backdrop-blur-sm">
-              <MiniSparkline 
-                data={performanceData} 
-                color={hexColors.primary} 
-                height={15}
-                width={40}
-                fillOpacity={0.3}
-              />
-            </div>
-          )}
-          
-          {/* Quick action buttons that appear on hover */}
-          {showQuickActions && isHovered && !isSelected && (
-            <motion.div 
-              className="absolute top-0 right-0 flex gap-1"
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="h-6 w-6 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60"
-                onClick={(e) => handleQuickAction(e, 'optimize')}
-              >
-                <Zap className="h-3 w-3 text-yellow-400" />
-              </Button>
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="h-6 w-6 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60"
-                onClick={(e) => handleQuickAction(e, 'analyze')}
-              >
-                <Activity className="h-3 w-3 text-blue-400" />
-              </Button>
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="h-6 w-6 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60"
-                onClick={(e) => handleQuickAction(e, 'add-agent')}
-              >
-                <Plus className="h-3 w-3 text-green-400" />
-              </Button>
-            </motion.div>
-          )}
-        </div>
-        
-        {/* Division decorations */}
-        {decorations.map((decoration, index) => (
-          <DivisionDecoration
-            key={`${division.id}-decor-${index}`}
-            type={decoration.type}
-            x={decoration.x}
-            y={decoration.y}
-            divisionColor={divStyle.primary}
-            isHovered={isHovered}
-          />
-        ))}
-        
-        {/* Bottom status area */}
-        <div className="flex items-center justify-between mt-2">
-          <div className="flex items-center gap-1.5">
-            <div 
-              className={`h-1.5 w-1.5 rounded-full ${isPulsing || isHovered ? 'animate-pulse-subtle' : ''}`}
-              style={{ 
-                backgroundColor: hexColors.primary, 
-                boxShadow: `0 0 5px ${hexColors.shadow}` 
-              }}
-            ></div>
-            <span className="text-[0.65rem] text-white/70">Status: Active</span>
-          </div>
-          
-          {/* Additional division info */}
-          {divisionAgents.length > 0 && (
-            <div className="flex items-center gap-1 text-[0.65rem] text-white/70">
-              <Gauge className="h-3 w-3 text-white/50" />
-              {Math.round(divisionAgents.reduce((sum, agent) => sum + agent.efficiency, 0) / divisionAgents.length)}% Eff
-            </div>
-          )}
-        </div>
-        
-        {/* Scan lines effect */}
-        <div className="absolute inset-0 scan-lines opacity-20 pointer-events-none"></div>
-        
-        {/* Neon border effect on hover */}
-        {isHovered && (
-          <motion.div 
-            className="absolute inset-0 pointer-events-none rounded-xl border"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            style={{ 
-              borderColor: hexColors.primary,
-              boxShadow: `0 0 15px ${hexColors.shadow}, inset 0 0 10px ${hexColors.shadow}`
-            }}
-          />
         )}
       </div>
+      
+      {/* Quick actions */}
+      {showQuickActions && (
+        <div className="absolute bottom-1 right-1 z-20 flex space-x-1">
+          <motion.button
+            className="h-6 w-6 rounded-full bg-black/40 flex items-center justify-center backdrop-blur-sm"
+            whileHover={{ scale: 1.2 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuickAction && onQuickAction(division.id, 'analyze');
+            }}
+          >
+            <BarChart2 className="h-3 w-3 text-white/80" />
+          </motion.button>
+          
+          <motion.button
+            className="h-6 w-6 rounded-full bg-black/40 flex items-center justify-center backdrop-blur-sm"
+            whileHover={{ scale: 1.2 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuickAction && onQuickAction(division.id, 'optimize');
+            }}
+          >
+            <Settings className="h-3 w-3 text-white/80" />
+          </motion.button>
+          
+          <motion.button
+            className="h-6 w-6 rounded-full bg-black/40 flex items-center justify-center backdrop-blur-sm"
+            whileHover={{ scale: 1.2 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuickAction && onQuickAction(division.id, 'add-agent');
+            }}
+          >
+            <span className="text-white text-xs font-medium">+</span>
+          </motion.button>
+        </div>
+      )}
+      
+      {/* Expanded metrics panel */}
+      {showStats && performanceData && (
+        <motion.div 
+          className="absolute bottom-2 left-2 bg-black/70 rounded-lg backdrop-blur-md p-2 z-30 border border-white/10"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-[10px] text-white/70">Efficiency</span>
+            <span className={`text-[10px] font-medium ${getEfficiencyColor(performanceData[performanceData.length - 1])}`}>
+              {performanceData[performanceData.length - 1]}%
+            </span>
+          </div>
+          
+          <div className="h-12 w-32">
+            <MiniSparkline 
+              data={performanceData} 
+              width={120} 
+              height={40}
+              color="#6366f1"
+              fillOpacity={0.3}
+              animated={true}
+            />
+          </div>
+          
+          <div className="flex justify-between mt-1">
+            <div className="flex flex-col">
+              <span className="text-[10px] text-white/70">Agents</span>
+              <span className="text-xs font-medium text-white">{totalAgents}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] text-white/70">Active</span>
+              <span className="text-xs font-medium text-white">{workingAgents}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] text-white/70">Activity</span>
+              <span className={`text-xs font-medium ${
+                activityStatus === 'high' ? 'text-green-400' : 
+                activityStatus === 'low' ? 'text-amber-400' : 
+                'text-white'
+              }`}>
+                {activityLevel !== undefined ? `${activityLevel}%` : 'N/A'}
+              </span>
+            </div>
+          </div>
+        </motion.div>
+      )}
     </motion.div>
   );
 };

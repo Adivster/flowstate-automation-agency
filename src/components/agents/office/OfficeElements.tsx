@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import Workstation from './Workstation';
 import DecorativeElement from './DecorativeElement';
@@ -445,6 +444,15 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
     agents.map(agent => {
       const position = adjustedAgentPositions[agent.id] || agent.position;
       const divisionColor = agent.division ? divisionColorMap[agent.division] : undefined;
+      const showPerformanceData = visualizationState?.layerData.performance?.active && 
+                                 visualizationState?.layerData.performance?.showSparklines;
+      
+      // Generate some mock performance data if it doesn't exist
+      if (showPerformanceData && (!agent.performanceData || agent.performanceData.length === 0)) {
+        agent.performanceData = Array.from({ length: 7 }, () => Math.floor(Math.random() * 40) + 60);
+        agent.efficiency = agent.performanceData[agent.performanceData.length - 1];
+        agent.workload = Math.floor(Math.random() * 100);
+      }
       
       return (
         <AgentCharacter 
@@ -459,6 +467,7 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
           onAgentClick={onAgentClick}
           style={{ zIndex: selectedAgent === agent.id ? ZIndexLayers.AGENT_SELECTED : ZIndexLayers.AGENT }}
           divisionColor={divisionColor}
+          showPerformanceData={showPerformanceData}
         />
       );
     })

@@ -5,6 +5,7 @@ import { AgentStatus } from './AgentStatus';
 import { AgentTask } from './AgentTask';
 import { AgentIcon } from './AgentIcon';
 import { useToast } from '@/hooks/use-toast';
+import MiniSparkline from '../MiniSparkline';
 
 // Define Position interface locally since it's missing from officeTypes
 interface Position {
@@ -21,6 +22,8 @@ interface AgentProps {
     status: 'working' | 'idle' | 'paused' | 'error';
     division?: string;
     workload?: number;
+    performanceData?: number[];
+    efficiency?: number;
     currentTask?: {
       type: 'reading' | 'analyzing' | 'experimenting' | 'emailing' | 'writing' | 'searching' | 'coding';
       description: string;
@@ -37,6 +40,7 @@ interface AgentProps {
     primary: string;
     glow: string;
   };
+  showPerformanceData?: boolean;
 }
 
 const AgentCharacter: React.FC<AgentProps> = ({
@@ -45,12 +49,14 @@ const AgentCharacter: React.FC<AgentProps> = ({
   onAgentClick,
   routePath = [],
   style,
-  divisionColor
+  divisionColor,
+  showPerformanceData = false
 }) => {
   const { toast } = useToast();
   const [currentPosition, setCurrentPosition] = useState(0);
   const [isTraveling, setIsTraveling] = useState(false);
   const [showTaskTooltip, setShowTaskTooltip] = useState(false);
+  const [showStats, setShowStats] = useState(false);
 
   const statusColor = 
     agent.status === 'working' ? 'bg-green-500' : 
@@ -75,6 +81,11 @@ const AgentCharacter: React.FC<AgentProps> = ({
     setShowTaskTooltip(!showTaskTooltip);
   };
 
+  const handleStatsToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowStats(!showStats);
+  };
+
   return (
     <motion.div
       className="absolute"
@@ -88,12 +99,19 @@ const AgentCharacter: React.FC<AgentProps> = ({
       animate={{
         left: `${agentPos.x}%`,
         top: `${agentPos.y}%`,
+        scale: agent.status === 'error' ? [1, 1.05, 1] : 1,
       }}
       transition={{
         type: "spring",
         stiffness: 120,
         damping: 20,
         duration: 2,
+        ...(agent.status === 'error' ? {
+          scale: {
+            repeat: Infinity,
+            duration: 2
+          }
+        } : {})
       }}
     >
       <motion.div 
@@ -133,6 +151,20 @@ const AgentCharacter: React.FC<AgentProps> = ({
             )}
 
             <AgentStatus status={agent.status} statusColor={statusColor} />
+            
+            {/* Performance indicator button */}
+            {showPerformanceData && agent.performanceData && agent.performanceData.length > 0 && (
+              <motion.div 
+                className="absolute -top-1 -right-1 bg-black/80 rounded-full h-5 w-5 flex items-center justify-center cursor-pointer"
+                whileHover={{ scale: 1.2 }}
+                onClick={handleStatsToggle}
+              >
+                <svg className="h-3 w-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 3v18h18" />
+                  <path d="M18 9l-5 5-2.5-2.5L3 19" />
+                </svg>
+              </motion.div>
+            )}
           </div>
         </div>
 
@@ -149,6 +181,44 @@ const AgentCharacter: React.FC<AgentProps> = ({
               <span className="text-xs font-medium text-flow-accent">
                 {agent.name}
               </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* Performance data tooltip */}
+        <AnimatePresence>
+          {(showPerformanceData && showStats && agent.performanceData && agent.performanceData.length > 0) && (
+            <motion.div 
+              className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 p-2 
+                bg-gray-950/90 border border-flow-accent/50 rounded-md backdrop-blur-sm
+                shadow-lg shadow-flow-accent/20 z-50 w-32"
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-[10px] text-gray-400">Performance</span>
+                <span className="text-[10px] font-medium text-white">
+                  {agent.efficiency !== undefined ? `${agent.efficiency}%` : 'N/A'}
+                </span>
+              </div>
+              <div className="h-10">
+                <MiniSparkline 
+                  data={agent.performanceData} 
+                  width={100} 
+                  height={30}
+                  color={divisionColor?.primary || '#6366f1'}
+                  fillOpacity={0.3}
+                  animated={true}
+                />
+              </div>
+              <div className="flex justify-between items-center mt-1">
+                <span className="text-[10px] text-gray-400">Workload</span>
+                <span className="text-[10px] font-medium text-white">
+                  {agent.workload !== undefined ? `${agent.workload}%` : 'N/A'}
+                </span>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

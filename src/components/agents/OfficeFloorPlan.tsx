@@ -1,885 +1,393 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Card } from '@/components/ui/card';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { getDivisions, defaultDivisionPositions } from './office/data/divisionsData';
-import { workstations, decorations, holograms, agents } from './office/data';
-import { fixOverlaps, optimizeLayout } from './office/utils/layoutUtils';
-import DataTransmissionManager, { DataTransmission } from './office/DataTransmissionManager';
-import NotificationManager, { Notification } from './office/NotificationManager';
-import OfficeElements from './office/OfficeElements';
-import InfoPanelManager from './office/InfoPanelManager';
-import { Button } from '@/components/ui/button';
-import { Pencil, Save, RotateCcw, X, ZoomIn, ZoomOut, Layers, Users, Info } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { motion, AnimatePresence } from 'framer-motion';
-import ZoomableView from './office/ZoomableView';
-import VisualizationControls from './office/VisualizationControls';
-import { VisualizationLayer } from './office/VisualizationControls';
-import { VisualizationLayerData, VisualizationState } from './office/types/visualizationTypes';
-import { ActionPrompt } from '@/components/communication/useConversationalFlow';
-import { ActionPromptCard } from '@/components/communication/ActionPromptCard';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { OfficeLoadingState } from './office/layout/OfficeLoadingState';
-import { OfficeBackground } from './office/layout/OfficeBackground';
-import { OfficeControls } from './office/layout/OfficeControls';
 
-interface Position {
-  x: number;
-  y: number;
+import React, { useState, useRef, useEffect } from 'react';
+import OfficeElements from './office/OfficeElements';
+import { useToast } from '@/hooks/use-toast';
+import { Terminal, X, ZoomIn, ZoomOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { VisualizationState } from './office/types/visualizationTypes';
+
+// Mock data for the office layout
+// In a real app, this would come from an API or state management store
+const officeData = {
+  divisions: [
+    { id: 'kb', name: 'Knowledge Base', position: { x: 10, y: 20, width: 35, height: 30 }, borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', textColor: '#10B981' },
+    { id: 'analytics', name: 'Analytics', position: { x: 55, y: 20, width: 35, height: 30 }, borderColor: '#3B82F6', backgroundColor: 'rgba(59, 130, 246, 0.1)', textColor: '#3B82F6' },
+    { id: 'operations', name: 'Operations', position: { x: 10, y: 60, width: 35, height: 30 }, borderColor: '#F97316', backgroundColor: 'rgba(249, 115, 22, 0.1)', textColor: '#F97316' },
+    { id: 'strategy', name: 'Strategy', position: { x: 55, y: 60, width: 35, height: 30 }, borderColor: '#8B5CF6', backgroundColor: 'rgba(139, 92, 246, 0.1)', textColor: '#8B5CF6' },
+  ],
+  agents: [
+    { id: 1, name: 'Agent 1', icon: '👨‍💼', position: { x: 15, y: 25 }, status: 'working', division: 'kb' },
+    { id: 2, name: 'Agent 2', icon: '👩‍💼', position: { x: 25, y: 25 }, status: 'working', division: 'kb' },
+    { id: 3, name: 'Agent 3', icon: '🤖', position: { x: 35, y: 25 }, status: 'idle', division: 'kb' },
+    { id: 4, name: 'Agent 4', icon: '👩‍💻', position: { x: 15, y: 40 }, status: 'working', division: 'kb' },
+    { id: 5, name: 'Agent 5', icon: '👨‍💻', position: { x: 25, y: 40 }, status: 'working', division: 'kb' },
+    
+    { id: 6, name: 'Agent 6', icon: '📊', position: { x: 60, y: 25 }, status: 'working', division: 'analytics' },
+    { id: 7, name: 'Agent 7', icon: '📈', position: { x: 70, y: 25 }, status: 'error', division: 'analytics' },
+    { id: 8, name: 'Agent 8', icon: '📉', position: { x: 80, y: 25 }, status: 'working', division: 'analytics' },
+    { id: 9, name: 'Agent 9', icon: '🔍', position: { x: 60, y: 40 }, status: 'idle', division: 'analytics' },
+    { id: 10, name: 'Agent 10', icon: '📡', position: { x: 70, y: 40 }, status: 'working', division: 'analytics' },
+    
+    { id: 11, name: 'Agent 11', icon: '⚙️', position: { x: 15, y: 65 }, status: 'working', division: 'operations' },
+    { id: 12, name: 'Agent 12', icon: '🔧', position: { x: 25, y: 65 }, status: 'working', division: 'operations' },
+    { id: 13, name: 'Agent 13', icon: '🔨', position: { x: 35, y: 65 }, status: 'idle', division: 'operations' },
+    { id: 14, name: 'Agent 14', icon: '🛠️', position: { x: 15, y: 80 }, status: 'error', division: 'operations' },
+    { id: 15, name: 'Agent 15', icon: '📦', position: { x: 25, y: 80 }, status: 'paused', division: 'operations' },
+    
+    { id: 16, name: 'Agent 16', icon: '🧠', position: { x: 60, y: 65 }, status: 'working', division: 'strategy' },
+    { id: 17, name: 'Agent 17', icon: '💡', position: { x: 70, y: 65 }, status: 'working', division: 'strategy' },
+    { id: 18, name: 'Agent 18', icon: '📝', position: { x: 80, y: 65 }, status: 'idle', division: 'strategy' },
+    { id: 19, name: 'Agent 19', icon: '✅', position: { x: 60, y: 80 }, status: 'paused', division: 'strategy' },
+    { id: 20, name: 'Agent 20', icon: '⭐', position: { x: 70, y: 80 }, status: 'working', division: 'strategy' },
+  ],
+  decorations: [
+    { type: 'plant', x: 5, y: 5, size: 'medium' },
+    { type: 'plant', x: 90, y: 5, size: 'small' },
+    { type: 'plant', x: 5, y: 95, size: 'large' },
+    { type: 'plant', x: 90, y: 95, size: 'medium' },
+  ],
+  holograms: [
+    { type: 'stats', x: 45, y: 10, size: 'medium' },
+    { type: 'globe', x: 45, y: 90, size: 'large' },
+  ],
+  workstations: [
+    { x: 20, y: 30, width: 5, height: 3, rotation: 0, type: 'desk' },
+    { x: 30, y: 30, width: 5, height: 3, rotation: 0, type: 'desk' },
+    { x: 20, y: 35, width: 5, height: 3, rotation: 0, type: 'desk' },
+    { x: 30, y: 35, width: 5, height: 3, rotation: 0, type: 'desk' },
+    
+    { x: 65, y: 30, width: 5, height: 3, rotation: 0, type: 'desk' },
+    { x: 75, y: 30, width: 5, height: 3, rotation: 0, type: 'desk' },
+    { x: 65, y: 35, width: 5, height: 3, rotation: 0, type: 'desk' },
+    { x: 75, y: 35, width: 5, height: 3, rotation: 0, type: 'desk' },
+    
+    { x: 20, y: 70, width: 5, height: 3, rotation: 0, type: 'desk' },
+    { x: 30, y: 70, width: 5, height: 3, rotation: 0, type: 'desk' },
+    { x: 20, y: 75, width: 5, height: 3, rotation: 0, type: 'desk' },
+    { x: 30, y: 75, width: 5, height: 3, rotation: 0, type: 'desk' },
+    
+    { x: 65, y: 70, width: 5, height: 3, rotation: 0, type: 'desk' },
+    { x: 75, y: 70, width: 5, height: 3, rotation: 0, type: 'desk' },
+    { x: 65, y: 75, width: 5, height: 3, rotation: 0, type: 'desk' },
+    { x: 75, y: 75, width: 5, height: 3, rotation: 0, type: 'desk' },
+  ]
+};
+
+interface OfficeFloorPlanProps {
+  visualizationState?: VisualizationState;
+  onHotspotAction?: (action: string, entityId: string, entityType: string) => void;
 }
 
-const OfficeFloorPlan: React.FC = () => {
-  // Component state
+const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({ 
+  visualizationState,
+  onHotspotAction 
+}) => {
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<number | null>(null);
-  const [showInfoPanel, setShowInfoPanel] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [dataTransmissions, setDataTransmissions] = useState<DataTransmission[]>([]);
-  const [pulsing, setPulsing] = useState<Record<string, boolean>>({});
+  const [showTerminal, setShowTerminal] = useState(false);
+  const [command, setCommand] = useState('');
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const [terminalOutput, setTerminalOutput] = useState<string[]>([
+    'Office Control Terminal v1.0',
+    'Type "help" for available commands.',
+    '> '
+  ]);
+  const [divisionPulses, setDivisionPulses] = useState<Record<string, boolean>>({});
   const [editMode, setEditMode] = useState(false);
-  const [divisionPositions, setDivisionPositions] = useState<Record<string, {x: number, y: number}>>({});
-  const [zoomLevel, setZoomLevel] = useState<number>(1);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [aiPromptVisible, setAiPromptVisible] = useState(false);
-  const [aiPrompt, setAiPrompt] = useState<ActionPrompt | null>(null);
-  const [visualizationState, setVisualizationState] = useState<VisualizationState>({
-    activeLayerIds: ['performance'],
-    layers: [
-      { id: 'hotspots', name: 'Interactive Hotspots', active: true, count: 8 },
-      { id: 'heatmap', name: 'Activity Heatmap', active: false },
-      { id: 'statusMarkers', name: 'Status Indicators', active: true, count: 3 },
-      { id: 'performance', name: 'Performance Data', active: true },
-      { id: 'quickActions', name: 'Quick Actions', active: true }
-    ],
-    layerData: {
-      heatmap: {
-        active: false,
-        data: []
-      },
-      statusMarkers: {
-        active: true,
-        data: []
-      },
-      hotspots: {
-        active: true,
-        divisionHotspots: true,
-        workstationHotspots: true,
-        serverHotspots: true
-      },
-      performance: {
-        active: true,
-        showSparklines: true,
-        showEfficiency: true
-      },
-      quickActions: {
-        active: true
-      },
-      analytics: {
-        active: true,
-        position: 'bottom-left',
-        showLabels: true,
-        showTrends: true
-      }
-    }
-  });
-  
-  // Hooks
-  const { t } = useLanguage();
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [divisionPositions, setDivisionPositions] = useState<Record<string, { x: number, y: number }>>({});
+  const terminalRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const divisions = getDivisions(t);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const isInitialMount = useRef(true);
   
-  // Handle initial load
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      
-      // Load positions from localStorage or use optimized positions
-      try {
-        const savedPositions = localStorage.getItem('officeDivisionPositions');
-        
-        if (savedPositions) {
-          setDivisionPositions(JSON.parse(savedPositions));
-        } else {
-          setDivisionPositions(optimizeLayout(divisions, defaultDivisionPositions));
-        }
-      } catch (error) {
-        console.error('Error loading saved division positions:', error);
-        setDivisionPositions(optimizeLayout(divisions, defaultDivisionPositions));
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl + ` to toggle terminal
+      if (e.ctrlKey && e.key === '`') {
+        setShowTerminal(prev => !prev);
       }
       
-      setIsLoaded(true);
-    }
-  }, [divisions]);
-  
-  // Setup data transmissions
-  useEffect(() => {
-    if (!isLoaded) return;
-    
-    const initialTransmissions: DataTransmission[] = [
-      { 
-        id: 1, 
-        start: { x: 25, y: 45 }, 
-        end: { x: 65, y: 45 }, 
-        color: '#6366f1' 
-      },
-      { 
-        id: 2, 
-        start: { x: 29, y: 60 }, 
-        end: { x: 61, y: 75 }, 
-        color: '#8b5cf6' 
-      },
-      { 
-        id: 3, 
-        start: { x: 45, y: 25 }, 
-        end: { x: 25, y: 35 }, 
-        color: '#ec4899' 
-      },
-      { 
-        id: 4, 
-        start: { x: 50, y: 25 }, 
-        end: { x: 65, y: 35 }, 
-        color: '#14b8a6' 
+      // Escape to close terminal
+      if (e.key === 'Escape' && showTerminal) {
+        setShowTerminal(false);
       }
-    ];
-    
-    setDataTransmissions(initialTransmissions);
-    
-    return () => {
-      setDataTransmissions([]);
     };
-  }, [isLoaded]);
-  
-  // Random data transmissions
-  useEffect(() => {
-    if (!isLoaded) return;
     
-    const interval = setInterval(() => {
-      const divs = ['kb', 'analytics', 'operations', 'strategy'];
-      let div1 = divs[Math.floor(Math.random() * divs.length)];
-      let div2 = divs[Math.floor(Math.random() * divs.length)];
-      while (div1 === div2) {
-        div2 = divs[Math.floor(Math.random() * divs.length)];
-      }
-      
-      const division1 = divisions.find(d => d.id === div1);
-      const division2 = divisions.find(d => d.id === div2);
-      
-      if (division1 && division2) {
-        // Use the positioned division coordinates if available
-        const div1Pos = divisionPositions[div1] || { 
-          x: division1.position.x, 
-          y: division1.position.y 
-        };
-        
-        const div2Pos = divisionPositions[div2] || {
-          x: division2.position.x,
-          y: division2.position.y
-        };
-        
-        const newTransmission: DataTransmission = {
-          id: Math.random().toString(),
-          start: { 
-            x: div1Pos.x + (division1.position.width / 2), 
-            y: div1Pos.y + (division1.position.height / 2)
-          },
-          end: { 
-            x: div2Pos.x + (division2.position.width / 2), 
-            y: div2Pos.y + (division2.position.height / 2)
-          },
-          color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`,
-          temporary: true,
-          pulseSpeed: 1.5
-        };
-        
-        setDataTransmissions(prev => [...prev, newTransmission]);
-        
-        setTimeout(() => {
-          setDataTransmissions(prev => prev.filter(t => t.id !== newTransmission.id));
-        }, 4000);
-        
-        if (Math.random() > 0.5) {
-          const msgTypes = ['Data synced', 'Process completed', 'Update received', 'Task assigned'];
-          const msg = msgTypes[Math.floor(Math.random() * msgTypes.length)];
-          const notifTypes = ['success', 'info', 'warning', 'error'] as const;
-          const type = notifTypes[Math.floor(Math.random() * 3)];
-          
-          const notif: Notification = {
-            id: Date.now(),
-            x: div2Pos.x + (division2.position.width / 2),
-            y: div2Pos.y - 5,
-            message: msg,
-            type
-          };
-          
-          setNotifications(prev => [...prev, notif]);
-          
-          setTimeout(() => {
-            setNotifications(prev => prev.filter(n => n.id !== notif.id));
-          }, 2000);
-        }
-      }
-    }, 8000);
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('openCommandTerminal', () => setShowTerminal(true));
     
-    return () => clearInterval(interval);
-  }, [divisions, isLoaded, divisionPositions]);
-  
-  // Division pulsing effect
-  useEffect(() => {
-    if (!isLoaded) return;
-    
-    const interval = setInterval(() => {
-      const randomDivId = divisions[Math.floor(Math.random() * divisions.length)].id;
-      
-      setPulsing(prev => ({
+    // Start pulse animation for divisions
+    const pulseInterval = setInterval(() => {
+      const randomDivision = officeData.divisions[Math.floor(Math.random() * officeData.divisions.length)];
+      setDivisionPulses(prev => ({
         ...prev,
-        [randomDivId]: true
+        [randomDivision.id]: true
       }));
       
+      // Clear pulse after 5 seconds
       setTimeout(() => {
-        setPulsing(prev => ({
+        setDivisionPulses(prev => ({
           ...prev,
-          [randomDivId]: false
+          [randomDivision.id]: false
         }));
-      }, 3000);
-    }, 5000);
+      }, 5000);
+    }, 10000);
     
-    return () => clearInterval(interval);
-  }, [divisions, isLoaded]);
-  
-  // Handle division click
-  const handleDivisionClick = (divisionId: string) => {
-    if (editMode) return;
-    
-    setSelectedDivision(divisionId);
-    setSelectedAgent(null);
-    setShowInfoPanel(true);
-    
-    setPulsing(prev => ({
-      ...prev,
-      [divisionId]: true
-    }));
-    
-    setTimeout(() => {
-      setPulsing(prev => ({
-        ...prev,
-        [divisionId]: false
-      }));
-    }, 2000);
-    
-    // Show AI prompt with probability
-    if (Math.random() > 0.7) {
-      setTimeout(() => {
-        showAiInsightPrompt('division', divisionId);
-      }, 1000);
-    }
-  };
-  
-  // Handle agent click
-  const handleAgentClick = (agentId: number) => {
-    if (editMode) return;
-    
-    setSelectedAgent(agentId);
-    setSelectedDivision(null);
-    setShowInfoPanel(true);
-    
-    // Show AI prompt with probability
-    if (Math.random() > 0.7) {
-      setTimeout(() => {
-        showAiInsightPrompt('agent', agentId.toString());
-      }, 1000);
-    }
-  };
-
-  // Handle closing the info panel
-  const handleCloseInfoPanel = () => {
-    setShowInfoPanel(false);
-    setSelectedDivision(null);
-    setSelectedAgent(null);
-  };
-  
-  // Handle background click to deselect
-  const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.currentTarget === e.target) {
-      setShowInfoPanel(false);
-      setSelectedDivision(null);
-      setSelectedAgent(null);
-    }
-  };
-  
-  // Handle escape key
-  useEffect(() => {
-    const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        if (showInfoPanel) {
-          setSelectedDivision(null);
-          setSelectedAgent(null);
-          setShowInfoPanel(false);
-        } else if (editMode) {
-          setEditMode(false);
-        }
-      }
-    };
-    window.addEventListener('keydown', handleEsc);
     return () => {
-      window.removeEventListener('keydown', handleEsc);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('openCommandTerminal', () => setShowTerminal(true));
+      clearInterval(pulseInterval);
     };
-  }, [editMode, showInfoPanel]);
+  }, [showTerminal]);
   
-  const selectedDivisionObject = selectedDivision 
-    ? divisions.find(d => d.id === selectedDivision) 
-    : null;
+  // Auto-scroll to bottom of terminal
+  useEffect(() => {
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    }
+  }, [terminalOutput]);
+  
+  const handleDivisionClick = (divisionId: string) => {
+    setSelectedDivision(prevId => prevId === divisionId ? null : divisionId);
+    setSelectedAgent(null);
+  };
+  
+  const handleAgentClick = (agentId: number) => {
+    setSelectedAgent(prevId => prevId === agentId ? null : agentId);
     
-  const selectedAgentObject = selectedAgent 
-    ? agents.find(a => a.id === selectedAgent) 
-    : null;
-  
-  // Toggle edit mode
-  const toggleEditMode = () => {
-    setEditMode(!editMode);
-    if (editMode) {
-      savePositions();
-    } else {
-      setSelectedDivision(null);
-      setSelectedAgent(null);
-      setShowInfoPanel(false);
-      
-      toast({
-        title: t('editModeEnabled'),
-        description: t('dragDivisionsToReposition'),
-        duration: 3000,
-      });
+    // Find the agent
+    const agent = officeData.agents.find(a => a.id === agentId);
+    if (agent) {
+      setSelectedDivision(agent.division || null);
     }
   };
   
-  // Handle division drag end
-  const handleDivisionDragEnd = (divisionId: string, x: number, y: number) => {
-    // Create a safety buffer from edges
-    const boundedX = Math.max(5, Math.min(95 - 20, x));
-    const boundedY = Math.max(5, Math.min(85 - 20, y));
+  const handleCommandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCommand(e.target.value);
+  };
+  
+  const handleCommandSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     
+    if (!command.trim()) return;
+    
+    setCommandHistory(prev => [...prev, command]);
+    const output = processCommand(command);
+    setTerminalOutput(prev => [...prev, `${command}`, ...output, '> ']);
+    setCommand('');
+  };
+  
+  const processCommand = (cmd: string): string[] => {
+    const args = cmd.trim().split(' ');
+    const command = args[0].toLowerCase();
+    
+    switch(command) {
+      case 'help':
+        return [
+          'Available commands:',
+          '  help - Show this help message',
+          '  select <division|agent> <id> - Select a division or agent',
+          '  info <division|agent> <id> - Show information about a division or agent',
+          '  agents - List all agents',
+          '  divisions - List all divisions',
+          '  edit <on|off> - Toggle edit mode',
+          '  clear - Clear the terminal',
+          '  exit - Close the terminal'
+        ];
+      
+      case 'select':
+        if (args.length < 3) return ['Error: Usage: select <division|agent> <id>'];
+        
+        if (args[1] === 'division') {
+          const divisionId = args[2];
+          const division = officeData.divisions.find(d => d.id === divisionId);
+          if (!division) return [`Error: Division ${divisionId} not found`];
+          
+          setSelectedDivision(divisionId);
+          return [`Selected division: ${division.name}`];
+        }
+        
+        if (args[1] === 'agent') {
+          const agentId = parseInt(args[2]);
+          const agent = officeData.agents.find(a => a.id === agentId);
+          if (!agent) return [`Error: Agent ${agentId} not found`];
+          
+          setSelectedAgent(agentId);
+          return [`Selected agent: ${agent.name}`];
+        }
+        
+        return ['Error: Invalid selection type. Use "division" or "agent"'];
+      
+      case 'info':
+        if (args.length < 3) return ['Error: Usage: info <division|agent> <id>'];
+        
+        if (args[1] === 'division') {
+          const divisionId = args[2];
+          const division = officeData.divisions.find(d => d.id === divisionId);
+          if (!division) return [`Error: Division ${divisionId} not found`];
+          
+          const agentsInDivision = officeData.agents.filter(a => a.division === divisionId);
+          return [
+            `Division information:`,
+            `- ID: ${division.id}`,
+            `- Name: ${division.name}`,
+            `- Position: x=${division.position.x}, y=${division.position.y}`,
+            `- Size: width=${division.position.width}, height=${division.position.height}`,
+            `- Agents: ${agentsInDivision.length}`
+          ];
+        }
+        
+        if (args[1] === 'agent') {
+          const agentId = parseInt(args[2]);
+          const agent = officeData.agents.find(a => a.id === agentId);
+          if (!agent) return [`Error: Agent ${agentId} not found`];
+          
+          return [
+            `Agent information:`,
+            `- ID: ${agent.id}`,
+            `- Name: ${agent.name}`,
+            `- Status: ${agent.status}`,
+            `- Position: x=${agent.position.x}, y=${agent.position.y}`,
+            `- Division: ${agent.division || 'None'}`
+          ];
+        }
+        
+        return ['Error: Invalid info type. Use "division" or "agent"'];
+      
+      case 'agents':
+        return [
+          'List of agents:',
+          ...officeData.agents.map(a => `- ID: ${a.id}, Name: ${a.name}, Status: ${a.status}, Division: ${a.division || 'None'}`)
+        ];
+      
+      case 'divisions':
+        return [
+          'List of divisions:',
+          ...officeData.divisions.map(d => `- ID: ${d.id}, Name: ${d.name}`)
+        ];
+      
+      case 'edit':
+        if (args.length < 2) return ['Error: Usage: edit <on|off>'];
+        
+        if (args[1] === 'on') {
+          setEditMode(true);
+          return ['Edit mode enabled. You can now drag divisions.'];
+        }
+        
+        if (args[1] === 'off') {
+          setEditMode(false);
+          return ['Edit mode disabled.'];
+        }
+        
+        return ['Error: Invalid edit mode. Use "on" or "off"'];
+      
+      case 'clear':
+        setTimeout(() => {
+          setTerminalOutput([
+            'Office Control Terminal v1.0',
+            'Type "help" for available commands.',
+            '> '
+          ]);
+        }, 0);
+        return [];
+      
+      case 'exit':
+        setShowTerminal(false);
+        return [];
+      
+      default:
+        return [`Error: Unknown command "${command}". Type "help" for available commands.`];
+    }
+  };
+  
+  const handleDivisionDragEnd = (divisionId: string, x: number, y: number) => {
     setDivisionPositions(prev => ({
       ...prev,
-      [divisionId]: { x: boundedX, y: boundedY }
+      [divisionId]: { x, y }
     }));
-  };
-  
-  // Save positions
-  const savePositions = () => {
-    try {
-      localStorage.setItem('officeDivisionPositions', JSON.stringify(divisionPositions));
-      toast({
-        title: t('layoutSaved'),
-        description: t('officeLayoutSaved'),
-        duration: 2000,
-      });
-    } catch (error) {
-      console.error('Error saving division positions:', error);
-      toast({
-        title: t('error'),
-        description: t('errorSavingLayout'),
-        variant: 'destructive',
-        duration: 3000,
-      });
-    }
-  };
-  
-  // Reset positions
-  const resetPositions = () => {
-    const optimizedPositions = optimizeLayout(divisions, defaultDivisionPositions);
-    
-    setDivisionPositions(optimizedPositions);
-    localStorage.setItem('officeDivisionPositions', JSON.stringify(optimizedPositions));
     
     toast({
-      title: t('layoutReset'),
-      description: t('officeLayoutReset'),
-      duration: 2000,
+      title: "Division Moved",
+      description: `Division ${divisionId} has been moved to x=${x.toFixed(1)}%, y=${y.toFixed(1)}%`,
+      duration: 3000,
     });
   };
   
-  // Zoom controls
   const handleZoomIn = () => {
     setZoomLevel(prev => Math.min(prev + 0.1, 1.5));
   };
   
   const handleZoomOut = () => {
-    setZoomLevel(prev => Math.max(prev - 0.1, 0.8));
+    setZoomLevel(prev => Math.max(prev - 0.1, 0.5));
   };
-  
-  const handleResetZoom = () => {
-    setZoomLevel(1);
-  };
-  
-  // Toggle visualization layers
-  const handleToggleLayer = (layerId: string) => {
-    setVisualizationState(prev => {
-      // Update the layer active state
-      const updatedLayers = prev.layers.map(layer => 
-        layer.id === layerId ? { ...layer, active: !layer.active } : layer
-      );
-      
-      // Update the layerData active state
-      let updatedLayerData = { ...prev.layerData };
-      if (layerId === 'heatmap') {
-        updatedLayerData.heatmap.active = !updatedLayerData.heatmap.active;
-      } else if (layerId === 'statusMarkers') {
-        updatedLayerData.statusMarkers.active = !updatedLayerData.statusMarkers.active;
-      } else if (layerId === 'hotspots') {
-        updatedLayerData.hotspots.active = !updatedLayerData.hotspots.active;
-      } else if (layerId === 'performance') {
-        updatedLayerData.performance.active = !updatedLayerData.performance.active;
-      } else if (layerId === 'quickActions') {
-        updatedLayerData.quickActions.active = !updatedLayerData.quickActions.active;
-      }
-      
-      // Update activeLayerIds
-      const updatedActiveLayerIds = updatedLayers
-        .filter(layer => layer.active)
-        .map(layer => layer.id);
-        
-      return {
-        activeLayerIds: updatedActiveLayerIds,
-        layers: updatedLayers,
-        layerData: updatedLayerData
-      };
-    });
-    
-    toast({
-      title: `Visualization Layer`,
-      description: `Updated display settings`,
-      duration: 2000,
-    });
-  };
-  
-  // Handle hotspot actions
-  const handleHotspotAction = (action: string, entityId: string, entityType: string) => {
-    if (action === 'details') {
-      // Open details panel
-      if (entityType === 'division') {
-        setSelectedDivision(entityId);
-        setSelectedAgent(null);
-        setShowInfoPanel(true);
-      } else if (entityType === 'agent') {
-        setSelectedAgent(parseInt(entityId));
-        setSelectedDivision(null);
-        setShowInfoPanel(true);
-      } else {
-        toast({
-          title: "View Details",
-          description: `Viewing details for ${entityType} ${entityId}`,
-          duration: 3000,
-        });
-      }
-    } else if (action === 'optimize') {
-      showAiInsightPrompt(entityType, entityId, 'optimize');
-    } else if (action === 'diagnose') {
-      showAiInsightPrompt(entityType, entityId, 'diagnose');
-    } else if (action === 'chat') {
-      toast({
-        title: "Chat Interface",
-        description: `Opening chat with ${entityType} ${entityId}`,
-        duration: 3000,
-      });
-    } else if (action === 'analyze') {
-      showAiInsightPrompt(entityType, entityId, 'analyze');
-    }
-  };
-  
-  // Show AI insight prompt
-  const showAiInsightPrompt = (entityType: string, entityId: string, action?: string) => {
-    // Generate a prompt based on entity type
-    let prompt: ActionPrompt | null = null;
-    
-    if (entityType === 'division') {
-      const division = divisions.find(d => d.id === entityId);
-      if (!division) return;
-      
-      if (action === 'optimize' || !action) {
-        prompt = {
-          id: `${entityType}-${entityId}-optimize-${Date.now()}`,
-          actionType: 'optimize',
-          title: `Optimize ${division.name} Division`,
-          description: `AI analysis detected opportunity to improve performance by reallocating resources for the ${division.name} Division.`,
-          severity: 'medium',
-          entityType: 'division',
-          entityId: entityId,
-          metrics: {
-            before: 76,
-            after: 91,
-            unit: '%'
-          },
-          actions: {
-            confirm: 'Apply Changes',
-            decline: 'Ignore',
-            moreInfo: 'Details'
-          }
-        };
-      } else if (action === 'analyze') {
-        prompt = {
-          id: `${entityType}-${entityId}-analyze-${Date.now()}`,
-          actionType: 'diagnose',
-          title: `${division.name} Performance Analysis`,
-          description: `Generate comprehensive performance report for ${division.name} Division with efficiency trends.`,
-          severity: 'low',
-          entityType: 'division',
-          entityId: entityId,
-          actions: {
-            confirm: 'Generate Report',
-            decline: 'Cancel'
-          }
-        };
-      }
-    } else if (entityType === 'agent') {
-      const agent = agents.find(a => a.id.toString() === entityId);
-      if (!agent) return;
-      
-      if (action === 'diagnose' || !action) {
-        prompt = {
-          id: `${entityType}-${entityId}-tune-${Date.now()}`,
-          actionType: 'tune',
-          title: `Tune Agent Parameters`,
-          description: `Agent ${agent.name} has been operating below optimal thresholds. Performance tuning recommended.`,
-          severity: agent.status === 'error' ? 'high' : 'medium',
-          entityType: 'agent',
-          entityId: entityId,
-          metrics: {
-            before: 68,
-            after: 85,
-            unit: '%'
-          },
-          actions: {
-            confirm: 'Tune Agent',
-            decline: 'Ignore',
-            moreInfo: 'View Analysis'
-          }
-        };
-      } else if (action === 'optimize') {
-        prompt = {
-          id: `${entityType}-${entityId}-reassign-${Date.now()}`,
-          actionType: 'reassign',
-          title: `Reassign Agent Tasks`,
-          description: `Recommended workload redistribution for Agent ${agent.name} to optimize task efficiency.`,
-          severity: 'medium',
-          entityType: 'agent',
-          entityId: entityId,
-          metrics: {
-            before: 12,
-            after: 8,
-            unit: ' tasks'
-          },
-          actions: {
-            confirm: 'Reassign Tasks',
-            decline: 'Ignore',
-            moreInfo: 'View Plan'
-          }
-        };
-      }
-    } else if (entityType === 'server') {
-      prompt = {
-        id: `${entityType}-${entityId}-simulate-${Date.now()}`,
-        actionType: 'simulate',
-        title: 'System Performance Simulation',
-        description: 'Run simulation to identify potential bottlenecks and optimize resource allocation.',
-        severity: 'low',
-        entityType: 'system',
-        entityId: 'server',
-        actions: {
-          confirm: 'Run Simulation',
-          decline: 'Cancel',
-          moreInfo: 'Parameters'
-        }
-      };
-    }
-    
-    if (prompt) {
-      setAiPrompt(prompt);
-      setAiPromptVisible(true);
-    }
-  };
-  
-  // Handle AI prompt actions
-  const handleAiPromptAction = (action: 'confirm' | 'decline' | 'moreInfo') => {
-    if (!aiPrompt) return;
-    
-    if (action === 'confirm') {
-      toast({
-        title: "Action Confirmed",
-        description: `Processing ${aiPrompt.title}`,
-        duration: 3000,
-      });
-    } else if (action === 'moreInfo') {
-      toast({
-        title: "Additional Information",
-        description: `Showing details for ${aiPrompt.title}`,
-        duration: 3000,
-      });
-    }
-    
-    setAiPromptVisible(false);
-    setAiPrompt(null);
-  };
-  
-  // Loading state
-  if (!isLoaded) {
-    return <OfficeLoadingState />;
-  }
   
   return (
-    <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-flow-background/20 border-flow-border neon-border">
-      <div 
-        ref={contentRef}
-        className="absolute inset-0 bg-flow-background/30 select-none overflow-hidden"
-        onClick={handleBackgroundClick}
-      >
-        <OfficeBackground />
-        
-        <ZoomableView 
-          zoomLevel={zoomLevel}
-          onZoomIn={handleZoomIn}
-          onZoomOut={handleZoomOut}
-          onReset={handleResetZoom}
-        >
-          <DataTransmissionManager transmissions={dataTransmissions} />
-          <NotificationManager notifications={notifications} />
-          
-          <OfficeElements 
-            divisions={divisions}
-            workstations={workstations}
-            decorations={decorations}
-            holograms={holograms}
-            agents={agents}
-            selectedDivision={selectedDivision}
-            selectedAgent={selectedAgent}
-            pulsing={pulsing}
-            onDivisionClick={handleDivisionClick}
-            onAgentClick={handleAgentClick}
-            editMode={editMode}
-            onDivisionDragEnd={handleDivisionDragEnd}
-            divisionPositions={divisionPositions}
-            zoomLevel={zoomLevel}
-            visualizationState={visualizationState}
-            onHotspotAction={handleHotspotAction}
-          />
-        </ZoomableView>
-        
-        <div className="absolute top-3 left-3 z-40">
-          <VisualizationControls 
-            layers={visualizationState.layers}
-            onToggleLayer={handleToggleLayer}
-          />
-        </div>
-        
-        <OfficeControls
-          zoomLevel={zoomLevel}
-          onZoomIn={handleZoomIn}
-          onZoomOut={handleZoomOut}
-          onResetZoom={handleResetZoom}
-        />
-        
-        <InfoPanelManager 
-          selectedDivision={selectedDivision}
-          selectedDivisionObject={selectedDivisionObject}
-          selectedAgent={selectedAgent}
-          selectedAgentObject={selectedAgentObject}
-          showInfoPanel={showInfoPanel}
-          agents={agents}
-          onClose={handleCloseInfoPanel}
-        />
-        
-        <AnimatePresence>
-          {aiPromptVisible && aiPrompt && (
-            <motion.div 
-              className="absolute bottom-16 right-4 z-50"
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              transition={{ duration: 0.3, type: "spring" }}
-              style={{
-                maxWidth: "90%",
-                width: "320px",
-                filter: "drop-shadow(0 10px 25px rgba(0,0,0,0.5))"
-              }}
-            >
-              <ActionPromptCard 
-                prompt={aiPrompt}
-                onAction={handleAiPromptAction}
-                timestamp={new Date().toLocaleTimeString()}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-        
-        {/* UI Help Button */}
-        <div className="absolute top-3 right-28 z-40">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="h-8 w-8 p-0 bg-black/60 backdrop-blur-md text-white border-white/10"
-              >
-                <Info className="h-4 w-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80 p-3 bg-black/80 backdrop-blur-lg border-white/10 text-white">
-              <h4 className="font-medium mb-2">Office View Controls</h4>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-start gap-2">
-                  <Layers className="h-4 w-4 mt-0.5 text-purple-400" />
-                  <span>Use <strong>Visualization Layers</strong> to toggle different data overlays</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Users className="h-4 w-4 mt-0.5 text-blue-400" />
-                  <span>Click on divisions or agents to view detailed information</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <ZoomIn className="h-4 w-4 mt-0.5 text-green-400" />
-                  <span>Use zoom controls or hold Option/Alt + drag to pan around</span>
-                </li>
-              </ul>
-              <div className="mt-3 pt-2 border-t border-white/10 text-xs text-white/70">
-                Hover over elements to reveal interactive features and quick actions
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div>
-        
-        {/* Editing Controls */}
-        <div className="absolute top-3 right-16 flex items-center gap-2 z-40">
-          {editMode ? (
-            <>
-              <Button 
-                size="sm" 
-                variant="outline"
-                className="h-8 px-2.5 bg-gray-800/70 backdrop-blur-sm text-white border-gray-600 hover:bg-gray-700/80"
-                onClick={resetPositions}
-              >
-                <RotateCcw className="h-3.5 w-3.5 mr-1" />
-                {t('reset')}
-              </Button>
-              
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="h-8 px-2.5 bg-green-600/70 backdrop-blur-sm text-white border-green-500 hover:bg-green-700/80"
-                onClick={savePositions}
-              >
-                <Save className="h-3.5 w-3.5 mr-1" />
-                {t('save')}
-              </Button>
-              
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="h-8 px-2.5 bg-red-600/70 backdrop-blur-sm text-white border-red-500 hover:bg-red-700/80"
-                onClick={toggleEditMode}
-              >
-                <X className="h-3.5 w-3.5 mr-1" />
-                {t('exit')}
-              </Button>
-            </>
-          ) : (
-            <Button 
-              size="sm" 
-              variant="outline" 
-              className="h-8 px-2.5 bg-gray-800/70 backdrop-blur-sm text-white border-gray-600 hover:bg-gray-700/80"
-              onClick={toggleEditMode}
-            >
-              <Pencil className="h-3.5 w-3.5 mr-1" />
-              {t('customize')}
-            </Button>
-          )}
-        </div>
-        
-        {/* Centralized Zoom Controls - only one set of controls */}
-        <div className="absolute bottom-3 right-3 flex items-center gap-2 z-40">
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 w-8 p-0 bg-gray-800/80 backdrop-blur-md text-white border-gray-600 hover:bg-gray-700/80"
-            onClick={handleZoomOut}
-          >
-            <ZoomOut className="h-3.5 w-3.5" />
-          </Button>
-          
-          <Button 
-            size="sm"
-            variant="outline"
-            className="h-8 bg-gray-800/80 backdrop-blur-md text-white border-gray-600 hover:bg-gray-700/80 px-2 font-mono"
-            onClick={handleResetZoom}
-          >
-            {Math.round(zoomLevel * 100)}%
-          </Button>
-          
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 w-8 p-0 bg-gray-800/80 backdrop-blur-md text-white border-gray-600 hover:bg-gray-700/80"
-            onClick={handleZoomIn}
-          >
-            <ZoomIn className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-      </div>
+    <div className="relative h-full w-full bg-black bg-opacity-50 rounded-xl overflow-hidden office-container" style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center center' }}>
+      <OfficeElements
+        divisions={officeData.divisions}
+        agents={officeData.agents}
+        decorations={officeData.decorations}
+        holograms={officeData.holograms}
+        workstations={officeData.workstations}
+        selectedDivision={selectedDivision}
+        selectedAgent={selectedAgent}
+        pulsing={divisionPulses}
+        onDivisionClick={handleDivisionClick}
+        onAgentClick={handleAgentClick}
+        editMode={editMode}
+        onDivisionDragEnd={handleDivisionDragEnd}
+        divisionPositions={divisionPositions}
+        zoomLevel={zoomLevel}
+        visualizationState={visualizationState}
+        onHotspotAction={onHotspotAction}
+      />
       
-      <style>
-        {`
-        .neon-border {
-          box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
-        }
-        
-        @keyframes pulse-opacity {
-          0%, 100% { opacity: 0.7; }
-          50% { opacity: 0.9; }
-        }
-        
-        @keyframes glow {
-          0%, 100% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
-          50% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.7); }
-        }
-        
-        @keyframes ping-slow {
-          0% { transform: scale(0.8); opacity: 0.8; }
-          50% { transform: scale(1.2); opacity: 0.4; }
-          100% { transform: scale(0.8); opacity: 0.8; }
-        }
-        
-        .animate-ping-slow {
-          animation: ping-slow 3s ease-in-out infinite;
-        }
-        
-        .scan-lines {
-          background-image: linear-gradient(
-            transparent 0%,
-            rgba(32, 128, 255, 0.02) 2%,
-            rgba(32, 128, 255, 0.02) 3%,
-            transparent 3%,
-            transparent 100%
-          );
-          background-size: 100% 4px;
-          width: 100%;
-          height: 100%;
-          animation: scan-moving 4s linear infinite;
-        }
-        
-        @keyframes scan-moving {
-          0% { background-position: 0 0; }
-          100% { background-position: 0 100%; }
-        }
-        
-        @keyframes animate-pulse-subtle {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.6; }
-        }
-        
-        .animate-pulse-subtle {
-          animation: animate-pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        `}
-      </style>
-    </Card>
+      {/* Terminal */}
+      {showTerminal && (
+        <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={() => setShowTerminal(false)}>
+          <div className="bg-black bg-opacity-90 border border-gray-700 rounded-lg w-full max-w-2xl max-h-[80vh] shadow-lg" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700">
+              <div className="flex items-center">
+                <Terminal className="w-4 h-4 mr-2 text-green-500" />
+                <span className="text-sm text-green-500 font-mono">Office Control Terminal</span>
+              </div>
+              <button className="text-gray-500 hover:text-white" onClick={() => setShowTerminal(false)}>
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div 
+              ref={terminalRef}
+              className="p-4 h-80 overflow-y-auto font-mono text-sm text-green-500 bg-black custom-scrollbar"
+            >
+              {terminalOutput.map((line, index) => (
+                <div key={index} className={line.startsWith('>') ? 'text-blue-500' : ''}>
+                  {line}
+                </div>
+              ))}
+            </div>
+            <form onSubmit={handleCommandSubmit} className="px-4 py-2 border-t border-gray-700 flex">
+              <span className="text-blue-500 mr-2 font-mono">{'>'}</span>
+              <input 
+                type="text" 
+                value={command}
+                onChange={handleCommandChange}
+                className="bg-transparent flex-1 outline-none text-green-500 font-mono text-sm"
+                autoFocus
+              />
+            </form>
+          </div>
+        </div>
+      )}
+      
+      {/* Zoom Controls */}
+      <div className="absolute bottom-2 right-2 flex gap-2 z-30">
+        <Button variant="outline" size="sm" className="h-7 w-7 p-0 bg-black/50 border-white/20 text-white hover:bg-black/70" onClick={handleZoomIn}>
+          <ZoomIn className="h-3 w-3" />
+        </Button>
+        <Button variant="outline" size="sm" className="h-7 w-7 p-0 bg-black/50 border-white/20 text-white hover:bg-black/70" onClick={handleZoomOut}>
+          <ZoomOut className="h-3 w-3" />
+        </Button>
+      </div>
+    </div>
   );
 };
 
