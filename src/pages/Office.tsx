@@ -1,11 +1,12 @@
 
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AgentGrid from '@/components/agents/AgentGrid';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Cpu, Users, Briefcase, Filter, Terminal, Zap, Building2, RefreshCw, Eye, Grid, Layers } from 'lucide-react';
+import { Cpu, Users, Briefcase, Filter, Terminal, Zap, Building2, RefreshCw, Eye, Grid, Layers, Activity } from 'lucide-react';
 import OfficeFloorPlan from '@/components/agents/OfficeFloorPlan';
 import AgencyMetrics from '@/components/agents/AgencyMetrics';
 import { useLanguage } from '@/contexts/LanguageContext';
