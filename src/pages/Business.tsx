@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -25,6 +24,8 @@ import FinancialOverview from '@/features/business/FinancialOverview';
 import CRMIntegration from '@/features/business/CRMIntegration';
 import BudgetManagement from '@/features/business/BudgetManagement';
 import ApiSynchronization from '@/features/business/ApiSynchronization';
+import ERPDashboard from '@/features/business/ERPDashboard';
+import CallCenterDashboard from '@/features/business/CallCenterDashboard';
 
 const Business = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -80,21 +81,24 @@ const Business = () => {
           
           <GlassMorphism className="border border-flow-border/30 rounded-2xl overflow-hidden hover-scale">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="p-6">
-              <TabsList className="grid max-w-md grid-cols-6 mb-6 bg-flow-background/30">
+              <TabsList className="grid max-w-md grid-cols-7 mb-6 bg-flow-background/30">
                 <TabsTrigger value="overview" className="data-[state=active]:bg-flow-accent data-[state=active]:text-white">
                   Overview
                 </TabsTrigger>
-                <TabsTrigger value="crm" className="data-[state=active]:bg-flow-accent data-[state=active]:text-white">
-                  CRM
-                </TabsTrigger>
                 <TabsTrigger value="budget" className="data-[state=active]:bg-flow-accent data-[state=active]:text-white">
                   Budget
+                </TabsTrigger>
+                <TabsTrigger value="crm" className="data-[state=active]:bg-flow-accent data-[state=active]:text-white">
+                  CRM
                 </TabsTrigger>
                 <TabsTrigger value="erp" className="data-[state=active]:bg-flow-accent data-[state=active]:text-white">
                   ERP
                 </TabsTrigger>
                 <TabsTrigger value="call-center" className="data-[state=active]:bg-flow-accent data-[state=active]:text-white">
                   Call Center
+                </TabsTrigger>
+                <TabsTrigger value="inventory" className="data-[state=active]:bg-flow-accent data-[state=active]:text-white">
+                  Inventory
                 </TabsTrigger>
                 <TabsTrigger value="api" className="data-[state=active]:bg-flow-accent data-[state=active]:text-white">
                   API Sync
@@ -105,26 +109,26 @@ const Business = () => {
                 <FinancialOverview timeRange={timeRange} />
               </TabsContent>
               
-              <TabsContent value="crm" className="space-y-6">
-                <CRMIntegration />
-              </TabsContent>
-              
               <TabsContent value="budget" className="space-y-6">
                 <BudgetManagement />
               </TabsContent>
               
+              <TabsContent value="crm" className="space-y-6">
+                <CRMIntegration />
+              </TabsContent>
+              
               <TabsContent value="erp" className="space-y-6">
-                <Card className="bg-flow-background/20 backdrop-blur-md border-flow-border p-4">
-                  <div className="flex items-center justify-center h-64">
-                    <p className="text-muted-foreground">ERP Integration Coming Soon</p>
-                  </div>
-                </Card>
+                <ERPDashboard />
               </TabsContent>
               
               <TabsContent value="call-center" className="space-y-6">
+                <CallCenterDashboard />
+              </TabsContent>
+              
+              <TabsContent value="inventory" className="space-y-6">
                 <Card className="bg-flow-background/20 backdrop-blur-md border-flow-border p-4">
                   <div className="flex items-center justify-center h-64">
-                    <p className="text-muted-foreground">Call Center Dashboard Coming Soon</p>
+                    <p className="text-muted-foreground">Inventory Management Coming Soon</p>
                   </div>
                 </Card>
               </TabsContent>
