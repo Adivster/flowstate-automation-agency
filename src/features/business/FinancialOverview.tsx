@@ -1,38 +1,12 @@
 
 import { useState, useEffect } from 'react';
-import { BarChart, PieChart, LineChart, Activity, DollarSign, TrendingUp, TrendingDown, Users, ShoppingCart } from 'lucide-react';
+import { BarChart as BarChartIcon, PieChart as PieChartIcon, LineChart as LineChartIcon, Activity, DollarSign, TrendingUp, TrendingDown, Users, ShoppingCart } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useKpiData } from '@/hooks/useKpiData';
-
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-} from 'chart.js';
-import { Bar, Line, Pie } from 'react-chartjs-2';
-
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-);
+import { LineChart, BarChart, PieChart } from '@/components/ui/chart';
 
 interface FinancialOverviewProps {
   timeRange: string;
@@ -41,49 +15,26 @@ interface FinancialOverviewProps {
 const FinancialOverview = ({ timeRange }: FinancialOverviewProps) => {
   const kpiData = useKpiData(timeRange);
 
-  // Prepare chart data
-  const revenueData = {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    datasets: [
-      {
-        label: 'Revenue',
-        data: kpiData.adCampaignPerformance.map(item => item.value),
-        fill: false,
-        borderColor: 'rgba(75, 192, 192, 1)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        tension: 0.4,
-      },
-    ],
-  };
+  // Prepare chart data for LineChart
+  const revenueData = kpiData.adCampaignPerformance.map((item, index) => ({
+    name: `Day ${index + 1}`,
+    value: item.value
+  }));
 
-  const conversionData = {
-    labels: ['Social', 'Organic', 'Referral', 'Direct', 'Email'],
-    datasets: [
-      {
-        label: 'Conversion Rate %',
-        data: [8.2, 5.7, 7.1, 9.3, 11.5],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.6)',
-          'rgba(54, 162, 235, 0.6)',
-          'rgba(255, 206, 86, 0.6)',
-          'rgba(75, 192, 192, 0.6)',
-          'rgba(153, 102, 255, 0.6)',
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+  // Prepare chart data for PieChart
+  const conversionData = [
+    { name: 'Social', value: 8.2, color: 'rgba(255, 99, 132, 0.6)' },
+    { name: 'Organic', value: 5.7, color: 'rgba(54, 162, 235, 0.6)' },
+    { name: 'Referral', value: 7.1, color: 'rgba(255, 206, 86, 0.6)' },
+    { name: 'Direct', value: 9.3, color: 'rgba(75, 192, 192, 0.6)' },
+    { name: 'Email', value: 11.5, color: 'rgba(153, 102, 255, 0.6)' },
+  ];
 
-  const engagementData = {
-    labels: kpiData.userEngagement.map((_, index) => `Day ${index + 1}`),
-    datasets: [
-      {
-        label: 'Engagement Minutes',
-        data: kpiData.userEngagement.map(item => item.value),
-        backgroundColor: 'rgba(153, 102, 255, 0.5)',
-      },
-    ],
-  };
+  // Prepare chart data for BarChart
+  const engagementData = kpiData.userEngagement.map((item, index) => ({
+    name: `Day ${index + 1}`,
+    value: item.value
+  }));
 
   return (
     <div className="space-y-6">
@@ -138,39 +89,17 @@ const FinancialOverview = ({ timeRange }: FinancialOverviewProps) => {
               <h3 className="text-sm font-medium">Revenue Trend</h3>
               <p className="text-xs text-muted-foreground">Daily revenue performance</p>
             </div>
-            <LineChart className="h-5 w-5 text-flow-accent" />
+            <LineChartIcon className="h-5 w-5 text-flow-accent" />
           </div>
           <div className="h-64">
-            <Line 
-              data={revenueData} 
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                    grid: {
-                      color: 'rgba(255, 255, 255, 0.1)',
-                    },
-                    ticks: {
-                      color: 'rgba(255, 255, 255, 0.7)',
-                    }
-                  },
-                  x: {
-                    grid: {
-                      display: false,
-                    },
-                    ticks: {
-                      color: 'rgba(255, 255, 255, 0.7)',
-                    }
-                  }
-                },
-                plugins: {
-                  legend: {
-                    display: false,
-                  }
-                }
-              }} 
+            <LineChart 
+              data={revenueData}
+              height={250}
+              showGrid={true}
+              showTooltip={true}
+              lineColor="rgba(75, 192, 192, 1)"
+              showArea={true}
+              areaOpacity={0.2}
             />
           </div>
         </Card>
@@ -181,27 +110,15 @@ const FinancialOverview = ({ timeRange }: FinancialOverviewProps) => {
               <h3 className="text-sm font-medium">Conversion by Channel</h3>
               <p className="text-xs text-muted-foreground">Source effectiveness</p>
             </div>
-            <PieChart className="h-5 w-5 text-flow-accent" />
+            <PieChartIcon className="h-5 w-5 text-flow-accent" />
           </div>
           <div className="h-64 flex items-center justify-center">
-            <div className="w-48 h-48">
-              <Pie 
-                data={conversionData} 
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: {
-                      position: 'right',
-                      labels: {
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        font: {
-                          size: 10
-                        }
-                      }
-                    }
-                  }
-                }}
+            <div className="w-full h-48">
+              <PieChart 
+                data={conversionData}
+                height={200}
+                showLegend={true}
+                legendPosition="side"
               />
             </div>
           </div>
@@ -226,40 +143,15 @@ const FinancialOverview = ({ timeRange }: FinancialOverviewProps) => {
                 <SelectItem value="app">Desktop App</SelectItem>
               </SelectContent>
             </Select>
-            <BarChart className="h-5 w-5 text-flow-accent" />
+            <BarChartIcon className="h-5 w-5 text-flow-accent" />
           </div>
         </div>
         <div className="h-64">
-          <Bar 
-            data={engagementData} 
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  grid: {
-                    color: 'rgba(255, 255, 255, 0.1)',
-                  },
-                  ticks: {
-                    color: 'rgba(255, 255, 255, 0.7)',
-                  }
-                },
-                x: {
-                  grid: {
-                    display: false,
-                  },
-                  ticks: {
-                    color: 'rgba(255, 255, 255, 0.7)',
-                  }
-                }
-              },
-              plugins: {
-                legend: {
-                  display: false,
-                }
-              }
-            }} 
+          <BarChart 
+            data={engagementData}
+            height={250}
+            showGrid={true}
+            lineColor="rgba(153, 102, 255, 0.5)"
           />
         </div>
       </Card>

@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { RefreshCw, UserPlus, Filter, ArrowRight, Check, Clock, BarChart, Zap, Link, LinkOff } from 'lucide-react';
+import { RefreshCw, UserPlus, Filter, ArrowRight, Check, Clock, BarChart, Zap, Link, Link2Off } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -340,6 +340,16 @@ interface ProviderCardProps {
 }
 
 const ProviderCard = ({ provider, onConnect, isLoading }: ProviderCardProps) => {
+  // Format date for display - adding the function here too since it's used in this component
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'N/A';
+    try {
+      return format(parseISO(dateString), 'dd MMM yyyy, HH:mm');
+    } catch (e) {
+      return 'Invalid date';
+    }
+  };
+
   return (
     <Card className="bg-flow-background/20 backdrop-blur-md border-flow-border p-4">
       <div className="flex items-center justify-between mb-3">
@@ -374,7 +384,7 @@ const ProviderCard = ({ provider, onConnect, isLoading }: ProviderCardProps) => 
             size="sm" 
             className="w-full text-xs h-8 mt-2 border-flow-border/50"
           >
-            <LinkOff className="h-3 w-3 mr-2" />
+            <Link2Off className="h-3 w-3 mr-2" />
             Disconnect
           </Button>
         </div>
