@@ -1,3 +1,4 @@
+
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
@@ -28,6 +29,8 @@ import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
 import VisualizationControls from '@/components/agents/office/VisualizationControls';
 import AgentInfoPanel from '@/components/agents/office/AgentInfoPanel';
 import { VisualizationState } from '@/components/agents/office/types/visualizationTypes';
+import { agents } from '@/components/agents/office/data/agentsData';
+import AgentChatAnalyticsPanel from '@/components/agents/office/AgentChatAnalyticsPanel';
 
 const Office = () => {
   const { t } = useLanguage();
@@ -45,6 +48,7 @@ const Office = () => {
   const contentLoaded = useRef(false);
   const [showVisualizationControls, setShowVisualizationControls] = useState(false);
   const [selectedAgentInfo, setSelectedAgentInfo] = useState<any>(null);
+  const [selectedAgentForChat, setSelectedAgentForChat] = useState<typeof agents[0] | null>(null);
   const [visualizationState, setVisualizationState] = useState<VisualizationState>({
     activeLayerIds: [],
     layers: [],
@@ -58,7 +62,7 @@ const Office = () => {
         serverHotspots: true
       },
       performance: {
-        active: false,
+        active: true,
         showSparklines: true,
         showEfficiency: true,
         position: 'bottom-right'
@@ -148,84 +152,42 @@ const Office = () => {
     });
     
     if (action === 'details' && entityType === 'agent') {
-      const mockAgent = {
-        id: entityId,
-        name: `Agent ${entityId}`,
-        avatar: '/assets/agent-avatar.png',
-        role: 'Knowledge Assistant',
-        status: 'active',
-        efficiency: 87,
-        tasks: {
-          completed: 42,
-          inProgress: 5,
-          total: 50
-        },
-        workstationId: 'WS-12',
-        division: 'knowledge',
-        uptime: '12d 4h',
-        specialty: 'Data Analysis',
-        skills: ['NLP', 'Information Retrieval', 'Summarization', 'Content Creation'],
-        currentTask: 'Analyzing customer feedback reports for sentiment trends',
-        recentActivities: [
-          {
-            type: 'task',
-            description: 'Completed knowledge base update',
-            time: '2 hours ago'
-          },
-          {
-            type: 'collaboration',
-            description: 'Assisted Agent 3 with data correlation',
-            time: '4 hours ago'
-          },
-          {
-            type: 'system',
-            description: 'Resource allocation optimized',
-            time: '1 day ago'
-          }
-        ],
-        performanceMetrics: [
-          {
-            metric: 'Accuracy',
-            value: 95,
-            change: 2.5,
-            trend: 'up'
-          },
-          {
-            metric: 'Response Time',
-            value: 85,
-            change: -1.2,
-            trend: 'down'
-          },
-          {
-            metric: 'Task Completion',
-            value: 92,
-            change: 5.0,
-            trend: 'up'
-          },
-          {
-            metric: 'Resource Usage',
-            value: 78,
-            change: 3.4,
-            trend: 'up'
-          }
-        ],
-        collaborationData: [
-          { name: 'Mon', value: 30 },
-          { name: 'Tue', value: 45 },
-          { name: 'Wed', value: 60 },
-          { name: 'Thu', value: 40 },
-          { name: 'Fri', value: 70 },
-          { name: 'Sat', value: 25 },
-          { name: 'Sun', value: 15 }
-        ]
-      };
+      // Find the agent from our data
+      const agentId = parseInt(entityId);
+      const foundAgent = agents.find(a => a.id === agentId);
       
-      setSelectedAgentInfo(mockAgent);
+      if (foundAgent) {
+        setSelectedAgentForChat(foundAgent);
+      } else {
+        // Use mock data if agent not found
+        const mockAgent = {
+          id: parseInt(entityId),
+          name: `Agent ${entityId}`,
+          role: 'Knowledge Assistant',
+          status: 'working',
+          icon: BookOpen,
+          division: 'knowledge',
+          position: { x: 0, y: 0 },
+          route: [],
+          efficiency: 87,
+          workload: 75,
+          performanceData: [65, 70, 75, 72, 80, 85, 87]
+        };
+        
+        setSelectedAgentForChat(mockAgent as any);
+      }
     }
   };
   
   const handleViewPerformance = () => {
     window.location.href = '/performance';
+  };
+
+  const handleAgentFloorClick = (agentId: number) => {
+    const foundAgent = agents.find(a => a.id === agentId);
+    if (foundAgent) {
+      setSelectedAgentForChat(foundAgent);
+    }
   };
   
   if (!loaded) {
@@ -707,6 +669,7 @@ const Office = () => {
                     <OfficeFloorPlan 
                       visualizationState={visualizationState}
                       onHotspotAction={handleHotspotAction}
+                      onAgentClick={handleAgentFloorClick}
                     />
                   </div>
                   
@@ -852,6 +815,15 @@ const Office = () => {
             <AgentInfoPanel 
               agent={selectedAgentInfo} 
               onClose={handleCloseAgentInfo} 
+            />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {selectedAgentForChat && (
+            <AgentChatAnalyticsPanel 
+              agent={selectedAgentForChat} 
+              onClose={() => setSelectedAgentForChat(null)} 
             />
           )}
         </AnimatePresence>

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AgentStatus } from './AgentStatus';
 import { AgentTask } from './AgentTask';
@@ -64,6 +64,22 @@ const AgentCharacter: React.FC<AgentProps> = ({
     agent.status === 'paused' ? 'bg-amber-500' : 
     'bg-red-500';
 
+  // Handle agent movement along route path
+  useEffect(() => {
+    if (routePath.length <= 1 || agent.status !== 'working') return;
+    
+    const moveInterval = setInterval(() => {
+      if (agent.status === 'working') {
+        setIsTraveling(true);
+        setCurrentPosition(prev => (prev + 1) % routePath.length);
+        
+        setTimeout(() => setIsTraveling(false), 800);
+      }
+    }, Math.random() * 15000 + 20000); // Random interval between 20-35 seconds
+    
+    return () => clearInterval(moveInterval);
+  }, [agent.status, routePath]);
+
   const nextPosition = routePath[currentPosition];
   const agentPos = nextPosition ? { x: nextPosition.x, y: nextPosition.y } : agent.position;
 
@@ -100,6 +116,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
         left: `${agentPos.x}%`,
         top: `${agentPos.y}%`,
         scale: agent.status === 'error' ? [1, 1.05, 1] : 1,
+        rotate: isTraveling ? [-3, 3] : 0,
       }}
       transition={{
         type: "spring",
@@ -110,6 +127,13 @@ const AgentCharacter: React.FC<AgentProps> = ({
           scale: {
             repeat: Infinity,
             duration: 2
+          }
+        } : {}),
+        ...(isTraveling ? {
+          rotate: {
+            duration: 0.3,
+            repeat: Infinity,
+            repeatType: "reverse"
           }
         } : {})
       }}

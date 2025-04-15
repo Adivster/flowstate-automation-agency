@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import OfficeElements from './office/OfficeElements';
 import { useToast } from '@/hooks/use-toast';
@@ -6,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { VisualizationState } from './office/types/visualizationTypes';
 import { Division, DecorativeElement, ZIndexLayers } from './office/types/officeTypes';
 import { Book, Database, BarChart3, Cpu, User, Users, Bot, Laptop, BarChart, Shield, Activity } from 'lucide-react';
+import { agents } from './office/data/agentsData';
 
 const officeData = {
   divisions: [
@@ -14,31 +16,7 @@ const officeData = {
     { id: 'operations', name: 'Operations', icon: Cpu, position: { x: 10, y: 60, width: 35, height: 30 }, borderColor: '#F97316', backgroundColor: 'rgba(249, 115, 22, 0.1)', textColor: '#F97316', zIndex: ZIndexLayers.DIVISION },
     { id: 'strategy', name: 'Strategy', icon: Database, position: { x: 55, y: 60, width: 35, height: 30 }, borderColor: '#8B5CF6', backgroundColor: 'rgba(139, 92, 246, 0.1)', textColor: '#8B5CF6', zIndex: ZIndexLayers.DIVISION },
   ] as Division[],
-  agents: [
-    { id: 1, name: 'Agent 1', icon: User, position: { x: 15, y: 25 }, status: 'working', division: 'kb' },
-    { id: 2, name: 'Agent 2', icon: Users, position: { x: 25, y: 25 }, status: 'working', division: 'kb' },
-    { id: 3, name: 'Agent 3', icon: Bot, position: { x: 35, y: 25 }, status: 'idle', division: 'kb' },
-    { id: 4, name: 'Agent 4', icon: User, position: { x: 15, y: 40 }, status: 'working', division: 'kb' },
-    { id: 5, name: 'Agent 5', icon: Users, position: { x: 25, y: 40 }, status: 'working', division: 'kb' },
-    
-    { id: 6, name: 'Agent 6', icon: BarChart, position: { x: 60, y: 25 }, status: 'working', division: 'analytics' },
-    { id: 7, name: 'Agent 7', icon: BarChart3, position: { x: 70, y: 25 }, status: 'error', division: 'analytics' },
-    { id: 8, name: 'Agent 8', icon: BarChart, position: { x: 80, y: 25 }, status: 'working', division: 'analytics' },
-    { id: 9, name: 'Agent 9', icon: Users, position: { x: 60, y: 40 }, status: 'idle', division: 'analytics' },
-    { id: 10, name: 'Agent 10', icon: Laptop, position: { x: 70, y: 40 }, status: 'working', division: 'analytics' },
-    
-    { id: 11, name: 'Agent 11', icon: Cpu, position: { x: 15, y: 65 }, status: 'working', division: 'operations' },
-    { id: 12, name: 'Agent 12', icon: Laptop, position: { x: 25, y: 65 }, status: 'working', division: 'operations' },
-    { id: 13, name: 'Agent 13', icon: Laptop, position: { x: 35, y: 65 }, status: 'idle', division: 'operations' },
-    { id: 14, name: 'Agent 14', icon: Laptop, position: { x: 15, y: 80 }, status: 'error', division: 'operations' },
-    { id: 15, name: 'Agent 15', icon: Shield, position: { x: 25, y: 80 }, status: 'paused', division: 'operations' },
-    
-    { id: 16, name: 'Agent 16', icon: Database, position: { x: 60, y: 65 }, status: 'working', division: 'strategy' },
-    { id: 17, name: 'Agent 17', icon: Activity, position: { x: 70, y: 65 }, status: 'working', division: 'strategy' },
-    { id: 18, name: 'Agent 18', icon: Book, position: { x: 80, y: 65 }, status: 'idle', division: 'strategy' },
-    { id: 19, name: 'Agent 19', icon: Database, position: { x: 60, y: 80 }, status: 'paused', division: 'strategy' },
-    { id: 20, name: 'Agent 20', icon: Shield, position: { x: 70, y: 80 }, status: 'working', division: 'strategy' },
-  ],
+  agents: agents,
   decorations: [
     { type: 'plant', x: 5, y: 5, size: 2 },
     { type: 'plant', x: 90, y: 5, size: 1 },
@@ -75,11 +53,13 @@ const officeData = {
 interface OfficeFloorPlanProps {
   visualizationState?: VisualizationState;
   onHotspotAction?: (action: string, entityId: string, entityType: string) => void;
+  onAgentClick?: (agentId: number) => void;
 }
 
 const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({ 
   visualizationState,
-  onHotspotAction 
+  onHotspotAction,
+  onAgentClick
 }) => {
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<number | null>(null);
@@ -151,6 +131,11 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
     const agent = officeData.agents.find(a => a.id === agentId);
     if (agent) {
       setSelectedDivision(agent.division || null);
+    }
+    
+    // Pass the click to the parent component
+    if (onAgentClick) {
+      onAgentClick(agentId);
     }
   };
   
