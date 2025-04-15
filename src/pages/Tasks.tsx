@@ -1,8 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { ClipboardList, Plus, Edit2, UserPlus, CheckSquare, Filter, CalendarDays, Search } from 'lucide-react';
+import { ClipboardList, Plus, Edit2, UserPlus, CheckSquare, Filter, CalendarDays, Search, Calendar } from 'lucide-react';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import TaskBoard from '@/components/tasks/TaskBoard';
 import { useTheme } from 'next-themes';
@@ -14,11 +14,17 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
 import { QuickActionButton } from '@/components/ui/quick-action-button';
 import { cn } from '@/lib/utils';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import TaskCalendarView from '@/components/tasks/TaskCalendarView';
 
 const Tasks: React.FC = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const { t } = useLanguage();
+  const [viewMode, setViewMode] = useState<'board' | 'calendar'>('board');
+  const [priorityFilter, setPriorityFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [divisionFilter, setDivisionFilter] = useState<string | null>(null);
   
   return (
     <ThemedBackground>
@@ -72,37 +78,70 @@ const Tasks: React.FC = () => {
             className="p-5 md:p-8"
           >
             {/* Task Filter Bar */}
-            <div className="flex flex-wrap gap-4 mb-6">
-              <div className={cn(
-                "flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border",
-                isDark ? 'bg-flow-background/30 border-flow-border/50' : 'bg-white/70 border-red-200/50'
-              )}>
-                <Search className="h-4 w-4 text-muted-foreground" />
-                <input 
-                  type="text" 
-                  placeholder="Search tasks..." 
-                  className="bg-transparent border-none outline-none w-full text-sm placeholder:text-muted-foreground/70"
-                />
+            <div className="flex flex-wrap justify-between gap-4 mb-6">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className={cn(
+                  "flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border min-w-[250px]",
+                  isDark ? 'bg-flow-background/30 border-flow-border/50' : 'bg-white/70 border-red-200'
+                )}>
+                  <Search className="h-4 w-4 text-muted-foreground" />
+                  <input 
+                    type="text" 
+                    placeholder="Search tasks..." 
+                    className="bg-transparent border-none outline-none w-full text-sm placeholder:text-muted-foreground/70"
+                  />
+                </div>
+                
+                <Button variant="outline" size="sm" className={cn(
+                  isDark ? 'border-flow-border/50 bg-flow-background/30' : 'border-red-200 bg-white/70'
+                )}>
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filters
+                </Button>
+                
+                <Button variant="outline" size="sm" className={cn(
+                  isDark ? 'border-flow-border/50 bg-flow-background/30' : 'border-red-200 bg-white/70'
+                )}>
+                  <CalendarDays className="h-4 w-4 mr-2" />
+                  Due Date
+                </Button>
               </div>
               
-              <Button variant="outline" size="sm" className={cn(
-                isDark ? 'border-flow-border/50 bg-flow-background/30' : 'border-red-200/50 bg-white/70'
-              )}>
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
-              </Button>
-              
-              <Button variant="outline" size="sm" className={cn(
-                isDark ? 'border-flow-border/50 bg-flow-background/30' : 'border-red-200/50 bg-white/70'
-              )}>
-                <CalendarDays className="h-4 w-4 mr-2" />
-                Due Date
-              </Button>
+              <div>
+                <Tabs 
+                  defaultValue="board" 
+                  value={viewMode}
+                  onValueChange={(val) => setViewMode(val as 'board' | 'calendar')}
+                  className="w-auto"
+                >
+                  <TabsList className={cn(
+                    "border",
+                    isDark ? 'bg-flow-background/30 border-flow-border/50' : 'bg-white/80 border-red-200/50'
+                  )}>
+                    <TabsTrigger value="board">
+                      <ClipboardList className="h-4 w-4 mr-2" />
+                      Board
+                    </TabsTrigger>
+                    <TabsTrigger value="calendar">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Calendar
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
             </div>
             
-            {/* Task Board */}
+            {/* Task Board or Calendar View */}
             <TaskProvider>
-              <TaskBoard />
+              {viewMode === 'board' ? (
+                <TaskBoard />
+              ) : (
+                <TaskCalendarView 
+                  priorityFilter={priorityFilter}
+                  statusFilter={statusFilter}
+                  divisionFilter={divisionFilter}
+                />
+              )}
             </TaskProvider>
           </SolarpunkPanel>
         </div>

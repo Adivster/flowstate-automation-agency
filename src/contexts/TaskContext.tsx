@@ -23,6 +23,7 @@ interface TaskContextType {
   updateTask: (id: string, task: Partial<Task>) => void;
   deleteTask: (id: string) => void;
   moveTask: (id: string, newStatus: TaskStatus) => void;
+  reorderTasks: (sourceIndex: number, destinationIndex: number, status: TaskStatus) => void;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -97,12 +98,34 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const moveTask = (id: string, newStatus: TaskStatus) => {
     setTasks(tasks.map(task => 
-      task.id === id ? { ...task, status: newStatus } : task
+      task.id === id ? { 
+        ...task, 
+        status: newStatus,
+        progress: newStatus === 'completed' ? 100 : 
+                 newStatus === 'todo' ? 0 :
+                 newStatus === 'in-progress' ? 50 :
+                 newStatus === 'review' ? 80 : task.progress
+      } : task
     ));
+  };
+  
+  // New function to reorder tasks within a status column
+  const reorderTasks = (sourceIndex: number, destinationIndex: number, status: TaskStatus) => {
+    const filteredTasks = tasks.filter(task => task.status === status);
+    const taskToMove = filteredTasks[sourceIndex];
+    
+    // Remove task from old position and insert into new position
+    const newFilteredTasks = [...filteredTasks];
+    newFilteredTasks.splice(sourceIndex, 1);
+    newFilteredTasks.splice(destinationIndex, 0, taskToMove);
+    
+    // Replace tasks with same status with the reordered ones
+    const newTasks = tasks.filter(task => task.status !== status).concat(newFilteredTasks);
+    setTasks(newTasks);
   };
 
   return (
-    <TaskContext.Provider value={{ tasks, addTask, updateTask, deleteTask, moveTask }}>
+    <TaskContext.Provider value={{ tasks, addTask, updateTask, deleteTask, moveTask, reorderTasks }}>
       {children}
     </TaskContext.Provider>
   );

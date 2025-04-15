@@ -1,4 +1,3 @@
-
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect, useRef } from 'react';
 import Navbar from '@/components/layout/Navbar';
@@ -19,6 +18,7 @@ import { motion } from 'framer-motion';
 import ThemedBackground from '@/components/ui/ThemedBackground';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
 
 const Office = () => {
   const { t } = useLanguage();
@@ -104,7 +104,11 @@ const Office = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-500 dark:text-purple-400"
+                    className={cn(
+                      isDark 
+                        ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
+                        : "bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700"
+                    )}
                   >
                     <Grid className="h-4 w-4 mr-2" />
                     Reorganize Office
@@ -113,7 +117,11 @@ const Office = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-500 dark:text-purple-400"
+                    className={cn(
+                      isDark 
+                        ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
+                        : "bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700"
+                    )}
                   >
                     <Users className="h-4 w-4 mr-2" />
                     View Agent Details
@@ -122,7 +130,11 @@ const Office = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-500 dark:text-purple-400"
+                    className={cn(
+                      isDark 
+                        ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
+                        : "bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700"
+                    )}
                   >
                     <RefreshCw className="h-4 w-4 mr-2" />
                     Refresh Status
@@ -131,7 +143,11 @@ const Office = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-500 dark:text-purple-400"
+                    className={cn(
+                      isDark 
+                        ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
+                        : "bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700"
+                    )}
                   >
                     <Layers className="h-4 w-4 mr-2" />
                     Toggle Heatmap
@@ -215,15 +231,22 @@ const Office = () => {
             </motion.div>
           </div>
           
-          <GlassMorphism className="border border-flow-border/30 rounded-2xl overflow-hidden hover-scale">
+          <SolarpunkPanel accentColor="lavender" className="overflow-hidden hover-scale">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 p-6">
-              <TabsList className="grid w-full max-w-md grid-cols-3 bg-flow-background/30 border border-flow-border/50">
+              <TabsList className={cn(
+                "grid w-full max-w-md grid-cols-3",
+                isDark 
+                  ? "bg-flow-background/30 border border-flow-border/50" 
+                  : "bg-white/60 border border-purple-200"
+              )}>
                 <TabsTrigger 
                   value="office" 
                   className={cn(
                     "flex items-center gap-2",
-                    "data-[state=active]:bg-flow-accent data-[state=active]:text-white",
-                    "data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300"
+                    "data-[state=active]:bg-purple-500 data-[state=active]:text-white",
+                    isDark 
+                      ? "data-[state=inactive]:text-gray-300"
+                      : "data-[state=inactive]:text-purple-700"
                   )}
                 >
                   <Briefcase className="h-4 w-4" />
@@ -233,8 +256,10 @@ const Office = () => {
                   value="agents" 
                   className={cn(
                     "flex items-center gap-2",
-                    "data-[state=active]:bg-flow-accent data-[state=active]:text-white",
-                    "data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300"
+                    "data-[state=active]:bg-purple-500 data-[state=active]:text-white",
+                    isDark 
+                      ? "data-[state=inactive]:text-gray-300"
+                      : "data-[state=inactive]:text-purple-700"
                   )}
                 >
                   <Users className="h-4 w-4" />
@@ -244,8 +269,10 @@ const Office = () => {
                   value="metrics" 
                   className={cn(
                     "flex items-center gap-2",
-                    "data-[state=active]:bg-flow-accent data-[state=active]:text-white",
-                    "data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300"
+                    "data-[state=active]:bg-purple-500 data-[state=active]:text-white",
+                    isDark 
+                      ? "data-[state=inactive]:text-gray-300"
+                      : "data-[state=inactive]:text-purple-700"
                   )}
                 >
                   <Cpu className="h-4 w-4" />
@@ -354,7 +381,7 @@ const Office = () => {
                 </div>
               </TabsContent>
             </Tabs>
-          </GlassMorphism>
+          </SolarpunkPanel>
         </div>
       </main>
       

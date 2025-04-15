@@ -4,13 +4,15 @@ import { useTheme } from 'next-themes';
 import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Clock, CheckSquare, AlertCircle, CalendarDays, CheckCircle2, CircleDashed, CircleDot } from 'lucide-react';
-import { useTaskContext } from '@/contexts/TaskContext';
+import { useTaskContext, Task, TaskStatus } from '@/contexts/TaskContext';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 const TaskBoard = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-  const { tasks } = useTaskContext();
+  const { tasks, moveTask } = useTaskContext();
   const [viewType, setViewType] = useState<'kanban' | 'list'>('kanban');
 
   // Task status types
@@ -20,18 +22,6 @@ const TaskBoard = () => {
     { id: 'review', label: 'Review', icon: <AlertCircle className="h-4 w-4" /> },
     { id: 'completed', label: 'Completed', icon: <CheckCircle2 className="h-4 w-4" /> }
   ];
-
-  // Placeholder tasks for demo
-  const demoTasks = [
-    { id: '1', title: 'Setup AI agent workflow', status: 'todo', priority: 'high', dueDate: '2025-04-30' },
-    { id: '2', title: 'Review agent performance', status: 'in-progress', priority: 'medium', dueDate: '2025-04-25' },
-    { id: '3', title: 'Optimize knowledge base', status: 'review', priority: 'low', dueDate: '2025-04-22' },
-    { id: '4', title: 'Update client reporting pipeline', status: 'completed', priority: 'high', dueDate: '2025-04-18' },
-    { id: '5', title: 'Train new AI models', status: 'todo', priority: 'medium', dueDate: '2025-05-05' },
-  ];
-
-  // Get tasks or use demo tasks if none exist
-  const displayTasks = tasks && tasks.length > 0 ? tasks : demoTasks;
 
   // Get priority style
   const getPriorityStyle = (priority: string) => {
@@ -47,54 +37,103 @@ const TaskBoard = () => {
     }
   };
   
+  // Handle drag end
+  const handleDragEnd = (result: DropResult) => {
+    const { destination, source, draggableId } = result;
+    
+    // Return if dropped outside a droppable area
+    if (!destination) return;
+    
+    // Return if dropped in the same position
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+    
+    // Move the task to the new status
+    moveTask(draggableId, destination.droppableId as TaskStatus);
+  };
+  
   // Render the Kanban board view
   const renderKanbanView = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-      {statuses.map((status) => (
-        <div key={status.id} className="flex flex-col h-full">
-          <div className={cn(
-            "flex items-center gap-2 mb-3 px-2 font-medium",
-            isDark ? 'text-flow-foreground/80' : 'text-emerald-700'
-          )}>
-            {status.icon}
-            <span>{status.label}</span>
-            <span className="ml-auto bg-white/10 px-2 py-0.5 rounded text-xs">
-              {displayTasks.filter(t => t.status === status.id).length}
-            </span>
-          </div>
-          
-          <SolarpunkPanel 
-            accentColor="coral"
-            className="h-full min-h-[300px] p-2"
-          >
-            <div className="flex flex-col gap-2">
-              {displayTasks
-                .filter(task => task.status === status.id)
-                .map(task => (
-                  <SolarpunkPanel 
-                    key={task.id} 
-                    interactive 
-                    accentColor="default"
-                    className="p-3 border-solid border"
-                    elevated
-                  >
-                    <h3 className="font-medium">{task.title}</h3>
-                    <div className="flex items-center justify-between text-xs mt-2 text-muted-foreground">
-                      <span className={cn("px-2 py-0.5 rounded", getPriorityStyle(task.priority))}>
-                        {task.priority}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <CalendarDays className="h-3 w-3" />
-                        {task.dueDate}
-                      </span>
-                    </div>
-                  </SolarpunkPanel>
-                ))}
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+        {statuses.map((status) => (
+          <div key={status.id} className="flex flex-col h-full">
+            <div className={cn(
+              "flex items-center gap-2 mb-3 px-2 font-medium",
+              isDark ? 'text-flow-foreground/80' : 'text-emerald-700'
+            )}>
+              {status.icon}
+              <span>{status.label}</span>
+              <span className="ml-auto bg-white/10 px-2 py-0.5 rounded text-xs">
+                {tasks.filter(t => t.status === status.id).length}
+              </span>
             </div>
-          </SolarpunkPanel>
-        </div>
-      ))}
-    </div>
+            
+            <Droppable droppableId={status.id}>
+              {(provided, snapshot) => (
+                <SolarpunkPanel 
+                  accentColor="coral"
+                  className={cn(
+                    "h-full min-h-[300px] p-2",
+                    snapshot.isDraggingOver ? (isDark ? "bg-flow-accent/5" : "bg-red-50") : ""
+                  )}
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                >
+                  <div className="flex flex-col gap-2">
+                    {tasks
+                      .filter(task => task.status === status.id)
+                      .map((task, index) => (
+                        <Draggable key={task.id} draggableId={task.id} index={index}>
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className="touch-none"
+                            >
+                              <motion.div
+                                initial={false}
+                                animate={snapshot.isDragging ? { scale: 1.02, boxShadow: "0 5px 15px rgba(0,0,0,0.1)" } : { scale: 1 }}
+                              >
+                                <SolarpunkPanel 
+                                  interactive 
+                                  accentColor="default"
+                                  className="p-3 border-solid border"
+                                  elevated={snapshot.isDragging}
+                                >
+                                  <h3 className="font-medium">{task.title}</h3>
+                                  {task.description && (
+                                    <p className="text-sm mt-1 text-muted-foreground line-clamp-2">{task.description}</p>
+                                  )}
+                                  <div className="flex items-center justify-between text-xs mt-2 text-muted-foreground">
+                                    <span className={cn("px-2 py-0.5 rounded", getPriorityStyle(task.priority))}>
+                                      {task.priority}
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                      <CalendarDays className="h-3 w-3" />
+                                      {task.dueDate}
+                                    </span>
+                                  </div>
+                                </SolarpunkPanel>
+                              </motion.div>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                    {provided.placeholder}
+                  </div>
+                </SolarpunkPanel>
+              )}
+            </Droppable>
+          </div>
+        ))}
+      </div>
+    </DragDropContext>
   );
 
   // Render the list view
@@ -111,24 +150,50 @@ const TaskBoard = () => {
           <div className="col-span-2">Due Date</div>
         </div>
         
-        {displayTasks.map(task => (
-          <div key={task.id} className="grid grid-cols-12 gap-2 p-3 hover:bg-black/5 transition-colors">
-            <div className="col-span-6">{task.title}</div>
-            <div className="col-span-2 flex items-center gap-1">
-              {statuses.find(s => s.id === task.status)?.icon}
-              <span className="text-sm">{statuses.find(s => s.id === task.status)?.label}</span>
-            </div>
-            <div className="col-span-2">
-              <span className={cn("px-2 py-0.5 text-xs rounded", getPriorityStyle(task.priority))}>
-                {task.priority}
-              </span>
-            </div>
-            <div className="col-span-2 flex items-center gap-1 text-sm">
-              <CalendarDays className="h-3 w-3" />
-              {task.dueDate}
-            </div>
-          </div>
-        ))}
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="task-list" direction="vertical">
+            {(provided) => (
+              <div 
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
+                {tasks.map((task, index) => (
+                  <Draggable key={task.id} draggableId={task.id} index={index}>
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className={cn(
+                          "grid grid-cols-12 gap-2 p-3 transition-colors touch-none",
+                          snapshot.isDragging 
+                            ? (isDark ? "bg-flow-background/50" : "bg-red-50/80") 
+                            : "hover:bg-black/5"
+                        )}
+                      >
+                        <div className="col-span-6">{task.title}</div>
+                        <div className="col-span-2 flex items-center gap-1">
+                          {statuses.find(s => s.id === task.status)?.icon}
+                          <span className="text-sm">{statuses.find(s => s.id === task.status)?.label}</span>
+                        </div>
+                        <div className="col-span-2">
+                          <span className={cn("px-2 py-0.5 text-xs rounded", getPriorityStyle(task.priority))}>
+                            {task.priority}
+                          </span>
+                        </div>
+                        <div className="col-span-2 flex items-center gap-1 text-sm">
+                          <CalendarDays className="h-3 w-3" />
+                          {task.dueDate}
+                        </div>
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       </div>
     </SolarpunkPanel>
   );
@@ -151,7 +216,7 @@ const TaskBoard = () => {
         >
           <TabsList className={cn(
             "border",
-            isDark ? 'bg-flow-background/30 border-flow-border/50' : 'bg-white/80 border-emerald-200/50'
+            isDark ? 'bg-flow-background/30 border-flow-border/50' : 'bg-white/80 border-red-200/50'
           )}>
             <TabsTrigger value="kanban">
               <CheckSquare className="h-4 w-4 mr-2" />
