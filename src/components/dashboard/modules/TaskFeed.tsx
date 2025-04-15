@@ -1,12 +1,34 @@
 
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
-import { ClipboardList, ChevronRight, Check, Clock, AlertTriangle, XCircle, LayoutList, LayoutGrid as GridIcon } from 'lucide-react';
+import { 
+  ClipboardList, 
+  ChevronRight, 
+  Check, 
+  Clock, 
+  AlertTriangle, 
+  XCircle, 
+  LayoutList, 
+  LayoutGrid as GridIcon,
+  ArrowUpCircle,
+  ArrowDownCircle,
+  UserPlus,
+  Edit,
+  Trash
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { getDivisionColorScheme } from '@/utils/colorSystem';
+import { Link } from 'react-router-dom';
+import { Progress } from '@/components/ui/progress';
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 
 const TaskFeed: React.FC = () => {
   const [viewMode, setViewMode] = useState<'list' | 'board'>('list');
@@ -97,10 +119,13 @@ const TaskFeed: React.FC = () => {
   return (
     <Card className="p-4 border-flow-border/30 bg-black/30 backdrop-blur-md h-full">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-medium neon-text-green flex items-center">
-          <ClipboardList className="mr-2 h-5 w-5 text-green-400" />
-          Task Feed
-        </h3>
+        <div>
+          <h3 className="text-lg font-medium neon-text-green flex items-center">
+            <ClipboardList className="mr-2 h-5 w-5 text-green-400" />
+            Task Feed
+          </h3>
+          <p className="text-xs text-flow-foreground/60 mt-1">Active tasks and their current progress</p>
+        </div>
         <div className="flex items-center gap-2">
           <div className="flex bg-black/40 rounded-md overflow-hidden">
             <Button 
@@ -120,11 +145,16 @@ const TaskFeed: React.FC = () => {
               <GridIcon className="h-3.5 w-3.5" />
             </Button>
           </div>
-          <motion.div whileHover={{ x: 3 }} transition={{ type: 'spring', stiffness: 400 }}>
-            <a href="#" className="text-xs text-flow-foreground/70 hover:text-flow-accent flex items-center">
-              View All <ChevronRight className="ml-1 h-3 w-3" />
-            </a>
-          </motion.div>
+          <Link to="/tasks">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-xs text-flow-foreground/70 hover:text-flow-accent flex items-center gap-1 h-7"
+            >
+              Go to Tasks
+              <ChevronRight className="h-3 w-3" />
+            </Button>
+          </Link>
         </div>
       </div>
       
@@ -176,7 +206,7 @@ const TaskFeed: React.FC = () => {
               return (
                 <motion.div
                   key={task.id}
-                  className="bg-black/20 rounded-md p-3 cursor-pointer hover:bg-black/30 border border-flow-border/10 transition-colors"
+                  className="bg-black/20 rounded-md p-3 cursor-pointer hover:bg-black/30 border border-flow-border/10 transition-colors group relative"
                   whileHover={{ 
                     y: -2,
                     boxShadow: `0 4px 12px rgba(0,0,0,0.2), 0 0 0 1px ${divisionColor.border}50` 
@@ -188,9 +218,20 @@ const TaskFeed: React.FC = () => {
                   <div className="flex justify-between items-start">
                     <div className="flex-grow">
                       <div className="flex items-center gap-1.5 mb-1">
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${priorityStyles[task.priority]}`}>
-                          {task.priority}
-                        </span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${priorityStyles[task.priority]}`}>
+                                {task.priority}
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="text-[10px] py-1 px-2">
+                              {task.priority === 'high' ? 'Critical priority' : 
+                               task.priority === 'medium' ? 'Medium priority' : 
+                               'Low priority'}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                         <span className="text-xs font-medium text-flow-foreground">{task.title}</span>
                       </div>
                       <div className="flex justify-between items-center text-[10px] text-flow-foreground/70">
@@ -218,12 +259,82 @@ const TaskFeed: React.FC = () => {
                       )}
                     </div>
                   </div>
+
+                  {/* Quick action buttons - visible on hover */}
+                  <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-5 w-5 bg-black/30">
+                            <ArrowUpCircle className="h-3 w-3 text-red-400" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="text-[10px] py-1 px-2">
+                          Increase priority
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-5 w-5 bg-black/30">
+                            <ArrowDownCircle className="h-3 w-3 text-green-400" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="text-[10px] py-1 px-2">
+                          Decrease priority
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-5 w-5 bg-black/30">
+                            <UserPlus className="h-3 w-3 text-blue-400" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="text-[10px] py-1 px-2">
+                          Reassign task
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-5 w-5 bg-black/30">
+                            <Edit className="h-3 w-3 text-amber-400" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="text-[10px] py-1 px-2">
+                          Edit task
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </motion.div>
               );
             })}
           </div>
         )}
       </ScrollArea>
+      
+      <div className="pt-2 mt-2 border-t border-flow-border/10 flex justify-between items-center">
+        <span className="text-xs text-flow-foreground/50">
+          {filteredTasks.length} tasks {activeTab === 'in-progress' ? 'in progress' : activeTab}
+        </span>
+        <Link to="/tasks">
+          <Button 
+            variant="outline"
+            size="sm" 
+            className="text-xs h-7 px-3 border-flow-border/30"
+          >
+            View all tasks
+          </Button>
+        </Link>
+      </div>
     </Card>
   );
 };

@@ -27,7 +27,8 @@ import {
   PanelRight,
   Maximize,
   Minimize,
-  Rocket
+  Rocket,
+  Search
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -49,6 +50,7 @@ import GlobalMeshStatus from './modules/GlobalMeshStatus';
 import DivisionsTab from './tabs/DivisionsTab';
 import AgentsTab from './tabs/AgentsTab';
 import SystemTab from './tabs/SystemTab';
+import { Input } from '@/components/ui/input';
 
 const AgencyDashboard: React.FC = () => {
   const { t } = useLanguage();
@@ -57,6 +59,7 @@ const AgencyDashboard: React.FC = () => {
   const [systemHealth, setSystemHealth] = useState(95);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [dateRange, setDateRange] = useState<'day' | 'week' | 'month' | 'year'>('week');
 
   useEffect(() => {
     // Simulate system health fluctuations
@@ -85,9 +88,17 @@ const AgencyDashboard: React.FC = () => {
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
+
+  const handleCommandK = (e: React.KeyboardEvent) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      const event = new CustomEvent('openCommandTerminal');
+      window.dispatchEvent(event);
+    }
+  };
   
   return (
-    <div className="p-4 relative">
+    <div className="p-4 relative" onKeyDown={handleCommandK}>
       {/* Header Bar with System Status */}
       <div className="mb-6 flex flex-wrap justify-between items-center">
         <div className="flex items-center">
@@ -101,6 +112,45 @@ const AgencyDashboard: React.FC = () => {
         </div>
         
         <div className="flex items-center gap-2 mt-4 md:mt-0">
+          {/* Global search with Ctrl+K shortcut */}
+          <div className="relative mr-2">
+            <Input 
+              placeholder="Search dashboard..." 
+              className="h-8 w-44 text-xs pl-8 bg-black/30 border-flow-border/30"
+            />
+            <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 transform -translate-y-1/2 text-flow-foreground/50" />
+            <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2 bg-flow-background/30 px-1 rounded text-[10px] text-flow-foreground/60">
+              Ctrl+K
+            </div>
+          </div>
+
+          <div className="flex bg-black/40 rounded-md overflow-hidden mr-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={`text-[10px] h-7 px-2 py-0 ${dateRange === 'day' ? 'bg-flow-accent/20' : ''}`}
+              onClick={() => setDateRange('day')}
+            >
+              Day
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={`text-[10px] h-7 px-2 py-0 ${dateRange === 'week' ? 'bg-flow-accent/20' : ''}`}
+              onClick={() => setDateRange('week')}
+            >
+              Week
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={`text-[10px] h-7 px-2 py-0 ${dateRange === 'month' ? 'bg-flow-accent/20' : ''}`}
+              onClick={() => setDateRange('month')}
+            >
+              Month
+            </Button>
+          </div>
+
           <Button 
             variant="outline" 
             size="icon" 
@@ -171,40 +221,40 @@ const AgencyDashboard: React.FC = () => {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-            {/* Performance Map */}
+            {/* Performance Map with KPIs */}
             <div className="lg:col-span-1">
               <PerformanceMap />
             </div>
             
-            {/* Division Overview */}
+            {/* Division Overview with Clear Section Titles */}
             <div className="lg:col-span-1">
               <DivisionOverview />
             </div>
             
-            {/* Agent Evolution Map */}
+            {/* Agent Evolution Map with Snapshots */}
             <div className="lg:col-span-1">
               <AgentEvolutionMap />
             </div>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Recent Activity Feed */}
+            {/* Recent Activity Feed with Filters */}
             <div className="lg:col-span-1">
               <RecentActivityFeed />
             </div>
             
-            {/* Task Feed */}
+            {/* Task Feed with Progress Bars & Quick Actions */}
             <div className="lg:col-span-1">
               <TaskFeed />
             </div>
             
-            {/* Command Terminal Widget */}
+            {/* Enhanced Command Terminal Widget */}
             <div className="lg:col-span-1">
               <CommandTerminalWidget />
             </div>
           </div>
           
-          {/* Global Mesh Status (Optional) */}
+          {/* Global Mesh Status (Collapsible/Expandable) */}
           <div className="mt-4">
             <GlobalMeshStatus />
           </div>
@@ -235,6 +285,11 @@ const AgencyDashboard: React.FC = () => {
           <span>🔥 1,000 tasks completed this week!</span>
         </div>
       </motion.div>
+
+      {/* Keyboard shortcut hint */}
+      <div className="fixed bottom-4 left-4 bg-black/60 border border-flow-border/30 rounded-lg px-2 py-1 text-[10px] text-flow-foreground/60">
+        Press <kbd className="bg-flow-background/60 px-1 py-0.5 rounded border border-flow-border/50">Ctrl+K</kbd> to search or open command terminal
+      </div>
     </div>
   );
 };

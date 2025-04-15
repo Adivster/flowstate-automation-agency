@@ -97,6 +97,17 @@ export const useDashboardActions = () => {
     }, 800);
   };
 
+  const handleOpenCommandTerminal = () => {
+    toast({
+      title: "Command Terminal",
+      description: "Opening command terminal interface...",
+      duration: 2000
+    });
+    
+    const event = new CustomEvent('openCommandTerminal');
+    window.dispatchEvent(event);
+  };
+
   return {
     handleCreateAgent,
     handleStartWorkflow,
@@ -105,6 +116,7 @@ export const useDashboardActions = () => {
     handleRunAnalysis,
     handleSystemAlert,
     handleAiConsult,
-    handleCreateDivision
+    handleCreateDivision,
+    handleOpenCommandTerminal
   };
 };

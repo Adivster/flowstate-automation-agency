@@ -51,15 +51,12 @@ const QuickActionsHub: React.FC = () => {
         <QuickActionButton
           icon={<Building2 className="h-6 w-6 text-yellow-400" />}
           label="Create Division"
-          onClick={dashboardActions.handleQuickTask}
+          onClick={dashboardActions.handleCreateDivision}
         />
         <QuickActionButton
           icon={<Terminal className="h-6 w-6 text-indigo-400" />}
           label="Open CLI"
-          onClick={() => {
-            const event = new CustomEvent('openCommandTerminal');
-            window.dispatchEvent(event);
-          }}
+          onClick={dashboardActions.handleOpenCommandTerminal}
         />
       </div>
     </Card>

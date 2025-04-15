@@ -1,10 +1,13 @@
 
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import { ChevronRight, BarChart, Activity, Clock, Users, TrendingUp, TrendingDown } from 'lucide-react';
+import { ChevronRight, BarChart, Activity, Clock, Users, TrendingUp, TrendingDown, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AreaChart } from '@/components/ui/chart';
 import { usePerformanceData } from '@/hooks/usePerformanceData';
+import { Link } from 'react-router-dom';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
 
 interface StatCardProps {
   icon: React.ElementType;
@@ -13,16 +16,33 @@ interface StatCardProps {
   trend: string;
   trendValue: string;
   upward?: boolean;
+  tooltip?: string;
 }
 
 const PerformanceMap: React.FC = () => {
   const performanceData = usePerformanceData();
 
-  const StatCard = ({ icon: Icon, title, value, trend, trendValue, upward = false }: StatCardProps) => (
+  const StatCard = ({ icon: Icon, title, value, trend, trendValue, upward = false, tooltip }: StatCardProps) => (
     <div className="bg-black/20 border border-flow-border/10 rounded-md p-3">
       <div className="flex justify-between items-start">
         <div>
-          <div className="text-xs text-flow-foreground/60">{title}</div>
+          <div className="text-xs text-flow-foreground/60 flex items-center">
+            {title}
+            {tooltip && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button className="ml-1 inline-flex">
+                      <Info className="h-3 w-3 text-flow-foreground/40" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">{tooltip}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
           <div className="text-lg font-medium mt-1 font-mono">{value}</div>
           {trend && (
             <div className="flex items-center mt-1 text-xs">
@@ -48,15 +68,23 @@ const PerformanceMap: React.FC = () => {
   return (
     <Card className="p-4 border-flow-border/30 bg-black/30 backdrop-blur-md h-full">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-medium neon-text-orange flex items-center">
-          <BarChart className="mr-2 h-5 w-5 text-orange-400" />
-          Performance Map
-        </h3>
-        <motion.div whileHover={{ x: 3 }} transition={{ type: 'spring', stiffness: 400 }}>
-          <a href="#" className="text-xs text-flow-foreground/70 hover:text-flow-accent flex items-center">
-            View Analytics <ChevronRight className="ml-1 h-3 w-3" />
-          </a>
-        </motion.div>
+        <div>
+          <h3 className="text-lg font-medium neon-text-orange flex items-center">
+            <BarChart className="mr-2 h-5 w-5 text-orange-400" />
+            Performance Map
+          </h3>
+          <p className="text-xs text-flow-foreground/60 mt-1">Tracks tasks, response time, system load & agents</p>
+        </div>
+        <Link to="/analytics">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-xs text-flow-foreground/70 hover:text-flow-accent flex items-center gap-1"
+          >
+            Go to Analytics
+            <ChevronRight className="h-3 w-3" />
+          </Button>
+        </Link>
       </div>
       
       <div className="grid grid-cols-2 gap-3 mb-3">
@@ -67,6 +95,7 @@ const PerformanceMap: React.FC = () => {
           trend="this week" 
           trendValue="+12%" 
           upward={true} 
+          tooltip="Total number of tasks successfully completed"
         />
         <StatCard 
           icon={Clock} 
@@ -75,6 +104,7 @@ const PerformanceMap: React.FC = () => {
           trend="from last week" 
           trendValue="-5%" 
           upward={true} 
+          tooltip="Average time to complete a task request"
         />
         <StatCard 
           icon={BarChart} 
@@ -83,6 +113,7 @@ const PerformanceMap: React.FC = () => {
           trend="from average" 
           trendValue="+8%" 
           upward={false} 
+          tooltip="Current CPU and memory usage"
         />
         <StatCard 
           icon={Users} 
@@ -91,6 +122,7 @@ const PerformanceMap: React.FC = () => {
           trend="daily" 
           trendValue="+2" 
           upward={true}
+          tooltip="Number of agents currently working on tasks"
         />
       </div>
       
@@ -107,8 +139,15 @@ const PerformanceMap: React.FC = () => {
         />
       </div>
       
-      <div className="text-xs text-center text-flow-foreground/50">
-        Weekly Task Completion Trend
+      <div className="flex justify-between items-center">
+        <div className="text-xs text-flow-foreground/50">
+          Weekly Task Completion Trend
+        </div>
+        <div className="flex space-x-2">
+          <Button variant="outline" size="sm" className="text-[10px] h-6 px-2 py-1">24h</Button>
+          <Button variant="outline" size="sm" className="text-[10px] h-6 px-2 py-1 bg-flow-accent/20">7d</Button>
+          <Button variant="outline" size="sm" className="text-[10px] h-6 px-2 py-1">30d</Button>
+        </div>
       </div>
     </Card>
   );
