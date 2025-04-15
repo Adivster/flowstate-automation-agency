@@ -3,7 +3,7 @@ import React, { forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { useTheme } from 'next-themes';
-import { motion } from 'framer-motion';
+import { motion, HTMLMotionProps } from 'framer-motion';
 
 interface SolarpunkPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -74,9 +74,6 @@ export const SolarpunkPanel = forwardRef<HTMLDivElement, SolarpunkPanelProps>(({
     }
   };
 
-  // Determine the panel component based on interactivity
-  const Component = interactive ? motion.div : 'div';
-
   // Motion animation props for interactive panels
   const motionProps = interactive ? {
     whileHover: { 
@@ -87,26 +84,44 @@ export const SolarpunkPanel = forwardRef<HTMLDivElement, SolarpunkPanelProps>(({
       duration: 0.3 
     }
   } : {};
+  
+  // Common className for both div and motion.div
+  const commonClassName = cn(
+    'rounded-xl overflow-hidden',
+    !noBorder && 'border-2',
+    fullWidth ? 'w-full' : '',
+    getAccentColorStyles(),
+    getShadowStyles(),
+    interactive && 'cursor-pointer transition-all duration-300',
+    isDark ? 'bg-flow-background/20 backdrop-blur-md text-flow-foreground' : 'backdrop-blur-sm text-gray-800',
+    className
+  );
+
+  if (interactive) {
+    // Use TypeScript type casting to handle the motion component properly
+    return (
+      <motion.div
+        ref={ref}
+        onClick={onClick}
+        className={commonClassName}
+        {...motionProps}
+        // Safely spread other props, excluding any that might conflict with motion props
+        {...(props as Omit<React.HTMLAttributes<HTMLDivElement>, keyof HTMLMotionProps<"div">>)}
+      >
+        {children}
+      </motion.div>
+    );
+  }
 
   return (
-    <Component
+    <div
       ref={ref}
       onClick={onClick}
-      className={cn(
-        'rounded-xl overflow-hidden',
-        !noBorder && 'border-2',
-        fullWidth ? 'w-full' : '',
-        getAccentColorStyles(),
-        getShadowStyles(),
-        interactive && 'cursor-pointer transition-all duration-300',
-        isDark ? 'bg-flow-background/20 backdrop-blur-md text-flow-foreground' : 'backdrop-blur-sm text-gray-800',
-        className
-      )}
-      {...motionProps}
+      className={commonClassName}
       {...props}
     >
       {children}
-    </Component>
+    </div>
   );
 });
 
