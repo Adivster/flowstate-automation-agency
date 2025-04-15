@@ -4,6 +4,9 @@ import { motion } from 'framer-motion';
 import { ZIndexLayers } from './types/officeTypes';
 import DivisionDecoration from './DivisionDecoration';
 import { getDivisionStyle, getDivisionHexColors } from '@/utils/colorSystem';
+import MiniSparkline from './MiniSparkline';
+import { Activity, Gauge, Plus, Zap } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface DivisionProps {
   division: {
@@ -27,6 +30,10 @@ interface DivisionProps {
   onDragEnd?: (id: string, x: number, y: number) => void;
   customPosition?: { x: number; y: number };
   agents?: Array<any>;
+  performanceData?: number[];
+  activityLevel?: number;
+  showQuickActions?: boolean;
+  onQuickAction?: (divisionId: string, action: string) => void;
 }
 
 const Division: React.FC<DivisionProps> = ({
@@ -37,7 +44,11 @@ const Division: React.FC<DivisionProps> = ({
   isDraggable = false,
   onDragEnd,
   customPosition,
-  agents = []
+  agents = [],
+  performanceData,
+  activityLevel = 0,
+  showQuickActions = false,
+  onQuickAction
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   
@@ -87,6 +98,20 @@ const Division: React.FC<DivisionProps> = ({
       return `0 0 15px ${hexColors.shadow}`;
     }
     return `0 0 5px ${hexColors.shadow}`;
+  };
+
+  const getActivityIndicator = () => {
+    if (activityLevel > 75) return "bg-red-500";
+    if (activityLevel > 50) return "bg-amber-500";
+    if (activityLevel > 30) return "bg-green-500";
+    return "bg-blue-500";
+  };
+
+  const handleQuickAction = (e: React.MouseEvent, action: string) => {
+    e.stopPropagation();
+    if (onQuickAction) {
+      onQuickAction(division.id, action);
+    }
   };
   
   return (
@@ -173,11 +198,12 @@ const Division: React.FC<DivisionProps> = ({
           </div>
         </div>
         
-        {/* Central division content area - can be extended with more info */}
-        <div className="flex-1 flex items-center justify-center">
+        {/* Activity indicator */}
+        <div className="flex-1 relative">
+          {/* Central division content area - can be extended with more info */}
           {isSelected && (
             <motion.div 
-              className="rounded-full w-12 h-12 flex items-center justify-center"
+              className="rounded-full w-12 h-12 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.1, duration: 0.2 }}
@@ -187,6 +213,61 @@ const Division: React.FC<DivisionProps> = ({
               }}
             >
               <Icon className="h-6 w-6" style={{ color: hexColors.primary }} />
+            </motion.div>
+          )}
+
+          {/* Activity level indicator (circular pulsing dot) */}
+          {activityLevel > 0 && (
+            <div className="absolute bottom-0 right-0 flex items-center gap-1">
+              <div className={`h-2 w-2 rounded-full ${getActivityIndicator()} animate-pulse`}></div>
+            </div>
+          )}
+          
+          {/* Performance sparkline - only show when not selected to avoid cluttering */}
+          {performanceData && !isSelected && (
+            <div className="absolute bottom-0 left-0 bg-black/30 p-1 rounded backdrop-blur-sm">
+              <MiniSparkline 
+                data={performanceData} 
+                color={hexColors.primary} 
+                height={15}
+                width={40}
+                fillOpacity={0.3}
+              />
+            </div>
+          )}
+          
+          {/* Quick action buttons that appear on hover */}
+          {showQuickActions && isHovered && !isSelected && (
+            <motion.div 
+              className="absolute top-0 right-0 flex gap-1"
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="h-6 w-6 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60"
+                onClick={(e) => handleQuickAction(e, 'optimize')}
+              >
+                <Zap className="h-3 w-3 text-yellow-400" />
+              </Button>
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="h-6 w-6 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60"
+                onClick={(e) => handleQuickAction(e, 'analyze')}
+              >
+                <Activity className="h-3 w-3 text-blue-400" />
+              </Button>
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="h-6 w-6 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60"
+                onClick={(e) => handleQuickAction(e, 'add-agent')}
+              >
+                <Plus className="h-3 w-3 text-green-400" />
+              </Button>
             </motion.div>
           )}
         </div>
@@ -216,9 +297,10 @@ const Division: React.FC<DivisionProps> = ({
             <span className="text-[0.65rem] text-white/70">Status: Active</span>
           </div>
           
-          {/* Additional division info can go here */}
+          {/* Additional division info */}
           {divisionAgents.length > 0 && (
-            <div className="text-[0.65rem] text-white/70">
+            <div className="flex items-center gap-1 text-[0.65rem] text-white/70">
+              <Gauge className="h-3 w-3 text-white/50" />
               {Math.round(divisionAgents.reduce((sum, agent) => sum + agent.efficiency, 0) / divisionAgents.length)}% Eff
             </div>
           )}

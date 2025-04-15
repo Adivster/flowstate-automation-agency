@@ -12,7 +12,7 @@ interface ActionPromptCardProps {
   timestamp?: string;
 }
 
-const ActionPromptCard: React.FC<ActionPromptCardProps> = ({ prompt, onAction, timestamp }) => {
+export const ActionPromptCard: React.FC<ActionPromptCardProps> = ({ prompt, onAction, timestamp }) => {
   // Icon mapping based on action type
   const getActionIcon = () => {
     switch (prompt.actionType) {

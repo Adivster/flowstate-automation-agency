@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -10,10 +11,16 @@ import OfficeElements from './office/OfficeElements';
 import OfficeControls from './office/OfficeControls';
 import InfoPanelManager from './office/InfoPanelManager';
 import { Button } from '@/components/ui/button';
-import { Pencil, Save, RotateCcw, X, ZoomIn, ZoomOut } from 'lucide-react';
+import { Pencil, Save, RotateCcw, X, ZoomIn, ZoomOut, Layers, Users, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import ZoomableView from './office/ZoomableView';
+import VisualizationControls from './office/VisualizationControls';
+import { VisualizationLayer } from './office/VisualizationControls';
+import { VisualizationLayerData, VisualizationState } from './office/types/visualizationTypes';
+import { ActionPrompt } from '@/components/communication/useConversationalFlow';
+import { ActionPromptCard } from '@/components/communication/ActionPromptCard';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const OfficeFloorPlan: React.FC = () => {
   // Component state
@@ -27,6 +34,42 @@ const OfficeFloorPlan: React.FC = () => {
   const [divisionPositions, setDivisionPositions] = useState<Record<string, {x: number, y: number}>>({});
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [aiPromptVisible, setAiPromptVisible] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState<ActionPrompt | null>(null);
+  const [visualizationState, setVisualizationState] = useState<VisualizationState>({
+    activeLayerIds: ['performance'],
+    layers: [
+      { id: 'hotspots', name: 'Interactive Hotspots', active: true, count: 8 },
+      { id: 'heatmap', name: 'Activity Heatmap', active: false },
+      { id: 'statusMarkers', name: 'Status Indicators', active: true, count: 3 },
+      { id: 'performance', name: 'Performance Data', active: true },
+      { id: 'quickActions', name: 'Quick Actions', active: true }
+    ],
+    layerData: {
+      heatmap: {
+        active: false,
+        data: []
+      },
+      statusMarkers: {
+        active: true,
+        data: []
+      },
+      hotspots: {
+        active: true,
+        divisionHotspots: true,
+        workstationHotspots: true,
+        serverHotspots: true
+      },
+      performance: {
+        active: true,
+        showSparklines: true,
+        showEfficiency: true
+      },
+      quickActions: {
+        active: true
+      }
+    }
+  });
   
   // Hooks
   const { t } = useLanguage();
@@ -212,6 +255,13 @@ const OfficeFloorPlan: React.FC = () => {
         [divisionId]: false
       }));
     }, 2000);
+    
+    // Show AI prompt with probability
+    if (Math.random() > 0.7) {
+      setTimeout(() => {
+        showAiInsightPrompt('division', divisionId);
+      }, 1000);
+    }
   };
   
   // Handle agent click
@@ -221,6 +271,13 @@ const OfficeFloorPlan: React.FC = () => {
     setSelectedAgent(agentId);
     setSelectedDivision(null);
     setShowInfoPanel(true);
+    
+    // Show AI prompt with probability
+    if (Math.random() > 0.7) {
+      setTimeout(() => {
+        showAiInsightPrompt('agent', agentId.toString());
+      }, 1000);
+    }
   };
 
   // Handle closing the info panel
@@ -343,6 +400,210 @@ const OfficeFloorPlan: React.FC = () => {
     setZoomLevel(1);
   };
   
+  // Toggle visualization layers
+  const handleToggleLayer = (layerId: string) => {
+    setVisualizationState(prev => {
+      // Update the layer active state
+      const updatedLayers = prev.layers.map(layer => 
+        layer.id === layerId ? { ...layer, active: !layer.active } : layer
+      );
+      
+      // Update the layerData active state
+      let updatedLayerData = { ...prev.layerData };
+      if (layerId === 'heatmap') {
+        updatedLayerData.heatmap.active = !updatedLayerData.heatmap.active;
+      } else if (layerId === 'statusMarkers') {
+        updatedLayerData.statusMarkers.active = !updatedLayerData.statusMarkers.active;
+      } else if (layerId === 'hotspots') {
+        updatedLayerData.hotspots.active = !updatedLayerData.hotspots.active;
+      } else if (layerId === 'performance') {
+        updatedLayerData.performance.active = !updatedLayerData.performance.active;
+      } else if (layerId === 'quickActions') {
+        updatedLayerData.quickActions.active = !updatedLayerData.quickActions.active;
+      }
+      
+      // Update activeLayerIds
+      const updatedActiveLayerIds = updatedLayers
+        .filter(layer => layer.active)
+        .map(layer => layer.id);
+        
+      return {
+        activeLayerIds: updatedActiveLayerIds,
+        layers: updatedLayers,
+        layerData: updatedLayerData
+      };
+    });
+    
+    toast({
+      title: `Visualization Layer`,
+      description: `Updated display settings`,
+      duration: 2000,
+    });
+  };
+  
+  // Handle hotspot actions
+  const handleHotspotAction = (action: string, entityId: string, entityType: string) => {
+    if (action === 'details') {
+      // Open details panel
+      if (entityType === 'division') {
+        setSelectedDivision(entityId);
+        setSelectedAgent(null);
+        setShowInfoPanel(true);
+      } else if (entityType === 'agent') {
+        setSelectedAgent(parseInt(entityId));
+        setSelectedDivision(null);
+        setShowInfoPanel(true);
+      } else {
+        toast({
+          title: "View Details",
+          description: `Viewing details for ${entityType} ${entityId}`,
+          duration: 3000,
+        });
+      }
+    } else if (action === 'optimize') {
+      showAiInsightPrompt(entityType, entityId, 'optimize');
+    } else if (action === 'diagnose') {
+      showAiInsightPrompt(entityType, entityId, 'diagnose');
+    } else if (action === 'chat') {
+      toast({
+        title: "Chat Interface",
+        description: `Opening chat with ${entityType} ${entityId}`,
+        duration: 3000,
+      });
+    } else if (action === 'analyze') {
+      showAiInsightPrompt(entityType, entityId, 'analyze');
+    }
+  };
+  
+  // Show AI insight prompt
+  const showAiInsightPrompt = (entityType: string, entityId: string, action?: string) => {
+    // Generate a prompt based on entity type
+    let prompt: ActionPrompt | null = null;
+    
+    if (entityType === 'division') {
+      const division = divisions.find(d => d.id === entityId);
+      if (!division) return;
+      
+      if (action === 'optimize' || !action) {
+        prompt = {
+          actionType: 'optimize',
+          title: `Optimize ${division.name} Division`,
+          description: `AI analysis detected opportunity to improve performance by reallocating resources for the ${division.name} Division.`,
+          severity: 'medium',
+          entityType: 'division',
+          entityId: entityId,
+          metrics: {
+            before: 76,
+            after: 91,
+            unit: '%'
+          },
+          actions: {
+            confirm: 'Apply Changes',
+            decline: 'Ignore',
+            moreInfo: 'Details'
+          }
+        };
+      } else if (action === 'analyze') {
+        prompt = {
+          actionType: 'diagnose',
+          title: `${division.name} Performance Analysis`,
+          description: `Generate comprehensive performance report for ${division.name} Division with efficiency trends.`,
+          severity: 'low',
+          entityType: 'division',
+          entityId: entityId,
+          actions: {
+            confirm: 'Generate Report',
+            decline: 'Cancel'
+          }
+        };
+      }
+    } else if (entityType === 'agent') {
+      const agent = agents.find(a => a.id.toString() === entityId);
+      if (!agent) return;
+      
+      if (action === 'diagnose' || !action) {
+        prompt = {
+          actionType: 'tune',
+          title: `Tune Agent Parameters`,
+          description: `Agent ${agent.name} has been operating below optimal thresholds. Performance tuning recommended.`,
+          severity: agent.status === 'error' ? 'high' : 'medium',
+          entityType: 'agent',
+          entityId: entityId,
+          metrics: {
+            before: 68,
+            after: 85,
+            unit: '%'
+          },
+          actions: {
+            confirm: 'Tune Agent',
+            decline: 'Ignore',
+            moreInfo: 'View Analysis'
+          }
+        };
+      } else if (action === 'optimize') {
+        prompt = {
+          actionType: 'reassign',
+          title: `Reassign Agent Tasks`,
+          description: `Recommended workload redistribution for Agent ${agent.name} to optimize task efficiency.`,
+          severity: 'medium',
+          entityType: 'agent',
+          entityId: entityId,
+          metrics: {
+            before: 12,
+            after: 8,
+            unit: ' tasks'
+          },
+          actions: {
+            confirm: 'Reassign Tasks',
+            decline: 'Ignore',
+            moreInfo: 'View Plan'
+          }
+        };
+      }
+    } else if (entityType === 'server') {
+      prompt = {
+        actionType: 'simulate',
+        title: 'System Performance Simulation',
+        description: 'Run simulation to identify potential bottlenecks and optimize resource allocation.',
+        severity: 'low',
+        entityType: 'system',
+        entityId: 'server',
+        actions: {
+          confirm: 'Run Simulation',
+          decline: 'Cancel',
+          moreInfo: 'Parameters'
+        }
+      };
+    }
+    
+    if (prompt) {
+      setAiPrompt(prompt);
+      setAiPromptVisible(true);
+    }
+  };
+  
+  // Handle AI prompt actions
+  const handleAiPromptAction = (action: 'confirm' | 'decline' | 'moreInfo') => {
+    if (!aiPrompt) return;
+    
+    if (action === 'confirm') {
+      toast({
+        title: "Action Confirmed",
+        description: `Processing ${aiPrompt.title}`,
+        duration: 3000,
+      });
+    } else if (action === 'moreInfo') {
+      toast({
+        title: "Additional Information",
+        description: `Showing details for ${aiPrompt.title}`,
+        duration: 3000,
+      });
+    }
+    
+    setAiPromptVisible(false);
+    setAiPrompt(null);
+  };
+  
   // Loading state
   if (!isLoaded) {
     return (
@@ -405,8 +666,18 @@ const OfficeFloorPlan: React.FC = () => {
             onDivisionDragEnd={handleDivisionDragEnd}
             divisionPositions={divisionPositions}
             zoomLevel={zoomLevel}
+            visualizationState={visualizationState}
+            onHotspotAction={handleHotspotAction}
           />
         </ZoomableView>
+        
+        {/* Visualization controls */}
+        <div className="absolute top-3 left-3 z-40">
+          <VisualizationControls 
+            layers={visualizationState.layers}
+            onToggleLayer={handleToggleLayer}
+          />
+        </div>
         
         {/* Control buttons and UI */}
         <OfficeControls translationFunction={t} />
@@ -422,8 +693,62 @@ const OfficeFloorPlan: React.FC = () => {
           onClose={handleCloseInfoPanel}
         />
         
+        {/* AI Insight Prompt */}
+        <AnimatePresence>
+          {aiPromptVisible && aiPrompt && (
+            <motion.div 
+              className="absolute top-1/4 left-1/2 transform -translate-x-1/2 z-50"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ActionPromptCard 
+                prompt={aiPrompt}
+                onAction={handleAiPromptAction}
+                timestamp={new Date().toLocaleTimeString()}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        
+        {/* UI Help Button */}
+        <div className="absolute top-3 right-28 z-40">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="h-8 w-8 p-0 bg-black/60 backdrop-blur-md text-white border-white/10"
+              >
+                <Info className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-3 bg-black/80 backdrop-blur-lg border-white/10 text-white">
+              <h4 className="font-medium mb-2">Office View Controls</h4>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-2">
+                  <Layers className="h-4 w-4 mt-0.5 text-purple-400" />
+                  <span>Use <strong>Visualization Layers</strong> to toggle different data overlays</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Users className="h-4 w-4 mt-0.5 text-blue-400" />
+                  <span>Click on divisions or agents to view detailed information</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <ZoomIn className="h-4 w-4 mt-0.5 text-green-400" />
+                  <span>Use zoom controls or hold Option/Alt + drag to pan around</span>
+                </li>
+              </ul>
+              <div className="mt-3 pt-2 border-t border-white/10 text-xs text-white/70">
+                Hover over elements to reveal interactive features and quick actions
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+        
         {/* Editing Controls */}
-        <div className="absolute top-3 right-3 flex items-center gap-2 z-40">
+        <div className="absolute top-3 right-16 flex items-center gap-2 z-40">
           {editMode ? (
             <>
               <Button 
@@ -543,6 +868,15 @@ const OfficeFloorPlan: React.FC = () => {
         @keyframes scan-moving {
           0% { background-position: 0 0; }
           100% { background-position: 0 100%; }
+        }
+        
+        @keyframes animate-pulse-subtle {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.6; }
+        }
+        
+        .animate-pulse-subtle {
+          animation: animate-pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
         `}
       </style>

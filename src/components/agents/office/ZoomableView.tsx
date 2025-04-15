@@ -36,6 +36,13 @@ const ZoomableView: React.FC<ZoomableViewProps> = ({
   const [panOffset, setPanOffset] = useState(initialPanOffset);
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
   const [showPanIndicator, setShowPanIndicator] = useState(false);
+  const [isMac, setIsMac] = useState(false);
+  
+  // Detect if user is on a Mac
+  useEffect(() => {
+    const isMacOS = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+    setIsMac(isMacOS);
+  }, []);
   
   // Handle initial zoom scale
   useEffect(() => {
@@ -50,6 +57,8 @@ const ZoomableView: React.FC<ZoomableViewProps> = ({
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!panEnabled) return;
     
+    // Check if alt key is pressed (for Mac) or middle mouse button
+    // For Mac, use Option (Alt) key since control+click is contextual menu
     if (e.altKey || e.button === 1) {
       e.preventDefault();
       setIsPanning(true);
@@ -98,6 +107,42 @@ const ZoomableView: React.FC<ZoomableViewProps> = ({
     setPanOffset(initialPanOffset);
     onReset?.();
   };
+
+  // Handle touch events for mobile
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!panEnabled || e.touches.length !== 2) return;
+    
+    setIsPanning(true);
+    const touch1 = e.touches[0];
+    setStartPoint({
+      x: touch1.clientX - panOffset.x,
+      y: touch1.clientY - panOffset.y
+    });
+    setShowPanIndicator(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!isPanning || !panEnabled || e.touches.length !== 2) return;
+    
+    const touch1 = e.touches[0];
+    const newX = touch1.clientX - startPoint.x;
+    const newY = touch1.clientY - startPoint.y;
+    
+    // Add bounds to prevent excessive panning
+    const maxPan = 1000; 
+    const boundedX = Math.max(-maxPan, Math.min(maxPan, newX));
+    const boundedY = Math.max(-maxPan, Math.min(maxPan, newY));
+    
+    setPanOffset({
+      x: boundedX,
+      y: boundedY
+    });
+  };
+
+  const handleTouchEnd = () => {
+    setIsPanning(false);
+    setShowPanIndicator(false);
+  };
   
   // Calculate constrained zoom level
   const constrainedZoom = Math.max(minZoom, Math.min(maxZoom, zoomLevel));
@@ -111,6 +156,9 @@ const ZoomableView: React.FC<ZoomableViewProps> = ({
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
       onDoubleClick={handleDoubleClick}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       style={{ cursor: isPanning ? 'grabbing' : 'default' }}
     >
       <AnimatePresence>
@@ -224,6 +272,14 @@ const ZoomableView: React.FC<ZoomableViewProps> = ({
       
       {isPanning && (
         <div className="fixed inset-0 bg-black/5 backdrop-blur-[1px] pointer-events-none" />
+      )}
+
+      {isMac && (
+        <div className="absolute bottom-4 left-4 z-[100] max-w-xs">
+          <Badge variant="outline" className="text-xs bg-black/60 backdrop-blur-md text-white/70 border-white/10">
+            Hold Option (⌥) + drag to pan
+          </Badge>
+        </div>
       )}
     </div>
   );
