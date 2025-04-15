@@ -44,7 +44,7 @@ const Performance: React.FC = () => {
             extendedTitle="Real-Time Monitoring"
             description="Track and optimize workflow efficiency with real-time feedback loops."
             icon={<Activity className="h-12 w-12 text-teal-400 drop-shadow-[0_0_15px_rgba(45,212,191,0.8)]" />}
-            variant="performance"
+            variant="analytics"
             glassEffect={true}
             actions={
               <div className="flex flex-wrap items-center gap-2">
@@ -127,7 +127,7 @@ const Performance: React.FC = () => {
 
             <TabsContent value="workflows" className="space-y-6 mt-0">
               <SolarpunkPanel
-                accentColor="teal"
+                accentColor="aqua"
                 className={cn("p-5 md:p-8", 
                   isDark 
                     ? "" 
@@ -180,7 +180,7 @@ const Performance: React.FC = () => {
             
             <TabsContent value="system" className="mt-0">
               <SolarpunkPanel
-                accentColor="teal"
+                accentColor="aqua"
                 className={cn("p-8 h-64 flex items-center justify-center", 
                   isDark 
                     ? "" 

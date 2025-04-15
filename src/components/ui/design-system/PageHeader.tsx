@@ -16,7 +16,7 @@ interface PageHeaderProps {
   className?: string;
   glassEffect?: boolean;
   accentColor?: string;
-  variant?: 'default' | 'dashboard' | 'office' | 'workflows' | 'tasks' | 'knowledge' | 'business' | 'analytics' | 'courses';
+  variant?: 'default' | 'dashboard' | 'office' | 'workflows' | 'tasks' | 'knowledge' | 'business' | 'analytics' | 'courses' | 'performance';
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({

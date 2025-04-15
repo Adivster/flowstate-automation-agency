@@ -8,7 +8,7 @@ import { motion, HTMLMotionProps } from 'framer-motion';
 interface SolarpunkPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   className?: string;
-  accentColor?: 'default' | 'yellow' | 'green' | 'orange' | 'coral' | 'aqua' | 'gold' | 'blue' | 'lavender';
+  accentColor?: 'default' | 'yellow' | 'green' | 'orange' | 'coral' | 'aqua' | 'gold' | 'blue' | 'lavender' | 'teal';
   interactive?: boolean;
   elevated?: boolean;
   noBorder?: boolean;

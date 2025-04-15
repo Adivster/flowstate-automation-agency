@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { LineChart } from '@/components/ui/chart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
 
-// Types for workflow performance data
 export interface WorkflowPerformancePoint {
   name: string;
   value: number;
@@ -54,25 +52,22 @@ const WorkflowPerformanceChart: React.FC<WorkflowPerformanceChartProps> = ({
   const isDark = theme === 'dark';
   const { toast } = useToast();
   const [showAnnotations, setShowAnnotations] = useState(true);
-  const [smoothing, setSmoothing] = useState('ema'); // 'none', 'ema', 'sma'
+  const [smoothing, setSmoothing] = useState('ema');
   const chartRef = useRef<HTMLDivElement>(null);
-  
-  // Generate chart data based on the workflow data and selected smoothing
+
   const chartData = workflowData.data.map(point => ({
     name: minimal ? '' : point.name,
     value: point.value,
     color: getTrendColor(workflowData.trend),
     description: point.annotation || `${point.name}: ${point.value}`
   }));
-  
-  // Determine color based on trend
+
   function getTrendColor(trend: 'up' | 'down' | 'neutral') {
     if (trend === 'up') return isDark ? '#4ade80' : '#22c55e';
     if (trend === 'down') return isDark ? '#f87171' : '#ef4444';
     return isDark ? '#f59e0b' : '#d97706';
   }
-  
-  // Get trend icon based on trend direction
+
   const getTrendIcon = () => {
     if (workflowData.trend === 'up') {
       return <ArrowUp className="h-4 w-4 mr-1 text-green-500" />;
@@ -82,8 +77,7 @@ const WorkflowPerformanceChart: React.FC<WorkflowPerformanceChartProps> = ({
       return <ArrowRight className="h-4 w-4 mr-1 text-amber-500" />;
     }
   };
-  
-  // Get trend color class based on trend direction
+
   const getTrendTextClass = () => {
     if (workflowData.trend === 'up') {
       return 'text-green-500';
@@ -93,8 +87,7 @@ const WorkflowPerformanceChart: React.FC<WorkflowPerformanceChartProps> = ({
       return 'text-amber-500';
     }
   };
-  
-  // Handle clicking on a data point
+
   const handleDataPointClick = (data: any, index: number) => {
     if (!interactive) return;
     
@@ -113,7 +106,7 @@ const WorkflowPerformanceChart: React.FC<WorkflowPerformanceChartProps> = ({
       });
     }
   };
-  
+
   const handleViewDetails = () => {
     if (onViewDetails) {
       onViewDetails(workflowData);
@@ -126,7 +119,6 @@ const WorkflowPerformanceChart: React.FC<WorkflowPerformanceChartProps> = ({
     }
   };
 
-  // Effects for any real-time updates or animations
   useEffect(() => {
     if (chartRef.current) {
       // Any DOM manipulation or animation setup could go here
@@ -160,7 +152,7 @@ const WorkflowPerformanceChart: React.FC<WorkflowPerformanceChartProps> = ({
   }
 
   return (
-    <SolarpunkPanel accentColor="teal" className="h-full">
+    <SolarpunkPanel accentColor="aqua" className="h-full">
       <div className="h-full flex flex-col" ref={chartRef}>
         <div className="flex items-center justify-between p-4 pb-2">
           <div>
