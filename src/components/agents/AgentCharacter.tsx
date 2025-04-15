@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   CheckCircle, AlertCircle, PauseCircle, GhostIcon, MessageCircle,
-  Book, BookOpen, Lightbulb, Beaker, Mail, Pen, FileText, FileSearch, FileCode
+  Book, BookOpen, Lightbulb, Beaker, Mail, Pen, FileSearch, FileCode
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { AgentMood } from './office/types/officeTypes';
@@ -136,13 +136,13 @@ const AgentCharacter: React.FC<AgentProps> = ({
     if (!agent.currentTask) return null;
     
     switch(agent.currentTask.type) {
-      case 'reading': return <Book className="w-3 h-3" />;
-      case 'analyzing': return <Lightbulb className="w-3 h-3" />;
-      case 'experimenting': return <Beaker className="w-3 h-3" />;
-      case 'emailing': return <Mail className="w-3 h-3" />;
-      case 'writing': return <Pen className="w-3 h-3" />;
-      case 'searching': return <FileSearch className="w-3 h-3" />;
-      case 'coding': return <FileCode className="w-3 h-3" />;
+      case 'reading': return <Book className="w-3.5 h-3.5 text-blue-400" />;
+      case 'analyzing': return <Lightbulb className="w-3.5 h-3.5 text-yellow-400" />;
+      case 'experimenting': return <Beaker className="w-3.5 h-3.5 text-purple-400" />;
+      case 'emailing': return <Mail className="w-3.5 h-3.5 text-green-400" />;
+      case 'writing': return <Pen className="w-3.5 h-3.5 text-cyan-400" />;
+      case 'searching': return <FileSearch className="w-3.5 h-3.5 text-orange-400" />;
+      case 'coding': return <FileCode className="w-3.5 h-3.5 text-pink-400" />;
       default: return null;
     }
   };
@@ -218,13 +218,22 @@ const AgentCharacter: React.FC<AgentProps> = ({
             </div>
 
             {agent.currentTask && (
-              <div 
-                className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-gray-950/90 border-2 border-gray-800 
-                  flex items-center justify-center cursor-help transition-colors hover:bg-gray-900/90"
+              <motion.div 
+                className="absolute -top-1 -left-1 w-6 h-6 rounded-full bg-gray-950/90 border-2 border-gray-800 
+                  flex items-center justify-center cursor-help group transition-all duration-300
+                  hover:scale-110 hover:border-flow-accent"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
                 title={agent.currentTask.description}
               >
                 {getTaskIcon()}
-              </div>
+                
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 scale-0 opacity-0 
+                  bg-gray-950/90 text-white text-xs px-2 py-1 rounded whitespace-nowrap
+                  group-hover:scale-100 group-hover:opacity-100 transition-all duration-200">
+                  {agent.currentTask.description}
+                </div>
+              </motion.div>
             )}
 
             <span 
