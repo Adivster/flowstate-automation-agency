@@ -5,7 +5,12 @@ import { AgentStatus } from './AgentStatus';
 import { AgentTask } from './AgentTask';
 import { AgentIcon } from './AgentIcon';
 import { useToast } from '@/hooks/use-toast';
-import { Position } from '../types/officeTypes';
+
+// Define Position interface locally since it's missing from officeTypes
+interface Position {
+  x: number;
+  y: number;
+}
 
 interface AgentProps {
   agent: {

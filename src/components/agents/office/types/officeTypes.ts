@@ -95,6 +95,11 @@ export interface DivisionPosition {
   y: number;
 }
 
+export interface Position {
+  x: number;
+  y: number;
+}
+
 export interface DivisionDecorationData {
   type: string;
   x: number;
