@@ -5,7 +5,7 @@ import { useKpiData } from '@/hooks/useKpiData';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { Brain, Info, Sparkles, BarChart } from 'lucide-react';
+import { Brain, Info, Sparkles, BarChart, FileOutput, Filter, TrendingUp, PieChart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import HeadlineMetrics from '@/components/analytics/HeadlineMetrics';
@@ -21,6 +21,8 @@ import { useToast } from '@/hooks/use-toast';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import { useTheme } from 'next-themes';
 import ThemedBackground from '@/components/ui/ThemedBackground';
+import { Helmet } from 'react-helmet-async';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Analytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState<string>('7d');
@@ -29,6 +31,7 @@ const Analytics: React.FC = () => {
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const { t } = useLanguage();
   
   const handleAIAssistantToggle = () => {
     setShowAIAssistant(!showAIAssistant);
@@ -42,6 +45,10 @@ const Analytics: React.FC = () => {
   
   return (
     <ThemedBackground>
+      <Helmet>
+        <title>{t('analytics')} | {t('agency')}</title>
+      </Helmet>
+      
       <Navbar />
       
       {/* Main Content */}
@@ -49,10 +56,51 @@ const Analytics: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <PageHeader 
             title="Analytics"
-            description="Comprehensive insights and performance metrics for your agency. Monitor campaign effectiveness, customer engagement, and growth trends."
-            icon={isDark 
-              ? <BarChart className="h-8 w-8 text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
-              : <BarChart className="h-8 w-8 text-emerald-600 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+            extendedTitle="Data Insights"
+            description="Dive deep into performance metrics, forecasts, and trends."
+            icon={<PieChart className="h-12 w-12 text-pink-400 drop-shadow-[0_0_15px_rgba(236,72,153,0.8)]" />}
+            variant="analytics"
+            glassEffect={true}
+            actions={
+              <div className="flex flex-wrap items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="bg-pink-500/10 border-pink-500/50 hover:bg-pink-500/20 text-pink-500 dark:text-pink-400"
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filter Data
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="bg-pink-500/10 border-pink-500/50 hover:bg-pink-500/20 text-pink-500 dark:text-pink-400"
+                >
+                  <FileOutput className="h-4 w-4 mr-2" />
+                  Export Report
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="bg-pink-500/10 border-pink-500/50 hover:bg-pink-500/20 text-pink-500 dark:text-pink-400"
+                >
+                  <Brain className="h-4 w-4 mr-2" />
+                  Run Predictive Model
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="bg-pink-500/10 border-pink-500/50 hover:bg-pink-500/20 text-pink-500 dark:text-pink-400"
+                >
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  View Trends
+                </Button>
+                
+                <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
+              </div>
             }
           />
           

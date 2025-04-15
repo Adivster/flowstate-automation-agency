@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Search, Upload, BookMarked, HelpCircle } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
@@ -13,6 +13,7 @@ import KnowledgeSearch from '@/components/knowledge/KnowledgeSearch';
 import KnowledgeTabs from '@/components/knowledge/KnowledgeTabs';
 import EmptyState from '@/components/knowledge/EmptyState';
 import DocumentUploadSection from '@/components/knowledge/DocumentUploadSection';
+import { Button } from '@/components/ui/button';
 
 const Knowledge = () => {
   const { t } = useLanguage();
@@ -23,7 +24,6 @@ const Knowledge = () => {
   const [showCategorySection, setShowCategorySection] = useState(true);
   const [selectedDocument, setSelectedDocument] = useState<any | null>(null);
   
-  // Sample categories
   const categories = [
     { id: 'all', name: 'All Documents', count: 6 },
     { id: 'process', name: 'Process', count: 2 },
@@ -34,7 +34,6 @@ const Knowledge = () => {
     { id: 'security', name: 'Security', count: 1 },
   ];
   
-  // Enhanced categories with descriptions and icons for the visual section - FIX: ensure icon is one of the allowed types
   const categoriesWithDetails = [
     { 
       id: 'process', 
@@ -86,7 +85,6 @@ const Knowledge = () => {
     },
   ];
   
-  // Enhanced sample knowledge documents with extended metadata
   const documents = [
     {
       id: 1,
@@ -185,22 +183,18 @@ const Knowledge = () => {
     },
   ];
   
-  // Filter documents based on search query, selected category, and active filters
   const filteredDocuments = documents.filter(doc => {
-    // Search query filter
     const matchesSearch = 
       searchQuery === '' || 
       doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       doc.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       doc.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     
-    // Category filter
     const matchesCategory = 
       !selectedCategory || 
       selectedCategory === 'all' || 
       doc.category.toLowerCase() === selectedCategory.toLowerCase();
     
-    // Active tag filters
     const matchesTags = 
       activeFilters.length === 0 || 
       doc.tags.some(tag => activeFilters.includes(tag));
@@ -208,7 +202,6 @@ const Knowledge = () => {
     return matchesSearch && matchesCategory && matchesTags;
   });
   
-  // Get all unique tags from documents
   const allTags = [...new Set(documents.flatMap(doc => doc.tags))];
   
   const toggleFilter = (tag: string) => {
@@ -231,7 +224,6 @@ const Knowledge = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   
-  // Get pinned or popular documents for quick access
   const quickAccessDocs = documents.filter(doc => doc.pinned || doc.status === 'popular').slice(0, 3);
   
   return (
@@ -247,19 +239,57 @@ const Knowledge = () => {
           <div className="max-w-7xl mx-auto">
             <PageHeader 
               title={t('knowledge')}
+              extendedTitle="Knowledge Hub"
               description="Access your agency's collective intelligence repository. Search, browse, and utilize AI-optimized knowledge documents."
-              icon={<BookOpen className="h-8 w-8 text-blue-500 drop-shadow-[0_0_12px_rgba(59,130,246,0.8)]" />}
+              icon={<BookOpen className="h-12 w-12 text-teal-400 drop-shadow-[0_0_15px_rgba(45,212,191,0.8)]" />}
+              variant="knowledge"
               glassEffect={true}
-              className="bg-gradient-to-r from-blue-500/5 to-purple-500/5 border-b border-t border-blue-500/20"
+              actions={
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="bg-teal-500/10 border-teal-500/50 hover:bg-teal-500/20 text-teal-500 dark:text-teal-400"
+                  >
+                    <Search className="h-4 w-4 mr-2" />
+                    Search Docs
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="bg-teal-500/10 border-teal-500/50 hover:bg-teal-500/20 text-teal-500 dark:text-teal-400"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Content
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="bg-teal-500/10 border-teal-500/50 hover:bg-teal-500/20 text-teal-500 dark:text-teal-400"
+                  >
+                    <BookMarked className="h-4 w-4 mr-2" />
+                    Open Tutorials
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="bg-teal-500/10 border-teal-500/50 hover:bg-teal-500/20 text-teal-500 dark:text-teal-400"
+                  >
+                    <HelpCircle className="h-4 w-4 mr-2" />
+                    Ask AI
+                  </Button>
+                </div>
+              }
             />
             
-            {/* Quick Access Section */}
             <QuickAccess 
               documents={quickAccessDocs}
               onSelectDocument={setSelectedDocument}
             />
             
-            {/* Category showcase section - only shown when no category is selected */}
             {showCategorySection && (
               <CategorySection 
                 title="Knowledge Categories"
@@ -269,7 +299,6 @@ const Knowledge = () => {
               />
             )}
             
-            {/* Search and Filter Area */}
             <KnowledgeSearch 
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
@@ -285,7 +314,6 @@ const Knowledge = () => {
               clearFilters={clearFilters}
             />
             
-            {/* Content Tabs */}
             {filteredDocuments.length > 0 ? (
               <KnowledgeTabs 
                 documents={documents}
@@ -300,13 +328,11 @@ const Knowledge = () => {
               <EmptyState clearFilters={clearFilters} />
             )}
             
-            {/* Upload/Create Documents Section */}
             <DocumentUploadSection />
           </div>
         </TransitionWrapper>
       </main>
       
-      {/* Document Viewer Modal */}
       {selectedDocument && (
         <DocumentViewer 
           document={selectedDocument} 

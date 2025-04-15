@@ -3,19 +3,27 @@ import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { ClipboardList, Leaf } from 'lucide-react';
+import { ClipboardList, Plus, Edit2, UserPlus, CheckSquare } from 'lucide-react';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import TaskBoard from '@/components/tasks/TaskBoard';
 import { useTheme } from 'next-themes';
 import ThemedBackground from '@/components/ui/ThemedBackground';
 import { TaskProvider } from '@/contexts/TaskContext';
+import { Button } from '@/components/ui/button';
+import { Helmet } from 'react-helmet-async';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Tasks: React.FC = () => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const { t } = useLanguage();
   
   return (
     <ThemedBackground>
+      <Helmet>
+        <title>{t('tasks')} | {t('agency')}</title>
+      </Helmet>
+      
       <Navbar />
       
       {/* Main Content */}
@@ -23,10 +31,49 @@ const Tasks: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <PageHeader 
             title="Tasks"
-            description="Manage your agency's tasks, assignments, and deadlines from this central hub."
-            icon={isDark 
-              ? <ClipboardList className="h-8 w-8 text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
-              : <Leaf className="h-8 w-8 text-emerald-600 drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+            extendedTitle="Task Manager"
+            description="Manage and execute your daily operations with ease."
+            icon={<ClipboardList className="h-12 w-12 text-red-400 drop-shadow-[0_0_15px_rgba(239,68,68,0.8)]" />}
+            variant="tasks"
+            glassEffect={true}
+            actions={
+              <div className="flex flex-wrap items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="bg-red-500/10 border-red-500/50 hover:bg-red-500/20 text-red-500 dark:text-red-400"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Task
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="bg-red-500/10 border-red-500/50 hover:bg-red-500/20 text-red-500 dark:text-red-400"
+                >
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  Bulk Edit
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="bg-red-500/10 border-red-500/50 hover:bg-red-500/20 text-red-500 dark:text-red-400"
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Reassign
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="bg-red-500/10 border-red-500/50 hover:bg-red-500/20 text-red-500 dark:text-red-400"
+                >
+                  <CheckSquare className="h-4 w-4 mr-2" />
+                  Mark Complete
+                </Button>
+              </div>
             }
           />
           

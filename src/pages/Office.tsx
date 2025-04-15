@@ -4,7 +4,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AgentGrid from '@/components/agents/AgentGrid';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Cpu, Users, Briefcase, Filter, Terminal, Zap, Building2 } from 'lucide-react';
+import { Cpu, Users, Briefcase, Filter, Terminal, Zap, Building2, RefreshCw, Eye, Grid, Layers } from 'lucide-react';
 import OfficeFloorPlan from '@/components/agents/OfficeFloorPlan';
 import AgencyMetrics from '@/components/agents/AgencyMetrics';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -88,30 +88,48 @@ const Office = () => {
             transition={{ duration: 0.5 }}
           >
             <PageHeader 
-              title={t('agencyHQ')}
-              description={t('monitorAgents')}
-              icon={<Building2 className="h-8 w-8 text-purple-500 drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]" />}
+              title="Office"
+              extendedTitle="Digital Workspace"
+              description="Navigate your AI teams with an interactive, real-time floor plan."
+              icon={<Building2 className="h-12 w-12 text-purple-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]" />}
+              variant="office"
               glassEffect={true}
-              className="mb-6"
               actions={
                 <div className="flex flex-wrap items-center gap-2">
-                  <div className="text-xs bg-flow-muted/50 px-3 py-1.5 rounded-full flex items-center backdrop-blur-sm border border-flow-border/30">
-                    <span className="inline-block h-2 w-2 rounded-full bg-green-500 animate-pulse mr-2"></span>
-                    <span className="font-medium">{agentStats.active}</span> / {agentStats.total} {t('activeAgents')}
-                  </div>
-                  
-                  <Button
-                    variant="outline"
+                  <Button 
+                    variant="outline" 
                     size="sm"
-                    className="text-xs bg-flow-muted/30 hover:bg-flow-muted/50 border-flow-border"
-                    onClick={(e) => toast({
-                      title: "Terminal",
-                      description: "Opening agent command terminal",
-                      duration: 3000,
-                    })}
+                    className="bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-500 dark:text-purple-400"
                   >
-                    <Terminal className="h-3 w-3 mr-1" />
-                    Terminal
+                    <Grid className="h-4 w-4 mr-2" />
+                    Reorganize Office
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-500 dark:text-purple-400"
+                  >
+                    <Users className="h-4 w-4 mr-2" />
+                    View Agent Details
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-500 dark:text-purple-400"
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Refresh Status
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-500 dark:text-purple-400"
+                  >
+                    <Layers className="h-4 w-4 mr-2" />
+                    Toggle Heatmap
                   </Button>
                 </div>
               }

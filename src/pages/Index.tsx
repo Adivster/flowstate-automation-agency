@@ -1,9 +1,10 @@
+
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AgencyDashboard from '@/components/dashboard/AgencyDashboard';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { LayoutDashboard, PlayCircle, UserPlus, Building2, Terminal, Rocket, Zap, BrainCircuit } from 'lucide-react';
+import { LayoutGrid, PlayCircle, UserPlus, Building2, Terminal, Rocket, Zap, RefreshCw, AlertCircle, LayoutDashboard } from 'lucide-react';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import { motion } from 'framer-motion';
 import { QuickActionButton } from '@/components/ui/quick-action-button';
@@ -11,6 +12,7 @@ import ThemedBackground from '@/components/ui/ThemedBackground';
 import { useDashboardActions } from '@/hooks/useDashboardActions';
 import CommunicationTerminal from '@/components/communication/CommunicationTerminal';
 import ThemeSelector from '@/components/ui/ThemeSelector';
+import { Button } from '@/components/ui/button';
 
 const Index: React.FC = () => {
   const dashboardActions = useDashboardActions();
@@ -20,50 +22,53 @@ const Index: React.FC = () => {
       <Navbar />
       
       <main className="flex-1 mt-20 px-4 sm:px-6 pb-12 overflow-hidden relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-wrap items-center justify-between mb-8 max-w-7xl mx-auto"
-        >
-          <PageHeader 
-            title="Mission Control"
-            description="Welcome to your Agency HQ. Monitor performance, manage divisions, and optimize workflows from this central command center."
-            icon={<LayoutDashboard className="h-8 w-8 text-purple-500 drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]" />}
-          />
-          
-          <div className="flex flex-wrap items-center gap-2 mt-4 md:mt-0">
-            <ThemeSelector />
-            
-            <QuickActionButton 
-              icon={PlayCircle}
-              label="Start Workflow"
-              variant="success"
-              onClick={dashboardActions.handleStartWorkflow}
-            />
-            
-            <QuickActionButton 
-              icon={UserPlus}
-              label="Deploy Agent"
-              variant="default"
-              onClick={dashboardActions.handleCreateAgent}
-            />
-            
-            <QuickActionButton 
-              icon={Building2}
-              label="Create Division"
-              variant="warning"
-              onClick={dashboardActions.handleCreateDivision}
-            />
-            
-            <QuickActionButton 
-              icon={Rocket}
-              label="AI Optimize"
-              variant="ai"
-              onClick={dashboardActions.handleAiConsult}
-            />
-          </div>
-        </motion.div>
+        <PageHeader 
+          title="Dashboard"
+          extendedTitle="Real-Time Command Center"
+          description="View live performance, system alerts, and AI insights in one unified space."
+          icon={<LayoutDashboard className="h-12 w-12 text-blue-400 dark:text-blue-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.8)]" />}
+          variant="dashboard"
+          glassEffect={true}
+          actions={
+            <div className="flex flex-wrap items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-500 dark:text-blue-400"
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh Metrics
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-500 dark:text-blue-400"
+              >
+                <AlertCircle className="h-4 w-4 mr-2" />
+                View Alerts
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-500 dark:text-blue-400"
+              >
+                <LayoutGrid className="h-4 w-4 mr-2" />
+                Customize Dashboard
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-500 dark:text-blue-400"
+              >
+                <Terminal className="h-4 w-4 mr-2" />
+                Open CLI
+              </Button>
+            </div>
+          }
+        />
         
         <div className="max-w-7xl mx-auto">
           <GlassMorphism 

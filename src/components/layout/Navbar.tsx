@@ -1,3 +1,4 @@
+
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { 
@@ -51,7 +52,7 @@ const navItems = [
     icon: BookOpen,
   },
   {
-    name: "Business",
+    name: "business",
     link: "/business",
     icon: BadgeDollarSign,
   },
@@ -93,6 +94,9 @@ export default function Navbar() {
             {navItems.map((item) => {
               const isActive = location.pathname === item.link || 
                 (item.link !== "/" && location.pathname.startsWith(item.link));
+              
+              // Capitalize "Business"
+              const displayName = item.name === "business" ? "Business" : t(item.name);
                 
               return (
                 <Link
@@ -106,7 +110,7 @@ export default function Navbar() {
                   )}
                 >
                   <item.icon className="h-4 w-4 mr-1.5" />
-                  {t(item.name)}
+                  {displayName}
                 </Link>
               );
             })}
@@ -143,6 +147,9 @@ export default function Navbar() {
               {navItems.map((item) => {
                 const isActive = location.pathname === item.link || 
                   (item.link !== "/" && location.pathname.startsWith(item.link));
+                
+                // Capitalize "Business" in mobile menu too
+                const displayName = item.name === "business" ? "Business" : t(item.name);
                   
                 return (
                   <Link
@@ -157,7 +164,7 @@ export default function Navbar() {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <item.icon className="h-4 w-4 mr-2" />
-                    {t(item.name)}
+                    {displayName}
                   </Link>
                 );
               })}
