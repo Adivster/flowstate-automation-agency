@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -82,25 +81,6 @@ const CommunicationTerminal = () => {
 
   return (
     <>
-      <div className="fixed bottom-4 left-4 z-50">
-        <Button
-          size="icon"
-          variant="outline"
-          onClick={() => setIsOpen(!isOpen)}
-          className="terminal-toggle-btn rounded-full h-12 w-12 shadow-lg bg-black/70 border border-indigo-500/50 hover:bg-indigo-900/30 hover:border-indigo-400/80 transition-all duration-300 flex items-center justify-center"
-        >
-          {activeTab === 'command' ? (
-            <Terminal className="h-5 w-5 text-cyan-300" />
-          ) : (
-            <MessageSquare className="h-5 w-5 text-green-300" />
-          )}
-          
-          {(hasUnreadInsights || pendingPrompts.length > 0) && (
-            <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-green-500 rounded-full animate-pulse"></span>
-          )}
-        </Button>
-      </div>
-
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -196,6 +176,23 @@ const CommunicationTerminal = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      <Button
+        size="icon"
+        variant="outline"
+        onClick={() => setIsOpen(!isOpen)}
+        className="terminal-toggle-btn rounded-full h-12 w-12 shadow-lg bg-black/70 border border-indigo-500/50 hover:bg-indigo-900/30 hover:border-indigo-400/80 transition-all duration-300 flex items-center justify-center"
+      >
+        {activeTab === 'command' ? (
+          <Terminal className="h-5 w-5 text-cyan-300" />
+        ) : (
+          <MessageSquare className="h-5 w-5 text-green-300" />
+        )}
+        
+        {(hasUnreadInsights || pendingPrompts.length > 0) && (
+          <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-green-500 rounded-full animate-pulse"></span>
+        )}
+      </Button>
       
       <style>
         {`

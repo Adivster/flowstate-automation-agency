@@ -1,4 +1,3 @@
-
 import { ActionPrompt } from "../useConversationalFlow";
 
 export interface BaseConversationResponse {

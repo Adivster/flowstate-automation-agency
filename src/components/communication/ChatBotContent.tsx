@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -47,7 +46,6 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
   const chatRef = useRef<HTMLDivElement>(null);
   const [isControlPanelExpanded, setIsControlPanelExpanded] = useState(true);
   
-  // Generate context-aware quick actions
   const generateQuickActions = (): ControlAction[] => {
     if (activeContext === 'global') {
       return [
@@ -112,7 +110,6 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
     return [];
   };
   
-  // Generate system metrics
   const generateSystemMetrics = (): SystemMetric[] => {
     if (activeContext === 'global') {
       return [
@@ -178,7 +175,6 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
     return [];
   };
   
-  // Handle execution of actions from the control panel
   const handleExecuteAction = (actionId: string) => {
     const action = quickActions.find(a => a.id === actionId);
     if (action) {
@@ -190,14 +186,12 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
     }
   };
 
-  // Scroll to bottom when new messages arrive
   useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // Find prompt from JSON string
   const findPromptFromJson = (jsonString: string): ActionPrompt | null => {
     try {
       const promptData = JSON.parse(jsonString);
@@ -207,7 +201,6 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
     }
   };
 
-  // Handle suggestion click
   const handleSuggestionClick = (suggestion: string) => {
     setNewMessage(suggestion);
   };
@@ -226,7 +219,6 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
         }}
       >
         {messages.map((message, index) => {
-          // Check if this is an action prompt
           if (message.sender === 'bot' && message.isAction && message.text.startsWith('{')) {
             const promptData = findPromptFromJson(message.text);
             if (promptData) {
@@ -241,7 +233,6 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
             }
           }
           
-          // Regular message
           return (
             <motion.div 
               key={index}
@@ -271,7 +262,6 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
           );
         })}
 
-        {/* Show active suggestions if available */}
         {activeSuggestions.length > 0 && (
           <div className="mb-4 mt-2">
             <div className="text-xs text-cyan-400/70 mb-2">Suggested commands:</div>
@@ -292,7 +282,6 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
         )}
       </div>
       
-      {/* AI Control Panel */}
       <div className="px-3 pt-3">
         <AIControlPanel
           activeContext={activeContext}
