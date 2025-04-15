@@ -1,7 +1,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { BookOpen, BarChart, LayoutGrid, Compass, GraduationCap, CheckSquare, Menu, X, Building2, Workflow } from "lucide-react";
+import { BookOpen, BarChart, LayoutGrid, Compass, GraduationCap, CheckSquare, Menu, X, Building2, Workflow, BadgeDollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -34,6 +34,11 @@ const navItems = [
     name: "knowledge",
     link: "/knowledge",
     icon: BookOpen,
+  },
+  {
+    name: "business",
+    link: "/business",
+    icon: BadgeDollarSign,
   },
   {
     name: "analytics",
