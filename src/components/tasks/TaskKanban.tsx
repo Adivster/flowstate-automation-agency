@@ -1,10 +1,11 @@
 
 import React from 'react';
-import { useTaskStore, TaskStatus } from '@/contexts/TaskContext';
+import { useTaskContext, TaskStatus } from '@/contexts/TaskContext';
 import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
 import TaskItem from './TaskItem';
 import { Card } from '@/components/ui/card';
 import { Check, Clock, Pause, AlertCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface TaskKanbanProps {
   priorityFilter: string | null;
@@ -13,7 +14,7 @@ interface TaskKanbanProps {
 }
 
 const TaskKanban: React.FC<TaskKanbanProps> = ({ priorityFilter, statusFilter, divisionFilter }) => {
-  const { tasks } = useTaskStore();
+  const { tasks } = useTaskContext();
   
   // Apply filters
   const filteredTasks = tasks.filter(task => {
@@ -63,7 +64,7 @@ const TaskKanban: React.FC<TaskKanbanProps> = ({ priorityFilter, statusFilter, d
         
         return (
           <div key={status.key} className="flex flex-col h-full">
-            <div className={`rounded-t-lg border-b p-3 flex items-center justify-between ${status.color}`}>
+            <div className={cn(`rounded-t-lg border-b p-3 flex items-center justify-between ${status.color}`)}>
               <div className="flex items-center gap-2">
                 {status.icon}
                 <h3 className="font-medium text-sm">{status.name}</h3>

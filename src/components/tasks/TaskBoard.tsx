@@ -5,6 +5,7 @@ import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Clock, CheckSquare, AlertCircle, CalendarDays, CheckCircle2, CircleDashed, CircleDot } from 'lucide-react';
 import { useTaskContext } from '@/contexts/TaskContext';
+import { cn } from '@/lib/utils';
 
 const TaskBoard = () => {
   const { theme } = useTheme();

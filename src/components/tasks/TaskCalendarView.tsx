@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
-import { useTaskStore } from '@/contexts/TaskContext';
+import { useTaskContext } from '@/contexts/TaskContext';
 import { Card } from '@/components/ui/card';
 import {
   Tooltip,
@@ -26,7 +25,7 @@ const TaskCalendarView: React.FC<TaskCalendarViewProps> = ({
   statusFilter,
   divisionFilter,
 }) => {
-  const { tasks } = useTaskStore();
+  const { tasks } = useTaskContext();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   
   // Filter tasks based on criteria

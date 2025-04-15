@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { useTaskStore } from '@/contexts/TaskContext';
+import { useTaskContext } from '@/contexts/TaskContext';
 import TaskItem from './TaskItem';
 import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
+import { cn } from '@/lib/utils';
 
 interface TaskListProps {
   priorityFilter: string | null;
@@ -17,7 +18,7 @@ const TaskList: React.FC<TaskListProps> = ({
   divisionFilter,
   isGridView = false
 }) => {
-  const { tasks } = useTaskStore();
+  const { tasks } = useTaskContext();
   
   const filteredTasks = tasks.filter(task => {
     // Apply filters if they exist

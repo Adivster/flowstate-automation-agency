@@ -21,11 +21,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useTaskStore } from '@/contexts/TaskContext';
+import { useTaskContext } from '@/contexts/TaskContext';
 import { useToast } from '@/hooks/use-toast';
 
 const TaskCreateButton: React.FC = () => {
-  const { addTask } = useTaskStore();
+  const { addTask } = useTaskContext();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   

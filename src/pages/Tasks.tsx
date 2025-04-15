@@ -13,6 +13,7 @@ import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
 import { QuickActionButton } from '@/components/ui/quick-action-button';
+import { cn } from '@/lib/utils';
 
 const Tasks: React.FC = () => {
   const { theme } = useTheme();

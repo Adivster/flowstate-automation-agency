@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { Check, Clock, AlertCircle, Play, Pause, X, RotateCcw, Edit, MoreVertical, Calendar, Leaf } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { Task, TaskStatus, useTaskStore } from '@/contexts/TaskContext';
+import { Task, TaskStatus, useTaskContext } from '@/contexts/TaskContext';
 import { format } from 'date-fns';
 import { getDivisionColorScheme, getTaskColorClasses, getStatusColorClasses } from '@/utils/colorSystem';
 import { 
@@ -25,7 +24,7 @@ interface TaskItemProps {
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({ task, isGridView = false }) => {
-  const { updateTask, deleteTask } = useTaskStore();
+  const { updateTask, deleteTask } = useTaskContext();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   
