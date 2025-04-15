@@ -42,7 +42,8 @@ export const SolarpunkPanel = forwardRef<HTMLDivElement, SolarpunkPanelProps>(({
         case 'aqua': return 'border-teal-500/50 hover:border-teal-500/70';
         case 'gold': return 'border-amber-500/50 hover:border-amber-500/70';
         case 'blue': return 'border-blue-500/50 hover:border-blue-500/70';
-        case 'lavender': return 'border-orange-500/50 hover:border-orange-500/70';
+        case 'lavender': return 'border-orange-500/50 hover:border-orange-500/50';
+        case 'teal': return 'border-teal-500/50 hover:border-teal-500/70';
         default: return 'border-flow-accent/50 hover:border-flow-accent/70';
       }
     } else {
@@ -56,6 +57,7 @@ export const SolarpunkPanel = forwardRef<HTMLDivElement, SolarpunkPanelProps>(({
         case 'gold': return 'border-yellow-500 hover:border-yellow-600 bg-gradient-to-br from-yellow-50/90 to-white/90';
         case 'blue': return 'border-blue-500 hover:border-blue-600 bg-gradient-to-br from-blue-50/90 to-white/90';
         case 'lavender': return 'border-purple-500 hover:border-purple-600 bg-gradient-to-br from-purple-50/90 to-white/90';
+        case 'teal': return 'border-teal-500 hover:border-teal-600 bg-gradient-to-br from-teal-50/90 to-white/90';
         default: return 'border-emerald-500 hover:border-emerald-600 bg-gradient-to-br from-emerald-50/90 to-white/90';
       }
     }

@@ -6,7 +6,12 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AgentGrid from '@/components/agents/AgentGrid';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Cpu, Users, Briefcase, Filter, Terminal, Zap, Building2, RefreshCw, Eye, Grid, Layers, Activity } from 'lucide-react';
+import { 
+  Cpu, Users, Briefcase, Filter, Terminal, Zap, Building2, 
+  RefreshCw, Eye, Grid, Layers, Activity, BookOpen, 
+  Leaf, Sun, GanttChart, ChevronRight, BarChart, 
+  ChevronDown, Settings, Share2, GraduationCap
+} from 'lucide-react';
 import OfficeFloorPlan from '@/components/agents/OfficeFloorPlan';
 import AgencyMetrics from '@/components/agents/AgencyMetrics';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -28,7 +33,7 @@ import { VisualizationState } from '@/components/agents/office/types/visualizati
 const Office = () => {
   const { t } = useLanguage();
   const { toast } = useToast();
-  const { theme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const isDark = theme === 'dark';
   const [filterOptions, setFilterOptions] = useState({
     division: 'all',
@@ -126,6 +131,17 @@ const Office = () => {
     setSelectedAgentInfo(null);
   };
   
+  // Function to toggle between Cyberpunk and Solarpunk themes
+  const toggleTheme = () => {
+    setTheme(isDark ? 'light' : 'dark');
+    
+    toast({
+      title: `Switched to ${isDark ? 'Solarpunk' : 'Cyberpunk'} Theme`,
+      description: `Interface updated to ${isDark ? 'light, natural' : 'dark, neon'} aesthetics`,
+      duration: 3000,
+    });
+  };
+  
   const handleHotspotAction = (action: string, entityId: string, entityType: string) => {
     toast({
       title: `${action} - ${entityType}`,
@@ -212,16 +228,45 @@ const Office = () => {
     }
   };
   
+  const handleViewPerformance = () => {
+    window.location.href = '/performance';
+  };
+  
   if (!loaded) {
     return (
-      <div className="fixed inset-0 bg-flow-background flex flex-col items-center justify-center z-50">
-        <div className="w-12 h-12 border-4 border-flow-accent border-t-transparent rounded-full animate-spin"></div>
+      <div className={cn(
+        "fixed inset-0 flex flex-col items-center justify-center z-50",
+        isDark 
+          ? "bg-gray-900 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/20 via-gray-900 to-gray-900"
+          : "bg-emerald-50 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-green-100/60 via-emerald-50 to-emerald-50"
+      )}>
+        <div className={cn(
+          "w-12 h-12 rounded-full",
+          isDark 
+            ? "border-4 border-purple-500 border-t-transparent animate-spin" 
+            : "border-4 border-emerald-500 border-t-transparent animate-spin"
+        )}></div>
+        <div className={cn(
+          "mt-4 text-sm font-medium",
+          isDark ? "text-purple-300" : "text-emerald-600"
+        )}>
+          {isDark ? "Initializing Cyberpunk Interface..." : "Growing Solarpunk Environment..."}
+        </div>
       </div>
     );
   }
   
+  // Custom background styles based on theme
+  const backgroundStyle = isDark 
+    ? "bg-gray-900 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/10 via-gray-900 to-gray-900"
+    : "bg-emerald-50 bg-[url('/patterns/woven-light.png')] bg-repeat bg-opacity-30";
+  
+  const headerIcon = isDark 
+    ? <Building2 className="h-12 w-12 text-purple-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]" />
+    : <Building2 className="h-12 w-12 text-emerald-600 drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]" />;
+  
   return (
-    <ThemedBackground>
+    <div className={backgroundStyle}>
       <Helmet>
         <title>{t('office')} | {t('agency')}</title>
       </Helmet>
@@ -234,12 +279,16 @@ const Office = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
+            className="flex justify-between items-center"
           >
             <PageHeader 
               title="Office"
-              extendedTitle="Digital Workspace"
-              description="Navigate your AI teams with an interactive, real-time floor plan."
-              icon={<Building2 className="h-12 w-12 text-purple-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]" />}
+              extendedTitle={isDark ? "Digital Workspace" : "Collaborative Environment"}
+              description={isDark 
+                ? "Navigate your AI teams with an interactive, real-time floor plan."
+                : "An integrated workspace for your eco-conscious digital agents."
+              }
+              icon={headerIcon}
               variant="office"
               glassEffect={true}
               actions={
@@ -250,7 +299,7 @@ const Office = () => {
                     className={cn(
                       isDark 
                         ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
-                        : "bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700"
+                        : "bg-emerald-100 border-emerald-300 hover:bg-emerald-200 text-emerald-700"
                     )}
                     onClick={() => toast({
                       title: "Reorganize Office",
@@ -268,7 +317,7 @@ const Office = () => {
                     className={cn(
                       isDark 
                         ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
-                        : "bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700"
+                        : "bg-emerald-100 border-emerald-300 hover:bg-emerald-200 text-emerald-700"
                     )}
                     onClick={() => {
                       if (selectedAgentInfo) {
@@ -292,7 +341,7 @@ const Office = () => {
                     className={cn(
                       isDark 
                         ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
-                        : "bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700"
+                        : "bg-emerald-100 border-emerald-300 hover:bg-emerald-200 text-emerald-700"
                     )}
                     onClick={() => toast({
                       title: "Refreshing Status",
@@ -309,15 +358,45 @@ const Office = () => {
                     size="sm"
                     className={cn(
                       showVisualizationControls
-                        ? "bg-purple-500 hover:bg-purple-600 text-white"
+                        ? isDark 
+                          ? "bg-purple-500 hover:bg-purple-600 text-white" 
+                          : "bg-emerald-600 hover:bg-emerald-700 text-white"
                         : isDark 
                           ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
-                          : "bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700"
+                          : "bg-emerald-100 border-emerald-300 hover:bg-emerald-200 text-emerald-700"
                     )}
                     onClick={handleToggleVisualization}
                   >
                     <Layers className="h-4 w-4 mr-2" />
                     Visualization Controls
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      isDark 
+                        ? "bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-400" 
+                        : "bg-blue-100 border-blue-300 hover:bg-blue-200 text-blue-700"
+                    )}
+                    onClick={handleViewPerformance}
+                  >
+                    <Activity className="h-4 w-4 mr-2" />
+                    Performance Monitoring
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      isDark 
+                        ? "bg-amber-500/10 border-amber-500/50 hover:bg-amber-500/20 text-amber-400" 
+                        : "bg-amber-100 border-amber-300 hover:bg-amber-200 text-amber-700"
+                    )}
+                    onClick={toggleTheme}
+                  >
+                    {isDark ? <Sun className="h-4 w-4 mr-2" /> : <Terminal className="h-4 w-4 mr-2" />}
+                    {isDark ? 'Solarpunk Theme' : 'Cyberpunk Theme'}
                   </Button>
                 </div>
               }
@@ -331,15 +410,44 @@ const Office = () => {
               transition={{ duration: 0.4, delay: 0.1 }}
               className="hover-scale"
             >
-              <GlassMorphism intensity="low" className="p-4 rounded-xl border-green-500/30 flex items-center">
-                <div className="bg-green-500/20 p-2 rounded-lg mr-4">
-                  <Zap className="h-5 w-5 text-green-500" />
+              <GlassMorphism 
+                intensity="low" 
+                className={cn(
+                  "p-4 rounded-xl flex items-center",
+                  isDark 
+                    ? "border-green-500/30" 
+                    : "border-emerald-300 bg-gradient-to-br from-emerald-50/90 to-white/90"
+                )}
+              >
+                <div className={cn(
+                  "p-2 rounded-lg mr-4",
+                  isDark ? "bg-green-500/20" : "bg-emerald-200/50"
+                )}>
+                  <Zap className={cn(
+                    "h-5 w-5", 
+                    isDark ? "text-green-500" : "text-emerald-600"
+                  )} />
                 </div>
                 <div>
-                  <div className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-800")}>{agentStats.active}</div>
-                  <div className={cn("text-xs", isDark ? "text-flow-foreground/70" : "text-gray-600")}>Active Agents</div>
+                  <div className={cn(
+                    "text-xl font-bold", 
+                    isDark ? "text-white" : "text-gray-800"
+                  )}>
+                    {agentStats.active}
+                  </div>
+                  <div className={cn(
+                    "text-xs", 
+                    isDark ? "text-flow-foreground/70" : "text-gray-600"
+                  )}>
+                    Active Agents
+                  </div>
                 </div>
-                <Badge className="ml-auto bg-green-500 text-xs">Working</Badge>
+                <Badge className={cn(
+                  "ml-auto text-xs",
+                  isDark ? "bg-green-500" : "bg-emerald-500"
+                )}>
+                  Working
+                </Badge>
               </GlassMorphism>
             </motion.div>
             
@@ -349,15 +457,44 @@ const Office = () => {
               transition={{ duration: 0.4, delay: 0.2 }}
               className="hover-scale"
             >
-              <GlassMorphism intensity="low" className="p-4 rounded-xl border-blue-500/30 flex items-center">
-                <div className="bg-blue-500/20 p-2 rounded-lg mr-4">
-                  <Cpu className="h-5 w-5 text-blue-500" />
+              <GlassMorphism 
+                intensity="low" 
+                className={cn(
+                  "p-4 rounded-xl flex items-center",
+                  isDark 
+                    ? "border-blue-500/30" 
+                    : "border-blue-300 bg-gradient-to-br from-blue-50/90 to-white/90"
+                )}
+              >
+                <div className={cn(
+                  "p-2 rounded-lg mr-4",
+                  isDark ? "bg-blue-500/20" : "bg-blue-200/50"
+                )}>
+                  <Cpu className={cn(
+                    "h-5 w-5", 
+                    isDark ? "text-blue-500" : "text-blue-600"
+                  )} />
                 </div>
                 <div>
-                  <div className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-800")}>{agentStats.idle}</div>
-                  <div className={cn("text-xs", isDark ? "text-flow-foreground/70" : "text-gray-600")}>Idle Agents</div>
+                  <div className={cn(
+                    "text-xl font-bold", 
+                    isDark ? "text-white" : "text-gray-800"
+                  )}>
+                    {agentStats.idle}
+                  </div>
+                  <div className={cn(
+                    "text-xs", 
+                    isDark ? "text-flow-foreground/70" : "text-gray-600"
+                  )}>
+                    Idle Agents
+                  </div>
                 </div>
-                <Badge className="ml-auto bg-blue-500/70 text-xs">Ready</Badge>
+                <Badge className={cn(
+                  "ml-auto text-xs",
+                  isDark ? "bg-blue-500/70" : "bg-blue-500"
+                )}>
+                  Ready
+                </Badge>
               </GlassMorphism>
             </motion.div>
             
@@ -367,15 +504,44 @@ const Office = () => {
               transition={{ duration: 0.4, delay: 0.3 }}
               className="hover-scale"
             >
-              <GlassMorphism intensity="low" className="p-4 rounded-xl border-amber-500/30 flex items-center">
-                <div className="bg-amber-500/20 p-2 rounded-lg mr-4">
-                  <Cpu className="h-5 w-5 text-amber-500" />
+              <GlassMorphism 
+                intensity="low" 
+                className={cn(
+                  "p-4 rounded-xl flex items-center",
+                  isDark 
+                    ? "border-amber-500/30" 
+                    : "border-amber-300 bg-gradient-to-br from-amber-50/90 to-white/90"
+                )}
+              >
+                <div className={cn(
+                  "p-2 rounded-lg mr-4",
+                  isDark ? "bg-amber-500/20" : "bg-amber-200/50"
+                )}>
+                  <Cpu className={cn(
+                    "h-5 w-5", 
+                    isDark ? "text-amber-500" : "text-amber-600"
+                  )} />
                 </div>
                 <div>
-                  <div className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-800")}>{agentStats.paused}</div>
-                  <div className={cn("text-xs", isDark ? "text-flow-foreground/70" : "text-gray-600")}>Paused Agents</div>
+                  <div className={cn(
+                    "text-xl font-bold", 
+                    isDark ? "text-white" : "text-gray-800"
+                  )}>
+                    {agentStats.paused}
+                  </div>
+                  <div className={cn(
+                    "text-xs", 
+                    isDark ? "text-flow-foreground/70" : "text-gray-600"
+                  )}>
+                    Paused Agents
+                  </div>
                 </div>
-                <Badge className="ml-auto bg-amber-500 text-xs">Paused</Badge>
+                <Badge className={cn(
+                  "ml-auto text-xs",
+                  isDark ? "bg-amber-500" : "bg-amber-500"
+                )}>
+                  Paused
+                </Badge>
               </GlassMorphism>
             </motion.div>
             
@@ -385,36 +551,72 @@ const Office = () => {
               transition={{ duration: 0.4, delay: 0.4 }}
               className="hover-scale"
             >
-              <GlassMorphism intensity="low" className="p-4 rounded-xl border-red-500/30 flex items-center">
-                <div className="bg-red-500/20 p-2 rounded-lg mr-4">
-                  <Terminal className="h-5 w-5 text-red-500" />
+              <GlassMorphism 
+                intensity="low" 
+                className={cn(
+                  "p-4 rounded-xl flex items-center",
+                  isDark 
+                    ? "border-red-500/30" 
+                    : "border-red-300 bg-gradient-to-br from-red-50/90 to-white/90"
+                )}
+              >
+                <div className={cn(
+                  "p-2 rounded-lg mr-4",
+                  isDark ? "bg-red-500/20" : "bg-red-200/50"
+                )}>
+                  <Terminal className={cn(
+                    "h-5 w-5", 
+                    isDark ? "text-red-500" : "text-red-600"
+                  )} />
                 </div>
                 <div>
-                  <div className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-800")}>{agentStats.error}</div>
-                  <div className={cn("text-xs", isDark ? "text-flow-foreground/70" : "text-gray-600")}>Error State</div>
+                  <div className={cn(
+                    "text-xl font-bold", 
+                    isDark ? "text-white" : "text-gray-800"
+                  )}>
+                    {agentStats.error}
+                  </div>
+                  <div className={cn(
+                    "text-xs", 
+                    isDark ? "text-flow-foreground/70" : "text-gray-600"
+                  )}>
+                    Error State
+                  </div>
                 </div>
-                <Badge className="ml-auto bg-red-500 text-xs">Action Required</Badge>
+                <Badge className={cn(
+                  "ml-auto text-xs",
+                  isDark ? "bg-red-500" : "bg-red-500"
+                )}>
+                  Action Required
+                </Badge>
               </GlassMorphism>
             </motion.div>
           </div>
           
           <div className="relative">
-            <SolarpunkPanel accentColor="lavender" className="overflow-hidden hover-scale">
+            <SolarpunkPanel 
+              accentColor={isDark ? "blue" : "green"} 
+              className={cn(
+                "overflow-hidden hover-scale",
+                isDark 
+                  ? "border-[1px] border-purple-500/50 shadow-[0_0_30px_rgba(168,85,247,0.15)]" 
+                  : "border-[1px] border-emerald-400/70 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
+              )}
+            >
               <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 p-6">
                 <TabsList className={cn(
                   "grid w-full max-w-md grid-cols-3",
                   isDark 
                     ? "bg-flow-background/30 border border-flow-border/50" 
-                    : "bg-white/60 border border-purple-200"
+                    : "bg-white/60 border border-emerald-200"
                 )}>
                   <TabsTrigger 
                     value="office" 
                     className={cn(
                       "flex items-center gap-2",
-                      "data-[state=active]:bg-purple-500 data-[state=active]:text-white",
-                      isDark 
-                        ? "data-[state=inactive]:text-gray-300"
-                        : "data-[state=inactive]:text-purple-700"
+                      isDark
+                        ? "data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=inactive]:text-gray-300"
+                        : "data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=inactive]:text-emerald-700"
                     )}
                   >
                     <Briefcase className="h-4 w-4" />
@@ -424,10 +626,9 @@ const Office = () => {
                     value="agents" 
                     className={cn(
                       "flex items-center gap-2",
-                      "data-[state=active]:bg-purple-500 data-[state=active]:text-white",
-                      isDark 
-                        ? "data-[state=inactive]:text-gray-300"
-                        : "data-[state=inactive]:text-purple-700"
+                      isDark
+                        ? "data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=inactive]:text-gray-300"
+                        : "data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=inactive]:text-emerald-700"
                     )}
                   >
                     <Users className="h-4 w-4" />
@@ -437,10 +638,9 @@ const Office = () => {
                     value="metrics" 
                     className={cn(
                       "flex items-center gap-2",
-                      "data-[state=active]:bg-purple-500 data-[state=active]:text-white",
-                      isDark 
-                        ? "data-[state=inactive]:text-gray-300"
-                        : "data-[state=inactive]:text-purple-700"
+                      isDark
+                        ? "data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=inactive]:text-gray-300"
+                        : "data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=inactive]:text-emerald-700"
                     )}
                   >
                     <Cpu className="h-4 w-4" />
@@ -450,16 +650,34 @@ const Office = () => {
                 
                 <TabsContent value="office" className="space-y-6">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm mb-4">
-                    <div className={cn("flex items-center", isDark ? "text-flow-foreground/60" : "text-gray-600")}>
-                      <Zap className="h-4 w-4 mr-2 text-flow-accent" />
-                      {t('interactiveOffice')}
+                    <div className={cn(
+                      "flex items-center", 
+                      isDark ? "text-flow-foreground/60" : "text-gray-600"
+                    )}>
+                      {isDark 
+                        ? <Zap className="h-4 w-4 mr-2 text-flow-accent" />
+                        : <Leaf className="h-4 w-4 mr-2 text-emerald-600" />
+                      }
+                      {isDark 
+                        ? t('interactiveOffice')
+                        : "Navigate your sustainable digital workspace"
+                      }
                     </div>
                     <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
                       <Select onValueChange={(value) => handleFilterChange('division', value)}>
-                        <SelectTrigger className="w-[140px] h-8 text-xs bg-flow-background/30 border-flow-border/50">
+                        <SelectTrigger className={cn(
+                          "w-[140px] h-8 text-xs",
+                          isDark 
+                            ? "bg-flow-background/30 border-flow-border/50" 
+                            : "bg-white/50 border-emerald-200"
+                        )}>
                           <SelectValue placeholder="Filter Division" />
                         </SelectTrigger>
-                        <SelectContent className="bg-flow-background/90 backdrop-blur-md border-flow-border">
+                        <SelectContent className={cn(
+                          isDark 
+                            ? "bg-flow-background/90 backdrop-blur-md border-flow-border" 
+                            : "bg-white/90 backdrop-blur-md border-emerald-200"
+                        )}>
                           <SelectItem value="all">All Divisions</SelectItem>
                           <SelectItem value="kb">Knowledge Base</SelectItem>
                           <SelectItem value="analytics">Analytics</SelectItem>
@@ -471,7 +689,12 @@ const Office = () => {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        className="h-8 px-2 text-xs flex items-center gap-1 bg-flow-background/30 border-flow-border/50"
+                        className={cn(
+                          "h-8 px-2 text-xs flex items-center gap-1",
+                          isDark 
+                            ? "bg-flow-background/30 border-flow-border/50" 
+                            : "bg-white/50 border-emerald-200"
+                        )}
                         onClick={handleToggleVisualization}
                       >
                         <Filter className="h-3 w-3" />
@@ -480,7 +703,12 @@ const Office = () => {
                     </div>
                   </div>
                   
-                  <div className="min-h-[550px] h-[550px] relative">
+                  <div className={cn(
+                    "min-h-[550px] h-[550px] relative",
+                    isDark 
+                      ? "bg-black/40 rounded-xl backdrop-blur-sm overflow-hidden border border-purple-500/20" 
+                      : "bg-white/10 rounded-xl backdrop-blur-sm overflow-hidden border border-emerald-300/30"
+                  )}>
                     <OfficeFloorPlan 
                       visualizationState={visualizationState}
                       onHotspotAction={handleHotspotAction}
@@ -488,38 +716,83 @@ const Office = () => {
                   </div>
                   
                   <div className="flex justify-end items-center mt-2">
-                    <div className={cn("text-xs px-3 py-1.5 bg-flow-background/30 backdrop-blur-sm rounded-full border border-flow-accent/30 animate-pulse-subtle", isDark ? "text-flow-foreground/60" : "text-gray-600")}>
-                      <span className="text-flow-accent">{t('proTip')}</span> {t('openTerminal')}
+                    <div className={cn(
+                      "text-xs px-3 py-1.5 backdrop-blur-sm rounded-full border animate-pulse-subtle",
+                      isDark 
+                        ? "bg-flow-background/30 border-flow-accent/30 text-flow-foreground/60" 
+                        : "bg-emerald-50/60 border-emerald-300/50 text-emerald-800"
+                    )}>
+                      <span className={isDark ? "text-flow-accent" : "text-emerald-600"}>
+                        {t('proTip')}
+                      </span> {t('openTerminal')}
                     </div>
                   </div>
                 </TabsContent>
                 
                 <TabsContent value="agents" className="space-y-6">
-                  <div className="h-[60vh] overflow-y-auto pr-1 custom-scrollbar">
+                  <div className={cn(
+                    "h-[60vh] overflow-y-auto pr-1 custom-scrollbar",
+                    isDark 
+                      ? "scrollbar-dark" 
+                      : "scrollbar-light"
+                  )}>
                     <AgentGrid />
                   </div>
                   
                   <div className="flex justify-center mt-4">
-                    <Button variant="outline" className="border-flow-accent/50 bg-flow-accent/10 hover:bg-flow-accent/20 text-flow-accent">
-                      <Zap className="h-4 w-4 mr-2" />
+                    <Button 
+                      variant="outline" 
+                      className={cn(
+                        isDark 
+                          ? "border-flow-accent/50 bg-flow-accent/10 hover:bg-flow-accent/20 text-flow-accent" 
+                          : "border-emerald-500/50 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700"
+                      )}
+                    >
+                      {isDark 
+                        ? <Zap className="h-4 w-4 mr-2" />
+                        : <Leaf className="h-4 w-4 mr-2" />
+                      }
                       Deploy New Agent
                     </Button>
                   </div>
                 </TabsContent>
                 
                 <TabsContent value="metrics" className="space-y-6">
-                  <GlassMorphism intensity="low" className="p-4 rounded-xl border-flow-border/30 mb-4">
+                  <GlassMorphism 
+                    intensity="low" 
+                    className={cn(
+                      "p-4 rounded-xl mb-4",
+                      isDark 
+                        ? "border-flow-border/30" 
+                        : "border-emerald-200"
+                    )}
+                  >
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm">
-                      <div className={cn("flex items-center", isDark ? "text-flow-foreground/70" : "text-gray-600")}>
-                        <Cpu className="h-4 w-4 mr-2 text-cyan-400" />
+                      <div className={cn(
+                        "flex items-center",
+                        isDark ? "text-flow-foreground/70" : "text-gray-600"
+                      )}>
+                        <Cpu className={cn(
+                          "h-4 w-4 mr-2",
+                          isDark ? "text-cyan-400" : "text-cyan-600"
+                        )} />
                         {t('performanceMetrics')}
                       </div>
                       <div className="flex flex-wrap items-center gap-2 mt-3 sm:mt-0">
                         <Select defaultValue="7d">
-                          <SelectTrigger className="w-[140px] h-8 text-xs bg-flow-background/30 border-flow-border/50">
+                          <SelectTrigger className={cn(
+                            "w-[140px] h-8 text-xs",
+                            isDark 
+                              ? "bg-flow-background/30 border-flow-border/50" 
+                              : "bg-white/50 border-emerald-200"
+                          )}>
                             <SelectValue placeholder="Time Period" />
                           </SelectTrigger>
-                          <SelectContent className="bg-flow-background/90 backdrop-blur-md border-flow-border">
+                          <SelectContent className={cn(
+                            isDark 
+                              ? "bg-flow-background/90 backdrop-blur-md border-flow-border" 
+                              : "bg-white/90 backdrop-blur-md border-emerald-200"
+                          )}>
                             <SelectItem value="24h">Last 24 Hours</SelectItem>
                             <SelectItem value="7d">Last 7 Days</SelectItem>
                             <SelectItem value="30d">Last 30 Days</SelectItem>
@@ -530,7 +803,12 @@ const Office = () => {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          className="h-8 px-2 text-xs bg-flow-background/30 border-flow-border/50"
+                          className={cn(
+                            "h-8 px-2 text-xs",
+                            isDark 
+                              ? "bg-flow-background/30 border-flow-border/50" 
+                              : "bg-white/50 border-emerald-200"
+                          )}
                           onClick={() => toast({
                             title: "Export Data",
                             description: "Metrics data export functionality can be added here",
@@ -543,7 +821,12 @@ const Office = () => {
                     </div>
                   </GlassMorphism>
                   
-                  <div className="min-h-[550px] h-[550px] relative">
+                  <div className={cn(
+                    "min-h-[550px] h-[550px] relative",
+                    isDark 
+                      ? "bg-black/40 rounded-xl backdrop-blur-sm overflow-hidden border border-cyan-500/20" 
+                      : "bg-white/10 rounded-xl backdrop-blur-sm overflow-hidden border border-cyan-300/30"
+                  )}>
                     <AgencyMetrics />
                   </div>
                 </TabsContent>
@@ -582,7 +865,55 @@ const Office = () => {
       </main>
       
       <Footer />
-    </ThemedBackground>
+      
+      {/* Add custom scrollbar styles */}
+      <style jsx global>{`
+        .scrollbar-dark::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .scrollbar-dark::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.2);
+          border-radius: 8px;
+        }
+        
+        .scrollbar-dark::-webkit-scrollbar-thumb {
+          background: rgba(139, 92, 246, 0.5);
+          border-radius: 8px;
+        }
+        
+        .scrollbar-dark::-webkit-scrollbar-thumb:hover {
+          background: rgba(139, 92, 246, 0.7);
+        }
+        
+        .scrollbar-light::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .scrollbar-light::-webkit-scrollbar-track {
+          background: rgba(16, 185, 129, 0.1);
+          border-radius: 8px;
+        }
+        
+        .scrollbar-light::-webkit-scrollbar-thumb {
+          background: rgba(16, 185, 129, 0.3);
+          border-radius: 8px;
+        }
+        
+        .scrollbar-light::-webkit-scrollbar-thumb:hover {
+          background: rgba(16, 185, 129, 0.5);
+        }
+        
+        .animate-pulse-subtle {
+          animation: pulse-subtle 3s infinite;
+        }
+        
+        @keyframes pulse-subtle {
+          0%, 100% { opacity: 0.8; }
+          50% { opacity: 1; }
+        }
+      `}</style>
+    </div>
   );
 };
 

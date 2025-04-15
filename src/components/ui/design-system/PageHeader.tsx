@@ -49,6 +49,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         case 'business': return 'from-amber-500/20 to-yellow-500/20 border-amber-500/50 text-amber-400';
         case 'analytics': return 'from-pink-500/20 to-magenta-500/20 border-pink-500/50 text-pink-400';
         case 'courses': return 'from-orange-500/20 to-amber-500/20 border-orange-500/50 text-orange-400';
+        case 'performance': return 'from-teal-500/20 to-cyan-500/20 border-teal-500/50 text-teal-400';
         default: return 'from-flow-accent/20 to-purple-500/20 border-flow-accent/50 text-flow-accent';
       }
     } else {
@@ -62,6 +63,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         case 'business': return 'from-amber-100 to-yellow-100 border-amber-300 text-amber-700';
         case 'analytics': return 'from-blue-100 to-indigo-100 border-blue-300 text-indigo-700';
         case 'courses': return 'from-lavender-100 to-purple-100 border-lavender-300 text-purple-700';
+        case 'performance': return 'from-teal-100 to-cyan-100 border-teal-300 text-teal-700';
         default: return 'from-emerald-100 to-green-100 border-emerald-300 text-emerald-700';
       }
     }

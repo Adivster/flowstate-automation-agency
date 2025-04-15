@@ -152,7 +152,7 @@ const WorkflowPerformanceChart: React.FC<WorkflowPerformanceChartProps> = ({
   }
 
   return (
-    <SolarpunkPanel accentColor="aqua" className="h-full">
+    <SolarpunkPanel accentColor="blue" className="h-full">
       <div className="h-full flex flex-col" ref={chartRef}>
         <div className="flex items-center justify-between p-4 pb-2">
           <div>
