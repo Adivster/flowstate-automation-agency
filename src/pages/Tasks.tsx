@@ -2,8 +2,7 @@
 import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { ClipboardList, Plus, Edit2, UserPlus, CheckSquare } from 'lucide-react';
+import { ClipboardList, Plus, Edit2, UserPlus, CheckSquare, Filter, CalendarDays, Search } from 'lucide-react';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import TaskBoard from '@/components/tasks/TaskBoard';
 import { useTheme } from 'next-themes';
@@ -12,6 +11,8 @@ import { TaskProvider } from '@/contexts/TaskContext';
 import { Button } from '@/components/ui/button';
 import { Helmet } from 'react-helmet-async';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
+import { QuickActionButton } from '@/components/ui/quick-action-button';
 
 const Tasks: React.FC = () => {
   const { theme } = useTheme();
@@ -38,56 +39,71 @@ const Tasks: React.FC = () => {
             glassEffect={true}
             actions={
               <div className="flex flex-wrap items-center gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="bg-red-500/10 border-red-500/50 hover:bg-red-500/20 text-red-500 dark:text-red-400"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Task
-                </Button>
+                <QuickActionButton
+                  icon={<Plus className="h-4 w-4" />}
+                  label="Add Task"
+                  variant="tasks"
+                />
                 
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="bg-red-500/10 border-red-500/50 hover:bg-red-500/20 text-red-500 dark:text-red-400"
-                >
-                  <Edit2 className="h-4 w-4 mr-2" />
-                  Bulk Edit
-                </Button>
+                <QuickActionButton
+                  icon={<Edit2 className="h-4 w-4" />}
+                  label="Bulk Edit"
+                  variant="tasks"
+                />
                 
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="bg-red-500/10 border-red-500/50 hover:bg-red-500/20 text-red-500 dark:text-red-400"
-                >
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Reassign
-                </Button>
+                <QuickActionButton
+                  icon={<UserPlus className="h-4 w-4" />}
+                  label="Reassign"
+                  variant="tasks"
+                />
                 
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="bg-red-500/10 border-red-500/50 hover:bg-red-500/20 text-red-500 dark:text-red-400"
-                >
-                  <CheckSquare className="h-4 w-4 mr-2" />
-                  Mark Complete
-                </Button>
+                <QuickActionButton
+                  icon={<CheckSquare className="h-4 w-4" />}
+                  label="Mark Complete"
+                  variant="tasks"
+                />
               </div>
             }
           />
           
-          <GlassMorphism 
-            className={`rounded-2xl p-5 md:p-8 shadow-md hover-scale ${
-              isDark 
-                ? 'border-flow-border/30 scan-lines bg-flow-background/20 backdrop-blur-lg'
-                : 'border-emerald-200/50 eco-card bg-gradient-to-br from-white/60 to-emerald-50/40'
-            }`}
+          <SolarpunkPanel
+            accentColor="coral"
+            className="p-5 md:p-8"
           >
+            {/* Task Filter Bar */}
+            <div className="flex flex-wrap gap-4 mb-6">
+              <div className={cn(
+                "flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border",
+                isDark ? 'bg-flow-background/30 border-flow-border/50' : 'bg-white/70 border-red-200/50'
+              )}>
+                <Search className="h-4 w-4 text-muted-foreground" />
+                <input 
+                  type="text" 
+                  placeholder="Search tasks..." 
+                  className="bg-transparent border-none outline-none w-full text-sm placeholder:text-muted-foreground/70"
+                />
+              </div>
+              
+              <Button variant="outline" size="sm" className={cn(
+                isDark ? 'border-flow-border/50 bg-flow-background/30' : 'border-red-200/50 bg-white/70'
+              )}>
+                <Filter className="h-4 w-4 mr-2" />
+                Filters
+              </Button>
+              
+              <Button variant="outline" size="sm" className={cn(
+                isDark ? 'border-flow-border/50 bg-flow-background/30' : 'border-red-200/50 bg-white/70'
+              )}>
+                <CalendarDays className="h-4 w-4 mr-2" />
+                Due Date
+              </Button>
+            </div>
+            
+            {/* Task Board */}
             <TaskProvider>
               <TaskBoard />
             </TaskProvider>
-          </GlassMorphism>
+          </SolarpunkPanel>
         </div>
       </main>
       
