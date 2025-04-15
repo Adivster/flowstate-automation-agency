@@ -35,6 +35,11 @@ const navItems = [
     icon: BookOpen,
   },
   {
+    name: "courses",
+    link: "/courses",
+    icon: GraduationCap,
+  },
+  {
     name: "analytics",
     link: "/analytics",
     icon: BarChart,
