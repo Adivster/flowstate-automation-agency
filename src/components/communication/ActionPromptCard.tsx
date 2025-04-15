@@ -8,10 +8,11 @@ import type { ActionPrompt } from './useConversationalFlow';
 
 interface ActionPromptCardProps {
   prompt: ActionPrompt;
-  onAction: (promptId: string, action: 'confirm' | 'decline' | 'moreInfo') => void;
+  onAction: (action: 'confirm' | 'decline' | 'moreInfo') => void;
+  timestamp?: string;
 }
 
-const ActionPromptCard: React.FC<ActionPromptCardProps> = ({ prompt, onAction }) => {
+const ActionPromptCard: React.FC<ActionPromptCardProps> = ({ prompt, onAction, timestamp }) => {
   // Icon mapping based on action type
   const getActionIcon = () => {
     switch (prompt.actionType) {
@@ -79,12 +80,16 @@ const ActionPromptCard: React.FC<ActionPromptCardProps> = ({ prompt, onAction })
               </div>
             )}
             
+            {timestamp && (
+              <div className="text-xs text-gray-400/70 mb-2">{timestamp}</div>
+            )}
+            
             <div className="flex gap-2 justify-end">
               <Button 
                 variant="ghost" 
                 size="sm" 
                 className="h-7 text-xs"
-                onClick={() => onAction(prompt.id, 'decline')}
+                onClick={() => onAction('decline')}
               >
                 <ThumbsDown className="h-3 w-3 mr-1" />
                 {prompt.actions.decline}
@@ -95,7 +100,7 @@ const ActionPromptCard: React.FC<ActionPromptCardProps> = ({ prompt, onAction })
                   variant="outline" 
                   size="sm" 
                   className="h-7 text-xs"
-                  onClick={() => onAction(prompt.id, 'moreInfo')}
+                  onClick={() => onAction('moreInfo')}
                 >
                   <PlusCircle className="h-3 w-3 mr-1" />
                   {prompt.actions.moreInfo}
@@ -109,7 +114,7 @@ const ActionPromptCard: React.FC<ActionPromptCardProps> = ({ prompt, onAction })
                   prompt.severity === 'medium' ? 'bg-amber-600 hover:bg-amber-700' : 
                   'bg-blue-600 hover:bg-blue-700'
                 }`}
-                onClick={() => onAction(prompt.id, 'confirm')}
+                onClick={() => onAction('confirm')}
               >
                 <ThumbsUp className="h-3 w-3 mr-1" />
                 {prompt.actions.confirm}

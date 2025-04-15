@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -306,13 +305,11 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
     setNewMessage(suggestion);
   };
 
-  // Generate quick actions and system metrics based on context
   const quickActions = generateQuickActions();
   const systemMetrics = generateSystemMetrics();
 
   return (
     <div className="flex h-full">
-      {/* Chat Window */}
       <div className="flex-1 flex flex-col h-full scan-lines overflow-hidden">
         <div 
           ref={chatRef}
@@ -330,7 +327,6 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
                     key={index}
                     prompt={promptData}
                     onAction={(action) => onActionResponse(promptData.id, action)}
-                    timestamp={formatTime(message.timestamp)}
                   />
                 );
               }
@@ -404,7 +400,6 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
         </form>
       </div>
       
-      {/* AI Control Panel - Now positioned on the right side */}
       <div className="w-64 border-l border-indigo-500/30 bg-gray-900/80 backdrop-blur-md">
         <AIControlPanel
           activeContext={activeContext}

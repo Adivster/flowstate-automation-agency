@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -39,7 +38,6 @@ const AIControlPanel: React.FC<AIControlPanelProps> = ({
   const [activeInsightIndex, setActiveInsightIndex] = useState(0);
   const [pulsing, setPulsing] = useState(false);
 
-  // Cycle through insights
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveInsightIndex(prev => (prev + 1) % 4);
@@ -49,7 +47,6 @@ const AIControlPanel: React.FC<AIControlPanelProps> = ({
     return () => clearInterval(timer);
   }, []);
 
-  // Generate random metrics for visualization
   const generateMetricData = () => {
     return Array.from({ length: 12 }, () => Math.floor(Math.random() * 60) + 20);
   };
@@ -170,7 +167,6 @@ const AIControlPanel: React.FC<AIControlPanelProps> = ({
               </TooltipProvider>
             ))}
             
-            {/* Additional advanced actions */}
             <div className="mt-4 pt-2 border-t border-indigo-500/20">
               <h4 className="text-[10px] uppercase tracking-wider text-indigo-400/70 mb-2">Advanced Controls</h4>
               <div className="grid grid-cols-2 gap-1">
@@ -247,7 +243,6 @@ const AIControlPanel: React.FC<AIControlPanelProps> = ({
               </motion.div>
             ))}
 
-            {/* Mini visualization */}
             <div className="mt-4 bg-black/40 rounded-md border border-cyan-900/50 p-2">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs text-cyan-400">Performance Trend</span>
@@ -276,7 +271,6 @@ const AIControlPanel: React.FC<AIControlPanelProps> = ({
               </div>
             </div>
 
-            {/* System load indicator */}
             <div className="mt-2 bg-black/40 rounded-md border border-cyan-900/50 p-2">
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-xs text-cyan-400">System Load</span>
@@ -397,7 +391,6 @@ const AIControlPanel: React.FC<AIControlPanelProps> = ({
                 </motion.div>
               </AnimatePresence>
               
-              {/* Insight navigation dots */}
               <div className="flex justify-center gap-1.5 mt-3">
                 {[0, 1, 2, 3].map(i => (
                   <button 
@@ -409,7 +402,6 @@ const AIControlPanel: React.FC<AIControlPanelProps> = ({
               </div>
             </div>
 
-            {/* Context info */}
             <div className="mt-3 bg-black/40 rounded-md border border-cyan-900/50 p-2">
               <h3 className="text-xs font-medium text-cyan-300 mb-2">{
                 activeContext === 'global' ? 'Global System' : 
@@ -470,7 +462,6 @@ const AIControlPanel: React.FC<AIControlPanelProps> = ({
         </Tabs>
       </div>
       
-      {/* Bottom status bar */}
       <div className="p-1.5 bg-black/50 border-t border-indigo-500/30 flex items-center justify-between">
         <div className="flex items-center">
           <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse mr-1.5"></div>
@@ -479,7 +470,7 @@ const AIControlPanel: React.FC<AIControlPanelProps> = ({
         <span className="text-[10px] text-cyan-500/70">v1.4.2</span>
       </div>
       
-      <style jsx>{`
+      <style>{`
         @keyframes shimmer {
           0% { transform: translateX(-100%); }
           100% { transform: translateX(100%); }
