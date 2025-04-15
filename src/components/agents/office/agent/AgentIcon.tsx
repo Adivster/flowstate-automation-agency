@@ -22,14 +22,14 @@ export const AgentIcon: React.FC<AgentIconProps> = ({
 }) => {
   return (
     <div className="relative z-10">
-      <Icon className={`w-6 h-6 transition-transform duration-300 ${
+      {Icon && <Icon className={`w-6 h-6 transition-transform duration-300 ${
         divisionColor?.text || (
           status === 'working' ? 'text-green-400' : 
           status === 'idle' ? 'text-gray-400' : 
           status === 'paused' ? 'text-amber-400' : 
           'text-red-400'
         )
-      }`} />
+      }`} />}
 
       <AnimatePresence>
         {isSelected && (
