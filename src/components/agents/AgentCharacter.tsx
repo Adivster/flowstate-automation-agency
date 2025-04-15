@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -53,6 +54,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
   const { toast } = useToast();
   const [currentPosition, setCurrentPosition] = useState(0);
   const [isTraveling, setIsTraveling] = useState(false);
+  const [showTaskTooltip, setShowTaskTooltip] = useState(false);
   
   const bgColor = divisionColor ? divisionColor.bg : 'bg-flow-accent/20';
   const textColor = divisionColor ? divisionColor.text : 'text-flow-accent';
@@ -136,13 +138,13 @@ const AgentCharacter: React.FC<AgentProps> = ({
     if (!agent.currentTask) return null;
     
     switch(agent.currentTask.type) {
-      case 'reading': return <Book className="w-3.5 h-3.5 text-blue-400" />;
-      case 'analyzing': return <Lightbulb className="w-3.5 h-3.5 text-yellow-400" />;
-      case 'experimenting': return <Beaker className="w-3.5 h-3.5 text-purple-400" />;
-      case 'emailing': return <Mail className="w-3.5 h-3.5 text-green-400" />;
-      case 'writing': return <Pen className="w-3.5 h-3.5 text-cyan-400" />;
-      case 'searching': return <FileSearch className="w-3.5 h-3.5 text-orange-400" />;
-      case 'coding': return <FileCode className="w-3.5 h-3.5 text-pink-400" />;
+      case 'reading': return <Book className="w-4 h-4 text-blue-400" />;
+      case 'analyzing': return <Lightbulb className="w-4 h-4 text-yellow-400" />;
+      case 'experimenting': return <Beaker className="w-4 h-4 text-purple-400" />;
+      case 'emailing': return <Mail className="w-4 h-4 text-green-400" />;
+      case 'writing': return <Pen className="w-4 h-4 text-cyan-400" />;
+      case 'searching': return <FileSearch className="w-4 h-4 text-orange-400" />;
+      case 'coding': return <FileCode className="w-4 h-4 text-pink-400" />;
       default: return null;
     }
   };
@@ -166,6 +168,11 @@ const AgentCharacter: React.FC<AgentProps> = ({
     });
   };
 
+  const handleTaskIconClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowTaskTooltip(!showTaskTooltip);
+  };
+
   return (
     <motion.div
       className="absolute"
@@ -173,6 +180,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
         left: `${agentPos.x}%`, 
         top: `${agentPos.y}%`,
         filter: 'drop-shadow(0 0 8px rgba(0, 0, 0, 0.25))',
+        zIndex: isSelected ? 50 : agent.status === 'working' ? 20 : 10,
         ...style
       }}
       animate={{
@@ -187,7 +195,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
       }}
     >
       <motion.div 
-        className={`cursor-pointer ${isSelected ? 'relative z-10' : ''}`}
+        className={`cursor-pointer ${isSelected ? 'relative z-30' : ''}`}
         whileHover={{ scale: 1.1 }}
         onClick={() => onAgentClick && onAgentClick(agent.id)}
         title={`${agent.name} - ${t(agent.status)}${agent.currentTask ? ` - ${agent.currentTask.description}` : ''}`}
@@ -219,20 +227,32 @@ const AgentCharacter: React.FC<AgentProps> = ({
 
             {agent.currentTask && (
               <motion.div 
-                className="absolute -top-1 -left-1 w-6 h-6 rounded-full bg-gray-950/90 border-2 border-gray-800 
-                  flex items-center justify-center cursor-help group transition-all duration-300
-                  hover:scale-110 hover:border-flow-accent"
+                className="absolute -top-2 -left-2 w-7 h-7 rounded-full bg-gray-950/90 border-2 border-gray-800 
+                  flex items-center justify-center cursor-pointer group transition-all duration-300
+                  hover:scale-110 hover:border-flow-accent z-20"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                title={agent.currentTask.description}
+                onClick={handleTaskIconClick}
               >
                 {getTaskIcon()}
                 
-                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 scale-0 opacity-0 
-                  bg-gray-950/90 text-white text-xs px-2 py-1 rounded whitespace-nowrap
-                  group-hover:scale-100 group-hover:opacity-100 transition-all duration-200">
-                  {agent.currentTask.description}
-                </div>
+                <AnimatePresence>
+                  {showTaskTooltip && (
+                    <motion.div
+                      className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-950/95 
+                        text-white text-xs px-3 py-1.5 rounded-md shadow-lg border border-gray-800
+                        min-w-max z-50"
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <div className="font-medium">{agent.currentTask.description}</div>
+                      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 rotate-45 
+                        w-2 h-2 bg-gray-950/95 border-b border-r border-gray-800"></div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             )}
 
@@ -266,7 +286,7 @@ const AgentCharacter: React.FC<AgentProps> = ({
             <motion.div 
               className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 px-2 py-1 
                 bg-gray-950/90 border border-flow-accent/50 rounded-md backdrop-blur-sm
-                shadow-lg shadow-flow-accent/20"
+                shadow-lg shadow-flow-accent/20 z-40"
               initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -5 }}

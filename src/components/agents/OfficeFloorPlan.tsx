@@ -708,11 +708,16 @@ const OfficeFloorPlan: React.FC = () => {
         <AnimatePresence>
           {aiPromptVisible && aiPrompt && (
             <motion.div 
-              className="absolute top-1/4 left-1/2 transform -translate-x-1/2 z-50"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
+              className="absolute top-1/3 left-1/2 transform -translate-x-1/2 z-50"
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ duration: 0.3, type: "spring" }}
+              style={{
+                maxWidth: "90%",
+                width: "380px",
+                filter: "drop-shadow(0 10px 25px rgba(0,0,0,0.5))"
+              }}
             >
               <ActionPromptCard 
                 prompt={aiPrompt}
