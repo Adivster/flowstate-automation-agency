@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
   BookOpen, 
@@ -17,11 +18,7 @@ import {
   Activity,
   ChevronDown,
   ChevronRight,
-  PlayCircle,
-  UserPlus,
-  Building2,
   Settings,
-  Terminal as TerminalIcon,
   PanelLeft,
   PanelRight,
   Maximize,
@@ -38,13 +35,11 @@ import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { useDashboardActions } from '@/hooks/useDashboardActions';
 import SystemStatusModule from './modules/SystemStatusModule';
 import AIInsightsPanel from './modules/AIInsightsPanel';
-import QuickActionsHub from './modules/QuickActionsHub';
 import PerformanceMap from './modules/PerformanceMap';
 import DivisionOverview from './modules/DivisionOverview';
 import AgentEvolutionMap from './modules/AgentEvolutionMap';
 import RecentActivityFeed from './modules/RecentActivityFeed';
 import TaskFeed from './modules/TaskFeed';
-import CommandTerminalWidget from './modules/CommandTerminalWidget';
 import GlobalMeshStatus from './modules/GlobalMeshStatus';
 import DivisionsTab from './tabs/DivisionsTab';
 import AgentsTab from './tabs/AgentsTab';
@@ -262,7 +257,7 @@ const AgencyDashboard: React.FC = () => {
         </div>
       </motion.div>
 
-      <div className="fixed bottom-4 left-4 bg-black/60 border border-flow-border/30 rounded-lg px-2 py-1 text-[10px] text-flow-foreground/60">
+      <div className="fixed bottom-4 right-4 bg-black/60 border border-flow-border/30 rounded-lg px-2 py-1 text-[10px] text-flow-foreground/60">
         Press <kbd className="bg-flow-background/60 px-1 py-0.5 rounded border border-flow-border/50">Ctrl+K</kbd> to search or open command terminal
       </div>
     </div>

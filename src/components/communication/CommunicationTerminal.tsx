@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Terminal } from 'lucide-react';
+import { Terminal, MessageSquare } from 'lucide-react';
 import { useCommunicationTerminal } from './useCommunicationTerminal';
 import TerminalHeader from './TerminalHeader';
 import CommandTerminalContent from './CommandTerminalContent';
@@ -62,23 +62,32 @@ const CommunicationTerminal = () => {
     };
 
     window.addEventListener('openCommunicationTerminal', handleOpenTerminal);
+    window.addEventListener('openCommandTerminal', handleOpenTerminal);
     
     return () => {
       window.removeEventListener('openCommunicationTerminal', handleOpenTerminal);
+      window.removeEventListener('openCommandTerminal', handleOpenTerminal);
     };
   }, [setIsOpen]);
 
   return (
     <>
-      {/* Terminal toggle button positioned in bottom right */}
-      <div className="fixed bottom-4 right-4 z-50">
+      {/* Terminal toggle button positioned in bottom left */}
+      <div className="fixed bottom-4 left-4 z-50">
         <Button
           size="icon"
           variant="outline"
           onClick={() => setIsOpen(!isOpen)}
-          className="terminal-toggle-btn rounded-full h-12 w-12 shadow-lg bg-black/70 border border-indigo-500/50 hover:bg-indigo-900/30 hover:border-indigo-400/80 transition-all duration-300"
+          className="terminal-toggle-btn rounded-full h-12 w-12 shadow-lg bg-black/70 border border-indigo-500/50 hover:bg-indigo-900/30 hover:border-indigo-400/80 transition-all duration-300 flex items-center justify-center"
         >
-          <Terminal className="h-5 w-5 text-cyan-300" />
+          {activeTab === 'command' ? (
+            <Terminal className="h-5 w-5 text-cyan-300" />
+          ) : (
+            <MessageSquare className="h-5 w-5 text-green-300" />
+          )}
+          
+          {/* Pulse indicator when closed but has activity */}
+          <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-green-500 rounded-full animate-pulse"></span>
         </Button>
       </div>
 

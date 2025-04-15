@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { X, RotateCcw, Terminal, MessageSquare } from 'lucide-react';
+import { TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { X, RotateCcw, Terminal, MessageCircle } from 'lucide-react';
 
 interface TerminalHeaderProps {
   activeTab: 'command' | 'chat';
-  setActiveTab: (value: 'command' | 'chat') => void;
+  setActiveTab: React.Dispatch<React.SetStateAction<'command' | 'chat'>>;
   clearTerminal: () => void;
   closeTerminal: () => void;
 }
@@ -18,45 +18,55 @@ const TerminalHeader: React.FC<TerminalHeaderProps> = ({
   closeTerminal
 }) => {
   return (
-    <div className="flex justify-between items-center p-3 border-b border-indigo-500/30 bg-black/70">
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'command' | 'chat')} className="flex-grow">
-        <TabsList className="h-8 bg-black/50 border border-indigo-400/20 rounded-md">
+    <div className="border-b border-indigo-500/30 flex items-center justify-between p-2 bg-gray-900/90">
+      <div className="flex items-center gap-2">
+        <TabsList className="bg-gray-800/70 border border-indigo-500/20">
           <TabsTrigger 
             value="command" 
-            className={`text-xs ${activeTab === 'command' ? 'text-cyan-300' : 'text-flow-muted-foreground'}`}
+            className={`text-xs py-1 px-3 ${activeTab === 'command' ? 'data-[state=active]:bg-indigo-600/40' : ''} flex items-center gap-1`}
           >
-            <Terminal className="h-3.5 w-3.5 mr-1.5" />
-            Command Terminal
+            <Terminal className="h-3.5 w-3.5 text-cyan-400" />
+            CLI
           </TabsTrigger>
           <TabsTrigger 
-            value="chat" 
-            className={`text-xs ${activeTab === 'chat' ? 'text-cyan-300' : 'text-flow-muted-foreground'}`}
+            value="chat"
+            className={`text-xs py-1 px-3 ${activeTab === 'chat' ? 'data-[state=active]:bg-indigo-600/40' : ''} flex items-center gap-1`}
           >
-            <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
-            Communication Bot
+            <MessageSquare className="h-3.5 w-3.5 text-green-400" />
+            Chat
           </TabsTrigger>
         </TabsList>
-      </Tabs>
+        
+        <span className="text-sm font-medium text-flow-foreground/80">
+          {activeTab === 'command' ? 'Command Terminal' : 'AI Assistant'}
+        </span>
+      </div>
       
-      <div className="flex gap-1 ml-2">
+      <div className="flex items-center gap-1">
         <Button 
-          size="sm" 
           variant="ghost" 
-          className="h-7 w-7 rounded-md text-cyan-300 hover:text-cyan-200 hover:bg-black/30 p-0 flex items-center justify-center"
+          size="icon"
+          className="h-7 w-7 hover:bg-indigo-500/20"
           onClick={clearTerminal}
-          title="Clear terminal"
         >
-          <RotateCcw className="h-3.5 w-3.5" />
+          <RotateCcw className="h-3.5 w-3.5 text-flow-foreground/70" />
         </Button>
+        
         <Button 
-          size="sm" 
           variant="ghost" 
-          className="h-7 w-7 rounded-md text-red-500 hover:text-red-400 hover:bg-black/30 p-0 flex items-center justify-center"
+          size="icon"
+          className="h-7 w-7 hover:bg-indigo-500/20"
           onClick={closeTerminal}
-          title="Close terminal"
         >
-          <X className="h-4 w-4" />
+          <X className="h-3.5 w-3.5 text-flow-foreground/70" />
         </Button>
+      </div>
+      
+      <div className="absolute left-0 bottom-0 w-full h-0.5 overflow-hidden">
+        <div className={`h-full bg-gradient-to-r ${
+          activeTab === 'command' ? 'from-cyan-500/70 to-indigo-500/70' : 'from-green-500/70 to-teal-500/70'
+        } animate-pulse-subtle`}>
+        </div>
       </div>
     </div>
   );

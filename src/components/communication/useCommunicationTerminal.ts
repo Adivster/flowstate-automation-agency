@@ -1,12 +1,8 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
-export interface CommandHistoryItem {
-  type: 'input' | 'output';
-  content: string;
-}
-
-export interface Message {
+interface Message {
   sender: 'user' | 'bot';
   text: string;
   timestamp: Date;
@@ -15,115 +11,162 @@ export interface Message {
 export const useCommunicationTerminal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'command' | 'chat'>('command');
-  
-  // Command terminal state
   const [command, setCommand] = useState('');
-  const [commandHistory, setCommandHistory] = useState<CommandHistoryItem[]>([
-    { type: 'output', content: '> Welcome to the Agency Command Interface v3.2' },
-    { type: 'output', content: '> Type "help" for available commands' },
+  const [commandHistory, setCommandHistory] = useState<Array<{type: 'input' | 'output', content: string}>>([
+    { type: 'output', content: 'Welcome to FlowState Command Terminal v1.0\nType "help" for available commands.' },
   ]);
-  
-  // Chat bot state
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { sender: 'bot', text: 'Hello! I\'m your agency communication assistant. How can I help you today?', timestamp: new Date() }
+    {
+      sender: 'bot',
+      text: 'Hello! I am your AI assistant. How can I help you with your agency today?',
+      timestamp: new Date()
+    }
   ]);
-  
-  // Handle command submission
+  const { toast } = useToast();
+
+  // Keyboard shortcut to open terminal with Ctrl+K
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
+
+  // Handle command execution
   const handleCommand = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!command.trim()) return;
-
-    // Add command to history
-    setCommandHistory([...commandHistory, { type: 'input', content: command }]);
-
+    if (command.trim() === '') return;
+    
+    // Record command in history
+    setCommandHistory(prev => [...prev, { type: 'input', content: command }]);
+    
     // Process command
-    let response = 'Command not recognized. Type "help" for available commands.';
-
-    if (command.toLowerCase() === 'help') {
+    const commandLower = command.toLowerCase().trim();
+    let response = '';
+    
+    if (commandLower === 'help') {
       response = `Available commands:
-- status: Check agent status
-- spawn [agent-type]: Create new agent
-- list agents: List all agents
-- assign [task] to [agent]: Assign task
-- clear: Clear terminal`;
-    } else if (command.toLowerCase() === 'status') {
-      response = 'System Status: 24 agents active, 18 tasks in progress, all systems operational.';
-    } else if (command.toLowerCase() === 'list agents') {
-      response = 'Active Agents: Knowledge Agent, Data Analysis Agent, Security Agent, Development Agent, Research Agent...';
-    } else if (command.toLowerCase() === 'clear') {
-      setCommandHistory([]);
+help - Show this help message
+status - Check system status
+clear - Clear terminal history
+agents - List active agents
+divisions - List agency divisions
+create [agent|division] - Create a new resource
+deploy - Deploy pending changes`;
+    } else if (commandLower === 'status') {
+      response = 'System Status: ONLINE\nCPU: 23% | Memory: 45% | Network: Stable\nActive Agents: 14/24\nPending Tasks: 7';
+    } else if (commandLower === 'clear') {
+      setCommandHistory([{ type: 'output', content: 'Terminal cleared.' }]);
       setCommand('');
       return;
-    } else if (command.toLowerCase().startsWith('spawn')) {
-      const agentType = command.split(' ')[1];
-      response = `Initiating spawn sequence for new ${agentType || 'generic'} agent...`;
-      
-      // Add second response after a delay
-      setTimeout(() => {
-        setCommandHistory(prev => [...prev, { 
-          type: 'output', 
-          content: `Agent initialization complete. New ${agentType || 'generic'} agent is now active.` 
-        }]);
-      }, 1500);
+    } else if (commandLower === 'agents') {
+      response = 'Active Agents (14):\n- Agent001: Processing data (Analytics Div)\n- Agent007: Executing tasks (Ops Div)\n- Agent013: Learning new models (R&D Div)';
+    } else if (commandLower === 'divisions') {
+      response = 'Agency Divisions (4):\n- Analytics: 6 agents, 87% efficiency\n- Operations: 8 agents, 92% efficiency\n- R&D: 5 agents, 78% efficiency\n- Strategy: 5 agents, 91% efficiency';
+    } else if (commandLower.startsWith('create agent')) {
+      response = 'Initializing agent creation wizard...\nNew agent deployment in progress.\nAgent ID will be assigned upon completion.';
+    } else if (commandLower.startsWith('create division')) {
+      response = 'Initializing division creation wizard...\nPlease specify division name and purpose.';
+    } else if (commandLower === 'deploy') {
+      response = 'Deployment process initiated.\nValidating configurations...\nDeploying resources to production environment.\nDeployment completed successfully.';
+    } else {
+      response = `Command not recognized: ${command}\nType "help" for available commands.`;
     }
-
+    
     // Add response to history
-    setTimeout(() => {
-      setCommandHistory(prev => [...prev, { type: 'output', content: response }]);
-    }, 300);
-
+    setCommandHistory(prev => [...prev, { type: 'output', content: response }]);
+    
+    // Clear input
     setCommand('');
   };
-  
-  // Handle chat message submission
+
+  // Handle sending a chat message
   const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
+    if (newMessage.trim() === '') return;
     
     // Add user message
-    setMessages(prev => [...prev, { sender: 'user', text: newMessage, timestamp: new Date() }]);
+    const userMessage: Message = {
+      sender: 'user',
+      text: newMessage,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    
+    // Clear input
+    const sentMessage = newMessage;
     setNewMessage('');
     
-    // Simulate bot response after a delay
+    // Simulate AI response
     setTimeout(() => {
-      const botResponses = [
-        "I'll connect you with the appropriate agent team right away.",
-        "Your request has been logged and an agent will follow up within 2 hours.",
-        "I've analyzed your question and am routing it to our knowledge base experts.",
-        "Based on your query, I recommend checking our analytics division for insights.",
-        "That's a great question! Let me find the best agent to help you with that."
-      ];
+      let botResponse: string;
       
-      const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
-      setMessages(prev => [...prev, { sender: 'bot', text: randomResponse, timestamp: new Date() }]);
+      if (sentMessage.toLowerCase().includes('help')) {
+        botResponse = "I can help with managing your agents, creating workflows, or analyzing performance data. What would you like assistance with?";
+      } else if (sentMessage.toLowerCase().includes('agent') || sentMessage.toLowerCase().includes('division')) {
+        botResponse = "I can help you manage your agents and divisions. Would you like me to show you the current status, or help you create new ones?";
+      } else if (sentMessage.toLowerCase().includes('workflow')) {
+        botResponse = "Workflows help automate your agency processes. Would you like to create a new workflow or optimize existing ones?";
+      } else if (sentMessage.toLowerCase().includes('task')) {
+        botResponse = "I can help manage your tasks. Should I show you pending tasks or help prioritize them?";
+      } else if (sentMessage.toLowerCase().includes('performance') || sentMessage.toLowerCase().includes('analytics')) {
+        botResponse = "I can provide insights on your agency's performance. Would you like to see key metrics or detailed analytics?";
+      } else {
+        botResponse = "I'm here to assist with your agency management needs. I can help with agents, divisions, workflows, tasks, and analytics. What area would you like to focus on?";
+      }
+      
+      const botMessage: Message = {
+        sender: 'bot',
+        text: botResponse,
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, botMessage]);
+      
+      // Notify user if terminal is closed
+      if (!isOpen) {
+        toast({
+          title: "New message from AI Assistant",
+          description: botResponse.slice(0, 60) + (botResponse.length > 60 ? "..." : ""),
+          duration: 5000,
+        });
+      }
     }, 1000);
   };
-  
+
+  // Handle key presses in inputs
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
+      e.preventDefault();
       if (activeTab === 'command') {
-        handleCommand(e);
+        handleCommand(e as any);
       } else {
         handleSendMessage();
       }
     }
   };
-  
+
+  // Format time for chat messages
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
-  
+
+  // Clear terminal history
   const clearTerminal = () => {
     if (activeTab === 'command') {
-      setCommandHistory([
-        { type: 'output', content: '> Terminal cleared.' },
-        { type: 'output', content: '> Welcome to the Agency Command Interface v3.2' },
-        { type: 'output', content: '> Type "help" for available commands' }
-      ]);
+      setCommandHistory([{ type: 'output', content: 'Terminal cleared. Type "help" for available commands.' }]);
     } else {
-      setMessages([
-        { sender: 'bot', text: 'Chat history cleared. How can I help you today?', timestamp: new Date() }
-      ]);
+      setMessages([{
+        sender: 'bot',
+        text: 'Chat history cleared. How can I help you today?',
+        timestamp: new Date()
+      }]);
     }
   };
 
@@ -142,6 +185,6 @@ export const useCommunicationTerminal = () => {
     handleSendMessage,
     handleKeyPress,
     formatTime,
-    clearTerminal,
+    clearTerminal
   };
 };

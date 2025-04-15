@@ -80,8 +80,8 @@ export const useDashboardActions = () => {
       duration: 3000
     });
     
-    // Trigger communication terminal opening
-    const event = new CustomEvent('openCommunication');
+    // Trigger communication terminal opening on chat tab
+    const event = new CustomEvent('openCommunicationTerminal');
     window.dispatchEvent(event);
   };
 
@@ -93,7 +93,7 @@ export const useDashboardActions = () => {
     });
     
     setTimeout(() => {
-      navigate('/divisions');
+      navigate('/office');
     }, 800);
   };
 
