@@ -58,28 +58,28 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
           return 'bg-black/30 border-flow-border/30';
       }
     } else {
-      // Solarpunk light theme variants
+      // Solarpunk light theme variants - improved for better contrast
       switch (variant) {
         case 'accent':
-          return 'bg-amber-50/80 border-emerald-200 text-emerald-900';
+          return 'bg-amber-50/90 border-emerald-300 text-emerald-900';
         case 'dark':
-          return 'bg-emerald-900/10 border-emerald-900/20 text-emerald-900';
+          return 'bg-emerald-900/10 border-emerald-900/30 text-emerald-900';
         case 'light':
-          return 'bg-white/70 border-amber-100/50 text-gray-800';
+          return 'bg-white/90 border-amber-200 text-gray-800';
         case 'success':
-          return 'bg-green-50/80 border-green-300 text-green-800';
+          return 'bg-green-50/90 border-green-400 text-green-800';
         case 'warning':
-          return 'bg-amber-50/80 border-amber-300 text-amber-800';
+          return 'bg-amber-50/90 border-amber-400 text-amber-800';
         case 'error':
-          return 'bg-red-50/80 border-red-300 text-red-800';
+          return 'bg-red-50/90 border-red-400 text-red-800';
         case 'nature':
-          return 'bg-emerald-50/70 border-emerald-300/80 text-emerald-800';
+          return 'bg-emerald-50/90 border-emerald-400 text-emerald-800';
         case 'sunlit':
-          return 'bg-amber-50/80 border-amber-200 text-amber-800';
+          return 'bg-amber-50/90 border-amber-300 text-amber-800';
         case 'sky':
-          return 'bg-sky-50/70 border-sky-300/60 text-sky-800';
+          return 'bg-sky-50/90 border-sky-400 text-sky-800';
         default:
-          return 'bg-white/70 border-emerald-100 text-gray-800';
+          return 'bg-white/90 border-emerald-200 text-gray-800';
       }
     }
   };

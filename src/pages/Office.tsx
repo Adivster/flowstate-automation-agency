@@ -218,15 +218,36 @@ const Office = () => {
           <GlassMorphism className="border border-flow-border/30 rounded-2xl overflow-hidden hover-scale">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 p-6">
               <TabsList className="grid w-full max-w-md grid-cols-3 bg-flow-background/30 border border-flow-border/50">
-                <TabsTrigger value="office" className="flex items-center gap-2 data-[state=active]:bg-flow-accent data-[state=active]:text-white">
+                <TabsTrigger 
+                  value="office" 
+                  className={cn(
+                    "flex items-center gap-2",
+                    "data-[state=active]:bg-flow-accent data-[state=active]:text-white",
+                    "data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300"
+                  )}
+                >
                   <Briefcase className="h-4 w-4" />
                   <span className="hidden sm:inline">{t('officeView')}</span>
                 </TabsTrigger>
-                <TabsTrigger value="agents" className="flex items-center gap-2 data-[state=active]:bg-flow-accent data-[state=active]:text-white">
+                <TabsTrigger 
+                  value="agents" 
+                  className={cn(
+                    "flex items-center gap-2",
+                    "data-[state=active]:bg-flow-accent data-[state=active]:text-white",
+                    "data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300"
+                  )}
+                >
                   <Users className="h-4 w-4" />
                   <span className="hidden sm:inline">{t('agentList')}</span>
                 </TabsTrigger>
-                <TabsTrigger value="metrics" className="flex items-center gap-2 data-[state=active]:bg-flow-accent data-[state=active]:text-white">
+                <TabsTrigger 
+                  value="metrics" 
+                  className={cn(
+                    "flex items-center gap-2",
+                    "data-[state=active]:bg-flow-accent data-[state=active]:text-white",
+                    "data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300"
+                  )}
+                >
                   <Cpu className="h-4 w-4" />
                   <span className="hidden sm:inline">{t('systemMetrics')}</span>
                 </TabsTrigger>

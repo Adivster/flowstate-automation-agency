@@ -45,17 +45,17 @@ export const SolarpunkPanel: React.FC<SolarpunkPanelProps> = ({
         default: return 'border-flow-accent/50 hover:border-flow-accent/70';
       }
     } else {
-      // Solarpunk theme accent styles
+      // Solarpunk theme accent styles - improved contrast
       switch (accentColor) {
-        case 'yellow': return 'border-amber-300 hover:border-amber-400 bg-gradient-to-br from-amber-50/70 to-white/90';
-        case 'green': return 'border-emerald-300 hover:border-emerald-400 bg-gradient-to-br from-emerald-50/70 to-white/90';
-        case 'orange': return 'border-orange-300 hover:border-orange-400 bg-gradient-to-br from-orange-50/70 to-white/90';
-        case 'coral': return 'border-red-300 hover:border-red-400 bg-gradient-to-br from-red-50/70 to-white/90';
-        case 'aqua': return 'border-cyan-300 hover:border-cyan-400 bg-gradient-to-br from-cyan-50/70 to-white/90';
-        case 'gold': return 'border-yellow-300 hover:border-yellow-400 bg-gradient-to-br from-yellow-50/70 to-white/90';
-        case 'blue': return 'border-blue-300 hover:border-blue-400 bg-gradient-to-br from-blue-50/70 to-white/90';
-        case 'lavender': return 'border-purple-300 hover:border-purple-400 bg-gradient-to-br from-purple-50/70 to-white/90';
-        default: return 'border-emerald-300 hover:border-emerald-400 bg-gradient-to-br from-emerald-50/70 to-white/90';
+        case 'yellow': return 'border-amber-400 hover:border-amber-500 bg-gradient-to-br from-amber-50/70 to-white/90';
+        case 'green': return 'border-emerald-400 hover:border-emerald-500 bg-gradient-to-br from-emerald-50/70 to-white/90';
+        case 'orange': return 'border-orange-400 hover:border-orange-500 bg-gradient-to-br from-orange-50/70 to-white/90';
+        case 'coral': return 'border-red-400 hover:border-red-500 bg-gradient-to-br from-red-50/70 to-white/90';
+        case 'aqua': return 'border-cyan-400 hover:border-cyan-500 bg-gradient-to-br from-cyan-50/70 to-white/90';
+        case 'gold': return 'border-yellow-400 hover:border-yellow-500 bg-gradient-to-br from-yellow-50/70 to-white/90';
+        case 'blue': return 'border-blue-400 hover:border-blue-500 bg-gradient-to-br from-blue-50/70 to-white/90';
+        case 'lavender': return 'border-purple-400 hover:border-purple-500 bg-gradient-to-br from-purple-50/70 to-white/90';
+        default: return 'border-emerald-400 hover:border-emerald-500 bg-gradient-to-br from-emerald-50/70 to-white/90';
       }
     }
   };
@@ -71,6 +71,24 @@ export const SolarpunkPanel: React.FC<SolarpunkPanelProps> = ({
         ? 'shadow-xl shadow-black/10' 
         : 'shadow-md shadow-black/5';
     }
+  };
+
+  // Get light mode background
+  const getLightModeBackground = () => {
+    if (!isDark) {
+      switch (accentColor) {
+        case 'yellow': return 'bg-amber-50/70';
+        case 'green': return 'bg-emerald-50/70';
+        case 'orange': return 'bg-orange-50/70';
+        case 'coral': return 'bg-red-50/70';
+        case 'aqua': return 'bg-cyan-50/70';
+        case 'gold': return 'bg-yellow-50/70';
+        case 'blue': return 'bg-blue-50/70';
+        case 'lavender': return 'bg-purple-50/70';
+        default: return 'bg-emerald-50/70';
+      }
+    }
+    return '';
   };
 
   // Determine the panel component based on interactivity
@@ -96,6 +114,7 @@ export const SolarpunkPanel: React.FC<SolarpunkPanelProps> = ({
         fullWidth ? 'w-full' : '',
         getAccentColorStyles(),
         getShadowStyles(),
+        getLightModeBackground(),
         interactive && 'cursor-pointer transition-all duration-300',
         isDark ? 'bg-flow-background/20 backdrop-blur-md' : 'backdrop-blur-sm',
         className
