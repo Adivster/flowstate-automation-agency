@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Lightbulb, Sparkles, Info } from 'lucide-react'; // Replace InfoCircle with Info
+import { Lightbulb, Sparkles, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
