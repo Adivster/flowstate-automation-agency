@@ -2,7 +2,16 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BadgeDollarSign, ChevronDown, Filter, RefreshCw } from 'lucide-react';
+import { 
+  BadgeDollarSign, 
+  ChevronDown, 
+  Filter, 
+  RefreshCw, 
+  Database,     // For ERP
+  PhoneCall,    // For Call Center
+  ShoppingCart, // For Inventory
+  FileSpreadsheet // For Reports
+} from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import ThemedBackground from '@/components/ui/ThemedBackground';
@@ -71,18 +80,24 @@ const Business = () => {
           
           <GlassMorphism className="border border-flow-border/30 rounded-2xl overflow-hidden hover-scale">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="p-6">
-              <TabsList className="grid max-w-md grid-cols-4 mb-6 bg-flow-background/30">
+              <TabsList className="grid max-w-md grid-cols-6 mb-6 bg-flow-background/30">
                 <TabsTrigger value="overview" className="data-[state=active]:bg-flow-accent data-[state=active]:text-white">
                   Overview
                 </TabsTrigger>
                 <TabsTrigger value="crm" className="data-[state=active]:bg-flow-accent data-[state=active]:text-white">
-                  CRM Integration
+                  CRM
                 </TabsTrigger>
                 <TabsTrigger value="budget" className="data-[state=active]:bg-flow-accent data-[state=active]:text-white">
-                  Budget Management
+                  Budget
+                </TabsTrigger>
+                <TabsTrigger value="erp" className="data-[state=active]:bg-flow-accent data-[state=active]:text-white">
+                  ERP
+                </TabsTrigger>
+                <TabsTrigger value="call-center" className="data-[state=active]:bg-flow-accent data-[state=active]:text-white">
+                  Call Center
                 </TabsTrigger>
                 <TabsTrigger value="api" className="data-[state=active]:bg-flow-accent data-[state=active]:text-white">
-                  API Synchronization
+                  API Sync
                 </TabsTrigger>
               </TabsList>
               
@@ -96,6 +111,22 @@ const Business = () => {
               
               <TabsContent value="budget" className="space-y-6">
                 <BudgetManagement />
+              </TabsContent>
+              
+              <TabsContent value="erp" className="space-y-6">
+                <Card className="bg-flow-background/20 backdrop-blur-md border-flow-border p-4">
+                  <div className="flex items-center justify-center h-64">
+                    <p className="text-muted-foreground">ERP Integration Coming Soon</p>
+                  </div>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="call-center" className="space-y-6">
+                <Card className="bg-flow-background/20 backdrop-blur-md border-flow-border p-4">
+                  <div className="flex items-center justify-center h-64">
+                    <p className="text-muted-foreground">Call Center Dashboard Coming Soon</p>
+                  </div>
+                </Card>
               </TabsContent>
               
               <TabsContent value="api" className="space-y-6">

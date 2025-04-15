@@ -26,6 +26,10 @@ function App() {
         <Route path="/courses" element={<PageTransition><Courses /></PageTransition>} />
         <Route path="/analytics" element={<PageTransition><Analytics /></PageTransition>} />
         <Route path="/business" element={<PageTransition><Business /></PageTransition>} />
+        <Route path="/budget" element={<PageTransition><Business /></PageTransition>} />
+        <Route path="/erp" element={<PageTransition><Business /></PageTransition>} />
+        <Route path="/call-center" element={<PageTransition><Business /></PageTransition>} />
+        <Route path="/inventory" element={<PageTransition><Business /></PageTransition>} />
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>

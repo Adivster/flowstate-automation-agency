@@ -1,7 +1,23 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { BookOpen, BarChart, LayoutGrid, Compass, GraduationCap, CheckSquare, Menu, X, Building2, Workflow, BadgeDollarSign } from "lucide-react";
+import { 
+  BookOpen, 
+  BarChart, 
+  LayoutGrid, 
+  Compass, 
+  GraduationCap, 
+  CheckSquare, 
+  Menu, 
+  X, 
+  Building2, 
+  Workflow, 
+  BadgeDollarSign,
+  Database,     // For ERP
+  PhoneCall,    // For Call Center
+  ShoppingCart, // For Inventory
+  FileSpreadsheet // For Reports
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,7 +39,7 @@ const navItems = [
   {
     name: "workflows",
     link: "/workflows",
-    icon: Workflow, // Changed from GraduationCap to Workflow
+    icon: Workflow,
   },
   {
     name: "tasks",
@@ -41,6 +57,26 @@ const navItems = [
     icon: BadgeDollarSign,
   },
   {
+    name: "Budget",  // Capitalized
+    link: "/budget",
+    icon: FileSpreadsheet,
+  },
+  {
+    name: "ERP",
+    link: "/erp",
+    icon: Database,
+  },
+  {
+    name: "Call Center",
+    link: "/call-center",
+    icon: PhoneCall,
+  },
+  {
+    name: "Inventory",
+    link: "/inventory",
+    icon: ShoppingCart,
+  },
+  {
     name: "analytics",
     link: "/analytics",
     icon: BarChart,
@@ -48,7 +84,7 @@ const navItems = [
   {
     name: "courses",
     link: "/courses",
-    icon: GraduationCap, // Moved to the last position with original icon
+    icon: GraduationCap,
   },
 ];
 
