@@ -1,7 +1,6 @@
-
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { BookOpen, BarChart, LayoutGrid, Compass, GraduationCap, CheckSquare, Menu, X } from "lucide-react";
+import { BookOpen, BarChart, LayoutGrid, Compass, GraduationCap, CheckSquare, Menu, X, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,7 +8,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
-// Define the navigation items
 const navItems = [
   {
     name: "dashboard",
@@ -17,14 +15,19 @@ const navItems = [
     icon: LayoutGrid,
   },
   {
-    name: "agents",
-    link: "/agents",
-    icon: Compass,
+    name: "office",
+    link: "/office",
+    icon: Building2,
   },
   {
     name: "workflows",
     link: "/workflows",
     icon: GraduationCap,
+  },
+  {
+    name: "tasks",
+    link: "/tasks",
+    icon: CheckSquare,
   },
   {
     name: "knowledge",
@@ -35,11 +38,6 @@ const navItems = [
     name: "analytics",
     link: "/analytics",
     icon: BarChart,
-  },
-  {
-    name: "tasks",
-    link: "/tasks",
-    icon: CheckSquare,
   },
 ];
 
@@ -65,7 +63,6 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Desktop nav links */}
           <div className="hidden lg:flex items-center space-x-4">
             {navItems.map((item) => {
               const isActive = location.pathname === item.link || 
@@ -89,13 +86,11 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Right side items: language switcher, theme toggle, mobile menu button */}
           <div className="flex items-center space-x-3">
             <LanguageSwitcher />
             
             <ThemeToggle />
             
-            {/* Mobile menu button */}
             <div className="lg:hidden">
               <Button
                 variant="ghost"
@@ -110,7 +105,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState } from 'react';
 
 interface LanguageContextType {
@@ -40,6 +39,8 @@ const translations = {
     agentLounge: 'Agent Lounge',
     monitorAgents: 'Monitor and manage your agency\'s AI agents',
     agencyHQ: 'Agency HQ',
+    office: "Office",
+    tasks: "Tasks",
     officeView: 'Office View',
     agentList: 'Agent List',
     systemMetrics: 'System Metrics',

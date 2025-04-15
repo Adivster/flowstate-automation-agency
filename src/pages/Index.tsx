@@ -20,7 +20,7 @@ const Index: React.FC = () => {
     <div className={`min-h-screen flex flex-col bg-flow-background circuit-background ${theme}`}>
       <Navbar />
       
-      <main className="flex-1 mt-8 px-4 sm:px-6 pb-12 overflow-hidden relative">
+      <main className="flex-1 mt-20 px-4 sm:px-6 pb-12 overflow-hidden relative">
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
           <motion.div
             className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full"
