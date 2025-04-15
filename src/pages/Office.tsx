@@ -1,3 +1,4 @@
+
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect, useRef } from 'react';
 import Navbar from '@/components/layout/Navbar';
@@ -16,10 +17,14 @@ import { Badge } from '@/components/ui/badge';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import { motion } from 'framer-motion';
 import ThemedBackground from '@/components/ui/ThemedBackground';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 
 const Office = () => {
   const { t } = useLanguage();
   const { toast } = useToast();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [filterOptions, setFilterOptions] = useState({
     division: 'all',
     status: 'all',
@@ -148,8 +153,8 @@ const Office = () => {
                   <Zap className="h-5 w-5 text-green-500" />
                 </div>
                 <div>
-                  <div className="text-xl font-bold text-white">{agentStats.active}</div>
-                  <div className="text-xs text-flow-foreground/70">Active Agents</div>
+                  <div className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-800")}>{agentStats.active}</div>
+                  <div className={cn("text-xs", isDark ? "text-flow-foreground/70" : "text-gray-600")}>Active Agents</div>
                 </div>
                 <Badge className="ml-auto bg-green-500 text-xs">Working</Badge>
               </GlassMorphism>
@@ -166,8 +171,8 @@ const Office = () => {
                   <Cpu className="h-5 w-5 text-blue-500" />
                 </div>
                 <div>
-                  <div className="text-xl font-bold text-white">{agentStats.idle}</div>
-                  <div className="text-xs text-flow-foreground/70">Idle Agents</div>
+                  <div className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-800")}>{agentStats.idle}</div>
+                  <div className={cn("text-xs", isDark ? "text-flow-foreground/70" : "text-gray-600")}>Idle Agents</div>
                 </div>
                 <Badge className="ml-auto bg-blue-500/70 text-xs">Ready</Badge>
               </GlassMorphism>
@@ -184,8 +189,8 @@ const Office = () => {
                   <Cpu className="h-5 w-5 text-amber-500" />
                 </div>
                 <div>
-                  <div className="text-xl font-bold text-white">{agentStats.paused}</div>
-                  <div className="text-xs text-flow-foreground/70">Paused Agents</div>
+                  <div className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-800")}>{agentStats.paused}</div>
+                  <div className={cn("text-xs", isDark ? "text-flow-foreground/70" : "text-gray-600")}>Paused Agents</div>
                 </div>
                 <Badge className="ml-auto bg-amber-500 text-xs">Paused</Badge>
               </GlassMorphism>
@@ -202,8 +207,8 @@ const Office = () => {
                   <Terminal className="h-5 w-5 text-red-500" />
                 </div>
                 <div>
-                  <div className="text-xl font-bold text-white">{agentStats.error}</div>
-                  <div className="text-xs text-flow-foreground/70">Error State</div>
+                  <div className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-800")}>{agentStats.error}</div>
+                  <div className={cn("text-xs", isDark ? "text-flow-foreground/70" : "text-gray-600")}>Error State</div>
                 </div>
                 <Badge className="ml-auto bg-red-500 text-xs">Action Required</Badge>
               </GlassMorphism>
@@ -228,8 +233,8 @@ const Office = () => {
               </TabsList>
               
               <TabsContent value="office" className="space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm text-flow-foreground/60 mb-4">
-                  <div className="flex items-center">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm mb-4">
+                  <div className={cn("flex items-center", isDark ? "text-flow-foreground/60" : "text-gray-600")}>
                     <Zap className="h-4 w-4 mr-2 text-flow-accent" />
                     {t('interactiveOffice')}
                   </div>
@@ -268,7 +273,7 @@ const Office = () => {
                 </div>
                 
                 <div className="flex justify-end items-center mt-2">
-                  <div className="text-xs text-flow-foreground/60 px-3 py-1.5 bg-flow-background/30 backdrop-blur-sm rounded-full border border-flow-accent/30 animate-pulse-subtle">
+                  <div className={cn("text-xs px-3 py-1.5 bg-flow-background/30 backdrop-blur-sm rounded-full border border-flow-accent/30 animate-pulse-subtle", isDark ? "text-flow-foreground/60" : "text-gray-600")}>
                     <span className="text-flow-accent">{t('proTip')}</span> {t('openTerminal')}
                   </div>
                 </div>
@@ -290,7 +295,7 @@ const Office = () => {
               <TabsContent value="metrics" className="space-y-6">
                 <GlassMorphism intensity="low" className="p-4 rounded-xl border-flow-border/30 mb-4">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm">
-                    <div className="flex items-center text-flow-foreground/70">
+                    <div className={cn("flex items-center", isDark ? "text-flow-foreground/70" : "text-gray-600")}>
                       <Cpu className="h-4 w-4 mr-2 text-cyan-400" />
                       {t('performanceMetrics')}
                     </div>

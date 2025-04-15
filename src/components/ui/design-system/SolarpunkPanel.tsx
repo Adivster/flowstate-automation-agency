@@ -40,7 +40,7 @@ export const SolarpunkPanel: React.FC<SolarpunkPanelProps> = ({
         case 'coral': return 'border-red-500/50 hover:border-red-500/70';
         case 'aqua': return 'border-teal-500/50 hover:border-teal-500/70';
         case 'gold': return 'border-amber-500/50 hover:border-amber-500/70';
-        case 'blue': return 'border-pink-500/50 hover:border-pink-500/70';
+        case 'blue': return 'border-blue-500/50 hover:border-blue-500/70';
         case 'lavender': return 'border-orange-500/50 hover:border-orange-500/70';
         default: return 'border-flow-accent/50 hover:border-flow-accent/70';
       }
@@ -63,9 +63,13 @@ export const SolarpunkPanel: React.FC<SolarpunkPanelProps> = ({
   // Get shadow styles based on theme and elevation
   const getShadowStyles = () => {
     if (isDark) {
-      return elevated ? 'shadow-lg shadow-black/30' : 'shadow-md shadow-black/20';
+      return elevated 
+        ? 'shadow-xl shadow-black/40' 
+        : 'shadow-md shadow-black/20';
     } else {
-      return elevated ? 'shadow-md shadow-black/10' : 'shadow-sm shadow-black/5';
+      return elevated 
+        ? 'shadow-xl shadow-black/10' 
+        : 'shadow-md shadow-black/5';
     }
   };
 

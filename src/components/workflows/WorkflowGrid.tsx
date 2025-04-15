@@ -4,6 +4,8 @@ import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
 import { Play, Pause, Settings, Users, ActivitySquare, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 
 // Mock data for workflows
 const mockWorkflows = [
@@ -40,6 +42,9 @@ const mockWorkflows = [
 ];
 
 const WorkflowGrid: React.FC = () => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {mockWorkflows.map((workflow) => (
@@ -51,7 +56,10 @@ const WorkflowGrid: React.FC = () => {
         >
           <div className="p-6">
             <div className="flex items-start justify-between mb-4">
-              <h3 className="text-lg font-semibold text-orange-600 dark:text-orange-400">
+              <h3 className={cn(
+                "text-lg font-semibold",
+                isDark ? "text-orange-400" : "text-orange-600"
+              )}>
                 {workflow.name}
               </h3>
               <Badge 
@@ -62,27 +70,42 @@ const WorkflowGrid: React.FC = () => {
               </Badge>
             </div>
             
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+            <p className={cn(
+              "text-sm mb-4",
+              isDark ? "text-gray-300" : "text-gray-600"
+            )}>
               {workflow.description}
             </p>
             
             <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                <div className={cn(
+                  "flex items-center gap-2",
+                  isDark ? "text-gray-400" : "text-gray-500"
+                )}>
                   <ActivitySquare className="h-4 w-4" />
                   <span>Last run: {workflow.lastRun}</span>
                 </div>
-                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                <div className={cn(
+                  "flex items-center gap-2",
+                  isDark ? "text-gray-400" : "text-gray-500"
+                )}>
                   <Users className="h-4 w-4" />
                   <span>{workflow.agents} Agents</span>
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                <div className={cn(
+                  "flex items-center gap-2",
+                  isDark ? "text-gray-400" : "text-gray-500"
+                )}>
                   <ArrowRight className="h-4 w-4" />
                   <span>Next: {workflow.nextRun}</span>
                 </div>
-                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                <div className={cn(
+                  "flex items-center gap-2",
+                  isDark ? "text-gray-400" : "text-gray-500"
+                )}>
                   <Settings className="h-4 w-4" />
                   <span>{workflow.steps} Steps</span>
                 </div>

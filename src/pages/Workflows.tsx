@@ -10,9 +10,13 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ThemedBackground from '@/components/ui/ThemedBackground';
 import WorkflowGrid from '@/components/workflows/WorkflowGrid';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 
 const Workflows: React.FC = () => {
   const { t } = useLanguage();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   
   return (
     <ThemedBackground>
@@ -65,7 +69,9 @@ const Workflows: React.FC = () => {
           
           <SolarpunkPanel
             accentColor="orange"
-            className="p-5 md:p-8"
+            className={cn("p-5 md:p-8", 
+              isDark ? "" : "bg-gradient-to-br from-orange-50/70 via-white/90 to-orange-50/70"
+            )}
           >
             <WorkflowGrid />
           </SolarpunkPanel>

@@ -13,9 +13,14 @@ import { useDashboardActions } from '@/hooks/useDashboardActions';
 import CommunicationTerminal from '@/components/communication/CommunicationTerminal';
 import ThemeSelector from '@/components/ui/ThemeSelector';
 import { Button } from '@/components/ui/button';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
 
 const Index: React.FC = () => {
   const dashboardActions = useDashboardActions();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   
   return (
     <ThemedBackground>
@@ -71,11 +76,20 @@ const Index: React.FC = () => {
         />
         
         <div className="max-w-7xl mx-auto">
-          <GlassMorphism 
-            className="rounded-2xl shadow-xl border-flow-border/30 scan-lines bg-flow-background/20 backdrop-blur-lg overflow-hidden bg-glassmorphism-gradient"
+          <SolarpunkPanel 
+            accentColor={isDark ? 'blue' : 'blue'}
+            className="overflow-hidden rounded-2xl shadow-xl"
+            elevated
           >
-            <AgencyDashboard />
-          </GlassMorphism>
+            <div className={cn(
+              "rounded-xl overflow-hidden",
+              isDark 
+                ? "bg-flow-background/40 backdrop-blur-xl scan-lines" 
+                : "bg-gradient-to-br from-blue-50/80 via-white/90 to-blue-50/80 backdrop-blur-sm"
+            )}>
+              <AgencyDashboard />
+            </div>
+          </SolarpunkPanel>
         </div>
       </main>
       

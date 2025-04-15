@@ -61,25 +61,25 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
       // Solarpunk light theme variants
       switch (variant) {
         case 'accent':
-          return 'bg-amber-50/80 border-emerald-200';
+          return 'bg-amber-50/80 border-emerald-200 text-emerald-900';
         case 'dark':
-          return 'bg-emerald-900/10 border-emerald-900/20';
+          return 'bg-emerald-900/10 border-emerald-900/20 text-emerald-900';
         case 'light':
-          return 'bg-white/70 border-amber-100/50';
+          return 'bg-white/70 border-amber-100/50 text-gray-800';
         case 'success':
-          return 'bg-green-50/80 border-green-300';
+          return 'bg-green-50/80 border-green-300 text-green-800';
         case 'warning':
-          return 'bg-amber-50/80 border-amber-300';
+          return 'bg-amber-50/80 border-amber-300 text-amber-800';
         case 'error':
-          return 'bg-red-50/80 border-red-300';
+          return 'bg-red-50/80 border-red-300 text-red-800';
         case 'nature':
-          return 'bg-emerald-50/70 border-emerald-300/80';
+          return 'bg-emerald-50/70 border-emerald-300/80 text-emerald-800';
         case 'sunlit':
-          return 'bg-amber-50/80 border-amber-200';
+          return 'bg-amber-50/80 border-amber-200 text-amber-800';
         case 'sky':
-          return 'bg-sky-50/70 border-sky-300/60';
+          return 'bg-sky-50/70 border-sky-300/60 text-sky-800';
         default:
-          return 'bg-white/70 border-emerald-100';
+          return 'bg-white/70 border-emerald-100 text-gray-800';
       }
     }
   };
@@ -148,17 +148,6 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
         transition: { duration: 0.3 }
       } : {})}
     >
-      {/* Subtle light reflection effect */}
-      {hoverEffect && (
-        <div 
-          className="absolute inset-0 rounded-lg opacity-30 pointer-events-none overflow-hidden"
-          style={{
-            background: isDark 
-              ? 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 50%)' 
-              : 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%)',
-          }}
-        />
-      )}
       {children}
     </Component>
   );
