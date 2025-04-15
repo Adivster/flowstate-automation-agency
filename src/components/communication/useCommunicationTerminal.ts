@@ -1,175 +1,264 @@
 
 import { useState, useEffect } from 'react';
-import { useToast } from '@/hooks/use-toast';
-
-interface Message {
-  sender: 'user' | 'bot';
-  text: string;
-  timestamp: Date;
-}
+import { useConversationalFlow } from './useConversationalFlow';
 
 export const useCommunicationTerminal = () => {
+  // Terminal state
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'command' | 'chat'>('command');
   const [command, setCommand] = useState('');
-  const [commandHistory, setCommandHistory] = useState<Array<{type: 'input' | 'output', content: string}>>([
-    { type: 'output', content: 'Welcome to FlowState Command Terminal v1.0\nType "help" for available commands.' },
+  const [commandHistory, setCommandHistory] = useState<Array<{type: 'input' | 'output' | 'error' | 'system', content: string}>>([
+    { type: 'system', content: 'Terminal initialized. Type "help" for available commands.' }
   ]);
+  
+  // Chat state
   const [newMessage, setNewMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      sender: 'bot',
-      text: 'Hello! I am your AI assistant. How can I help you with your agency today?',
-      timestamp: new Date()
-    }
+  const [messages, setMessages] = useState<Array<{sender: 'user' | 'bot', text: string, timestamp: Date, isAction?: boolean, actionId?: string}>>([
+    { sender: 'bot', text: 'Hello! I\'m your agency communication assistant. How can I help you today?', timestamp: new Date() }
   ]);
-  const { toast } = useToast();
-
-  // Keyboard shortcut to open terminal with Ctrl+K
+  
+  // Conversational flow integration
+  const conversationalFlow = useConversationalFlow();
+  const { 
+    activeContext, 
+    contextEntity, 
+    pendingPrompts, 
+    activeSuggestions,
+    hasUnreadInsights,
+    processConversationalInput, 
+    handlePromptAction,
+    markInsightsAsRead 
+  } = conversationalFlow;
+  
+  // Handle anomaly alerts from the useDisplayState hook
   useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
+    const handleAnomalyAlert = (event: CustomEvent) => {
+      const { anomaly } = event.detail;
+      
+      if (anomaly) {
+        setActiveTab('chat');
         setIsOpen(true);
+        
+        // Create an action prompt message with the anomaly
+        const actionPrompt = {
+          id: `anomaly-${Date.now()}`,
+          title: `Anomaly Detected: ${anomaly.title}`,
+          description: anomaly.description,
+          actionType: 'diagnose',
+          severity: anomaly.severity,
+          entityType: 'division',
+          entityId: anomaly.division.toLowerCase(),
+          entityName: anomaly.division,
+          actions: {
+            confirm: 'Investigate',
+            decline: 'Dismiss',
+            moreInfo: 'Details'
+          },
+          metrics: {
+            before: anomaly.severity === 'high' ? 70 : anomaly.severity === 'medium' ? 80 : 90,
+            after: 95,
+            unit: '%'
+          }
+        };
+        
+        // Add a system message about the anomaly
+        setMessages(prev => [
+          ...prev,
+          {
+            sender: 'bot',
+            text: `⚠️ Alert: Anomaly detected in ${anomaly.division} division. ${anomaly.description}`,
+            timestamp: new Date()
+          },
+          {
+            sender: 'bot',
+            text: JSON.stringify(actionPrompt),
+            timestamp: new Date(),
+            isAction: true,
+            actionId: actionPrompt.id
+          }
+        ]);
       }
     };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, []);
-
-  // Handle command execution
+    
+    // Listen for anomaly alerts
+    window.addEventListener('anomalyAlert', handleAnomalyAlert as EventListener);
+    
+    return () => {
+      window.removeEventListener('anomalyAlert', handleAnomalyAlert as EventListener);
+    };
+  }, [setIsOpen]);
+  
+  // Handle command submission
   const handleCommand = (e: React.FormEvent) => {
     e.preventDefault();
-    if (command.trim() === '') return;
+    if (!command.trim()) return;
     
-    // Record command in history
+    // Add the command to history
     setCommandHistory(prev => [...prev, { type: 'input', content: command }]);
     
     // Process command
-    const commandLower = command.toLowerCase().trim();
-    let response = '';
-    
-    if (commandLower === 'help') {
-      response = `Available commands:
-help - Show this help message
-status - Check system status
-clear - Clear terminal history
-agents - List active agents
-divisions - List agency divisions
-create [agent|division] - Create a new resource
-deploy - Deploy pending changes`;
-    } else if (commandLower === 'status') {
-      response = 'System Status: ONLINE\nCPU: 23% | Memory: 45% | Network: Stable\nActive Agents: 14/24\nPending Tasks: 7';
-    } else if (commandLower === 'clear') {
-      setCommandHistory([{ type: 'output', content: 'Terminal cleared.' }]);
-      setCommand('');
-      return;
-    } else if (commandLower === 'agents') {
-      response = 'Active Agents (14):\n- Agent001: Processing data (Analytics Div)\n- Agent007: Executing tasks (Ops Div)\n- Agent013: Learning new models (R&D Div)';
-    } else if (commandLower === 'divisions') {
-      response = 'Agency Divisions (4):\n- Analytics: 6 agents, 87% efficiency\n- Operations: 8 agents, 92% efficiency\n- R&D: 5 agents, 78% efficiency\n- Strategy: 5 agents, 91% efficiency';
-    } else if (commandLower.startsWith('create agent')) {
-      response = 'Initializing agent creation wizard...\nNew agent deployment in progress.\nAgent ID will be assigned upon completion.';
-    } else if (commandLower.startsWith('create division')) {
-      response = 'Initializing division creation wizard...\nPlease specify division name and purpose.';
-    } else if (commandLower === 'deploy') {
-      response = 'Deployment process initiated.\nValidating configurations...\nDeploying resources to production environment.\nDeployment completed successfully.';
+    if (command.toLowerCase() === 'clear') {
+      clearTerminal();
     } else {
-      response = `Command not recognized: ${command}\nType "help" for available commands.`;
+      // Process through the command processor
+      setTimeout(() => {
+        const output = processCommand(command);
+        setCommandHistory(prev => [...prev, { type: 'output', content: output }]);
+      }, 300);
     }
     
-    // Add response to history
-    setCommandHistory(prev => [...prev, { type: 'output', content: response }]);
-    
-    // Clear input
+    // Clear the input
     setCommand('');
   };
-
-  // Handle sending a chat message
+  
+  // Clear terminal
+  const clearTerminal = () => {
+    setCommandHistory([{ type: 'system', content: 'Terminal cleared.' }]);
+  };
+  
+  // Handle sending chat messages
   const handleSendMessage = () => {
-    if (newMessage.trim() === '') return;
+    if (!newMessage.trim()) return;
     
     // Add user message
-    const userMessage: Message = {
-      sender: 'user',
-      text: newMessage,
-      timestamp: new Date()
-    };
-    
+    const userMessage = { sender: 'user' as const, text: newMessage, timestamp: new Date() };
     setMessages(prev => [...prev, userMessage]);
-    
-    // Clear input
-    const sentMessage = newMessage;
+    const userInput = newMessage;
     setNewMessage('');
     
-    // Simulate AI response
+    // Process message through conversational flow
     setTimeout(() => {
-      let botResponse: string;
+      const response = processConversationalInput(userInput);
       
-      if (sentMessage.toLowerCase().includes('help')) {
-        botResponse = "I can help with managing your agents, creating workflows, or analyzing performance data. What would you like assistance with?";
-      } else if (sentMessage.toLowerCase().includes('agent') || sentMessage.toLowerCase().includes('division')) {
-        botResponse = "I can help you manage your agents and divisions. Would you like me to show you the current status, or help you create new ones?";
-      } else if (sentMessage.toLowerCase().includes('workflow')) {
-        botResponse = "Workflows help automate your agency processes. Would you like to create a new workflow or optimize existing ones?";
-      } else if (sentMessage.toLowerCase().includes('task')) {
-        botResponse = "I can help manage your tasks. Should I show you pending tasks or help prioritize them?";
-      } else if (sentMessage.toLowerCase().includes('performance') || sentMessage.toLowerCase().includes('analytics')) {
-        botResponse = "I can provide insights on your agency's performance. Would you like to see key metrics or detailed analytics?";
-      } else {
-        botResponse = "I'm here to assist with your agency management needs. I can help with agents, divisions, workflows, tasks, and analytics. What area would you like to focus on?";
+      // Check if this is a context switch
+      if (response.message) {
+        // Regular message response
+        setMessages(prev => [
+          ...prev, 
+          { 
+            sender: 'bot', 
+            text: response.message, 
+            timestamp: new Date(),
+            isAction: !!response.actionTaken
+          }
+        ]);
       }
       
-      const botMessage: Message = {
-        sender: 'bot',
-        text: botResponse,
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, botMessage]);
-      
-      // Notify user if terminal is closed
-      if (!isOpen) {
-        toast({
-          title: "New message from AI Assistant",
-          description: botResponse.slice(0, 60) + (botResponse.length > 60 ? "..." : ""),
-          duration: 5000,
+      // If insights should be shown
+      if (response.showInsights && response.insights?.length) {
+        markInsightsAsRead();
+        
+        // Add a message for each insight as an action card
+        response.insights.forEach(insight => {
+          setMessages(prev => [
+            ...prev, 
+            { 
+              sender: 'bot', 
+              text: JSON.stringify(insight), // We'll parse this in the component
+              timestamp: new Date(),
+              isAction: true,
+              actionId: insight.id
+            }
+          ]);
         });
       }
-    }, 1000);
+      
+      // If suggestions should be shown
+      if (activeSuggestions.length > 0 && Math.random() > 0.5) {
+        setTimeout(() => {
+          const suggestionText = "Here are some commands you might find helpful:";
+          setMessages(prev => [
+            ...prev, 
+            { 
+              sender: 'bot', 
+              text: suggestionText, 
+              timestamp: new Date(),
+            }
+          ]);
+        }, 1000);
+      }
+    }, 500);
   };
-
-  // Handle key presses in inputs
+  
+  // Handle key press in terminal
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      e.preventDefault();
       if (activeTab === 'command') {
-        handleCommand(e as any);
+        handleCommand(e as unknown as React.FormEvent);
       } else {
         handleSendMessage();
       }
     }
   };
-
-  // Format time for chat messages
+  
+  // Format time for display
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
-
-  // Clear terminal history
-  const clearTerminal = () => {
-    if (activeTab === 'command') {
-      setCommandHistory([{ type: 'output', content: 'Terminal cleared. Type "help" for available commands.' }]);
-    } else {
-      setMessages([{
-        sender: 'bot',
-        text: 'Chat history cleared. How can I help you today?',
-        timestamp: new Date()
-      }]);
+  
+  // Process terminal commands
+  const processCommand = (cmd: string): string => {
+    const lowerCmd = cmd.toLowerCase().trim();
+    
+    if (lowerCmd === 'help') {
+      return 'Available commands:\n- help: Show this message\n- status: Check system status\n- list agents: List active agents\n- list divisions: List active divisions\n- chat: Switch to chat mode\n- clear: Clear terminal history\n- show insights: Display pending AI insights';
+    }
+    
+    if (lowerCmd === 'chat') {
+      setTimeout(() => setActiveTab('chat'), 500);
+      return 'Switching to chat interface...';
+    }
+    
+    if (lowerCmd === 'show insights' || lowerCmd === 'insights') {
+      if (pendingPrompts.length === 0) {
+        return 'No pending AI insights at the moment.';
+      }
+      
+      let response = `Found ${pendingPrompts.length} pending insights:\n\n`;
+      
+      pendingPrompts.forEach((prompt, index) => {
+        response += `${index + 1}. ${prompt.title} - ${prompt.severity.toUpperCase()} priority\n`;
+        response += `   ${prompt.description}\n\n`;
+      });
+      
+      response += `\nUse the chat interface for a more interactive experience with these insights.`;
+      
+      setTimeout(() => {
+        setActiveTab('chat');
+        markInsightsAsRead();
+      }, 2000);
+      
+      return response;
+    }
+    
+    // Process other commands through the conversational engine
+    const response = processConversationalInput(cmd);
+    return response.message || 'Command processed.';
+  };
+  
+  // Handle action responses from the chat
+  const handleActionResponse = (promptId: string, action: 'confirm' | 'decline' | 'moreInfo') => {
+    const response = handlePromptAction(promptId, action);
+    
+    if (response) {
+      setMessages(prev => [
+        ...prev, 
+        { 
+          sender: 'bot', 
+          text: response.message, 
+          timestamp: new Date(),
+          isAction: !!response.actionTaken
+        }
+      ]);
     }
   };
-
+  
+  // Update notification badge when insights change
+  useEffect(() => {
+    // If we have unread insights and the terminal is closed, we should show a notification
+    // This could be used by the parent component to show a badge
+  }, [hasUnreadInsights, isOpen]);
+  
   return {
     isOpen,
     setIsOpen,
@@ -181,10 +270,16 @@ deploy - Deploy pending changes`;
     newMessage,
     setNewMessage,
     messages,
+    hasUnreadInsights,
+    pendingPrompts,
+    activeSuggestions,
     handleCommand,
     handleSendMessage,
     handleKeyPress,
     formatTime,
-    clearTerminal
+    clearTerminal,
+    handleActionResponse,
+    activeContext,
+    contextEntity
   };
 };

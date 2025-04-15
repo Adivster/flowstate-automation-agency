@@ -1,8 +1,9 @@
+
 import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Terminal, MessageSquare } from 'lucide-react';
+import { Terminal, MessageSquare, Bell } from 'lucide-react';
 import { useCommunicationTerminal } from './useCommunicationTerminal';
 import TerminalHeader from './TerminalHeader';
 import CommandTerminalContent from './CommandTerminalContent';
@@ -20,11 +21,17 @@ const CommunicationTerminal = () => {
     newMessage,
     setNewMessage,
     messages,
+    pendingPrompts,
+    activeSuggestions,
+    hasUnreadInsights,
     handleCommand,
     handleSendMessage,
     handleKeyPress,
     formatTime,
     clearTerminal,
+    handleActionResponse,
+    activeContext,
+    contextEntity
   } = useCommunicationTerminal();
 
   // Create a separate ref for the terminal content
@@ -69,6 +76,16 @@ const CommunicationTerminal = () => {
     };
   }, [setIsOpen]);
 
+  // Get context title
+  const getContextTitle = () => {
+    if (activeContext === 'global') {
+      return 'Global System';
+    } else if (contextEntity) {
+      return `${contextEntity.name} ${activeContext}`;
+    }
+    return 'Communication Terminal';
+  };
+
   return (
     <>
       {/* Terminal toggle button positioned in bottom left */}
@@ -86,7 +103,9 @@ const CommunicationTerminal = () => {
           )}
           
           {/* Pulse indicator when closed but has activity */}
-          <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-green-500 rounded-full animate-pulse"></span>
+          {(hasUnreadInsights || pendingPrompts.length > 0) && (
+            <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-green-500 rounded-full animate-pulse"></span>
+          )}
         </Button>
       </div>
 
@@ -106,12 +125,53 @@ const CommunicationTerminal = () => {
               onValueChange={(val) => setActiveTab(val as 'command' | 'chat')} 
               className="w-full bg-gray-900/90 backdrop-blur-md border border-indigo-500/30 rounded-xl"
             >
-              <TerminalHeader 
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                clearTerminal={clearTerminal}
-                closeTerminal={() => setIsOpen(false)}
-              />
+              <div className="flex items-center justify-between p-3 border-b border-indigo-500/30">
+                <TabsList className="bg-gray-900/70 h-8">
+                  <TabsTrigger value="command" className="text-xs flex items-center gap-1.5 data-[state=active]:text-cyan-300">
+                    <Terminal className="h-3.5 w-3.5" />
+                    Command
+                  </TabsTrigger>
+                  <TabsTrigger value="chat" className="text-xs flex items-center gap-1.5 data-[state=active]:text-green-300">
+                    <MessageSquare className="h-3.5 w-3.5" />
+                    Assistant
+                    {pendingPrompts.length > 0 && (
+                      <span className="ml-1 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-500/80 text-[10px] text-white">
+                        {pendingPrompts.length}
+                      </span>
+                    )}
+                  </TabsTrigger>
+                </TabsList>
+
+                <div className="flex items-center">
+                  <span className="text-xs text-indigo-300/70 mr-2">
+                    {activeContext !== 'global' && contextEntity ? (
+                      <span className="flex items-center">
+                        <span className="w-2 h-2 bg-green-400 rounded-full mr-1.5"></span>
+                        {getContextTitle()}
+                      </span>
+                    ) : null}
+                  </span>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-7 w-7 rounded-md text-indigo-300/70 hover:text-indigo-300 hover:bg-indigo-500/10 p-0"
+                    onClick={clearTerminal}
+                  >
+                    <Bell className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-7 w-7 rounded-md text-indigo-300/70 hover:text-indigo-300 hover:bg-indigo-500/10 p-0"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </Button>
+                </div>
+              </div>
               
               <div className="max-h-[600px]">
                 {/* Terminal Tab */}
@@ -135,6 +195,9 @@ const CommunicationTerminal = () => {
                     handleSendMessage={handleSendMessage}
                     handleKeyPress={handleKeyPress}
                     formatTime={formatTime}
+                    activeSuggestions={activeSuggestions}
+                    pendingPrompts={pendingPrompts}
+                    onActionResponse={handleActionResponse}
                   />
                 </TabsContent>
               </div>

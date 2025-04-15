@@ -62,6 +62,21 @@ export const useDisplayState = () => {
                   selectedAnomaly.severity === "medium" ? "default" : "default", // Changed from "outline" to "default"
           duration: 7000,
         });
+        
+        // Trigger communication terminal to notify about the anomaly
+        setTimeout(() => {
+          // Create a custom event to open the terminal and show the anomaly
+          const event = new CustomEvent('openCommunicationTerminal');
+          window.dispatchEvent(event);
+          
+          // We'll use global event listener to handle anomaly alerts in the terminal
+          const alertEvent = new CustomEvent('anomalyAlert', { 
+            detail: {
+              anomaly: selectedAnomaly
+            }
+          });
+          window.dispatchEvent(alertEvent);
+        }, 2000);
       }
     }, 30000); // 30 seconds delay for the simulation
     
