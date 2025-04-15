@@ -8,7 +8,7 @@ import { LucideIcon } from "lucide-react"
 interface QuickActionButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon: LucideIcon
   label: string
-  variant?: "default" | "success" | "warning" | "danger"
+  variant?: "default" | "success" | "warning" | "danger" | "ai"
   hasPulse?: boolean
 }
 

@@ -95,11 +95,11 @@ const CommunicationTerminal = () => {
         {isOpen && (
           <motion.div
             ref={terminalContentRef}
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 0, x: -50, y: 50 }}
+            animate={{ opacity: 1, x: 0, y: 0 }}
+            exit={{ opacity: 0, x: -50, y: 50 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-20 left-4 bottom-20 w-[500px] z-40 rounded-xl overflow-hidden shadow-[0_0_30px_rgba(79,70,229,0.3)]"
+            className="fixed bottom-20 left-4 w-[500px] z-40 rounded-xl overflow-hidden shadow-[0_0_30px_rgba(79,70,229,0.3)]"
           >
             <Tabs 
               value={activeTab} 

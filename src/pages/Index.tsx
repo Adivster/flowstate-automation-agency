@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -60,7 +59,7 @@ const Index: React.FC = () => {
             <QuickActionButton 
               icon={Rocket}
               label="AI Optimize"
-              hasPulse
+              variant="ai"
               onClick={dashboardActions.handleAiConsult}
             />
           </div>
