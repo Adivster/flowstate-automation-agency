@@ -16,6 +16,7 @@ export const getDivisions = (t): Division[] => [
     },
     backgroundColor: divisionColors.kb.bg,
     borderColor: divisionColors.kb.border,
+    textColor: divisionColors.kb.text || '#FFFFFF', // Adding the missing textColor property
     zIndex: ZIndexLayers.DIVISION
   },
   {
@@ -30,6 +31,7 @@ export const getDivisions = (t): Division[] => [
     },
     backgroundColor: divisionColors.analytics.bg,
     borderColor: divisionColors.analytics.border,
+    textColor: divisionColors.analytics.text || '#FFFFFF', // Adding the missing textColor property
     zIndex: ZIndexLayers.DIVISION
   },
   {
@@ -44,6 +46,7 @@ export const getDivisions = (t): Division[] => [
     },
     backgroundColor: divisionColors.operations.bg,
     borderColor: divisionColors.operations.border,
+    textColor: divisionColors.operations.text || '#FFFFFF', // Adding the missing textColor property
     zIndex: ZIndexLayers.DIVISION
   },
   {
@@ -58,6 +61,7 @@ export const getDivisions = (t): Division[] => [
     },
     backgroundColor: divisionColors.strategy.bg,
     borderColor: divisionColors.strategy.border,
+    textColor: divisionColors.strategy.text || '#FFFFFF', // Adding the missing textColor property
     zIndex: ZIndexLayers.DIVISION
   }
 ];

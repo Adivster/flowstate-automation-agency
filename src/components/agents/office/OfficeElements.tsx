@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import Workstation from './Workstation';
 import DecorativeElement from './DecorativeElement';
@@ -62,7 +61,6 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
   const [statusMarkers, setStatusMarkers] = useState<StatusMarker[]>([]);
   const { toast } = useToast();
   
-  // Generate division color map
   useEffect(() => {
     const colorMap: Record<string, any> = {};
     divisions.forEach(division => {
@@ -71,130 +69,108 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
     setDivisionColorMap(colorMap);
   }, [divisions]);
   
-  // Generate mock metrics for divisions
   useEffect(() => {
     const metrics: Record<string, { performance: number[], activity: number }> = {};
     divisions.forEach(division => {
-      // Generate random performance data (7 data points)
-      const performance = Array.from({ length: 7 }, () => Math.floor(Math.random() * 40) + 60); // 60-100 range
-      
-      // Random activity level (0-100)
+      const performance = Array.from({ length: 7 }, () => Math.floor(Math.random() * 40) + 60);
       const activity = Math.floor(Math.random() * 100);
-      
       metrics[division.id] = { performance, activity };
     });
     setDivisionMetrics(metrics);
   }, [divisions]);
   
-  // Generate heatmap and status markers based on visualization state
   useEffect(() => {
     if (!visualizationState) return;
     
-    // Generate heatmap data
-    if (visualizationState.layerData.heatmap.active) {
-      const heatmap: HeatMapData[] = [];
-      
-      // Add a point for each division based on activity
-      divisions.forEach(division => {
-        const divPos = divisionPositions?.[division.id] || division.position;
-        const divMetrics = divisionMetrics[division.id];
-        
-        if (divMetrics) {
-          // Center position of division
-          const x = divPos.x + (division.position.width / 2);
-          const y = divPos.y + (division.position.height / 2);
-          
-          heatmap.push({
-            x,
-            y,
-            intensity: divMetrics.activity,
-            radius: 8 + (divMetrics.activity / 25) // Size based on activity level
-          });
-        }
-      });
-      
-      // Add random hotspots for agents
-      agents.forEach(agent => {
-        if (Math.random() > 0.7) {
-          const pos = adjustedAgentPositions[agent.id] || agent.position;
-          
-          heatmap.push({
-            x: pos.x,
-            y: pos.y,
-            intensity: Math.random() * 50 + 50, // 50-100 range
-            radius: 3 + Math.random() * 2
-          });
-        }
-      });
-      
-      setHeatmapData(heatmap);
-    } else {
-      setHeatmapData([]);
-    }
+    const heatmap: HeatMapData[] = [];
     
-    // Generate status markers
-    if (visualizationState.layerData.statusMarkers.active) {
-      const markers: StatusMarker[] = [];
+    divisions.forEach(division => {
+      const divPos = divisionPositions?.[division.id] || division.position;
+      const divMetrics = divisionMetrics[division.id];
       
-      // Add status markers for divisions with issues
-      divisions.forEach(division => {
-        const divPos = divisionPositions?.[division.id] || division.position;
-        const divMetrics = divisionMetrics[division.id];
+      if (divMetrics) {
+        const x = divPos.x + (division.position.width / 2);
+        const y = divPos.y + (division.position.height / 2);
         
-        if (divMetrics && divMetrics.activity > 70) {
-          const x = divPos.x + (division.position.width * 0.75);
-          const y = divPos.y + (division.position.height * 0.25);
-          
-          markers.push({
-            id: `division-${division.id}`,
-            type: divMetrics.activity > 90 ? 'error' : 'warning',
-            x,
-            y,
-            message: divMetrics.activity > 90 
-              ? 'Critical load detected' 
-              : 'High activity level',
-            value: `${divMetrics.activity}%`,
-            entityId: division.id,
-            entityType: 'division'
-          });
-        }
-      });
-      
-      // Add status markers for agents
-      agents.forEach(agent => {
-        if (agent.status === 'error' || agent.status === 'paused') {
-          const pos = adjustedAgentPositions[agent.id] || agent.position;
-          
-          markers.push({
-            id: `agent-${agent.id}`,
-            type: agent.status === 'error' ? 'error' : 'warning',
-            x: pos.x,
-            y: pos.y - 1.5, // Slightly above the agent
-            message: agent.status === 'error' 
-              ? 'Agent error detected' 
-              : 'Agent paused',
-            entityId: agent.id.toString(),
-            entityType: 'agent'
-          });
-        }
-      });
-      
-      // Add a few informational status markers
-      if (markers.length < 3) {
-        markers.push({
-          id: 'system-info',
-          type: 'info',
-          x: 50,
-          y: 35,
-          message: 'System operating normally',
-          entityType: 'system'
+        heatmap.push({
+          x,
+          y,
+          intensity: divMetrics.activity,
+          radius: 8 + (divMetrics.activity / 25)
         });
       }
+    });
+    
+    agents.forEach(agent => {
+      if (Math.random() > 0.7) {
+        const pos = adjustedAgentPositions[agent.id] || agent.position;
+        
+        heatmap.push({
+          x: pos.x,
+          y: pos.y,
+          intensity: Math.random() * 50 + 50,
+          radius: 3 + Math.random() * 2
+        });
+      }
+    });
+    
+    setHeatmapData(heatmap);
+    
+    const markers: StatusMarker[] = [];
+    
+    divisions.forEach(division => {
+      const divPos = divisionPositions?.[division.id] || division.position;
+      const divMetrics = divisionMetrics[division.id];
       
-      setStatusMarkers(markers);
-    } else {
-      setStatusMarkers([]);
+      if (divMetrics && divMetrics.activity > 70) {
+        const x = divPos.x + (division.position.width * 0.75);
+        const y = divPos.y + (division.position.height * 0.25);
+        
+        markers.push({
+          id: `division-${division.id}`,
+          type: divMetrics.activity > 90 ? 'error' : 'warning',
+          x,
+          y,
+          message: divMetrics.activity > 90 
+            ? 'Critical load detected' 
+            : 'High activity level',
+          value: `${divMetrics.activity}%`,
+          entityId: division.id,
+          entityType: 'division'
+        });
+      }
+    });
+    
+    agents.forEach(agent => {
+      if (agent.status === 'error' || agent.status === 'paused') {
+        const pos = adjustedAgentPositions[agent.id] || agent.position;
+        
+        markers.push({
+          id: `agent-${agent.id}`,
+          type: agent.status === 'error' ? 'error' : 'warning',
+          x: pos.x,
+          y: pos.y - 1.5,
+          message: agent.status === 'error' 
+            ? 'Agent error detected' 
+            : 'Agent paused',
+          entityId: agent.id.toString(),
+          entityType: 'agent'
+        });
+      }
+    });
+    
+    if (markers.length < 3) {
+      markers.push({
+        id: 'system-info',
+        type: 'info',
+        x: 50,
+        y: 35,
+        message: 'System operating normally',
+        entityType: 'system'
+      });
     }
+    
+    setStatusMarkers(markers);
   }, [divisions, agents, divisionMetrics, adjustedAgentPositions, visualizationState, divisionPositions]);
   
   useEffect(() => {
@@ -228,7 +204,6 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
   }, [agents, divisions, divisionPositions]);
   
   const handleHotspotAction = (action: string, entityId: string) => {
-    // Find if it's a division, agent, or other entity
     const division = divisions.find(d => d.id === entityId);
     const agent = agents.find(a => a.id.toString() === entityId);
     
@@ -298,10 +273,9 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
       const showQuickActions = visualizationState?.layerData.quickActions.active;
       const showPerformance = visualizationState?.layerData.performance.active;
       
-      // Create a version of the division that includes the required textColor property
       const divisionProps = {
         ...division,
-        textColor: division.textColor || '#FFFFFF' // Provide a default if not available
+        textColor: division.textColor || '#FFFFFF'
       };
       
       return (
@@ -329,7 +303,6 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
     
     const hotspots = [];
     
-    // Add division hotspots
     if (visualizationState.layerData.hotspots.divisionHotspots) {
       divisions.forEach((division) => {
         const divPos = divisionPositions?.[division.id] || division.position;
@@ -344,7 +317,7 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
             id={division.id}
             name={division.name}
             metrics={{
-              efficiency: metrics?.performance?.[6], // Last data point
+              efficiency: metrics?.performance?.[6],
               load: metrics?.activity,
               status: metrics?.activity > 80 ? 'critical' : metrics?.activity > 50 ? 'warning' : 'normal'
             }}
@@ -354,7 +327,6 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
       });
     }
     
-    // Add server hotspot
     if (visualizationState.layerData.hotspots.serverHotspots) {
       hotspots.push(
         <InteractiveHotspot
@@ -375,10 +347,8 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
       );
     }
     
-    // Add workstation hotspots
     if (visualizationState.layerData.hotspots.workstationHotspots) {
       workstations.forEach((station, index) => {
-        // Only add hotspots to some workstations
         if (index % 3 === 0) {
           hotspots.push(
             <InteractiveHotspot
@@ -430,7 +400,7 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
         type={item.type}
         x={item.x}
         y={item.y}
-        size={item.size}
+        size={typeof item.size === 'string' ? parseFloat(item.size as string) : item.size}
       />
     ))
   );
@@ -442,7 +412,7 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
         type={item.type}
         x={item.x}
         y={item.y}
-        size={item.size}
+        size={typeof item.size === 'string' ? parseFloat(item.size as string) : item.size}
       />
     ))
   );
@@ -454,7 +424,6 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
       const showPerformanceData = visualizationState?.layerData.performance?.active && 
                                  visualizationState?.layerData.performance?.showSparklines;
       
-      // Generate some mock performance data if it doesn't exist
       if (showPerformanceData && (!agent.performanceData || agent.performanceData.length === 0)) {
         agent.performanceData = Array.from({ length: 7 }, () => Math.floor(Math.random() * 40) + 60);
         agent.efficiency = agent.performanceData[agent.performanceData.length - 1];
