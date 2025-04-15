@@ -15,9 +15,19 @@ import SystemTab from '../tabs/SystemTab';
 
 interface TabContentProps {
   systemHealth: number;
+  searchTerm?: string;
+  dateRange?: 'day' | 'week' | 'month' | 'year';
+  hasAnomalyAlert?: boolean;
+  anomalyData?: any;
 }
 
-const TabContent: React.FC<TabContentProps> = ({ systemHealth }) => {
+const TabContent: React.FC<TabContentProps> = ({ 
+  systemHealth,
+  searchTerm,
+  dateRange,
+  hasAnomalyAlert,
+  anomalyData
+}) => {
   return (
     <>
       <TabsContent value="mission-control">

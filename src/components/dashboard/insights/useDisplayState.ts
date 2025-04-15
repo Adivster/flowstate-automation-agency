@@ -59,7 +59,7 @@ export const useDisplayState = () => {
           title: `Anomaly Detected: ${selectedAnomaly.title}`,
           description: selectedAnomaly.description,
           variant: selectedAnomaly.severity === "high" ? "destructive" : 
-                   selectedAnomaly.severity === "medium" ? "default" : "outline",
+                  selectedAnomaly.severity === "medium" ? "default" : "default", // Changed from "outline" to "default"
           duration: 7000,
         });
       }
