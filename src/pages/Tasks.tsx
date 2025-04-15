@@ -8,6 +8,7 @@ import PageHeader from '@/components/ui/design-system/PageHeader';
 import TaskBoard from '@/components/tasks/TaskBoard';
 import { useTheme } from 'next-themes';
 import ThemedBackground from '@/components/ui/ThemedBackground';
+import { TaskProvider } from '@/contexts/TaskContext';
 
 const Tasks: React.FC = () => {
   const { theme } = useTheme();
@@ -36,7 +37,9 @@ const Tasks: React.FC = () => {
                 : 'border-emerald-200/50 eco-card bg-gradient-to-br from-white/60 to-emerald-50/40'
             }`}
           >
-            <TaskBoard />
+            <TaskProvider>
+              <TaskBoard />
+            </TaskProvider>
           </GlassMorphism>
         </div>
       </main>
