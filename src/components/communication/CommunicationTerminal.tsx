@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -34,13 +33,10 @@ const CommunicationTerminal = () => {
     contextEntity
   } = useCommunicationTerminal();
 
-  // Create a separate ref for the terminal content
   const terminalContentRef = useRef<HTMLDivElement>(null);
 
-  // Handle outside clicks - improved implementation
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Check if terminal is open and click was outside terminal and not on toggle button
       const target = event.target as Element;
       
       if (
@@ -53,7 +49,6 @@ const CommunicationTerminal = () => {
       }
     };
 
-    // Add event listener for mouse clicks
     document.addEventListener('mousedown', handleClickOutside);
     
     return () => {
@@ -61,7 +56,6 @@ const CommunicationTerminal = () => {
     };
   }, [isOpen, setIsOpen]);
 
-  // Custom event listener to open terminal
   useEffect(() => {
     const handleOpenTerminal = () => {
       setIsOpen(true);
@@ -76,7 +70,6 @@ const CommunicationTerminal = () => {
     };
   }, [setIsOpen]);
 
-  // Get context title
   const getContextTitle = () => {
     if (activeContext === 'global') {
       return 'Global System';
@@ -88,7 +81,6 @@ const CommunicationTerminal = () => {
 
   return (
     <>
-      {/* Terminal toggle button positioned in bottom left */}
       <div className="fixed bottom-4 left-4 z-50">
         <Button
           size="icon"
@@ -102,14 +94,12 @@ const CommunicationTerminal = () => {
             <MessageSquare className="h-5 w-5 text-green-300" />
           )}
           
-          {/* Pulse indicator when closed but has activity */}
           {(hasUnreadInsights || pendingPrompts.length > 0) && (
             <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-green-500 rounded-full animate-pulse"></span>
           )}
         </Button>
       </div>
 
-      {/* Terminal panel */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -174,7 +164,6 @@ const CommunicationTerminal = () => {
               </div>
               
               <div className="max-h-[600px]">
-                {/* Terminal Tab */}
                 <TabsContent value="command" className="m-0 p-0">
                   <CommandTerminalContent
                     commandHistory={commandHistory}
@@ -186,7 +175,6 @@ const CommunicationTerminal = () => {
                   />
                 </TabsContent>
                 
-                {/* Chat Tab */}
                 <TabsContent value="chat" className="m-0 p-0">
                   <ChatBotContent
                     messages={messages}
@@ -206,7 +194,6 @@ const CommunicationTerminal = () => {
         )}
       </AnimatePresence>
       
-      {/* Add global styles for scrollbar and scan-lines effect */}
       <style>
         {`
         .custom-scrollbar::-webkit-scrollbar {

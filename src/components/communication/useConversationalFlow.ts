@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { ConversationResponse, ActionResponse, InsightResponse, BaseConversationResponse } from './types/conversationTypes';
 
 type ActionType = 'reassign' | 'optimize' | 'diagnose' | 'report' | 'tune' | 'simulate';
 
@@ -69,7 +70,7 @@ export const useConversationalFlow = () => {
     };
   };
   
-  const handlePromptAction = (promptId: string, action: 'confirm' | 'decline' | 'moreInfo') => {
+  const handlePromptAction = (promptId: string, action: 'confirm' | 'decline' | 'moreInfo'): ActionResponse | null => {
     const prompt = pendingPrompts.find(p => p.id === promptId);
     if (!prompt) return null;
     
@@ -98,7 +99,7 @@ export const useConversationalFlow = () => {
     }
   };
   
-  const processConversationalInput = (input: string) => {
+  const processConversationalInput = (input: string): ConversationResponse => {
     if (input.toLowerCase().startsWith('focus on') || input.toLowerCase().startsWith('switch to')) {
       const entityMatch = input.match(/focus on|switch to\s+(\w+)\s+(\w+)/i);
       if (entityMatch) {
@@ -122,12 +123,12 @@ export const useConversationalFlow = () => {
           message: `You have ${pendingPrompts.length} pending insights. I'll show them to you.`,
           showInsights: true,
           insights: pendingPrompts
-        };
+        } as InsightResponse;
       } else {
         return {
           type: 'system',
           message: "There are no pending AI insights at the moment. I'll notify you when new insights are available."
-        };
+        } as BaseConversationResponse;
       }
     }
     
@@ -136,14 +137,14 @@ export const useConversationalFlow = () => {
         return {
           type: 'system',
           message: generateContextSpecificStatus(activeContext, contextEntity)
-        };
+        } as BaseConversationResponse;
       }
     }
     
     if (/^yes|proceed|go ahead|confirm|approve|execute$/i.test(input.trim())) {
       if (pendingPrompts.length > 0) {
         const prompt = pendingPrompts[0];
-        return handlePromptAction(prompt.id, 'confirm');
+        return handlePromptAction(prompt.id, 'confirm') as ActionResponse;
       }
     }
     
@@ -311,7 +312,7 @@ const processGeneralConversation = (
   input: string, 
   activeContext: 'global' | 'division' | 'agent',
   contextEntity: {id: string; name: string; type: string} | null
-) => {
+): BaseConversationResponse => {
   const lowerInput = input.toLowerCase();
   
   if (lowerInput.includes('status') || lowerInput.includes('health')) {

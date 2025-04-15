@@ -1,13 +1,14 @@
 
 import { useState, useEffect } from 'react';
 import { useConversationalFlow } from './useConversationalFlow';
+import { CommandHistoryItem, ConversationResponse, ActionResponse, InsightResponse } from './types/conversationTypes';
 
 export const useCommunicationTerminal = () => {
   // Terminal state
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'command' | 'chat'>('command');
   const [command, setCommand] = useState('');
-  const [commandHistory, setCommandHistory] = useState<Array<{type: 'input' | 'output' | 'error' | 'system', content: string}>>([
+  const [commandHistory, setCommandHistory] = useState<CommandHistoryItem[]>([
     { type: 'system', content: 'Terminal initialized. Type "help" for available commands.' }
   ]);
   
@@ -130,22 +131,24 @@ export const useCommunicationTerminal = () => {
     setTimeout(() => {
       const response = processConversationalInput(userInput);
       
-      // Check if this is a context switch
+      // Check if this is a context switch or regular response
       if (response.message) {
         // Regular message response
+        const isActionResponse = 'actionTaken' in response;
+        
         setMessages(prev => [
           ...prev, 
           { 
             sender: 'bot', 
             text: response.message, 
             timestamp: new Date(),
-            isAction: !!response.actionTaken
+            isAction: isActionResponse ? !!response.actionTaken : false
           }
         ]);
       }
       
       // If insights should be shown
-      if (response.showInsights && response.insights?.length) {
+      if ('showInsights' in response && response.showInsights && response.insights?.length) {
         markInsightsAsRead();
         
         // Add a message for each insight as an action card

@@ -1,13 +1,12 @@
 
 import React, { useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Send, RotateCcw } from 'lucide-react';
+import { Terminal } from 'lucide-react';
+import { CommandHistoryItem } from './types/conversationTypes';
 
 interface CommandTerminalContentProps {
-  commandHistory: Array<{type: 'input' | 'output', content: string}>;
+  commandHistory: CommandHistoryItem[];
   command: string;
-  setCommand: React.Dispatch<React.SetStateAction<string>>;
+  setCommand: (cmd: string) => void;
   handleCommand: (e: React.FormEvent) => void;
   handleKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   clearTerminal: () => void;
@@ -22,64 +21,68 @@ const CommandTerminalContent: React.FC<CommandTerminalContentProps> = ({
   clearTerminal
 }) => {
   const terminalRef = useRef<HTMLDivElement>(null);
-  
-  // Scroll to bottom when new messages/commands arrive
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-scroll to bottom when history updates
   useEffect(() => {
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
   }, [commandHistory]);
-  
+
+  // Auto-focus input on mount
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
   return (
-    <>
+    <div className="flex flex-col h-full">
       <div 
         ref={terminalRef}
-        className="p-4 h-[320px] overflow-y-auto scan-lines font-mono custom-scrollbar"
-        style={{ 
-          backgroundColor: 'rgba(0,0,0,0.85)',
-          backgroundImage: 'linear-gradient(rgba(0, 70, 100, 0.05) 50%, transparent 50%)',
-          backgroundSize: '100% 4px'
-        }}
+        className="flex-1 overflow-y-auto p-3 text-sm font-mono custom-scrollbar scan-lines bg-black/60 backdrop-blur-lg"
       >
-        {commandHistory.map((item, index) => {
-          if (item.type === 'input') {
-            return (
-              <div key={index} className="flex gap-2 text-xs text-cyan-400 font-mono py-1">
-                <span className="text-cyan-400/70">&gt;</span>
-                <span>{item.content}</span>
+        {commandHistory.map((entry, index) => (
+          <div key={index} className="mb-2">
+            {entry.type === 'input' && (
+              <div className="flex">
+                <span className="text-green-400 mr-2">{'>'}</span>
+                <span className="text-indigo-100">{entry.content}</span>
               </div>
-            );
-          } else {
-            return (
-              <div key={index} className="text-xs text-green-300 font-mono mt-1 mb-2">
-                {item.content.split('\n').map((line, i) => (
-                  <div key={i}>{line}</div>
-                ))}
-              </div>
-            );
-          }
-        })}
+            )}
+            
+            {entry.type === 'output' && (
+              <div className="text-cyan-300 pl-4 whitespace-pre-wrap">{entry.content}</div>
+            )}
+            
+            {entry.type === 'error' && (
+              <div className="text-red-400 pl-4">{entry.content}</div>
+            )}
+            
+            {entry.type === 'system' && (
+              <div className="text-amber-300 italic">{entry.content}</div>
+            )}
+          </div>
+        ))}
       </div>
       
-      <form onSubmit={handleCommand} className="p-3 border-t border-indigo-500/30 bg-black/80 flex items-center">
-        <Input
-          type="text"
-          value={command}
-          onChange={(e) => setCommand(e.target.value)}
-          placeholder="Enter command..."
-          className="flex-1 bg-black/50 border-indigo-500/30 text-cyan-100 text-sm font-mono focus:border-cyan-400/70 focus:ring-1 focus:ring-cyan-400/40"
-          onKeyPress={handleKeyPress}
-        />
-        <Button 
-          type="submit" 
-          size="sm" 
-          className="ml-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_0_10px_rgba(79,70,229,0.5)] min-w-20"
-        >
-          <Send className="h-4 w-4 mr-1" />
-          Execute
-        </Button>
+      <form onSubmit={handleCommand} className="p-2 border-t border-indigo-500/30 bg-black/70">
+        <div className="flex items-center">
+          <span className="text-green-400 mr-2">{'>'}</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={command}
+            onChange={(e) => setCommand(e.target.value)}
+            onKeyPress={handleKeyPress}
+            className="flex-1 bg-transparent border-none outline-none text-indigo-100"
+            placeholder="Type command..."
+            aria-label="Command input"
+          />
+        </div>
       </form>
-    </>
+    </div>
   );
 };
 
