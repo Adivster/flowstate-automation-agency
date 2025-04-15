@@ -34,6 +34,7 @@ export interface Division {
   };
   backgroundColor: string;
   borderColor: string;
+  textColor: string;
   zIndex?: number;
 }
 
@@ -50,7 +51,7 @@ export interface DecorativeElement {
   type: string;
   x: number;
   y: number;
-  size: number;
+  size: number | string;
 }
 
 export interface HologramData {
@@ -125,7 +126,8 @@ export enum ZIndexLayers {
   DIVISION = 30,
   DIVISION_HOVERED = 35,
   DIVISION_SELECTED = 40,
-  DECORATION = 45, 
+  DIVISION_DRAGGING = 45,
+  DECORATION = 46, 
   AGENT = 50,
   AGENT_SELECTED = 55,
   DATA_PATH = 60,

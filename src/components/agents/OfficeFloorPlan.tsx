@@ -1,20 +1,19 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import OfficeElements from './office/OfficeElements';
 import { useToast } from '@/hooks/use-toast';
 import { Terminal, X, ZoomIn, ZoomOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { VisualizationState } from './office/types/visualizationTypes';
+import { Division, DecorativeElement, ZIndexLayers } from './office/types/officeTypes';
+import { Book, Database, BarChart3, Cpu } from 'lucide-react';
 
-// Mock data for the office layout
-// In a real app, this would come from an API or state management store
 const officeData = {
   divisions: [
-    { id: 'kb', name: 'Knowledge Base', position: { x: 10, y: 20, width: 35, height: 30 }, borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', textColor: '#10B981' },
-    { id: 'analytics', name: 'Analytics', position: { x: 55, y: 20, width: 35, height: 30 }, borderColor: '#3B82F6', backgroundColor: 'rgba(59, 130, 246, 0.1)', textColor: '#3B82F6' },
-    { id: 'operations', name: 'Operations', position: { x: 10, y: 60, width: 35, height: 30 }, borderColor: '#F97316', backgroundColor: 'rgba(249, 115, 22, 0.1)', textColor: '#F97316' },
-    { id: 'strategy', name: 'Strategy', position: { x: 55, y: 60, width: 35, height: 30 }, borderColor: '#8B5CF6', backgroundColor: 'rgba(139, 92, 246, 0.1)', textColor: '#8B5CF6' },
-  ],
+    { id: 'kb', name: 'Knowledge Base', icon: Book, position: { x: 10, y: 20, width: 35, height: 30 }, borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.1)', textColor: '#10B981', zIndex: ZIndexLayers.DIVISION },
+    { id: 'analytics', name: 'Analytics', icon: BarChart3, position: { x: 55, y: 20, width: 35, height: 30 }, borderColor: '#3B82F6', backgroundColor: 'rgba(59, 130, 246, 0.1)', textColor: '#3B82F6', zIndex: ZIndexLayers.DIVISION },
+    { id: 'operations', name: 'Operations', icon: Cpu, position: { x: 10, y: 60, width: 35, height: 30 }, borderColor: '#F97316', backgroundColor: 'rgba(249, 115, 22, 0.1)', textColor: '#F97316', zIndex: ZIndexLayers.DIVISION },
+    { id: 'strategy', name: 'Strategy', icon: Database, position: { x: 55, y: 60, width: 35, height: 30 }, borderColor: '#8B5CF6', backgroundColor: 'rgba(139, 92, 246, 0.1)', textColor: '#8B5CF6', zIndex: ZIndexLayers.DIVISION },
+  ] as Division[],
   agents: [
     { id: 1, name: 'Agent 1', icon: '👨‍💼', position: { x: 15, y: 25 }, status: 'working', division: 'kb' },
     { id: 2, name: 'Agent 2', icon: '👩‍💼', position: { x: 25, y: 25 }, status: 'working', division: 'kb' },
@@ -41,15 +40,15 @@ const officeData = {
     { id: 20, name: 'Agent 20', icon: '⭐', position: { x: 70, y: 80 }, status: 'working', division: 'strategy' },
   ],
   decorations: [
-    { type: 'plant', x: 5, y: 5, size: 'medium' },
-    { type: 'plant', x: 90, y: 5, size: 'small' },
-    { type: 'plant', x: 5, y: 95, size: 'large' },
-    { type: 'plant', x: 90, y: 95, size: 'medium' },
-  ],
+    { type: 'plant', x: 5, y: 5, size: 2 },
+    { type: 'plant', x: 90, y: 5, size: 1 },
+    { type: 'plant', x: 5, y: 95, size: 3 },
+    { type: 'plant', x: 90, y: 95, size: 2 },
+  ] as DecorativeElement[],
   holograms: [
-    { type: 'stats', x: 45, y: 10, size: 'medium' },
-    { type: 'globe', x: 45, y: 90, size: 'large' },
-  ],
+    { type: 'stats', x: 45, y: 10, size: 2 },
+    { type: 'globe', x: 45, y: 90, size: 3 },
+  ] as DecorativeElement[],
   workstations: [
     { x: 20, y: 30, width: 5, height: 3, rotation: 0, type: 'desk' },
     { x: 30, y: 30, width: 5, height: 3, rotation: 0, type: 'desk' },
@@ -101,12 +100,10 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
   
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ctrl + ` to toggle terminal
       if (e.ctrlKey && e.key === '`') {
         setShowTerminal(prev => !prev);
       }
       
-      // Escape to close terminal
       if (e.key === 'Escape' && showTerminal) {
         setShowTerminal(false);
       }
@@ -115,7 +112,6 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('openCommandTerminal', () => setShowTerminal(true));
     
-    // Start pulse animation for divisions
     const pulseInterval = setInterval(() => {
       const randomDivision = officeData.divisions[Math.floor(Math.random() * officeData.divisions.length)];
       setDivisionPulses(prev => ({
@@ -123,7 +119,6 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         [randomDivision.id]: true
       }));
       
-      // Clear pulse after 5 seconds
       setTimeout(() => {
         setDivisionPulses(prev => ({
           ...prev,
@@ -139,7 +134,6 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
     };
   }, [showTerminal]);
   
-  // Auto-scroll to bottom of terminal
   useEffect(() => {
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
@@ -154,7 +148,6 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
   const handleAgentClick = (agentId: number) => {
     setSelectedAgent(prevId => prevId === agentId ? null : agentId);
     
-    // Find the agent
     const agent = officeData.agents.find(a => a.id === agentId);
     if (agent) {
       setSelectedDivision(agent.division || null);
@@ -341,7 +334,6 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         onHotspotAction={onHotspotAction}
       />
       
-      {/* Terminal */}
       {showTerminal && (
         <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={() => setShowTerminal(false)}>
           <div className="bg-black bg-opacity-90 border border-gray-700 rounded-lg w-full max-w-2xl max-h-[80vh] shadow-lg" onClick={e => e.stopPropagation()}>
@@ -378,7 +370,6 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         </div>
       )}
       
-      {/* Zoom Controls */}
       <div className="absolute bottom-2 right-2 flex gap-2 z-30">
         <Button variant="outline" size="sm" className="h-7 w-7 p-0 bg-black/50 border-white/20 text-white hover:bg-black/70" onClick={handleZoomIn}>
           <ZoomIn className="h-3 w-3" />

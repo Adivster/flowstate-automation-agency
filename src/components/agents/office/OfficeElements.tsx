@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import Workstation from './Workstation';
 import DecorativeElement from './DecorativeElement';
@@ -5,7 +6,7 @@ import HolographicElement from './HolographicElement';
 import CentralServer from './CentralServer';
 import CommunicationHub from './CommunicationHub';
 import Division from './Division';
-import AgentCharacter from '../AgentCharacter';
+import AgentCharacter from './agent/AgentCharacter';
 import { Division as DivisionType, DecorativeElement as DecorativeElementType, ZIndexLayers } from './types/officeTypes';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getDivisionColors } from './styles/divisionStyles';
@@ -297,10 +298,16 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
       const showQuickActions = visualizationState?.layerData.quickActions.active;
       const showPerformance = visualizationState?.layerData.performance.active;
       
+      // Create a version of the division that includes the required textColor property
+      const divisionProps = {
+        ...division,
+        textColor: division.textColor || '#FFFFFF' // Provide a default if not available
+      };
+      
       return (
         <Division
           key={division.id}
-          division={division}
+          division={divisionProps}
           isSelected={selectedDivision === division.id}
           isPulsing={pulsing[division.id]}
           onDivisionClick={onDivisionClick}

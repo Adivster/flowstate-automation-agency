@@ -211,7 +211,6 @@ const VisualizationControls: React.FC<VisualizationControlsProps> = ({
                 <Switch 
                   checked={visualizationState.layerData.hotspots.divisionHotspots}
                   onCheckedChange={(checked) => updateLayerOption('hotspots', 'divisionHotspots', checked)}
-                  size="sm"
                 />
               </div>
               
@@ -220,7 +219,6 @@ const VisualizationControls: React.FC<VisualizationControlsProps> = ({
                 <Switch 
                   checked={visualizationState.layerData.hotspots.workstationHotspots}
                   onCheckedChange={(checked) => updateLayerOption('hotspots', 'workstationHotspots', checked)}
-                  size="sm"
                 />
               </div>
               
@@ -229,7 +227,6 @@ const VisualizationControls: React.FC<VisualizationControlsProps> = ({
                 <Switch 
                   checked={visualizationState.layerData.hotspots.serverHotspots}
                   onCheckedChange={(checked) => updateLayerOption('hotspots', 'serverHotspots', checked)}
-                  size="sm"
                 />
               </div>
               
@@ -261,7 +258,6 @@ const VisualizationControls: React.FC<VisualizationControlsProps> = ({
                 <Switch 
                   checked={visualizationState.layerData.performance.showSparklines}
                   onCheckedChange={(checked) => updateLayerOption('performance', 'showSparklines', checked)}
-                  size="sm"
                 />
               </div>
               
@@ -270,7 +266,6 @@ const VisualizationControls: React.FC<VisualizationControlsProps> = ({
                 <Switch 
                   checked={visualizationState.layerData.performance.showEfficiency}
                   onCheckedChange={(checked) => updateLayerOption('performance', 'showEfficiency', checked)}
-                  size="sm"
                 />
               </div>
               
@@ -341,7 +336,6 @@ const VisualizationControls: React.FC<VisualizationControlsProps> = ({
                 <Switch 
                   checked={visualizationState.layerData.ambientEffects?.scanlines}
                   onCheckedChange={(checked) => updateLayerOption('ambientEffects', 'scanlines', checked)}
-                  size="sm"
                 />
               </div>
               
@@ -350,7 +344,6 @@ const VisualizationControls: React.FC<VisualizationControlsProps> = ({
                 <Switch 
                   checked={visualizationState.layerData.ambientEffects?.noise}
                   onCheckedChange={(checked) => updateLayerOption('ambientEffects', 'noise', checked)}
-                  size="sm"
                 />
               </div>
               
@@ -359,7 +352,6 @@ const VisualizationControls: React.FC<VisualizationControlsProps> = ({
                 <Switch 
                   checked={visualizationState.layerData.ambientEffects?.glow}
                   onCheckedChange={(checked) => updateLayerOption('ambientEffects', 'glow', checked)}
-                  size="sm"
                 />
               </div>
             </div>
