@@ -4,14 +4,16 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AgencyDashboard from '@/components/dashboard/AgencyDashboard';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { LayoutDashboard, Zap } from 'lucide-react';
+import { LayoutDashboard, Zap, PlayCircle, UserPlus, Building2, Terminal } from 'lucide-react';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import ThemedBackground from '@/components/ui/ThemedBackground';
+import { useDashboardActions } from '@/hooks/useDashboardActions';
 
 const Index: React.FC = () => {
   const [theme, setTheme] = useState<'default' | 'retro' | 'vapor' | 'tactical'>('default');
+  const dashboardActions = useDashboardActions();
   
   const switchTheme = (newTheme: 'default' | 'retro' | 'vapor' | 'tactical') => {
     setTheme(newTheme);
@@ -39,28 +41,28 @@ const Index: React.FC = () => {
               variant="outline" 
               size="sm" 
               className="bg-black/20 border-flow-border/30 text-xs"
-              onClick={() => switchTheme('default')}
+              onClick={dashboardActions.handleStartWorkflow}
             >
-              <Zap className="h-3.5 w-3.5 mr-1.5 text-indigo-400" />
-              Default
+              <PlayCircle className="h-3.5 w-3.5 mr-1.5 text-cyan-400" />
+              Start Workflow
             </Button>
             <Button 
               variant="outline" 
               size="sm" 
               className="bg-black/20 border-flow-border/30 text-xs"
-              onClick={() => switchTheme('retro')}
+              onClick={dashboardActions.handleCreateAgent}
             >
-              <Zap className="h-3.5 w-3.5 mr-1.5 text-green-400" />
-              Retro
+              <UserPlus className="h-3.5 w-3.5 mr-1.5 text-green-400" />
+              Deploy Agent
             </Button>
             <Button 
               variant="outline" 
               size="sm" 
               className="bg-black/20 border-flow-border/30 text-xs"
-              onClick={() => switchTheme('vapor')}
+              onClick={dashboardActions.handleOpenCommandTerminal}
             >
-              <Zap className="h-3.5 w-3.5 mr-1.5 text-pink-400" />
-              Vapor
+              <Terminal className="h-3.5 w-3.5 mr-1.5 text-indigo-400" />
+              Open CLI
             </Button>
           </div>
         </motion.div>
