@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { 
@@ -52,29 +51,9 @@ const navItems = [
     icon: BookOpen,
   },
   {
-    name: "business",
+    name: "Business",
     link: "/business",
     icon: BadgeDollarSign,
-  },
-  {
-    name: "Budget",  // Capitalized
-    link: "/budget",
-    icon: FileSpreadsheet,
-  },
-  {
-    name: "ERP",
-    link: "/erp",
-    icon: Database,
-  },
-  {
-    name: "Call Center",
-    link: "/call-center",
-    icon: PhoneCall,
-  },
-  {
-    name: "Inventory",
-    link: "/inventory",
-    icon: ShoppingCart,
   },
   {
     name: "analytics",

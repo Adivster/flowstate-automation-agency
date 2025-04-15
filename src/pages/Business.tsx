@@ -26,6 +26,7 @@ import BudgetManagement from '@/features/business/BudgetManagement';
 import ApiSynchronization from '@/features/business/ApiSynchronization';
 import ERPDashboard from '@/features/business/ERPDashboard';
 import CallCenterDashboard from '@/features/business/CallCenterDashboard';
+import InventoryDashboard from '@/features/business/InventoryDashboard';
 
 const Business = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -126,11 +127,7 @@ const Business = () => {
               </TabsContent>
               
               <TabsContent value="inventory" className="space-y-6">
-                <Card className="bg-flow-background/20 backdrop-blur-md border-flow-border p-4">
-                  <div className="flex items-center justify-center h-64">
-                    <p className="text-muted-foreground">Inventory Management Coming Soon</p>
-                  </div>
-                </Card>
+                <InventoryDashboard />
               </TabsContent>
               
               <TabsContent value="api" className="space-y-6">
