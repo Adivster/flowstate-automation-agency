@@ -25,8 +25,31 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
+  const headerVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: -10 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   const HeaderContent = () => (
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-4">
+    <motion.div 
+      className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-4"
+      variants={headerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <div className="flex items-center">
         {icon && (
           <motion.div 
@@ -38,6 +61,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
                 ? "bg-flow-accent/20 border-flow-accent/30 shadow-[0_0_15px_rgba(217,70,239,0.2)]"
                 : "bg-emerald-100/50 border-emerald-200/70 shadow-[0_0_15px_rgba(16,185,129,0.15)]"
             )}
+            variants={itemVariants}
           >
             <div 
               className={cn(
@@ -51,7 +75,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
             </div>
           </motion.div>
         )}
-        <div>
+        <motion.div variants={itemVariants}>
           <h1 
             className={cn(
               "text-3xl font-bold",
@@ -72,15 +96,18 @@ const PageHeader: React.FC<PageHeaderProps> = ({
               {description}
             </p>
           )}
-        </div>
+        </motion.div>
       </div>
       
       {actions && (
-        <div className="flex flex-wrap items-center gap-2">
+        <motion.div 
+          className="flex flex-wrap items-center gap-2"
+          variants={itemVariants}
+        >
           {actions}
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 
   if (glassEffect) {
@@ -88,6 +115,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       <GlassMorphism 
         variant={isDark ? "accent" : "nature"}
         className={cn("mb-6 px-4 sm:px-6", className)}
+        animate={true}
       >
         <HeaderContent />
       </GlassMorphism>

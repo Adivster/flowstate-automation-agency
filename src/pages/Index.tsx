@@ -1,13 +1,14 @@
+
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AgencyDashboard from '@/components/dashboard/AgencyDashboard';
-import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { LayoutDashboard, Zap } from 'lucide-react';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import ThemedBackground from '@/components/ui/ThemedBackground';
 
 const Index: React.FC = () => {
   const [theme, setTheme] = useState<'default' | 'retro' | 'vapor' | 'tactical'>('default');
@@ -17,124 +18,64 @@ const Index: React.FC = () => {
   };
   
   return (
-    <div className={`min-h-screen flex flex-col bg-flow-background circuit-background ${theme}`}>
+    <ThemedBackground>
       <Navbar />
       
-      <main className="flex-1 mt-20 px-4 sm:px-6 pb-12 overflow-hidden relative">
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-          <motion.div
-            className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(139, 92, 246, 0.05) 0%, rgba(139, 92, 246, 0) 70%)" }}
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.4, 0.6, 0.4],
-            }}
-            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(219, 39, 119, 0.05) 0%, rgba(219, 39, 119, 0) 70%)" }}
-            animate={{
-              scale: [1.2, 1, 1.2],
-              opacity: [0.3, 0.5, 0.3],
-            }}
-            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+      <main className="flex-1 mt-20 px-4 sm:px-6 pb-12 overflow-hidden relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-wrap items-center justify-between mb-8 max-w-7xl mx-auto"
+        >
+          <PageHeader 
+            title="Mission Control"
+            description="Welcome to your Agency HQ. Monitor performance, manage divisions, and optimize workflows from this central command center."
+            icon={<LayoutDashboard className="h-8 w-8 text-purple-500 drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]" />}
           />
           
-          <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
-          
-          <div className="absolute inset-0">
-            {[...Array(20)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute rounded-full bg-indigo-500/20"
-                style={{
-                  width: Math.random() * 8 + 2 + 'px',
-                  height: Math.random() * 8 + 2 + 'px',
-                  left: Math.random() * 100 + '%',
-                  top: Math.random() * 100 + '%',
-                }}
-                animate={{
-                  x: [
-                    0, 
-                    Math.random() * 40 - 20,
-                    Math.random() * 40 - 20,
-                    0
-                  ],
-                  y: [
-                    0,
-                    Math.random() * 40 - 20,
-                    Math.random() * 40 - 20,
-                    0
-                  ],
-                  opacity: [0.7, 0.9, 0.7]
-                }}
-                transition={{ 
-                  duration: Math.random() * 20 + 10,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-            ))}
+          <div className="flex items-center gap-2 mt-4 md:mt-0">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="bg-black/20 border-flow-border/30 text-xs"
+              onClick={() => switchTheme('default')}
+            >
+              <Zap className="h-3.5 w-3.5 mr-1.5 text-indigo-400" />
+              Default
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="bg-black/20 border-flow-border/30 text-xs"
+              onClick={() => switchTheme('retro')}
+            >
+              <Zap className="h-3.5 w-3.5 mr-1.5 text-green-400" />
+              Retro
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="bg-black/20 border-flow-border/30 text-xs"
+              onClick={() => switchTheme('vapor')}
+            >
+              <Zap className="h-3.5 w-3.5 mr-1.5 text-pink-400" />
+              Vapor
+            </Button>
           </div>
+        </motion.div>
+        
+        <div className="max-w-7xl mx-auto">
+          <GlassMorphism 
+            className="rounded-2xl shadow-xl border-flow-border/30 scan-lines bg-flow-background/20 backdrop-blur-lg overflow-hidden bg-glassmorphism-gradient"
+          >
+            <AgencyDashboard />
+          </GlassMorphism>
         </div>
-      
-        <TransitionWrapper>
-          <div className="max-w-7xl mx-auto relative z-10">
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="flex flex-wrap items-center justify-between mb-4"
-            >
-              <PageHeader 
-                title="Mission Control"
-                description="Welcome to your Agency HQ. Monitor performance, manage divisions, and optimize workflows from this central command center."
-                icon={<LayoutDashboard className="h-8 w-8 text-purple-500 drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]" />}
-              />
-              
-              <div className="flex items-center gap-2 mt-4 md:mt-0">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="bg-black/20 border-flow-border/30 text-xs"
-                  onClick={() => switchTheme('default')}
-                >
-                  <Zap className="h-3.5 w-3.5 mr-1.5 text-indigo-400" />
-                  Default
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="bg-black/20 border-flow-border/30 text-xs"
-                  onClick={() => switchTheme('retro')}
-                >
-                  <Zap className="h-3.5 w-3.5 mr-1.5 text-green-400" />
-                  Retro
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="bg-black/20 border-flow-border/30 text-xs"
-                  onClick={() => switchTheme('vapor')}
-                >
-                  <Zap className="h-3.5 w-3.5 mr-1.5 text-pink-400" />
-                  Vapor
-                </Button>
-              </div>
-            </motion.div>
-            
-            <GlassMorphism 
-              className="rounded-2xl shadow-xl border-flow-border/30 scan-lines bg-flow-background/20 backdrop-blur-lg overflow-hidden bg-glassmorphism-gradient"
-            >
-              <AgencyDashboard />
-            </GlassMorphism>
-          </div>
-        </TransitionWrapper>
       </main>
       
       <Footer />
-    </div>
+    </ThemedBackground>
   );
 };
 

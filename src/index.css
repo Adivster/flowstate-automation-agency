@@ -1,883 +1,321 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Light mode / Solarpunk variables */
-    --background: 60 30% 96%;
-    --foreground: 142 30% 20%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-    --card: 60 30% 96%;
-    --card-foreground: 142 30% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --popover: 60 30% 96%;
-    --popover-foreground: 142 30% 20%;
-
-    --primary: 142 60% 40%;
-    --primary-foreground: 60 30% 96%;
-
-    --secondary: 50 80% 85%;
-    --secondary-foreground: 142 30% 20%;
-
-    --muted: 50 40% 90%;
-    --muted-foreground: 142 20% 40%;
-
-    --accent: 35 80% 65%;
-    --accent-foreground: 142 30% 20%;
-
-    --destructive: 0 62.8% 40.6%;
-    --destructive-foreground: 60 30% 96%;
-
-    --border: 142 30% 80%;
-    --input: 142 30% 80%;
-    --ring: 142 60% 40%;
-
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+ 
     --radius: 0.75rem;
 
-    /* SolarPunk specific colors */
-    --solarpunk-background: 60 30% 96%;
-    --solarpunk-foreground: 142 30% 20%;
-    --solarpunk-card: 60 25% 98%;
-    --solarpunk-card-foreground: 142 30% 20%;
-    --solarpunk-accent: 35 80% 65%;
-    --solarpunk-accent-foreground: 142 30% 20%;
-    --solarpunk-muted: 50 40% 90%;
-    --solarpunk-muted-foreground: 142 20% 40%;
-    --solarpunk-border: 142 30% 80%;
-    --solarpunk-success: 142 70% 45%;
-    --solarpunk-warning: 45 93% 47%;
-    --solarpunk-error: 0 70% 50%;
-    --solarpunk-info: 200 80% 50%;
-
-    /* FlowState specific colors for light mode */
-    --flow-background: 60 30% 96%;
-    --flow-foreground: 142 30% 20%;
-    --flow-card: 60 25% 98%;
-    --flow-card-foreground: 142 30% 20%;
-    --flow-accent: 142 60% 40%;
-    --flow-accent-foreground: 60 30% 96%;
-    --flow-muted: 50 40% 90%;
-    --flow-muted-foreground: 142 20% 40%;
-    --flow-border: 142 30% 80%;
-    --flow-success: 142 70% 45%;
-    --flow-warning: 45 93% 47%;
-    --flow-error: 0 70% 50%;
-    --flow-info: 200 80% 50%;
-    
-    /* Standardized spacing */
-    --space-xs: 0.25rem;
-    --space-sm: 0.5rem;
-    --space-md: 1rem;
-    --space-lg: 1.5rem;
-    --space-xl: 2rem;
-    --space-2xl: 3rem;
-    
-    /* Animation timing */
-    --transition-fast: 150ms;
-    --transition-normal: 300ms;
-    --transition-slow: 500ms;
+    /* Solar theme variables */
+    --solar-background: 60 100% 99%;
+    --solar-foreground: 160 84% 39%;
+    --solar-accent: 45 100% 60%;
+    --solar-muted: 45 30% 94%;
+    --solar-border: 160 30% 85%;
   }
-
+ 
   .dark {
-    /* Cyberpunk dark theme */
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
-
+ 
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
-
+ 
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-
+ 
     --primary: 0 0% 98%;
     --primary-foreground: 240 5.9% 10%;
-
+ 
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
-
+ 
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
-
+ 
     --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 98%;
-
+ 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-
+ 
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
+
+    /* Cyber theme variables */
+    --flow-background: 240 10% 3.9%; /* Dark background */
+    --flow-foreground: 0 0% 98%; /* Light text */
+    --flow-border: 240 24% 20%; /* Subtle border */
+    --flow-accent: 270 76% 53%; /* Vibrant purple */
+    --flow-accent-foreground: 0 0% 98%; /* Light text on accent */
+    --flow-muted: 240 8% 12%; /* Muted background */
+  }
+
+  /* Custom Flow Colors for Cyberpunk Theme */
+  .dark {
+    /* Common */
+    --flow-radius: 0.5rem;
+
+    /* Colors - Cyberpunk Theme */
+    --flow-background: 225 14% 5%; /* Dark background */
+    --flow-foreground: 210 6% 93%; /* Light text */
+    --flow-muted: 223 14% 10%; /* Muted background elements */
+    --flow-muted-foreground: 215 10% 65%; /* Subtle text on muted backgrounds */
+    --flow-border: 235 23% 18%; /* Border colors */
+    --flow-accent: 265 89% 78%; /* Bright purple accent */
+    --flow-accent-secondary: 187 100% 69%; /* Cyan accent */
+    --flow-accent-tertiary: 326 100% 74%; /* Pink accent */
+  }
+
+  /* Root Variables for Both Themes */
+  :root {
+    /* Cyberpunk Theme Colors */
+    --color-cyber-bg: 225 14% 5%;
+    --color-cyber-text: 210 6% 93%; 
+    --color-cyber-accent: 265 89% 78%;
+    --color-cyber-accent2: 187 100% 69%;
+    --color-cyber-accent3: 326 100% 74%;
+    --color-cyber-muted: 223 14% 10%;
+    --color-cyber-border: 235 23% 18%;
     
-    /* FlowState cyberpunk neon colors */
-    --flow-background: 222 47% 5%;
-    --flow-foreground: 180 100% 80%;
-    --flow-card: 225 30% 8%;
-    --flow-card-foreground: 180 100% 80%;
-    --flow-accent: 320 100% 60%;
-    --flow-accent-foreground: 0 0% 100%;
-    --flow-muted: 225 20% 15%;
-    --flow-muted-foreground: 180 10% 70%;
-    --flow-border: 260 30% 50%;
-    
-    /* Status colors - dark mode */
-    --flow-success: 142 76% 45%;
-    --flow-warning: 38 92% 50%;
-    --flow-error: 0 70% 50%;
-    --flow-info: 199 89% 48%;
+    /* Solarpunk Theme Colors */
+    --color-solar-bg: 60 100% 99%;
+    --color-solar-text: 160 50% 30%;
+    --color-solar-accent: 142 72% 29%;
+    --color-solar-accent2: 45 100% 60%;
+    --color-solar-accent3: 22 100% 60%;
+    --color-solar-muted: 45 30% 94%;
+    --color-solar-border: 160 30% 85%;
   }
 }
-
+ 
 @layer base {
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-flow-background text-flow-foreground font-sans antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
-  }
-  
-  /* Headings */
-  h1 {
-    @apply text-3xl sm:text-4xl font-bold tracking-tight mb-4;
-  }
-  
-  h2 {
-    @apply text-2xl sm:text-3xl font-semibold tracking-tight mb-3;
-  }
-  
-  h3 {
-    @apply text-xl sm:text-2xl font-medium tracking-tight mb-2;
-  }
-  
-  h4 {
-    @apply text-lg font-medium tracking-tight mb-2;
-  }
-  
-  h5 {
-    @apply text-base font-medium tracking-tight mb-1;
-  }
-  
-  /* Content spacing */
-  section {
-    @apply mb-8;
-  }
-  
-  p {
-    @apply mb-4 last:mb-0;
-  }
-  
-  /* Custom classes for glass morphism */
-  .glass {
-    @apply bg-white/10 backdrop-blur-md border border-white/20;
-  }
-  
-  .dark .glass {
-    @apply bg-black/10 border-white/10;
-  }
-
-  .light .glass {
-    @apply bg-white/40 backdrop-blur-md border border-white/40;
-  }
-  
-  /* Animations for page transitions */
-  .page-enter {
-    @apply animate-enter;
-  }
-  
-  .page-exit {
-    @apply animate-exit;
-  }
-  
-  /* Custom scrollbar styling */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    @apply bg-transparent;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    @apply bg-flow-muted rounded-full;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-flow-muted-foreground;
-  }
-  
-  /* Typography improvements */
-  h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight;
-  }
-  
-  /* More subtle neon text effect for headers that matches the Agency HQ image */
-  .neon-text {
-    @apply text-white;
-    text-shadow: 0 0 5px #d946ef, 
-                 0 0 8px #d946ef;
-  }
-
-  .light .neon-text {
-    @apply text-solarpunk-foreground;
-    text-shadow: 0 0 5px rgba(52, 211, 153, 0.7), 
-                 0 0 8px rgba(52, 211, 153, 0.5);
-  }
-  
-  /* Cyberpunk neon text variations */
-  .neon-text-blue {
-    @apply text-white;
-    text-shadow: 0 0 5px #0ea5e9, 
-                 0 0 8px #0ea5e9;
-  }
-  
-  .light .neon-text-blue {
-    @apply text-solarpunk-foreground;
-    text-shadow: 0 0 5px rgba(14, 165, 233, 0.7), 
-                 0 0 8px rgba(14, 165, 233, 0.5);
-  }
-  
-  .neon-text-green {
-    @apply text-white;
-    text-shadow: 0 0 5px #22c55e, 
-                 0 0 8px #22c55e;
-  }
-  
-  .light .neon-text-green {
-    @apply text-solarpunk-foreground;
-    text-shadow: 0 0 5px rgba(34, 197, 94, 0.7), 
-                 0 0 8px rgba(34, 197, 94, 0.5);
-  }
-  
-  .neon-text-orange {
-    @apply text-white;
-    text-shadow: 0 0 5px #f97316, 
-                 0 0 8px #f97316;
-  }
-  
-  .light .neon-text-orange {
-    @apply text-solarpunk-foreground;
-    text-shadow: 0 0 5px rgba(249, 115, 22, 0.7), 
-                 0 0 8px rgba(249, 115, 22, 0.5);
-  }
-  
-  .neon-text-pink {
-    @apply text-white;
-    text-shadow: 0 0 5px #ec4899, 
-                 0 0 8px #ec4899;
-  }
-  
-  .light .neon-text-pink {
-    @apply text-solarpunk-foreground;
-    text-shadow: 0 0 5px rgba(236, 72, 153, 0.7), 
-                 0 0 8px rgba(236, 72, 153, 0.5);
-  }
-
-  /* Solarpunk specific styles */
-  .light .eco-gradient {
-    background: linear-gradient(135deg, rgba(242, 252, 226, 0.9), rgba(210, 250, 215, 0.8));
-  }
-
-  .light .leaf-pattern {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 5C16.2 5 5 16.2 5 30s11.2 25 25 25 25-11.2 25-25S43.8 5 30 5zm0 45c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20z' fill='rgba(52, 211, 153, 0.1)'/%3E%3C/svg%3E");
-    background-size: 60px 60px;
-  }
-  
-  /* Enhanced Solarpunk UI elements */
-  .light .eco-card {
-    @apply bg-gradient-to-br from-white/80 to-emerald-50/70 border-emerald-100 shadow-sm hover:shadow-md transition-all;
-  }
-  
-  .light .solar-button {
-    @apply bg-gradient-to-r from-amber-400 to-emerald-400 text-white rounded-full px-4 py-2 shadow-lg hover:shadow-xl transition-all;
-  }
-
-  .light .solar-input {
-    @apply bg-white/80 border border-emerald-200 rounded-full px-4 py-2 focus:ring-2 focus:ring-amber-300 focus:border-amber-300;
-  }
-  
-  .light .eco-badge {
-    @apply bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 text-xs font-medium rounded-full;
-  }
-  
-  .light .sunflower-badge {
-    @apply bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 text-xs font-medium rounded-full;
-  }
-  
-  .light .solar-highlight {
-    @apply bg-gradient-to-r from-amber-100 to-amber-50 border-l-4 border-amber-400 pl-4 py-2 rounded-r;
-  }
-  
-  /* Enhanced organic patterns for solarpunk theme */
-  .light .organic-pattern {
-    background-size: 20px 20px;
-    background-image: radial-gradient(circle, rgba(16, 185, 129, 0.1) 1px, transparent 1px);
-  }
-  
-  .light .sunbeam-pattern {
-    background-image: 
-      linear-gradient(45deg, rgba(251, 191, 36, 0.05) 25%, transparent 25%),
-      linear-gradient(-45deg, rgba(251, 191, 36, 0.05) 25%, transparent 25%),
-      linear-gradient(45deg, transparent 75%, rgba(251, 191, 36, 0.05) 75%),
-      linear-gradient(-45deg, transparent 75%, rgba(251, 191, 36, 0.05) 75%);
-    background-size: 20px 20px;
-  }
-  
-  .light .water-ripple {
-    position: relative;
-  }
-  
-  .light .water-ripple::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(
-      circle,
-      rgba(56, 189, 248, 0) 0%,
-      rgba(56, 189, 248, 0.05) 50%,
-      rgba(56, 189, 248, 0) 100%
-    );
-    background-size: 50px 50px;
-    animation: ripple 8s ease-in-out infinite;
-    pointer-events: none;
-    z-index: 1;
-  }
-  
-  @keyframes ripple {
-    0% {
-      background-size: 50px 50px;
-      opacity: 0.3;
-    }
-    50% {
-      background-size: 80px 80px;
-      opacity: 0.6;
-    }
-    100% {
-      background-size: 50px 50px;
-      opacity: 0.3;
-    }
-  }
-  
-  .light .bg-grid-pattern {
-    background-image: 
-      linear-gradient(to right, rgba(52, 211, 153, 0.07) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(52, 211, 153, 0.07) 1px, transparent 1px);
-    background-size: 20px 20px;
-  }
-
-  .light .scan-lines::before {
-    background: linear-gradient(
-      to bottom,
-      transparent 50%,
-      rgba(52, 211, 153, 0.03) 50%
-    );
-    background-size: 100% 4px;
-  }
-
-  .light .scan-lines::after {
-    background: linear-gradient(
-      rgba(250, 250, 250, 0),
-      rgba(250, 250, 250, 0.1)
-    );
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
-/* Import fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap');
-
-/* Add Hebrew font support */
-@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap');
-
-/* RTL support */
-.rtl {
-  direction: rtl;
-  text-align: right;
+/* Theme-specific typography */
+.dark {
+  --font-cyber: 'JetBrains Mono', monospace;
 }
 
-.rtl .ltr-element {
-  direction: ltr;
+/* Custom animations */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(139, 92, 246, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(139, 92, 246, 0.8); }
 }
 
-/* Enhanced Cyberpunk UI elements */
-.neon-border {
-  box-shadow: 0 0 5px theme('colors.flow.accent'), 
-              0 0 10px theme('colors.flow.accent');
-  border: 1px solid theme('colors.flow.accent');
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
-.light .neon-border {
-  box-shadow: 0 0 5px rgba(52, 211, 153, 0.7), 
-              0 0 10px rgba(52, 211, 153, 0.3);
-  border: 1px solid rgba(52, 211, 153, 0.5);
+@keyframes scan-moving {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100%; }
 }
 
-.neon-border-blue {
-  box-shadow: 0 0 5px #0ea5e9, 
-              0 0 10px #0ea5e9;
-  border: 1px solid rgba(14, 165, 233, 0.5);
+/* Cyberpunk Theme Classes */
+.font-cyber {
+  font-family: var(--font-cyber), 'JetBrains Mono', monospace;
+  letter-spacing: 0.05em;
 }
 
-.light .neon-border-blue {
-  box-shadow: 0 0 5px rgba(14, 165, 233, 0.5), 
-              0 0 10px rgba(14, 165, 233, 0.2);
-  border: 1px solid rgba(14, 165, 233, 0.3);
+.neon-text {
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.7);
 }
 
-.neon-border-green {
-  box-shadow: 0 0 5px #22c55e, 
-              0 0 10px #22c55e;
-  border: 1px solid rgba(34, 197, 94, 0.5);
+.neon-text-green {
+  color: #4ade80;
+  text-shadow: 0 0 10px rgba(74, 222, 128, 0.7);
 }
 
-.light .neon-border-green {
-  box-shadow: 0 0 5px rgba(34, 197, 94, 0.5), 
-              0 0 10px rgba(34, 197, 94, 0.2);
-  border: 1px solid rgba(34, 197, 94, 0.3);
+.neon-text-blue {
+  color: #38bdf8;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.7);
 }
 
-.neon-border-orange {
-  box-shadow: 0 0 5px #f97316, 
-              0 0 10px #f97316;
-  border: 1px solid rgba(249, 115, 22, 0.5);
-}
-
-.light .neon-border-orange {
-  box-shadow: 0 0 5px rgba(249, 115, 22, 0.5), 
-              0 0 10px rgba(249, 115, 22, 0.2);
-  border: 1px solid rgba(249, 115, 22, 0.3);
+.neon-text-purple {
+  color: #a78bfa;
+  text-shadow: 0 0 10px rgba(167, 139, 250, 0.7);
 }
 
 .neon-border-purple {
-  box-shadow: 0 0 5px #8b5cf6, 
-              0 0 10px #8b5cf6;
-  border: 1px solid rgba(139, 92, 246, 0.5);
+  box-shadow: 0 0 5px rgba(139, 92, 246, 0.5);
+  border-color: rgba(139, 92, 246, 0.5);
+  transition: all 0.2s ease;
 }
 
-.light .neon-border-purple {
-  box-shadow: 0 0 5px rgba(139, 92, 246, 0.5), 
-              0 0 10px rgba(139, 92, 246, 0.2);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+.neon-border-green {
+  box-shadow: 0 0 5px rgba(74, 222, 128, 0.5);
+  border-color: rgba(74, 222, 128, 0.5);
+  transition: all 0.2s ease;
 }
 
-/* Cyberpunk button styles */
-.cyber-button {
-  position: relative;
-  background: linear-gradient(135deg, rgba(20, 20, 25, 0.8), rgba(30, 30, 40, 0.8));
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-family: 'Orbitron', sans-serif;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  transition: all 0.3s;
-  outline: none;
-  overflow: hidden;
+.neon-border-blue {
+  box-shadow: 0 0 5px rgba(56, 189, 248, 0.5);
+  border-color: rgba(56, 189, 248, 0.5);
+  transition: all 0.2s ease;
 }
 
-.cyber-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: all 0.6s;
+.neon-border-orange {
+  box-shadow: 0 0 5px rgba(251, 146, 60, 0.5);
+  border-color: rgba(251, 146, 60, 0.5);
+  transition: all 0.2s ease;
 }
 
-.cyber-button:hover::before {
-  left: 100%;
+.interactive-card:hover {
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.7);
+  transform: translateY(-2px);
 }
 
-.cyber-button:hover {
-  box-shadow: 0 0 10px rgba(217, 70, 239, 0.6);
-  border-color: rgba(217, 70, 239, 0.5);
-}
-
-.terminal-button {
-  position: fixed;
-  bottom: 70px;
-  left: 20px;
-  z-index: 50;
-}
-
-/* Enhanced scan line effect for monitors */
 .scan-lines {
   position: relative;
   overflow: hidden;
 }
 
-.scan-lines::before {
-  content: '';
+.scan-lines::after {
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 50%,
-    rgba(0, 0, 0, 0.03) 50%
+  background-image: linear-gradient(
+    transparent 0%,
+    rgba(32, 128, 255, 0.02) 2%,
+    rgba(32, 128, 255, 0.02) 3%,
+    transparent 3%,
+    transparent 100%
   );
   background-size: 100% 4px;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
+  animation: scan-moving 4s linear infinite;
   z-index: 1;
 }
 
-.scan-lines::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+.bg-glassmorphism-gradient {
   background: linear-gradient(
-    rgba(16, 16, 20, 0),
-    rgba(16, 16, 20, 0.1)
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 100%
   );
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* Cyberpunk font classes */
-.font-cyber {
-  font-family: 'Orbitron', sans-serif;
-}
-
-.font-space {
-  font-family: 'Space Grotesk', sans-serif;
-}
-
-.font-ibm {
-  font-family: 'IBM Plex Sans', sans-serif;
-}
-
-.font-ibm-mono {
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-/* Hebrew typography adjustments */
-.font-heebo {
-  font-family: 'Heebo', sans-serif;
-}
-
-/* Subtle pulse animation for agents and elements */
-@keyframes pulse-subtle {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.animate-pulse-subtle {
-  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Grid pattern background */
-.bg-grid-pattern {
-  background-image: 
-    linear-gradient(to right, rgba(134, 140, 255, 0.07) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(134, 140, 255, 0.07) 1px, transparent 1px);
-  background-size: 20px 20px;
-}
-
-/* Cyberpunk glow animations */
-@keyframes glow-pulse {
-  0% {
-    box-shadow: 0 0 5px rgba(217, 70, 239, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 15px rgba(217, 70, 239, 0.8);
-  }
-  100% {
-    box-shadow: 0 0 5px rgba(217, 70, 239, 0.5);
-  }
 }
 
 .animate-glow-pulse {
-  animation: glow-pulse 3s ease-in-out infinite;
+  animation: glow-pulse 2s infinite ease-in-out;
 }
 
-@keyframes text-glow-pulse {
-  0% {
-    text-shadow: 0 0 4px rgba(217, 70, 239, 0.5);
-  }
-  50% {
-    text-shadow: 0 0 8px rgba(217, 70, 239, 0.8),
-                0 0 12px rgba(217, 70, 239, 0.3);
-  }
-  100% {
-    text-shadow: 0 0 4px rgba(217, 70, 239, 0.5);
-  }
+.animate-float {
+  animation: float 6s infinite ease-in-out;
 }
 
-.animate-text-glow {
-  animation: text-glow-pulse 3s ease-in-out infinite;
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s infinite ease-in-out;
 }
 
-/* Task progress bar animation */
-@keyframes progress-fill {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(0);
-  }
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
 }
 
-.progress-fill {
-  animation: progress-fill 1s ease-out forwards;
+/* --- Solarpunk Theme Classes --- */
+.solar-button {
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+  transition: all 0.3s ease;
 }
 
-/* Data transmission path */
-@keyframes dash {
-  to {
-    stroke-dashoffset: -20;
-  }
+.solar-button:hover {
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
+  transform: translateY(-2px);
 }
 
-.animated-path {
-  stroke-dasharray: 5, 5;
-  animation: dash 1s linear infinite;
-}
-
-/* Flowing digital circuit animation */
-@keyframes flow-circuit {
-  0% {
-    background-position: 0% 0%;
-  }
-  100% {
-    background-position: 100% 100%;
-  }
-}
-
-.circuit-background {
-  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10h80v80H10z' fill='none' stroke='rgba(134, 70, 255, 0.1)' stroke-width='1'/%3E%3Cpath d='M30 10v80M50 10v80M70 10v80M10 30h80M10 50h80M10 70h80' stroke='rgba(134, 70, 255, 0.05)' stroke-width='0.5'/%3E%3C/svg%3E");
-  background-size: 40px 40px;
-  animation: flow-circuit 30s linear infinite;
-}
-
-/* Standard layout spacing classes */
-@layer components {
-  .container-lg {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-  
-  .container-md {
-    @apply max-w-5xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-  
-  .container-sm {
-    @apply max-w-3xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-  
-  .page-section {
-    @apply py-8 md:py-12;
-  }
-  
-  .section-title {
-    @apply text-2xl font-bold mb-6 flex items-center gap-2;
-  }
-  
-  /* Interactive components */
-  .interactive-card {
-    @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-cyber;
-  }
-  
-  .hover-glow {
-    @apply transition-all duration-300 hover:shadow-cyber;
-  }
-  
-  .hover-glow-sm {
-    @apply transition-all duration-300 hover:shadow-cyber-sm;
-  }
-  
-  .hover-glow-lg {
-    @apply transition-all duration-300 hover:shadow-cyber-lg;
-  }
-  
-  /* Navigation active state */
-  .nav-link {
-    @apply transition-all duration-300 px-3 py-2 rounded-md;
-  }
-  
-  .nav-link-active {
-    @apply bg-flow-accent/20 text-flow-foreground;
-  }
-  
-  /* Status indicators */
-  .status-badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-  }
-  
-  .status-badge-success {
-    @apply bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400;
-  }
-  
-  .status-badge-warning {
-    @apply bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400;
-  }
-  
-  .status-badge-error {
-    @apply bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400;
-  }
-  
-  .status-badge-info {
-    @apply bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-400;
-  }
-  
-  /* Data card styles */
-  .data-card {
-    @apply bg-flow-card p-4 rounded-lg border border-flow-border shadow-neo-subtle transition-all duration-300;
-  }
-  
-  .data-card-hover {
-    @apply hover:shadow-neo hover:border-flow-accent/20;
-  }
-}
-
-/* Status colors for indicators */
-.text-status-success {
-  @apply text-emerald-600 dark:text-emerald-400;
-}
-
-.text-status-warning {
-  @apply text-amber-600 dark:text-amber-400;
-}
-
-.text-status-error {
-  @apply text-rose-600 dark:text-rose-400;
-}
-
-.text-status-info {
-  @apply text-sky-600 dark:text-sky-400;
-}
-
-/* Standardized page layouts */
-.page-layout {
-  @apply min-h-screen flex flex-col bg-flow-background;
-}
-
-.page-content {
-  @apply flex-1 mt-20 px-4 sm:px-6 pb-12;
-}
-
-/* Solarpunk glow animations */
-.light .animate-glow-pulse {
-  animation: solarpunk-glow-pulse 3s ease-in-out infinite;
-}
-
-@keyframes solarpunk-glow-pulse {
-  0% {
-    box-shadow: 0 0 5px rgba(52, 211, 153, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 15px rgba(52, 211, 153, 0.8);
-  }
-  100% {
-    box-shadow: 0 0 5px rgba(52, 211, 153, 0.5);
-  }
-}
-
-.light .animate-text-glow {
-  animation: solarpunk-text-glow-pulse 3s ease-in-out infinite;
-}
-
-@keyframes solarpunk-text-glow-pulse {
-  0% {
-    text-shadow: 0 0 4px rgba(52, 211, 153, 0.5);
-  }
-  50% {
-    text-shadow: 0 0 8px rgba(52, 211, 153, 0.8),
-                0 0 12px rgba(52, 211, 153, 0.3);
-  }
-  100% {
-    text-shadow: 0 0 4px rgba(52, 211, 153, 0.5);
-  }
-}
-
-/* Glassmorphism gradients */
-.bg-glassmorphism-gradient {
-  background-image: radial-gradient(circle at top right, rgba(139, 92, 246, 0.05), transparent 500px);
-  box-shadow: 0 10px 30px -10px rgba(139, 92, 246, 0.3);
-}
-
-.bg-welcome-header-gradient {
-  background-image: linear-gradient(135deg, rgba(139, 92, 246, 0.07) 0%, rgba(217, 70, 239, 0.05) 100%);
-}
-
-/* Solarpunk decorative gradients */
-.bg-solarpunk-gradient {
-  background-image: linear-gradient(120deg, rgba(252, 211, 77, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
-}
-
-.bg-natural-header-gradient {
-  background-image: linear-gradient(135deg, rgba(167, 243, 208, 0.2) 0%, rgba(253, 230, 138, 0.15) 100%);
-}
-
-/* Solarpunk-specific decor elements */
-.flower-decor {
-  position: relative;
-}
-
-.flower-decor::before {
-  content: '✿';
-  position: absolute;
-  font-size: 1.25rem;
-  color: rgba(16, 185, 129, 0.6);
-  top: -0.5rem;
-  right: -0.5rem;
-}
-
-.light .leaf-highlight {
+.eco-card {
   position: relative;
   overflow: hidden;
 }
 
-.light .leaf-highlight::after {
-  content: '';
+.eco-card::before {
+  content: "";
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(16, 185, 129, 0.15) 0%,
-    rgba(16, 185, 129, 0) 70%
-  );
-  opacity: 0;
-  animation: leaf-pulse 4s ease-in-out infinite;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
 }
 
-@keyframes leaf-pulse {
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
+.leaf-pattern {
+  position: relative;
+}
+
+.circuit-background {
+  background-size: 50px 50px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+.page-transition {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Interactive hover effects for both themes */
+.hover-scale {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+.dark .hover-scale:hover {
+  box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+}
+
+.hover-scale:hover {
+  box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);
 }

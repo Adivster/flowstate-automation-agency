@@ -2,6 +2,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
+import { motion } from 'framer-motion';
 
 type GlassMorphismProps = {
   children: React.ReactNode;
@@ -12,7 +13,8 @@ type GlassMorphismProps = {
   borderOpacity?: number;
   hoverEffect?: boolean;
   style?: React.CSSProperties;
-  onClick?: () => void; // Support for onClick prop
+  onClick?: () => void;
+  animate?: boolean;
 };
 
 export const GlassMorphism: React.FC<GlassMorphismProps> = ({
@@ -24,7 +26,8 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
   borderOpacity = 0.2,
   hoverEffect = false,
   style,
-  onClick, // Add onClick prop
+  onClick,
+  animate = false,
 }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -92,7 +95,6 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
           return 'backdrop-blur-md';
       }
     } else {
-      // Light theme might need less intense blur
       switch (intensity) {
         case 'low':
           return 'backdrop-blur-sm';
@@ -108,14 +110,26 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
     if (!hoverEffect) return '';
     
     if (isDark) {
-      return 'transition-all duration-300 hover:bg-opacity-40 hover:border-opacity-50 hover:shadow-lg';
+      return 'transition-all duration-300 hover:bg-opacity-40 hover:border-opacity-60 hover:shadow-lg hover:shadow-flow-accent/10';
     } else {
-      return 'transition-all duration-300 hover:bg-opacity-90 hover:border-opacity-60 hover:shadow-md';
+      return 'transition-all duration-300 hover:bg-opacity-90 hover:border-opacity-70 hover:shadow-md hover:shadow-emerald-300/20';
     }
   };
+
+  const getGlowEffect = () => {
+    if (!isDark) return {};
+    
+    // Subtle light source on cyberpunk glass elements
+    return {
+      backgroundImage: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
+      boxShadow: `0 4px 20px -5px rgba(0, 0, 0, 0.4), inset 0 0 4px rgba(255, 255, 255, 0.05)`,
+    };
+  };
+  
+  const Component = animate ? motion.div : 'div';
   
   return (
-    <div
+    <Component
       className={cn(
         'rounded-lg border',
         getBackgroundVariant(),
@@ -123,11 +137,30 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
         getHoverEffect(),
         className
       )}
-      style={style}
+      style={{
+        ...getGlowEffect(),
+        ...style
+      }}
       onClick={onClick}
+      {...(animate ? {
+        initial: { opacity: 0, y: 5 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.3 }
+      } : {})}
     >
+      {/* Subtle light reflection effect */}
+      {hoverEffect && (
+        <div 
+          className="absolute inset-0 rounded-lg opacity-30 pointer-events-none overflow-hidden"
+          style={{
+            background: isDark 
+              ? 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 50%)' 
+              : 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 50%)',
+          }}
+        />
+      )}
       {children}
-    </div>
+    </Component>
   );
 };
 
