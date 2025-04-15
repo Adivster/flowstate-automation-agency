@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -33,7 +32,6 @@ export const useConversationalFlow = () => {
   const [hasUnreadInsights, setHasUnreadInsights] = useState(false);
   const { toast } = useToast();
   
-  // Simulate receiving insights from the system
   useEffect(() => {
     const insightTimer = setTimeout(() => {
       if (Math.random() > 0.7 && pendingPrompts.length < 3) {
@@ -41,30 +39,26 @@ export const useConversationalFlow = () => {
         setPendingPrompts(prev => [...prev, newPrompt]);
         setHasUnreadInsights(true);
         
-        // Notify user of new insight
         toast({
           title: "New AI Insight",
           description: newPrompt.title,
           duration: 5000,
         });
       }
-    }, 45000); // Every 45 seconds
+    }, 45000);
     
     return () => clearTimeout(insightTimer);
   }, [pendingPrompts, toast]);
 
-  // Generate contextual command suggestions based on active context
   useEffect(() => {
     const suggestions = generateContextualSuggestions(activeContext, contextEntity);
     setActiveSuggestions(suggestions);
   }, [activeContext, contextEntity]);
   
-  // Method to handle switching context
   const switchContext = (type: 'global' | 'division' | 'agent', entity?: {id: string; name: string; type: string}) => {
     setActiveContext(type);
     setContextEntity(entity || null);
     
-    // Generate new suggestions based on context
     const suggestions = generateContextualSuggestions(type, entity || null);
     setActiveSuggestions(suggestions);
     
@@ -75,16 +69,13 @@ export const useConversationalFlow = () => {
     };
   };
   
-  // Handle action prompts
   const handlePromptAction = (promptId: string, action: 'confirm' | 'decline' | 'moreInfo') => {
     const prompt = pendingPrompts.find(p => p.id === promptId);
     if (!prompt) return null;
     
-    // Remove this prompt from pending
     setPendingPrompts(prev => prev.filter(p => p.id !== promptId));
     
     if (action === 'confirm') {
-      // Simulate executing the action
       return {
         type: 'system',
         message: `Executing ${prompt.actionType} on ${prompt.entityName || 'system'}. This will improve performance by approximately ${prompt.metrics?.after - prompt.metrics?.before}${prompt.metrics?.unit}.`,
@@ -99,7 +90,6 @@ export const useConversationalFlow = () => {
         actionTaken: null
       };
     } else {
-      // More info requested
       return {
         type: 'system',
         message: generateDetailedInfo(prompt),
@@ -108,9 +98,7 @@ export const useConversationalFlow = () => {
     }
   };
   
-  // Process conversation input with context awareness
   const processConversationalInput = (input: string) => {
-    // Check if input is targeting a specific entity
     if (input.toLowerCase().startsWith('focus on') || input.toLowerCase().startsWith('switch to')) {
       const entityMatch = input.match(/focus on|switch to\s+(\w+)\s+(\w+)/i);
       if (entityMatch) {
@@ -126,7 +114,6 @@ export const useConversationalFlow = () => {
       }
     }
     
-    // Check if input is requesting to view AI insights
     if (input.toLowerCase().includes('show insights') || input.toLowerCase().includes('ai insights')) {
       if (pendingPrompts.length > 0) {
         setHasUnreadInsights(false);
@@ -139,12 +126,11 @@ export const useConversationalFlow = () => {
       } else {
         return {
           type: 'system',
-          message: 'There are no pending AI insights at the moment. I'll notify you when new insights are available.'
+          message: "There are no pending AI insights at the moment. I'll notify you when new insights are available."
         };
       }
     }
     
-    // Handle context-specific queries
     if (activeContext !== 'global' && contextEntity) {
       if (input.toLowerCase().includes('performance') || input.toLowerCase().includes('status')) {
         return {
@@ -154,15 +140,13 @@ export const useConversationalFlow = () => {
       }
     }
     
-    // Handle affirmative responses to suggestions
     if (/^yes|proceed|go ahead|confirm|approve|execute$/i.test(input.trim())) {
       if (pendingPrompts.length > 0) {
-        const prompt = pendingPrompts[0]; // Take the first pending prompt
+        const prompt = pendingPrompts[0];
         return handlePromptAction(prompt.id, 'confirm');
       }
     }
     
-    // Fall back to general conversation
     return processGeneralConversation(input, activeContext, contextEntity);
   };
   
@@ -183,7 +167,6 @@ export const useConversationalFlow = () => {
   };
 };
 
-// Helper functions
 const generateRandomPrompt = (): ActionPrompt => {
   const actionTypes: ActionType[] = ['reassign', 'optimize', 'diagnose', 'report', 'tune', 'simulate'];
   const entities = [
@@ -199,8 +182,8 @@ const generateRandomPrompt = (): ActionPrompt => {
   const randomEntity = entities[Math.floor(Math.random() * entities.length)];
   const randomSeverity = Math.random() > 0.7 ? 'high' : Math.random() > 0.4 ? 'medium' : 'low';
   
-  const currentMetric = Math.floor(Math.random() * 50) + 40; // 40-90
-  const improvedMetric = Math.min(100, currentMetric + Math.floor(Math.random() * 15) + 5); // 5-20% improvement
+  const currentMetric = Math.floor(Math.random() * 50) + 40;
+  const improvedMetric = Math.min(100, currentMetric + Math.floor(Math.random() * 15) + 5);
   
   const titles = {
     reassign: `Task reassignment needed for ${randomEntity.name}`,
@@ -276,7 +259,6 @@ const generateContextualSuggestions = (
 };
 
 const generateDetailedInfo = (prompt: ActionPrompt): string => {
-  // Create more detailed information about the prompt
   let details = `Detailed Analysis for ${prompt.entityName}:\n\n`;
   
   if (prompt.actionType === 'reassign') {
@@ -330,7 +312,6 @@ const processGeneralConversation = (
   activeContext: 'global' | 'division' | 'agent',
   contextEntity: {id: string; name: string; type: string} | null
 ) => {
-  // Process general conversation based on input keywords
   const lowerInput = input.toLowerCase();
   
   if (lowerInput.includes('status') || lowerInput.includes('health')) {
@@ -361,7 +342,6 @@ const processGeneralConversation = (
     };
   }
   
-  // Context-aware default response
   if (activeContext !== 'global' && contextEntity) {
     return {
       type: 'system',
