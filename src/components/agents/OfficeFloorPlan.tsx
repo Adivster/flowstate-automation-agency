@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -13,7 +12,7 @@ import InfoPanelManager from './office/InfoPanelManager';
 import { Button } from '@/components/ui/button';
 import { Pencil, Save, RotateCcw, X, ZoomIn, ZoomOut, Layers, Users, Info } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import ZoomableView from './office/ZoomableView';
 import VisualizationControls from './office/VisualizationControls';
 import { VisualizationLayer } from './office/VisualizationControls';
@@ -486,6 +485,7 @@ const OfficeFloorPlan: React.FC = () => {
       
       if (action === 'optimize' || !action) {
         prompt = {
+          id: `${entityType}-${entityId}-optimize-${Date.now()}`,
           actionType: 'optimize',
           title: `Optimize ${division.name} Division`,
           description: `AI analysis detected opportunity to improve performance by reallocating resources for the ${division.name} Division.`,
@@ -505,6 +505,7 @@ const OfficeFloorPlan: React.FC = () => {
         };
       } else if (action === 'analyze') {
         prompt = {
+          id: `${entityType}-${entityId}-analyze-${Date.now()}`,
           actionType: 'diagnose',
           title: `${division.name} Performance Analysis`,
           description: `Generate comprehensive performance report for ${division.name} Division with efficiency trends.`,
@@ -523,6 +524,7 @@ const OfficeFloorPlan: React.FC = () => {
       
       if (action === 'diagnose' || !action) {
         prompt = {
+          id: `${entityType}-${entityId}-tune-${Date.now()}`,
           actionType: 'tune',
           title: `Tune Agent Parameters`,
           description: `Agent ${agent.name} has been operating below optimal thresholds. Performance tuning recommended.`,
@@ -542,6 +544,7 @@ const OfficeFloorPlan: React.FC = () => {
         };
       } else if (action === 'optimize') {
         prompt = {
+          id: `${entityType}-${entityId}-reassign-${Date.now()}`,
           actionType: 'reassign',
           title: `Reassign Agent Tasks`,
           description: `Recommended workload redistribution for Agent ${agent.name} to optimize task efficiency.`,
@@ -562,6 +565,7 @@ const OfficeFloorPlan: React.FC = () => {
       }
     } else if (entityType === 'server') {
       prompt = {
+        id: `${entityType}-${entityId}-simulate-${Date.now()}`,
         actionType: 'simulate',
         title: 'System Performance Simulation',
         description: 'Run simulation to identify potential bottlenecks and optimize resource allocation.',
