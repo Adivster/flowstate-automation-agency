@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { 
   BookOpen, 
@@ -46,7 +45,7 @@ import AgentsTab from './tabs/AgentsTab';
 import SystemTab from './tabs/SystemTab';
 import { Input } from '@/components/ui/input';
 
-const AgencyDashboard: React.FC = () => {
+const AgencyDashboard = () => {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState("mission-control");
   const dashboardActions = useDashboardActions();
@@ -91,57 +90,20 @@ const AgencyDashboard: React.FC = () => {
   };
   
   return (
-    <div className="p-4 relative" onKeyDown={handleCommandK}>
-      <div className="mb-6 flex flex-wrap justify-between items-center">
-        <div className="flex items-center">
-          <div className="animate-pulse-subtle mr-4">
-            <div className="h-3 w-3 rounded-full bg-green-500 shadow-[0_0_10px_rgba(74,222,128,0.5)]"></div>
-          </div>
-          <div>
-            <h2 className="text-xl font-cyber tracking-wider neon-text-green">SYSTEM ONLINE</h2>
-            <p className="text-xs text-flow-foreground/70">Health: {systemHealth.toFixed(1)}% • Last Update: {new Date().toLocaleTimeString()}</p>
+    <div className="p-4 relative">
+      <div className="mb-6 flex flex-wrap justify-between items-center gap-4">
+        <div className="relative flex-grow max-w-md">
+          <Input 
+            placeholder="Search dashboard..." 
+            className="h-8 w-full text-xs pl-8 bg-black/30 border-flow-border/30"
+          />
+          <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 transform -translate-y-1/2 text-flow-foreground/50" />
+          <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2 bg-flow-background/30 px-1 rounded text-[10px] text-flow-foreground/60">
+            Ctrl+K
           </div>
         </div>
-        
-        <div className="flex items-center gap-2 mt-4 md:mt-0">
-          <div className="relative mr-2">
-            <Input 
-              placeholder="Search dashboard..." 
-              className="h-8 w-44 text-xs pl-8 bg-black/30 border-flow-border/30"
-            />
-            <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 transform -translate-y-1/2 text-flow-foreground/50" />
-            <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2 bg-flow-background/30 px-1 rounded text-[10px] text-flow-foreground/60">
-              Ctrl+K
-            </div>
-          </div>
 
-          <div className="flex bg-black/40 rounded-md overflow-hidden mr-2">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className={`text-[10px] h-7 px-2 py-0 ${dateRange === 'day' ? 'bg-flow-accent/20' : ''}`}
-              onClick={() => setDateRange('day')}
-            >
-              Day
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className={`text-[10px] h-7 px-2 py-0 ${dateRange === 'week' ? 'bg-flow-accent/20' : ''}`}
-              onClick={() => setDateRange('week')}
-            >
-              Week
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className={`text-[10px] h-7 px-2 py-0 ${dateRange === 'month' ? 'bg-flow-accent/20' : ''}`}
-              onClick={() => setDateRange('month')}
-            >
-              Month
-            </Button>
-          </div>
-
+        <div className="flex items-center gap-2">
           <Button 
             variant="outline" 
             size="icon" 
@@ -158,45 +120,25 @@ const AgencyDashboard: React.FC = () => {
           >
             {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
           </Button>
-          <Tabs 
-            defaultValue={activeTab}
-            value={activeTab} 
-            onValueChange={setActiveTab}
-          >
-            <TabsList className="bg-flow-background/30 border border-flow-border/20 p-1">
-              <TabsTrigger value="mission-control" className="data-[state=active]:bg-flow-accent/20 text-xs">
-                Mission Control
-              </TabsTrigger>
-              <TabsTrigger value="divisions" className="data-[state=active]:bg-flow-accent/20 text-xs">
-                Divisions
-              </TabsTrigger>
-              <TabsTrigger value="agents" className="data-[state=active]:bg-flow-accent/20 text-xs">
-                Agents
-              </TabsTrigger>
-              <TabsTrigger value="system" className="data-[state=active]:bg-flow-accent/20 text-xs">
-                System
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
         </div>
       </div>
-      
-      <div className="h-0.5 w-full bg-black/30 mb-6 relative overflow-hidden">
-        <motion.div 
-          className="absolute h-full bg-gradient-to-r from-cyan-500/0 via-cyan-500/80 to-cyan-500/0 top-0"
-          style={{ width: '30%' }}
-          animate={{
-            x: ['-100%', '400%'],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        />
-      </div>
 
-      <Tabs value={activeTab} defaultValue={activeTab}>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="bg-flow-background/30 border border-flow-border/20 p-1">
+          <TabsTrigger value="mission-control" className="data-[state=active]:bg-flow-accent/20 text-xs">
+            Mission Control
+          </TabsTrigger>
+          <TabsTrigger value="divisions" className="data-[state=active]:bg-flow-accent/20 text-xs">
+            Divisions
+          </TabsTrigger>
+          <TabsTrigger value="agents" className="data-[state=active]:bg-flow-accent/20 text-xs">
+            Agents
+          </TabsTrigger>
+          <TabsTrigger value="system" className="data-[state=active]:bg-flow-accent/20 text-xs">
+            System
+          </TabsTrigger>
+        </TabsList>
+        
         <TabsContent value="mission-control">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
             <SystemStatusModule systemHealth={systemHealth} />
@@ -244,22 +186,6 @@ const AgencyDashboard: React.FC = () => {
           <SystemTab />
         </TabsContent>
       </Tabs>
-      
-      <motion.div 
-        className="fixed bottom-4 right-4 bg-black/80 border border-indigo-500/30 rounded-lg p-3 backdrop-blur-md z-30 shadow-lg"
-        initial={{ y: 100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 1, duration: 0.5 }}
-      >
-        <div className="flex items-center gap-2 text-xs text-flow-foreground/80">
-          <Rocket className="h-4 w-4 text-amber-400" />
-          <span>🔥 1,000 tasks completed this week!</span>
-        </div>
-      </motion.div>
-
-      <div className="fixed bottom-4 right-4 bg-black/60 border border-flow-border/30 rounded-lg px-2 py-1 text-[10px] text-flow-foreground/60">
-        Press <kbd className="bg-flow-background/60 px-1 py-0.5 rounded border border-flow-border/50">Ctrl+K</kbd> to search or open command terminal
-      </div>
     </div>
   );
 };

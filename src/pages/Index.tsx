@@ -1,20 +1,19 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AgencyDashboard from '@/components/dashboard/AgencyDashboard';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { LayoutDashboard, PlayCircle, UserPlus, Building2, Terminal } from 'lucide-react';
+import { LayoutDashboard, PlayCircle, UserPlus, Building2, Terminal, Rocket, Zap, BrainCircuit } from 'lucide-react';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
+import { QuickActionButton } from '@/components/ui/quick-action-button';
 import ThemedBackground from '@/components/ui/ThemedBackground';
 import { useDashboardActions } from '@/hooks/useDashboardActions';
 import CommunicationTerminal from '@/components/communication/CommunicationTerminal';
 import ThemeSelector from '@/components/ui/ThemeSelector';
 
 const Index: React.FC = () => {
-  const [theme, setTheme] = useState<'default' | 'retro' | 'vapor' | 'tactical'>('default');
   const dashboardActions = useDashboardActions();
   
   return (
@@ -34,35 +33,36 @@ const Index: React.FC = () => {
             icon={<LayoutDashboard className="h-8 w-8 text-purple-500 drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]" />}
           />
           
-          <div className="flex items-center gap-2 mt-4 md:mt-0">
+          <div className="flex flex-wrap items-center gap-2 mt-4 md:mt-0">
             <ThemeSelector />
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="bg-black/20 border-flow-border/30 text-xs"
+            
+            <QuickActionButton 
+              icon={PlayCircle}
+              label="Start Workflow"
+              variant="success"
               onClick={dashboardActions.handleStartWorkflow}
-            >
-              <PlayCircle className="h-3.5 w-3.5 mr-1.5 text-cyan-400" />
-              Start Workflow
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="bg-black/20 border-flow-border/30 text-xs"
+            />
+            
+            <QuickActionButton 
+              icon={UserPlus}
+              label="Deploy Agent"
+              variant="default"
               onClick={dashboardActions.handleCreateAgent}
-            >
-              <UserPlus className="h-3.5 w-3.5 mr-1.5 text-green-400" />
-              Deploy Agent
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="bg-black/20 border-flow-border/30 text-xs"
+            />
+            
+            <QuickActionButton 
+              icon={Building2}
+              label="Create Division"
+              variant="warning"
               onClick={dashboardActions.handleCreateDivision}
-            >
-              <Building2 className="h-3.5 w-3.5 mr-1.5 text-yellow-400" />
-              Create Division
-            </Button>
+            />
+            
+            <QuickActionButton 
+              icon={Rocket}
+              label="AI Optimize"
+              hasPulse
+              onClick={dashboardActions.handleAiConsult}
+            />
           </div>
         </motion.div>
         
