@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -66,6 +67,12 @@ const OfficeFloorPlan: React.FC = () => {
       },
       quickActions: {
         active: true
+      },
+      analytics: {
+        active: true,
+        position: 'bottom-left',
+        showLabels: true,
+        showTrends: true
       }
     }
   });
