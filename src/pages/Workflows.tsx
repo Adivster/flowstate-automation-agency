@@ -1,13 +1,15 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { Workflow, Edit2, ActivitySquare, PlayCircle } from 'lucide-react';
+import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
+import { Workflow, Zap, Play, Settings, Users, ActivitySquare, PlayCircle, PlusCircle } from 'lucide-react';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ThemedBackground from '@/components/ui/ThemedBackground';
+import WorkflowGrid from '@/components/workflows/WorkflowGrid';
 
 const Workflows: React.FC = () => {
   const { t } = useLanguage();
@@ -24,9 +26,9 @@ const Workflows: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <PageHeader 
             title="Workflows"
-            extendedTitle="Automated Processes"
-            description="Design, monitor, and optimize your sequence of automated tasks."
-            icon={<Workflow className="h-12 w-12 text-lime-400 dark:text-lime-400 drop-shadow-[0_0_15px_rgba(163,230,53,0.8)]" />}
+            extendedTitle="Process Automation"
+            description="Design, monitor, and optimize your automated task sequences."
+            icon={<Workflow className="h-12 w-12 text-orange-400 drop-shadow-[0_0_15px_rgba(251,146,60,0.8)]" />}
             variant="workflows"
             glassEffect={true}
             actions={
@@ -34,48 +36,39 @@ const Workflows: React.FC = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="bg-lime-500/10 border-lime-500/50 hover:bg-lime-500/20 text-lime-500 dark:text-lime-400"
+                  className="bg-orange-500/10 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 dark:text-orange-400"
                 >
-                  <Workflow className="h-4 w-4 mr-2" />
-                  Create Workflow
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  New Workflow
                 </Button>
                 
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="bg-lime-500/10 border-lime-500/50 hover:bg-lime-500/20 text-lime-500 dark:text-lime-400"
+                  className="bg-orange-500/10 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 dark:text-orange-400"
                 >
-                  <Edit2 className="h-4 w-4 mr-2" />
-                  Edit Workflow
+                  <Play className="h-4 w-4 mr-2" />
+                  Run All
                 </Button>
                 
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="bg-lime-500/10 border-lime-500/50 hover:bg-lime-500/20 text-lime-500 dark:text-lime-400"
+                  className="bg-orange-500/10 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 dark:text-orange-400"
                 >
-                  <ActivitySquare className="h-4 w-4 mr-2" />
-                  Optimize
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="bg-lime-500/10 border-lime-500/50 hover:bg-lime-500/20 text-lime-500 dark:text-lime-400"
-                >
-                  <PlayCircle className="h-4 w-4 mr-2" />
-                  Run Simulation
+                  <Settings className="h-4 w-4 mr-2" />
+                  Settings
                 </Button>
               </div>
             }
           />
           
-          <GlassMorphism className="rounded-2xl p-6 md:p-8 shadow-sm border-flow-border/30 scan-lines">
-            {/* Workflow content will go here */}
-            <div className="text-center text-flow-foreground/70">
-              <p>Workflow management interface coming soon...</p>
-            </div>
-          </GlassMorphism>
+          <SolarpunkPanel
+            accentColor="orange"
+            className="p-5 md:p-8"
+          >
+            <WorkflowGrid />
+          </SolarpunkPanel>
         </div>
       </main>
       
