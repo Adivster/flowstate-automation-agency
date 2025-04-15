@@ -19,7 +19,7 @@ export const QuickActionButton = React.forwardRef<HTMLButtonElement, QuickAction
       success: "from-green-500/20 to-emerald-500/20 border-green-500/30 hover:border-green-500/50 text-green-400",
       warning: "from-amber-500/20 to-yellow-500/20 border-amber-500/30 hover:border-amber-500/50 text-amber-400",
       danger: "from-red-500/20 to-rose-500/20 border-red-500/30 hover:border-red-500/50 text-red-400",
-      ai: "from-fuchsia-500/30 to-purple-500/30 border-fuchsia-500/40 hover:border-fuchsia-500/60 text-fuchsia-400", // New AI variant
+      ai: "from-pink-500/30 to-fuchsia-500/30 border-pink-500/40 hover:border-pink-500/60 text-pink-400",
     }
 
     return (
@@ -33,7 +33,7 @@ export const QuickActionButton = React.forwardRef<HTMLButtonElement, QuickAction
           className={cn(
             "relative h-10 pl-3 pr-4 bg-gradient-to-br border backdrop-blur-sm transition-all duration-300",
             variantStyles[variant as keyof typeof variantStyles],
-            hasPulse && "animate-pulse",
+            hasPulse && "animate-pulse-slow",
             className
           )}
           {...props}
@@ -48,9 +48,9 @@ export const QuickActionButton = React.forwardRef<HTMLButtonElement, QuickAction
                 opacity: [0.5, 0, 0.5] 
               }}
               transition={{ 
-                duration: 2,
+                duration: 3,
                 repeat: Infinity,
-                ease: "linear" 
+                ease: "easeInOut" 
               }}
             />
           )}
