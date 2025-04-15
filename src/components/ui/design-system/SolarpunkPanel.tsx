@@ -1,11 +1,11 @@
 
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { useTheme } from 'next-themes';
 import { motion } from 'framer-motion';
 
-interface SolarpunkPanelProps {
+interface SolarpunkPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   className?: string;
   accentColor?: 'default' | 'yellow' | 'green' | 'orange' | 'coral' | 'aqua' | 'gold' | 'blue' | 'lavender';
@@ -16,7 +16,7 @@ interface SolarpunkPanelProps {
   onClick?: () => void;
 }
 
-export const SolarpunkPanel: React.FC<SolarpunkPanelProps> = ({
+export const SolarpunkPanel = forwardRef<HTMLDivElement, SolarpunkPanelProps>(({
   children,
   className,
   accentColor = 'default',
@@ -25,7 +25,8 @@ export const SolarpunkPanel: React.FC<SolarpunkPanelProps> = ({
   noBorder = false,
   fullWidth = false,
   onClick,
-}) => {
+  ...props
+}, ref) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
@@ -89,6 +90,7 @@ export const SolarpunkPanel: React.FC<SolarpunkPanelProps> = ({
 
   return (
     <Component
+      ref={ref}
       onClick={onClick}
       className={cn(
         'rounded-xl overflow-hidden',
@@ -101,10 +103,13 @@ export const SolarpunkPanel: React.FC<SolarpunkPanelProps> = ({
         className
       )}
       {...motionProps}
+      {...props}
     >
       {children}
     </Component>
   );
-};
+});
+
+SolarpunkPanel.displayName = 'SolarpunkPanel';
 
 export default SolarpunkPanel;
