@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { 
   BookOpen, 
@@ -62,12 +61,11 @@ const AgencyDashboard: React.FC = () => {
   const [dateRange, setDateRange] = useState<'day' | 'week' | 'month' | 'year'>('week');
 
   useEffect(() => {
-    // Simulate system health fluctuations
     const interval = setInterval(() => {
       setSystemHealth(prev => {
-        const change = Math.random() * 2 - 1; // Random value between -1 and 1
+        const change = Math.random() * 2 - 1;
         const newValue = prev + change;
-        return Math.min(Math.max(newValue, 90), 99); // Keep between 90 and 99
+        return Math.min(Math.max(newValue, 90), 99);
       });
     }, 5000);
     
@@ -99,7 +97,6 @@ const AgencyDashboard: React.FC = () => {
   
   return (
     <div className="p-4 relative" onKeyDown={handleCommandK}>
-      {/* Header Bar with System Status */}
       <div className="mb-6 flex flex-wrap justify-between items-center">
         <div className="flex items-center">
           <div className="animate-pulse-subtle mr-4">
@@ -112,7 +109,6 @@ const AgencyDashboard: React.FC = () => {
         </div>
         
         <div className="flex items-center gap-2 mt-4 md:mt-0">
-          {/* Global search with Ctrl+K shortcut */}
           <div className="relative mr-2">
             <Input 
               placeholder="Search dashboard..." 
@@ -190,7 +186,6 @@ const AgencyDashboard: React.FC = () => {
         </div>
       </div>
       
-      {/* Pulse Line */}
       <div className="h-0.5 w-full bg-black/30 mb-6 relative overflow-hidden">
         <motion.div 
           className="absolute h-full bg-gradient-to-r from-cyan-500/0 via-cyan-500/80 to-cyan-500/0 top-0"
@@ -206,55 +201,37 @@ const AgencyDashboard: React.FC = () => {
         />
       </div>
 
-      {/* Main Dashboard Content */}
       <Tabs value={activeTab} defaultValue={activeTab}>
         <TabsContent value="mission-control">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-            {/* System Status Module */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
             <SystemStatusModule systemHealth={systemHealth} />
-            
-            {/* AI Insights Panel */}
             <AIInsightsPanel />
-            
-            {/* Quick Actions Hub */}
-            <QuickActionsHub />
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-            {/* Performance Map with KPIs */}
             <div className="lg:col-span-1">
               <PerformanceMap />
             </div>
             
-            {/* Division Overview with Clear Section Titles */}
             <div className="lg:col-span-1">
               <DivisionOverview />
             </div>
             
-            {/* Agent Evolution Map with Snapshots */}
             <div className="lg:col-span-1">
               <AgentEvolutionMap />
             </div>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Recent Activity Feed with Filters */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="lg:col-span-1">
               <RecentActivityFeed />
             </div>
             
-            {/* Task Feed with Progress Bars & Quick Actions */}
             <div className="lg:col-span-1">
               <TaskFeed />
             </div>
-            
-            {/* Enhanced Command Terminal Widget */}
-            <div className="lg:col-span-1">
-              <CommandTerminalWidget />
-            </div>
           </div>
           
-          {/* Global Mesh Status (Collapsible/Expandable) */}
           <div className="mt-4">
             <GlobalMeshStatus />
           </div>
@@ -273,7 +250,6 @@ const AgencyDashboard: React.FC = () => {
         </TabsContent>
       </Tabs>
       
-      {/* Dashboard Achievements Panel */}
       <motion.div 
         className="fixed bottom-4 right-4 bg-black/80 border border-indigo-500/30 rounded-lg p-3 backdrop-blur-md z-30 shadow-lg"
         initial={{ y: 100, opacity: 0 }}
@@ -286,7 +262,6 @@ const AgencyDashboard: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* Keyboard shortcut hint */}
       <div className="fixed bottom-4 left-4 bg-black/60 border border-flow-border/30 rounded-lg px-2 py-1 text-[10px] text-flow-foreground/60">
         Press <kbd className="bg-flow-background/60 px-1 py-0.5 rounded border border-flow-border/50">Ctrl+K</kbd> to search or open command terminal
       </div>

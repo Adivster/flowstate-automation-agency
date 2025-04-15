@@ -4,12 +4,13 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AgencyDashboard from '@/components/dashboard/AgencyDashboard';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { LayoutDashboard, Zap, PlayCircle, UserPlus, Building2, Terminal } from 'lucide-react';
+import { LayoutDashboard, PlayCircle, UserPlus, Building2 } from 'lucide-react';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import ThemedBackground from '@/components/ui/ThemedBackground';
 import { useDashboardActions } from '@/hooks/useDashboardActions';
+import CommunicationTerminal from '@/components/communication/CommunicationTerminal';
 
 const Index: React.FC = () => {
   const [theme, setTheme] = useState<'default' | 'retro' | 'vapor' | 'tactical'>('default');
@@ -59,10 +60,10 @@ const Index: React.FC = () => {
               variant="outline" 
               size="sm" 
               className="bg-black/20 border-flow-border/30 text-xs"
-              onClick={dashboardActions.handleOpenCommandTerminal}
+              onClick={dashboardActions.handleCreateDivision}
             >
-              <Terminal className="h-3.5 w-3.5 mr-1.5 text-indigo-400" />
-              Open CLI
+              <Building2 className="h-3.5 w-3.5 mr-1.5 text-yellow-400" />
+              Create Division
             </Button>
           </div>
         </motion.div>
@@ -77,6 +78,7 @@ const Index: React.FC = () => {
       </main>
       
       <Footer />
+      <CommunicationTerminal />
     </ThemedBackground>
   );
 };
