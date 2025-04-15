@@ -186,14 +186,9 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isGridView = false }) => {
             value={task.progress} 
             className={cn(
               "h-2", 
-              isDark ? (
-                task.status === 'failed' ? "bg-red-200" : "bg-flow-muted",
-                task.status === 'completed' ? "bg-green-200" : ""
-              ) : (
-                task.status === 'failed' ? "bg-red-100" : "bg-emerald-100",
-                task.status === 'completed' ? "bg-emerald-100" : ""
-              ),
-              divisionColorScheme && `overflow-hidden rounded-full`
+              isDark ? 
+                (task.status === 'failed' ? "bg-red-200" : "bg-flow-muted") : 
+                (task.status === 'completed' ? "bg-emerald-100" : "bg-emerald-100")
             )}
           >
             <div 
@@ -255,14 +250,9 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, isGridView = false }) => {
           value={task.progress} 
           className={cn(
             "h-2", 
-            isDark ? (
-              task.status === 'failed' ? "bg-red-200" : "bg-flow-muted",
-              task.status === 'completed' ? "bg-green-200" : ""
-            ) : (
-              task.status === 'failed' ? "bg-red-100" : "bg-emerald-100",
-              task.status === 'completed' ? "bg-emerald-100" : ""
-            ),
-            divisionColorScheme && `overflow-hidden rounded-full`
+            isDark ? 
+              (task.status === 'failed' ? "bg-red-200" : "bg-flow-muted") : 
+              (task.status === 'completed' ? "bg-emerald-100" : "bg-emerald-100")
           )}
         >
           <div 
