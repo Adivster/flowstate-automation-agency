@@ -7,7 +7,6 @@ import { fixOverlaps, optimizeLayout } from './office/utils/layoutUtils';
 import DataTransmissionManager, { DataTransmission } from './office/DataTransmissionManager';
 import NotificationManager, { Notification } from './office/NotificationManager';
 import OfficeElements from './office/OfficeElements';
-import OfficeControls from './office/OfficeControls';
 import InfoPanelManager from './office/InfoPanelManager';
 import { Button } from '@/components/ui/button';
 import { Pencil, Save, RotateCcw, X, ZoomIn, ZoomOut, Layers, Users, Info } from 'lucide-react';
@@ -20,6 +19,14 @@ import { VisualizationLayerData, VisualizationState } from './office/types/visua
 import { ActionPrompt } from '@/components/communication/useConversationalFlow';
 import { ActionPromptCard } from '@/components/communication/ActionPromptCard';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { OfficeLoadingState } from './office/layout/OfficeLoadingState';
+import { OfficeBackground } from './office/layout/OfficeBackground';
+import { OfficeControls } from './office/layout/OfficeControls';
+
+interface Position {
+  x: number;
+  y: number;
+}
 
 const OfficeFloorPlan: React.FC = () => {
   // Component state
@@ -616,13 +623,7 @@ const OfficeFloorPlan: React.FC = () => {
   
   // Loading state
   if (!isLoaded) {
-    return (
-      <Card className="relative w-full h-[550px] overflow-hidden border-2 p-0 bg-flow-background/20 border-flow-border neon-border">
-        <div className="absolute inset-0 flex items-center justify-center bg-flow-background/50 backdrop-blur-sm">
-          <div className="w-12 h-12 border-4 border-flow-accent border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      </Card>
-    );
+    return <OfficeLoadingState />;
   }
   
   return (
@@ -632,35 +633,17 @@ const OfficeFloorPlan: React.FC = () => {
         className="absolute inset-0 bg-flow-background/30 select-none overflow-hidden"
         onClick={handleBackgroundClick}
       >
-        {/* Cyberpunk grid background */}
-        <div 
-          className="absolute inset-0 will-change-transform" 
-          style={{ 
-            backgroundImage: 'linear-gradient(to right, rgba(156, 163, 175, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(156, 163, 175, 0.1) 1px, transparent 1px)',
-            backgroundSize: '20px 20px',
-          }}
-        />
+        <OfficeBackground />
         
-        {/* Background glow effects */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-purple-500/5 blur-3xl"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-blue-500/5 blur-3xl"></div>
-        </div>
-        
-        {/* Use ZoomableView without its own controls */}
         <ZoomableView 
           zoomLevel={zoomLevel}
           onZoomIn={handleZoomIn}
           onZoomOut={handleZoomOut}
           onReset={handleResetZoom}
         >
-          {/* Data transmission lines */}
           <DataTransmissionManager transmissions={dataTransmissions} />
-          
-          {/* Notifications */}
           <NotificationManager notifications={notifications} />
           
-          {/* All office elements */}
           <OfficeElements 
             divisions={divisions}
             workstations={workstations}
@@ -681,7 +664,6 @@ const OfficeFloorPlan: React.FC = () => {
           />
         </ZoomableView>
         
-        {/* Visualization controls */}
         <div className="absolute top-3 left-3 z-40">
           <VisualizationControls 
             layers={visualizationState.layers}
@@ -689,10 +671,13 @@ const OfficeFloorPlan: React.FC = () => {
           />
         </div>
         
-        {/* Control buttons and UI */}
-        <OfficeControls translationFunction={t} />
+        <OfficeControls
+          zoomLevel={zoomLevel}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onResetZoom={handleResetZoom}
+        />
         
-        {/* Info panel for selected division/agent */}
         <InfoPanelManager 
           selectedDivision={selectedDivision}
           selectedDivisionObject={selectedDivisionObject}
@@ -703,7 +688,6 @@ const OfficeFloorPlan: React.FC = () => {
           onClose={handleCloseInfoPanel}
         />
         
-        {/* AI Insight Prompt - Repositioned to bottom right */}
         <AnimatePresence>
           {aiPromptVisible && aiPrompt && (
             <motion.div 
