@@ -1,28 +1,20 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { 
-  Lightbulb, 
-  Sparkles, 
-  ArrowUpRight, 
-  BarChart3, 
-  Users, 
-  Bell,
-  ChevronRight,
-  BadgeCheck,
-  Gauge,
-  BrainCircuit
+  Lightbulb, Sparkles, ArrowUpRight, BarChart3, Users, 
+  Bell, ChevronRight, BadgeCheck, Gauge, BrainCircuit,
+  Zap, Target, TrendingUp, Award
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const AIInsights: React.FC = () => {
   const { toast } = useToast();
   const [expandedInsight, setExpandedInsight] = useState<number | null>(null);
   
-  // Enhanced mock data for AI insights
   const insights = [
     {
       id: 1,
@@ -99,7 +91,6 @@ const AIInsights: React.FC = () => {
     }
   };
 
-  // Severity badge styling
   const getSeverityBadge = (severity: string) => {
     switch(severity) {
       case 'high':
@@ -114,12 +105,51 @@ const AIInsights: React.FC = () => {
   };
 
   return (
-    <GlassMorphism className="p-6 rounded-xl bg-flow-background/20 backdrop-blur-lg border-flow-accent/20 h-full">
-      <div className="flex items-center justify-between mb-4">
+    <GlassMorphism className="p-6 rounded-xl bg-gradient-to-br from-indigo-500/5 to-purple-500/10 backdrop-blur-lg border-flow-accent/20 h-full overflow-hidden relative">
+      <div className="absolute inset-0 pointer-events-none">
+        <motion.div
+          className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-500/10 to-pink-500/5 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+      </div>
+
+      <div className="flex items-center justify-between mb-6 relative">
         <div className="flex items-center">
-          <Lightbulb className="h-5 w-5 mr-2 text-yellow-400" />
-          <h3 className="text-lg font-medium">AI Insights</h3>
+          <div className="relative">
+            <Lightbulb className="h-6 w-6 text-yellow-400" />
+            <motion.div
+              className="absolute inset-0 text-yellow-400"
+              animate={{
+                scale: [1, 1.5, 1],
+                opacity: [0.5, 0, 0.5],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+            >
+              <Lightbulb className="h-6 w-6" />
+            </motion.div>
+          </div>
+          <div className="ml-3">
+            <h3 className="text-xl font-bold bg-gradient-to-r from-yellow-200 to-yellow-400 bg-clip-text text-transparent">
+              AI Insights
+            </h3>
+            <p className="text-xs text-flow-foreground/60 mt-0.5">
+              Real-time intelligence & recommendations
+            </p>
+          </div>
         </div>
+        
         <motion.div 
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -138,82 +168,107 @@ const AIInsights: React.FC = () => {
           </Button>
         </motion.div>
       </div>
-      
-      <div className="space-y-3 mb-4 max-h-[calc(100%-80px)] overflow-y-auto custom-scrollbar pr-1">
-        {insights.map(insight => (
-          <motion.div 
-            key={insight.id} 
-            className={`bg-flow-card/30 border border-flow-border/10 rounded-lg p-3 hover:bg-flow-card/40 transition-all cursor-pointer group ${expandedInsight === insight.id ? 'bg-flow-card/50' : ''}`}
-            onClick={() => toggleExpand(insight.id)}
-            whileHover={{ translateY: -2 }}
-            animate={{ height: expandedInsight === insight.id ? 'auto' : 'auto' }}
-          >
-            <div className="flex items-start gap-3">
-              <div className={`
-                p-2 rounded-full 
-                ${insight.type === 'performance' ? 'bg-blue-500/20 text-blue-400' : 
-                 insight.type === 'opportunity' ? 'bg-green-500/20 text-green-400' : 
-                 'bg-yellow-500/20 text-yellow-400'}
-              `}>
-                <insight.icon className="h-4 w-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-medium group-hover:text-flow-accent truncate">{insight.title}</h4>
-                  <span className={`text-[10px] ml-2 px-1.5 py-0.5 rounded-full border ${getSeverityBadge(insight.severity)}`}>
-                    {insight.severity === 'high' ? 'High Priority' : insight.severity === 'medium' ? 'Medium' : 'Low'}
-                  </span>
+
+      <ScrollArea className="h-[calc(100%-100px)]">
+        <div className="space-y-4">
+          {insights.map((insight, index) => (
+            <motion.div
+              key={insight.id}
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: index * 0.1 }}
+              className={`
+                relative overflow-hidden rounded-lg border
+                ${expandedInsight === insight.id 
+                  ? 'bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border-indigo-500/30'
+                  : 'bg-black/20 border-flow-border/10'
+                }
+                hover:bg-gradient-to-br hover:from-indigo-500/15 hover:to-purple-500/15
+                transition-all duration-300 cursor-pointer group
+              `}
+              onClick={() => toggleExpand(insight.id)}
+            >
+              <div className="flex items-start gap-3">
+                <div className={`
+                  p-2 rounded-full 
+                  ${insight.type === 'performance' ? 'bg-blue-500/20 text-blue-400' : 
+                   insight.type === 'opportunity' ? 'bg-green-500/20 text-green-400' : 
+                   'bg-yellow-500/20 text-yellow-400'}
+                `}>
+                  <insight.icon className="h-4 w-4" />
                 </div>
-                <p className="text-xs text-flow-foreground/70 mt-0.5">{insight.description}</p>
-                
-                {expandedInsight === insight.id && (
-                  <motion.div 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    transition={{ duration: 0.3 }}
-                    className="mt-2 pt-2 border-t border-flow-border/10"
-                  >
-                    <p className="text-xs text-flow-foreground/80 bg-flow-background/40 p-2 rounded-md">
-                      <BadgeCheck className="h-3 w-3 inline-block mr-1 text-flow-accent" />
-                      {insight.additionalInfo}
-                    </p>
-                    
-                    <div className="mt-2 flex justify-end">
-                      {insight.action && (
-                        insight.action.startsWith('/') ? (
-                          <Link to={insight.action}>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-medium group-hover:text-flow-accent truncate">{insight.title}</h4>
+                    <span className={`text-[10px] ml-2 px-1.5 py-0.5 rounded-full border ${getSeverityBadge(insight.severity)}`}>
+                      {insight.severity === 'high' ? 'High Priority' : insight.severity === 'medium' ? 'Medium' : 'Low'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-flow-foreground/70 mt-0.5">{insight.description}</p>
+                  
+                  {expandedInsight === insight.id && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      transition={{ duration: 0.3 }}
+                      className="mt-2 pt-2 border-t border-flow-border/10"
+                    >
+                      <p className="text-xs text-flow-foreground/80 bg-flow-background/40 p-2 rounded-md">
+                        <BadgeCheck className="h-3 w-3 inline-block mr-1 text-flow-accent" />
+                        {insight.additionalInfo}
+                      </p>
+                      
+                      <div className="mt-2 flex justify-end">
+                        {insight.action && (
+                          insight.action.startsWith('/') ? (
+                            <Link to={insight.action}>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="text-[10px] h-7 px-2 text-flow-foreground/70 hover:text-flow-accent"
+                              >
+                                {insight.actionText}
+                                <ArrowUpRight className="h-3 w-3 ml-1" />
+                              </Button>
+                            </Link>
+                          ) : (
                             <Button 
                               variant="ghost" 
                               size="sm" 
                               className="text-[10px] h-7 px-2 text-flow-foreground/70 hover:text-flow-accent"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleInsightAction(insight);
+                              }}
                             >
                               {insight.actionText}
                               <ArrowUpRight className="h-3 w-3 ml-1" />
                             </Button>
-                          </Link>
-                        ) : (
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="text-[10px] h-7 px-2 text-flow-foreground/70 hover:text-flow-accent"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleInsightAction(insight);
-                            }}
-                          >
-                            {insight.actionText}
-                            <ArrowUpRight className="h-3 w-3 ml-1" />
-                          </Button>
-                        )
-                      )}
-                    </div>
-                  </motion.div>
-                )}
+                          )
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+              
+              {insight.severity === 'high' && (
+                <motion.div
+                  className="absolute inset-0 bg-orange-500/20"
+                  animate={{
+                    opacity: [0, 0.2, 0],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                />
+              )}
+            </motion.div>
+          ))}
+        </div>
+      </ScrollArea>
       
       <div className="pt-2 border-t border-flow-border/10">
         <div className="flex items-center justify-between">

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Network, ChevronRight } from 'lucide-react';
@@ -39,9 +38,20 @@ const AgentEvolutionMap: React.FC = () => {
   };
 
   return (
-    <Card className="p-4 border-flow-border/30 bg-black/30 backdrop-blur-md h-full">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-medium neon-text-blue flex items-center">
+    <Card className="p-4 border-flow-border/30 bg-black/30 backdrop-blur-md h-full relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 pointer-events-none opacity-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-indigo-500/10" />
+        <svg className="absolute inset-0" width="100%" height="100%">
+          <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-indigo-500/20" />
+          </pattern>
+          <rect width="100%" height="100%" fill="url(#grid)" />
+        </svg>
+      </div>
+
+      <div className="flex justify-between items-center mb-4 relative">
+        <h3 className="text-lg font-medium bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent flex items-center">
           <Network className="mr-2 h-5 w-5 text-blue-400" />
           Agent Evolution
         </h3>
@@ -105,17 +115,18 @@ const AgentEvolutionMap: React.FC = () => {
         })}
       </div>
       
+      {/* Enhanced legend with pulsing indicators */}
       <div className="flex justify-center gap-4 mt-4">
         {Object.entries(nodeColors).map(([type, { bg, border }]) => (
           <div key={type} className="flex items-center gap-1.5">
-            <div 
-              className="h-2.5 w-2.5 rounded-full" 
-              style={{ 
-                backgroundColor: bg,
-                border: `1px solid ${border}`,
-                boxShadow: `0 0 4px ${bg}80`
+            <motion.div 
+              className="h-2.5 w-2.5 rounded-full relative"
+              style={{ backgroundColor: bg, border: `1px solid ${border}` }}
+              animate={{ 
+                boxShadow: [`0 0 4px ${bg}80`, `0 0 8px ${bg}80`, `0 0 4px ${bg}80`] 
               }}
-            ></div>
+              transition={{ duration: 2, repeat: Infinity }}
+            />
             <span className="text-xs text-flow-foreground/70 capitalize">{type}</span>
           </div>
         ))}

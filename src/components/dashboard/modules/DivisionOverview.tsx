@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { LayoutGrid, ChevronRight, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
@@ -34,7 +33,7 @@ const DivisionOverview: React.FC = () => {
   return (
     <Card className="p-4 border-flow-border/30 bg-black/30 backdrop-blur-md h-full">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-medium neon-text-green flex items-center">
+        <h3 className="text-lg font-medium bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent flex items-center">
           <LayoutGrid className="mr-2 h-5 w-5 text-green-400" />
           Division Overview
         </h3>
@@ -83,18 +82,38 @@ const DivisionOverview: React.FC = () => {
         })}
       </div>
       
-      <div className="h-36">
-        <PieChart 
-          data={loadData}
-          showLabel={false}
-          showLegend={true}
-          legendPosition="side"
-          donut={true}
-        />
-      </div>
-      
-      <div className="text-xs text-center text-flow-foreground/50 mt-2">
-        Division Load Distribution
+      <div className="mt-4 grid grid-cols-2 gap-4">
+        <div className="col-span-1">
+          <div className="h-36">
+            <PieChart 
+              data={loadData}
+              showLabel={false}
+              showLegend={false}
+              donut={true}
+            />
+          </div>
+          <div className="text-xs text-center text-flow-foreground/50 mt-2">
+            Load Distribution
+          </div>
+        </div>
+        
+        <div className="col-span-1">
+          <div className="space-y-2">
+            {divisions.map(division => {
+              const colorScheme = getDivisionColorScheme(division.id);
+              return (
+                <div key={division.id} className="flex items-center gap-2">
+                  <div 
+                    className="h-3 w-3 rounded-full"
+                    style={{ backgroundColor: colorScheme.primary }}
+                  />
+                  <span className="text-xs text-flow-foreground/70">{division.name}</span>
+                  <span className="text-xs text-flow-foreground/50 ml-auto">{division.load}%</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </Card>
   );

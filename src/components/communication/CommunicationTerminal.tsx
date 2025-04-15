@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -96,11 +95,11 @@ const CommunicationTerminal = () => {
         {isOpen && (
           <motion.div
             ref={terminalContentRef}
-            initial={{ y: 400, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 400, opacity: 0 }}
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed bottom-20 left-4 right-4 md:left-auto md:right-4 md:w-[500px] z-40 rounded-xl overflow-hidden shadow-[0_0_30px_rgba(79,70,229,0.3)]"
+            className="fixed top-20 left-4 bottom-20 w-[500px] z-40 rounded-xl overflow-hidden shadow-[0_0_30px_rgba(79,70,229,0.3)]"
           >
             <Tabs 
               value={activeTab} 
