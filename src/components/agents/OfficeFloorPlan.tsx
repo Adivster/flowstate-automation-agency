@@ -11,6 +11,7 @@ import TaskWorkflowPanel from './office/TaskWorkflowPanel';
 import NewDivisionModal from './office/NewDivisionModal';
 import { AnimatePresence } from 'framer-motion';
 import { useTaskContext } from '@/contexts/TaskContext';
+import { OfficeControls } from './office/layout/OfficeControls';
 
 const officeData = {
   divisions: [
