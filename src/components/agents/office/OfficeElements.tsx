@@ -4,7 +4,7 @@ import DecorativeElement from './DecorativeElement';
 import HolographicElement from './HolographicElement';
 import CentralServer from './CentralServer';
 import CommunicationHub from './CommunicationHub';
-import Division from './Division';
+import DivisionWrapper from './DivisionWrapper';
 import AgentCharacter from './agent/AgentCharacter';
 import { Division as DivisionType, DecorativeElement as DecorativeElementType, ZIndexLayers } from './types/officeTypes';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -279,7 +279,7 @@ const OfficeElements: React.FC<OfficeElementsProps> = ({
       };
       
       return (
-        <Division
+        <DivisionWrapper
           key={division.id}
           division={divisionProps}
           isSelected={selectedDivision === division.id}

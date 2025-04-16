@@ -5,8 +5,18 @@ import { ZIndexLayers } from './types/officeTypes';
 import MiniSparkline, { SparklineData } from './MiniSparkline';
 import { Activity, BarChart2, ZapOff, Settings, Clock, ListTodo, CheckCircle } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { useTaskContext } from '@/contexts/TaskContext';
 import { cn } from '@/lib/utils';
+
+// Mock task data interface - to prevent direct dependency on TaskContext
+export interface DivisionTask {
+  id: string;
+  title: string;
+  status: string;
+  priority: string;
+  dueDate: string;
+  division?: string;
+  progress?: number;
+}
 
 interface DivisionProps {
   division: {
@@ -37,6 +47,8 @@ interface DivisionProps {
   activityLevel?: number;
   showQuickActions?: boolean;
   onQuickAction?: (divisionId: string, action: string) => void;
+  // Provide tasks directly instead of using context
+  divisionTasks?: DivisionTask[];
 }
 
 const Division: React.FC<DivisionProps> = ({
@@ -51,12 +63,12 @@ const Division: React.FC<DivisionProps> = ({
   performanceData,
   activityLevel,
   showQuickActions = false,
-  onQuickAction
+  onQuickAction,
+  divisionTasks = []
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showTaskInfo, setShowTaskInfo] = useState(false);
-  const { tasks } = useTaskContext();
   
   const position = {
     x: customPosition?.x !== undefined ? customPosition.x : division.position.x,
@@ -68,8 +80,7 @@ const Division: React.FC<DivisionProps> = ({
   const workingAgents = divisionAgents.filter(agent => agent.status === 'working').length;
   const totalAgents = divisionAgents.length;
   
-  // Calculate division tasks
-  const divisionTasks = tasks.filter(task => task.division === division.id);
+  // Calculate division tasks - use provided tasks instead of context
   const todoTasks = divisionTasks.filter(task => task.status === 'todo').length;
   const inProgressTasks = divisionTasks.filter(task => task.status === 'in-progress').length;
   const completedTasks = divisionTasks.filter(task => task.status === 'completed').length;

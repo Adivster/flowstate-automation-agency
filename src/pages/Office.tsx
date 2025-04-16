@@ -1,4 +1,3 @@
-
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
@@ -31,6 +30,7 @@ import AgentInfoPanel from '@/components/agents/office/AgentInfoPanel';
 import { VisualizationState } from '@/components/agents/office/types/visualizationTypes';
 import { agents } from '@/components/agents/office/data/agentsData';
 import AgentChatAnalyticsPanel from '@/components/agents/office/AgentChatAnalyticsPanel';
+import { TaskProvider } from '@/contexts/TaskContext';
 
 const Office = () => {
   const { t } = useLanguage();
@@ -152,14 +152,12 @@ const Office = () => {
     });
     
     if (action === 'details' && entityType === 'agent') {
-      // Find the agent from our data
       const agentId = parseInt(entityId);
       const foundAgent = agents.find(a => a.id === agentId);
       
       if (foundAgent) {
         setSelectedAgentForChat(foundAgent);
       } else {
-        // Use mock data if agent not found
         const mockAgent = {
           id: parseInt(entityId),
           name: `Agent ${entityId}`,
@@ -666,11 +664,13 @@ const Office = () => {
                       ? "bg-black/40 rounded-xl backdrop-blur-sm overflow-hidden border border-purple-500/20" 
                       : "bg-white/10 rounded-xl backdrop-blur-sm overflow-hidden border border-emerald-300/30"
                   )}>
-                    <OfficeFloorPlan 
-                      visualizationState={visualizationState}
-                      onHotspotAction={handleHotspotAction}
-                      onAgentClick={handleAgentFloorClick}
-                    />
+                    <TaskProvider>
+                      <OfficeFloorPlan 
+                        visualizationState={visualizationState}
+                        onHotspotAction={handleHotspotAction}
+                        onAgentClick={handleAgentFloorClick}
+                      />
+                    </TaskProvider>
                   </div>
                   
                   <div className="flex justify-end items-center mt-2">

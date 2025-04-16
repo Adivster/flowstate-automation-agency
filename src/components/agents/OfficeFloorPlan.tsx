@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import OfficeElements from './office/OfficeElements';
 import { useToast } from '@/hooks/use-toast';
@@ -11,6 +10,8 @@ import { agents } from './office/data/agentsData';
 import TaskWorkflowPanel from './office/TaskWorkflowPanel';
 import NewDivisionModal from './office/NewDivisionModal';
 import { AnimatePresence } from 'framer-motion';
+import { useTaskContext, Task } from '@/contexts/TaskContext';
+import type { DivisionTask } from '@/components/agents/office/Division';
 
 const officeData = {
   divisions: [
@@ -64,6 +65,7 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
   onHotspotAction,
   onAgentClick
 }) => {
+  const { tasks } = useTaskContext();
   const [divisions, setDivisions] = useState<Division[]>(officeData.divisions);
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<number | null>(null);
@@ -148,7 +150,6 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
       setSelectedDivision(agent.division || null);
     }
     
-    // Pass the click to the parent component
     if (onAgentClick) {
       onAgentClick(agentId);
     }
@@ -332,8 +333,7 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
   };
 
   const handleCreateDivision = (newDivision: any) => {
-    // Generate a color based on the division's color name
-    let borderColor = '#8B5CF6'; // Default purple
+    let borderColor = '#8B5CF6';
     let backgroundColor = 'rgba(139, 92, 246, 0.1)';
     let textColor = '#8B5CF6';
     
@@ -365,7 +365,6 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         break;
     }
     
-    // Create the division with the right format
     const divisionToAdd: Division = {
       id: newDivision.id,
       name: newDivision.name,
@@ -403,6 +402,17 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         zoomLevel={zoomLevel}
         visualizationState={visualizationState}
         onHotspotAction={onHotspotAction}
+        divisionTasks={tasks
+          .filter(task => task.division === division.id)
+          .map(task => ({
+            id: task.id,
+            title: task.title,
+            status: task.status,
+            priority: task.priority,
+            dueDate: task.dueDate,
+            division: task.division,
+            progress: task.progress
+          } as DivisionTask))}
       />
       
       {showTerminal && (
