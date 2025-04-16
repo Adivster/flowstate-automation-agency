@@ -64,7 +64,7 @@ const NewDivisionModal: React.FC<NewDivisionModalProps> = ({
     'ShieldCheck', 'Users', 'Briefcase', 'Brain', 'Lightbulb',
     'Settings', 'LineChart', 'HeartPulse', 'Gauge', 'Bot',
     'Cpu', 'Search', 'Code', 'Network', 'Laptop'
-  ] as (keyof typeof LucideIcons)[];
+  ] as const;
   
   // Color options for divisions
   const colorOptions: Record<string, ColorOption> = {
@@ -126,7 +126,7 @@ const NewDivisionModal: React.FC<NewDivisionModalProps> = ({
     setError(null);
   };
   
-  const handleIconSelect = (iconKey: keyof typeof LucideIcons) => {
+  const handleIconSelect = (iconKey: typeof commonIcons[number]) => {
     setFormState({
       ...formState,
       iconKey
@@ -188,6 +188,13 @@ const NewDivisionModal: React.FC<NewDivisionModalProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [onClose]);
+
+  // Function to render specific icon by key
+  const renderIcon = (iconKey: keyof typeof LucideIcons, className: string) => {
+    // Type assertion to ensure proper type for dynamic component
+    const IconComponent = (LucideIcons[iconKey] as React.ElementType);
+    return <IconComponent className={className} />;
+  };
 
   return (
     <motion.div 
@@ -313,33 +320,29 @@ const NewDivisionModal: React.FC<NewDivisionModalProps> = ({
                 "grid grid-cols-6 gap-2 p-2 rounded-lg",
                 isDark ? "bg-gray-800/50" : "bg-gray-50"
               )}>
-                {commonIcons.map(iconKey => {
-                  // Fix: Correctly access and use the icon component
-                  const IconComp = LucideIcons[iconKey];
-                  return (
-                    <div
-                      key={iconKey}
-                      className={cn(
-                        "aspect-square rounded-lg flex items-center justify-center cursor-pointer transition-colors",
-                        formState.iconKey === iconKey
-                          ? isDark 
-                            ? `bg-${formState.color}-500/30 ring-2 ring-${formState.color}-500` 
-                            : `bg-${formState.color}-100 ring-2 ring-${formState.color}-500`
-                          : isDark 
-                            ? "bg-gray-700 hover:bg-gray-600" 
-                            : "bg-white hover:bg-gray-100"
-                      )}
-                      onClick={() => handleIconSelect(iconKey)}
-                    >
-                      <IconComp className={cn(
-                        "h-5 w-5",
-                        formState.iconKey === iconKey
-                          ? isDark ? `text-${formState.color}-400` : `text-${formState.color}-600`
-                          : isDark ? "text-gray-400" : "text-gray-600"
-                      )} />
-                    </div>
-                  );
-                })}
+                {commonIcons.map(iconKey => (
+                  <div
+                    key={iconKey}
+                    className={cn(
+                      "aspect-square rounded-lg flex items-center justify-center cursor-pointer transition-colors",
+                      formState.iconKey === iconKey
+                        ? isDark 
+                          ? `bg-${formState.color}-500/30 ring-2 ring-${formState.color}-500` 
+                          : `bg-${formState.color}-100 ring-2 ring-${formState.color}-500`
+                        : isDark 
+                          ? "bg-gray-700 hover:bg-gray-600" 
+                          : "bg-white hover:bg-gray-100"
+                    )}
+                    onClick={() => handleIconSelect(iconKey)}
+                  >
+                    {renderIcon(iconKey, cn(
+                      "h-5 w-5",
+                      formState.iconKey === iconKey
+                        ? isDark ? `text-${formState.color}-400` : `text-${formState.color}-600`
+                        : isDark ? "text-gray-400" : "text-gray-600"
+                    ))}
+                  </div>
+                ))}
               </div>
             </div>
             
@@ -392,14 +395,10 @@ const NewDivisionModal: React.FC<NewDivisionModalProps> = ({
                       `bg-${formState.color}-500/20`
                     )}
                   >
-                    {/* Fix: Render the selected icon component correctly */}
-                    {(() => {
-                      const PreviewIcon = LucideIcons[formState.iconKey];
-                      return <PreviewIcon className={cn(
-                        "h-6 w-6",
-                        isDark ? `text-${formState.color}-400` : `text-${formState.color}-600`
-                      )} />;
-                    })()}
+                    {renderIcon(formState.iconKey, cn(
+                      "h-6 w-6",
+                      isDark ? `text-${formState.color}-400` : `text-${formState.color}-600`
+                    ))}
                   </div>
                   <div>
                     <h4 className={cn(
