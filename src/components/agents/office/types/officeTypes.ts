@@ -80,6 +80,12 @@ export interface AgentData {
   mood?: AgentMood;
   workload?: number; // 0-100 percentage
   zIndex?: number;
+  performanceData?: number[]; // Performance history data for charts
+  efficiency?: number; // Efficiency percentage
+  currentTask?: {
+    type: 'reading' | 'analyzing' | 'experimenting' | 'emailing' | 'writing' | 'searching' | 'coding';
+    description: string;
+  };
 }
 
 export type AgentMood = 
