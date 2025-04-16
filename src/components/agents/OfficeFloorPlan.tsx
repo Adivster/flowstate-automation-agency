@@ -10,8 +10,7 @@ import { agents } from './office/data/agentsData';
 import TaskWorkflowPanel from './office/TaskWorkflowPanel';
 import NewDivisionModal from './office/NewDivisionModal';
 import { AnimatePresence } from 'framer-motion';
-import { useTaskContext, Task } from '@/contexts/TaskContext';
-import type { DivisionTask } from '@/components/agents/office/Division';
+import { useTaskContext } from '@/contexts/TaskContext';
 
 const officeData = {
   divisions: [
@@ -402,17 +401,6 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         zoomLevel={zoomLevel}
         visualizationState={visualizationState}
         onHotspotAction={onHotspotAction}
-        divisionTasks={tasks
-          .filter(task => task.division === division.id)
-          .map(task => ({
-            id: task.id,
-            title: task.title,
-            status: task.status,
-            priority: task.priority,
-            dueDate: task.dueDate,
-            division: task.division,
-            progress: task.progress
-          } as DivisionTask))}
       />
       
       {showTerminal && (
