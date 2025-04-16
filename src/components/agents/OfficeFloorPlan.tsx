@@ -2,12 +2,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import OfficeElements from './office/OfficeElements';
 import { useToast } from '@/hooks/use-toast';
-import { Terminal, X, ZoomIn, ZoomOut } from 'lucide-react';
+import { Terminal, X, ZoomIn, ZoomOut, Building2, PlusCircle, Clock, ChevronDown, ChevronRight, Settings, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { VisualizationState } from './office/types/visualizationTypes';
 import { Division, DecorativeElement, ZIndexLayers } from './office/types/officeTypes';
-import { Book, Database, BarChart3, Cpu, User, Users, Bot, Laptop, BarChart, Shield, Activity } from 'lucide-react';
+import { Book, Database, BarChart3, Cpu } from 'lucide-react';
 import { agents } from './office/data/agentsData';
+import TaskWorkflowPanel from './office/TaskWorkflowPanel';
+import NewDivisionModal from './office/NewDivisionModal';
+import { AnimatePresence } from 'framer-motion';
 
 const officeData = {
   divisions: [
@@ -61,6 +64,7 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
   onHotspotAction,
   onAgentClick
 }) => {
+  const [divisions, setDivisions] = useState<Division[]>(officeData.divisions);
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<number | null>(null);
   const [showTerminal, setShowTerminal] = useState(false);
@@ -75,6 +79,8 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
   const [editMode, setEditMode] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [divisionPositions, setDivisionPositions] = useState<Record<string, { x: number, y: number }>>({});
+  const [showTaskPanel, setShowTaskPanel] = useState(false);
+  const [showNewDivisionModal, setShowNewDivisionModal] = useState(false);
   const terminalRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
@@ -84,8 +90,16 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         setShowTerminal(prev => !prev);
       }
       
-      if (e.key === 'Escape' && showTerminal) {
-        setShowTerminal(false);
+      if (e.key === 'Escape') {
+        if (showTerminal) {
+          setShowTerminal(false);
+        } else if (showTaskPanel) {
+          setShowTaskPanel(false);
+        } else if (selectedDivision) {
+          setSelectedDivision(null);
+        } else if (selectedAgent) {
+          setSelectedAgent(null);
+        }
       }
     };
     
@@ -93,7 +107,7 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
     window.addEventListener('openCommandTerminal', () => setShowTerminal(true));
     
     const pulseInterval = setInterval(() => {
-      const randomDivision = officeData.divisions[Math.floor(Math.random() * officeData.divisions.length)];
+      const randomDivision = divisions[Math.floor(Math.random() * divisions.length)];
       setDivisionPulses(prev => ({
         ...prev,
         [randomDivision.id]: true
@@ -112,7 +126,7 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
       window.removeEventListener('openCommandTerminal', () => setShowTerminal(true));
       clearInterval(pulseInterval);
     };
-  }, [showTerminal]);
+  }, [showTerminal, showTaskPanel, selectedDivision, selectedAgent, divisions]);
   
   useEffect(() => {
     if (terminalRef.current) {
@@ -123,6 +137,7 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
   const handleDivisionClick = (divisionId: string) => {
     setSelectedDivision(prevId => prevId === divisionId ? null : divisionId);
     setSelectedAgent(null);
+    setShowTaskPanel(true);
   };
   
   const handleAgentClick = (agentId: number) => {
@@ -167,6 +182,9 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
           '  info <division|agent> <id> - Show information about a division or agent',
           '  agents - List all agents',
           '  divisions - List all divisions',
+          '  tasks - Show tasks for the current division',
+          '  workflows - Show workflows for the current division',
+          '  create division - Create a new division',
           '  edit <on|off> - Toggle edit mode',
           '  clear - Clear the terminal',
           '  exit - Close the terminal'
@@ -177,7 +195,7 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         
         if (args[1] === 'division') {
           const divisionId = args[2];
-          const division = officeData.divisions.find(d => d.id === divisionId);
+          const division = divisions.find(d => d.id === divisionId);
           if (!division) return [`Error: Division ${divisionId} not found`];
           
           setSelectedDivision(divisionId);
@@ -200,7 +218,7 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         
         if (args[1] === 'division') {
           const divisionId = args[2];
-          const division = officeData.divisions.find(d => d.id === divisionId);
+          const division = divisions.find(d => d.id === divisionId);
           if (!division) return [`Error: Division ${divisionId} not found`];
           
           const agentsInDivision = officeData.agents.filter(a => a.division === divisionId);
@@ -240,8 +258,23 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
       case 'divisions':
         return [
           'List of divisions:',
-          ...officeData.divisions.map(d => `- ID: ${d.id}, Name: ${d.name}`)
+          ...divisions.map(d => `- ID: ${d.id}, Name: ${d.name}`)
         ];
+      
+      case 'create':
+        if (args.length < 2 || args[1] !== 'division') 
+          return ['Error: Usage: create division'];
+        
+        setShowNewDivisionModal(true);
+        return ['Opening new division creation interface...'];
+
+      case 'tasks':
+        setShowTaskPanel(true);
+        return ['Opening tasks panel...'];
+
+      case 'workflows':
+        setShowTaskPanel(true);
+        return ['Opening workflows panel...'];
       
       case 'edit':
         if (args.length < 2) return ['Error: Usage: edit <on|off>'];
@@ -297,11 +330,64 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
   const handleZoomOut = () => {
     setZoomLevel(prev => Math.max(prev - 0.1, 0.5));
   };
+
+  const handleCreateDivision = (newDivision: any) => {
+    // Generate a color based on the division's color name
+    let borderColor = '#8B5CF6'; // Default purple
+    let backgroundColor = 'rgba(139, 92, 246, 0.1)';
+    let textColor = '#8B5CF6';
+    
+    switch (newDivision.color) {
+      case 'blue':
+        borderColor = '#3B82F6';
+        backgroundColor = 'rgba(59, 130, 246, 0.1)';
+        textColor = '#3B82F6';
+        break;
+      case 'green':
+        borderColor = '#22C55E';
+        backgroundColor = 'rgba(34, 197, 94, 0.1)';
+        textColor = '#22C55E';
+        break;
+      case 'emerald':
+        borderColor = '#10B981';
+        backgroundColor = 'rgba(16, 185, 129, 0.1)';
+        textColor = '#10B981';
+        break;
+      case 'amber':
+        borderColor = '#F59E0B';
+        backgroundColor = 'rgba(245, 158, 11, 0.1)';
+        textColor = '#F59E0B';
+        break;
+      case 'red':
+        borderColor = '#EF4444';
+        backgroundColor = 'rgba(239, 68, 68, 0.1)';
+        textColor = '#EF4444';
+        break;
+    }
+    
+    // Create the division with the right format
+    const divisionToAdd: Division = {
+      id: newDivision.id,
+      name: newDivision.name,
+      icon: require('lucide-react')[newDivision.icon],
+      position: newDivision.position,
+      backgroundColor,
+      borderColor,
+      textColor,
+      zIndex: ZIndexLayers.DIVISION
+    };
+    
+    setDivisions([...divisions, divisionToAdd]);
+  };
+
+  const handleCloseTaskPanel = () => {
+    setShowTaskPanel(false);
+  };
   
   return (
     <div className="relative h-full w-full bg-black bg-opacity-50 rounded-xl overflow-hidden office-container" style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center center' }}>
       <OfficeElements
-        divisions={officeData.divisions}
+        divisions={divisions}
         agents={officeData.agents}
         decorations={officeData.decorations}
         holograms={officeData.holograms}
@@ -355,6 +441,27 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         </div>
       )}
       
+      <div className="absolute top-2 left-2 z-30 flex gap-2">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="h-8 w-8 p-0 bg-black/50 border-white/20 text-white hover:bg-black/70"
+          onClick={() => setShowNewDivisionModal(true)}
+          title="Create new division"
+        >
+          <PlusCircle className="h-4 w-4" />
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="h-8 w-8 p-0 bg-black/50 border-white/20 text-white hover:bg-black/70"
+          onClick={() => setShowTaskPanel(true)}
+          title="View tasks and workflows"
+        >
+          <Clock className="h-4 w-4" />
+        </Button>
+      </div>
+      
       <div className="absolute bottom-2 right-2 flex gap-2 z-30">
         <Button variant="outline" size="sm" className="h-7 w-7 p-0 bg-black/50 border-white/20 text-white hover:bg-black/70" onClick={handleZoomIn}>
           <ZoomIn className="h-3 w-3" />
@@ -363,6 +470,24 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
           <ZoomOut className="h-3 w-3" />
         </Button>
       </div>
+      
+      <AnimatePresence>
+        {showTaskPanel && (
+          <TaskWorkflowPanel 
+            selectedDivision={selectedDivision} 
+            onClose={handleCloseTaskPanel} 
+          />
+        )}
+      </AnimatePresence>
+      
+      <AnimatePresence>
+        {showNewDivisionModal && (
+          <NewDivisionModal 
+            onClose={() => setShowNewDivisionModal(false)}
+            onCreateDivision={handleCreateDivision}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

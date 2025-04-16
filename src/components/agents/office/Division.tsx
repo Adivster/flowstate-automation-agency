@@ -3,7 +3,10 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ZIndexLayers } from './types/officeTypes';
 import MiniSparkline, { SparklineData } from './MiniSparkline';
-import { Activity, BarChart2, ZapOff, Settings } from 'lucide-react';
+import { Activity, BarChart2, ZapOff, Settings, Clock, ListTodo, CheckCircle } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { useTaskContext } from '@/contexts/TaskContext';
+import { cn } from '@/lib/utils';
 
 interface DivisionProps {
   division: {
@@ -52,6 +55,8 @@ const Division: React.FC<DivisionProps> = ({
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [showTaskInfo, setShowTaskInfo] = useState(false);
+  const { tasks } = useTaskContext();
   
   const position = {
     x: customPosition?.x !== undefined ? customPosition.x : division.position.x,
@@ -62,6 +67,13 @@ const Division: React.FC<DivisionProps> = ({
   const divisionAgents = agents.filter(agent => agent.division === division.id);
   const workingAgents = divisionAgents.filter(agent => agent.status === 'working').length;
   const totalAgents = divisionAgents.length;
+  
+  // Calculate division tasks
+  const divisionTasks = tasks.filter(task => task.division === division.id);
+  const todoTasks = divisionTasks.filter(task => task.status === 'todo').length;
+  const inProgressTasks = divisionTasks.filter(task => task.status === 'in-progress').length;
+  const completedTasks = divisionTasks.filter(task => task.status === 'completed').length;
+  const totalDivisionTasks = divisionTasks.length;
   
   // Calculate metrics
   const utilization = totalAgents > 0 ? (workingAgents / totalAgents) * 100 : 0;
@@ -159,18 +171,31 @@ const Division: React.FC<DivisionProps> = ({
         </div>
         
         {/* Mini metrics label */}
-        {performanceData && (
+        <div className="flex flex-col gap-1">
           <div 
             className="bg-black/40 backdrop-blur-sm rounded px-1.5 py-1 flex items-center gap-1 cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
               setShowStats(!showStats);
+              setShowTaskInfo(false);
             }}
           >
             <Activity className="h-2.5 w-2.5 text-white/70" />
             <span className="text-[9px] text-white/70">Metrics</span>
           </div>
-        )}
+          
+          <div 
+            className="bg-black/40 backdrop-blur-sm rounded px-1.5 py-1 flex items-center gap-1 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowTaskInfo(!showTaskInfo);
+              setShowStats(false);
+            }}
+          >
+            <Clock className="h-2.5 w-2.5 text-white/70" />
+            <span className="text-[9px] text-white/70">Tasks {totalDivisionTasks > 0 ? `(${totalDivisionTasks})` : ''}</span>
+          </div>
+        </div>
       </div>
       
       {/* Quick actions */}
@@ -235,6 +260,8 @@ const Division: React.FC<DivisionProps> = ({
               color="#6366f1"
               fillOpacity={0.3}
               animated={true}
+              showDots={true}
+              showGrid={true}
             />
           </div>
           
@@ -258,6 +285,75 @@ const Division: React.FC<DivisionProps> = ({
               </span>
             </div>
           </div>
+        </motion.div>
+      )}
+      
+      {/* Task Information Panel */}
+      {showTaskInfo && (
+        <motion.div 
+          className="absolute bottom-2 right-2 bg-black/70 rounded-lg backdrop-blur-md p-2 z-30 border border-white/10"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[10px] text-white/70">Task Overview</span>
+            <span className="text-[10px] font-medium text-white">{totalDivisionTasks}</span>
+          </div>
+          
+          {totalDivisionTasks > 0 ? (
+            <>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center">
+                    <ListTodo className="h-3 w-3 text-blue-400 mr-1.5" />
+                    <span className="text-[10px] text-white">To Do</span>
+                  </div>
+                  <span className="text-[10px] font-medium text-blue-400">{todoTasks}</span>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center">
+                    <Clock className="h-3 w-3 text-purple-400 mr-1.5" />
+                    <span className="text-[10px] text-white">In Progress</span>
+                  </div>
+                  <span className="text-[10px] font-medium text-purple-400">{inProgressTasks}</span>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center">
+                    <CheckCircle className="h-3 w-3 text-green-400 mr-1.5" />
+                    <span className="text-[10px] text-white">Completed</span>
+                  </div>
+                  <span className="text-[10px] font-medium text-green-400">{completedTasks}</span>
+                </div>
+              </div>
+              
+              <div className="mt-2 pt-2 border-t border-white/10">
+                <div className="flex justify-between text-[10px] mb-1">
+                  <span className="text-white/70">Progress</span>
+                  <span className="text-white">
+                    {completedTasks > 0 && totalDivisionTasks > 0 
+                      ? Math.round((completedTasks / totalDivisionTasks) * 100)
+                      : 0}%
+                  </span>
+                </div>
+                <Progress 
+                  value={completedTasks > 0 && totalDivisionTasks > 0 
+                    ? Math.round((completedTasks / totalDivisionTasks) * 100)
+                    : 0} 
+                  className="h-1 bg-white/10"
+                  indicatorClassName="bg-green-500"
+                />
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-2">
+              <ListTodo className="h-4 w-4 text-gray-400 mb-1" />
+              <span className="text-[10px] text-gray-400">No tasks yet</span>
+            </div>
+          )}
         </motion.div>
       )}
     </motion.div>

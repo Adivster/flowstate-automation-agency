@@ -124,6 +124,34 @@ export interface DivisionStyle {
   pattern: string;
 }
 
+// Workflow types
+export interface Workflow {
+  id: string;
+  name: string;
+  description?: string;
+  status: WorkflowStatus;
+  progress: number; // 0-100
+  divisionId: string;
+  steps: WorkflowStep[];
+  createdAt: string;
+  updatedAt: string;
+  assignedAgentIds: number[];
+}
+
+export interface WorkflowStep {
+  id: string;
+  name: string;
+  description?: string;
+  status: 'pending' | 'in-progress' | 'completed' | 'failed';
+  order: number;
+  dependsOn?: string[]; // IDs of steps that must be completed before this one
+  assignedAgentIds?: number[];
+  estimatedHours?: number;
+  actualHours?: number;
+}
+
+export type WorkflowStatus = 'draft' | 'active' | 'paused' | 'completed' | 'failed';
+
 // Z-index layers for proper stacking
 export enum ZIndexLayers {
   BACKGROUND = 5,
