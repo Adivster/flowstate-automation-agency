@@ -189,9 +189,6 @@ const NewDivisionModal: React.FC<NewDivisionModalProps> = ({
     };
   }, [onClose]);
 
-  // Render the selected icon
-  const IconComponent = LucideIcons[formState.iconKey] || Building2;
-
   return (
     <motion.div 
       className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
@@ -317,7 +314,7 @@ const NewDivisionModal: React.FC<NewDivisionModalProps> = ({
                 isDark ? "bg-gray-800/50" : "bg-gray-50"
               )}>
                 {commonIcons.map(iconKey => {
-                  const Icon = LucideIcons[iconKey];
+                  const IconComponent = LucideIcons[iconKey];
                   return (
                     <div
                       key={iconKey}
@@ -333,7 +330,7 @@ const NewDivisionModal: React.FC<NewDivisionModalProps> = ({
                       )}
                       onClick={() => handleIconSelect(iconKey)}
                     >
-                      <Icon className={cn(
+                      <IconComponent className={cn(
                         "h-5 w-5",
                         formState.iconKey === iconKey
                           ? isDark ? `text-${formState.color}-400` : `text-${formState.color}-600`
@@ -363,7 +360,7 @@ const NewDivisionModal: React.FC<NewDivisionModalProps> = ({
                     )}
                     style={{ 
                       backgroundColor: color.primary,
-                      ringColor: color.border
+                      borderColor: formState.color === key ? color.border : 'transparent'
                     }}
                     onClick={() => handleColorSelect(key)}
                   >
@@ -394,10 +391,13 @@ const NewDivisionModal: React.FC<NewDivisionModalProps> = ({
                       `bg-${formState.color}-500/20`
                     )}
                   >
-                    <IconComponent className={cn(
-                      "h-6 w-6",
-                      isDark ? `text-${formState.color}-400` : `text-${formState.color}-600`
-                    )} />
+                    {(() => {
+                      const SelectedIcon = LucideIcons[formState.iconKey];
+                      return <SelectedIcon className={cn(
+                        "h-6 w-6",
+                        isDark ? `text-${formState.color}-400` : `text-${formState.color}-600`
+                      )} />;
+                    })()}
                   </div>
                   <div>
                     <h4 className={cn(
