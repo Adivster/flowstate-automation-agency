@@ -50,13 +50,13 @@ const Office = () => {
   const [selectedAgentInfo, setSelectedAgentInfo] = useState<any>(null);
   const [selectedAgentForChat, setSelectedAgentForChat] = useState<typeof agents[0] | null>(null);
   const [visualizationState, setVisualizationState] = useState<VisualizationState>({
-    activeLayerIds: [],
+    activeLayerIds: ['hotspots', 'performance', 'quickActions'],
     layers: [],
     layerData: {
       heatmap: { active: false, data: [] },
-      statusMarkers: { active: false, data: [] },
+      statusMarkers: { active: true, data: [] },
       hotspots: { 
-        active: false,
+        active: true,
         divisionHotspots: true,
         workstationHotspots: true,
         serverHotspots: true
@@ -68,7 +68,7 @@ const Office = () => {
         position: 'bottom-right'
       },
       quickActions: {
-        active: false,
+        active: true,
         style: 'icon',
         position: 'bottom-right'
       },
@@ -132,16 +132,6 @@ const Office = () => {
   
   const handleCloseAgentInfo = () => {
     setSelectedAgentInfo(null);
-  };
-  
-  const toggleTheme = () => {
-    setTheme(isDark ? 'light' : 'dark');
-    
-    toast({
-      title: `Switched to ${isDark ? 'Solarpunk' : 'Cyberpunk'} Theme`,
-      description: `Interface updated to ${isDark ? 'light, natural' : 'dark, neon'} aesthetics`,
-      duration: 3000,
-    });
   };
   
   const handleHotspotAction = (action: string, entityId: string, entityType: string) => {
@@ -338,20 +328,6 @@ const Office = () => {
                   >
                     <Activity className="h-4 w-4 mr-2" />
                     Performance Monitoring
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={cn(
-                      isDark 
-                        ? "bg-amber-500/10 border-amber-500/50 hover:bg-amber-500/20 text-amber-400" 
-                        : "bg-amber-100 border-amber-300 hover:bg-amber-200 text-amber-700"
-                    )}
-                    onClick={toggleTheme}
-                  >
-                    {isDark ? <Sun className="h-4 w-4 mr-2" /> : <Terminal className="h-4 w-4 mr-2" />}
-                    {isDark ? 'Solarpunk Theme' : 'Cyberpunk Theme'}
                   </Button>
                 </div>
               }

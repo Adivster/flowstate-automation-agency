@@ -403,6 +403,15 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         onHotspotAction={onHotspotAction}
       />
       
+      <OfficeControls
+        zoomLevel={zoomLevel}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+        onResetZoom={() => setZoomLevel(1)}
+        onToggleVisualizationControls={() => setShowTaskPanel(true)}
+        visualizationActive={!!visualizationState?.activeLayerIds?.length}
+      />
+      
       {showTerminal && (
         <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={() => setShowTerminal(false)}>
           <div className="bg-black bg-opacity-90 border border-gray-700 rounded-lg w-full max-w-2xl max-h-[80vh] shadow-lg" onClick={e => e.stopPropagation()}>
@@ -457,15 +466,6 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
           title="View tasks and workflows"
         >
           <Clock className="h-4 w-4" />
-        </Button>
-      </div>
-      
-      <div className="absolute bottom-2 right-2 flex gap-2 z-30">
-        <Button variant="outline" size="sm" className="h-7 w-7 p-0 bg-black/50 border-white/20 text-white hover:bg-black/70" onClick={handleZoomIn}>
-          <ZoomIn className="h-3 w-3" />
-        </Button>
-        <Button variant="outline" size="sm" className="h-7 w-7 p-0 bg-black/50 border-white/20 text-white hover:bg-black/70" onClick={handleZoomOut}>
-          <ZoomOut className="h-3 w-3" />
         </Button>
       </div>
       
