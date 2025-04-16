@@ -1,11 +1,16 @@
 
 import React, { useState } from 'react';
-import { Info, ZoomIn, ZoomOut, Eye, EyeOff, Layers, Settings, Maximize, Minimize } from 'lucide-react';
+import { Info, ZoomIn, ZoomOut, Eye, EyeOff, Layers, Settings, Maximize, Minimize, Save, Download, Upload, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
+import { OfficeGrid } from '../OfficeGrid';
+import { SolarpunkWindow } from '@/components/ui/design-system/SolarpunkWindow';
+import NewDivisionModal from '../division-modal/NewDivisionModal';
 
 interface OfficeControlsProps {
   zoomLevel: number;
@@ -14,6 +19,11 @@ interface OfficeControlsProps {
   onResetZoom: () => void;
   onToggleVisualizationControls?: () => void;
   visualizationActive?: boolean;
+  onAddDivision?: () => void;
+  onSave?: () => void;
+  onLoad?: () => void;
+  onExport?: () => void;
+  onImport?: () => void;
 }
 
 export const OfficeControls: React.FC<OfficeControlsProps> = ({
@@ -23,11 +33,28 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
   onResetZoom,
   onToggleVisualizationControls,
   visualizationActive = false,
+  onAddDivision,
+  onSave,
+  onLoad,
+  onExport,
+  onImport
 }) => {
   const { theme } = useTheme();
+  const { toast } = useToast();
   const isDark = theme === 'dark';
   const [expanded, setExpanded] = useState(false);
+  const [isNewDivisionModalOpen, setIsNewDivisionModalOpen] = useState(false);
   
+  const handleCreateDivision = (data: any) => {
+    if (onAddDivision) {
+      onAddDivision();
+    }
+    toast({
+      title: "Division Created",
+      description: `${data.name} division has been created successfully.`,
+    });
+  };
+
   return (
     <>
       <div className="absolute top-3 right-4 z-40">
@@ -177,11 +204,9 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
                     ? "bg-black/50 text-white border-gray-700/50" 
                     : "bg-white/50 text-gray-700 border-gray-200/50"
                 )}
-                onClick={() => {
-                  // This could toggle a full-screen mode or other view options
-                }}
+                onClick={() => setIsNewDivisionModalOpen(true)}
               >
-                <Eye className="h-3.5 w-3.5" />
+                <Plus className="h-3.5 w-3.5" />
               </Button>
               
               <Button
@@ -193,16 +218,27 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
                     ? "bg-black/50 text-white border-gray-700/50" 
                     : "bg-white/50 text-gray-700 border-gray-200/50"
                 )}
-                onClick={() => {
-                  // This could toggle a settings panel or other options
-                }}
+                onClick={onSave}
               >
-                <Settings className="h-3.5 w-3.5" />
+                <Save className="h-3.5 w-3.5" />
               </Button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* New Division Modal */}
+      <SolarpunkWindow
+        open={isNewDivisionModalOpen}
+        onClose={() => setIsNewDivisionModalOpen(false)}
+        title="Create New Division"
+        description="Define a new division within the office."
+      >
+        <NewDivisionModal
+          onClose={() => setIsNewDivisionModalOpen(false)}
+          onCreateDivision={handleCreateDivision}
+        />
+      </SolarpunkWindow>
     </>
   );
 };
