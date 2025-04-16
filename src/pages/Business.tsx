@@ -13,17 +13,24 @@ import {
   FileSpreadsheet,
   LineChart,
   Briefcase,
-  UserPlus
+  UserPlus,
+  LayoutDashboard,
+  Settings2,
+  Grid3x3,
+  Link as LinkIcon
 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import ThemedBackground from '@/components/ui/ThemedBackground';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Link } from 'react-router-dom';
 import FinancialOverview from '@/features/business/FinancialOverview';
 import CRMIntegration from '@/features/business/CRMIntegration';
 import BudgetManagement from '@/features/business/BudgetManagement';
@@ -31,12 +38,22 @@ import ApiSynchronization from '@/features/business/ApiSynchronization';
 import ERPDashboard from '@/features/business/ERPDashboard';
 import CallCenterDashboard from '@/features/business/CallCenterDashboard';
 import InventoryDashboard from '@/features/business/InventoryDashboard';
+import BusinessModules from '@/features/business/BusinessModules';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const Business = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [timeRange, setTimeRange] = useState('30d');
+  const [showCrossPlatformLinks, setShowCrossPlatformLinks] = useState(true);
   const { t } = useLanguage();
+  
+  // Cross-platform navigation links to improve cohesion
+  const crossPlatformLinks = [
+    { title: 'Dashboard', path: '/', icon: LayoutDashboard, description: 'Return to main dashboard' },
+    { title: 'Analytics', path: '/analytics', icon: LineChart, description: 'View detailed analytics' },
+    { title: 'Office', path: '/office', icon: Briefcase, description: 'Manage your virtual office' },
+    { title: 'Tasks', path: '/tasks', icon: Grid3x3, description: 'Review and manage tasks' },
+  ];
 
   return (
     <ThemedBackground>
@@ -95,6 +112,25 @@ const Business = () => {
                   Manage CRM
                 </Button>
                 
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setShowCrossPlatformLinks(!showCrossPlatformLinks)}
+                        className="bg-amber-500/10 border-amber-500/50 hover:bg-amber-500/20 text-amber-500 dark:text-amber-400"
+                      >
+                        <LinkIcon className="h-4 w-4 mr-2" />
+                        Quick Nav
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      <p className="text-xs">Navigate to related areas</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                
                 <Select defaultValue={timeRange} onValueChange={setTimeRange}>
                   <SelectTrigger className="w-[140px] text-xs h-8 bg-flow-muted/30 border-flow-border/50">
                     <SelectValue placeholder="Time Period" />
@@ -109,6 +145,48 @@ const Business = () => {
               </div>
             }
           />
+          
+          <AnimatePresence>
+            {showCrossPlatformLinks && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <GlassMorphism className="border border-flow-border/30 rounded-xl p-4 mb-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="text-sm font-medium text-flow-accent">Cross-Platform Navigation</h3>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-7 w-7 p-0" 
+                      onClick={() => setShowCrossPlatformLinks(false)}
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {crossPlatformLinks.map((link, i) => (
+                      <Link key={i} to={link.path}>
+                        <Card className="bg-flow-background/20 border-flow-border/30 hover:bg-flow-background/40 hover:border-flow-accent/50 transition-all duration-200">
+                          <div className="flex items-center p-3">
+                            <div className="p-2 rounded-full bg-flow-accent/10 mr-3">
+                              <link.icon className="h-4 w-4 text-flow-accent" />
+                            </div>
+                            <div>
+                              <div className="text-xs font-medium">{link.title}</div>
+                              <div className="text-[10px] text-flow-foreground/60">{link.description}</div>
+                            </div>
+                          </div>
+                        </Card>
+                      </Link>
+                    ))}
+                  </div>
+                </GlassMorphism>
+              </motion.div>
+            )}
+          </AnimatePresence>
           
           <GlassMorphism className="border border-flow-border/30 rounded-2xl overflow-hidden hover-scale">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="p-6">
@@ -138,6 +216,7 @@ const Business = () => {
               
               <TabsContent value="overview" className="space-y-6">
                 <FinancialOverview timeRange={timeRange} />
+                <BusinessModules />
               </TabsContent>
               
               <TabsContent value="budget" className="space-y-6">
