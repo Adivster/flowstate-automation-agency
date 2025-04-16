@@ -314,7 +314,8 @@ const NewDivisionModal: React.FC<NewDivisionModalProps> = ({
                 isDark ? "bg-gray-800/50" : "bg-gray-50"
               )}>
                 {commonIcons.map(iconKey => {
-                  const IconComponent = LucideIcons[iconKey];
+                  // Fix: Correctly access and use the icon component
+                  const IconComp = LucideIcons[iconKey];
                   return (
                     <div
                       key={iconKey}
@@ -330,7 +331,7 @@ const NewDivisionModal: React.FC<NewDivisionModalProps> = ({
                       )}
                       onClick={() => handleIconSelect(iconKey)}
                     >
-                      <IconComponent className={cn(
+                      <IconComp className={cn(
                         "h-5 w-5",
                         formState.iconKey === iconKey
                           ? isDark ? `text-${formState.color}-400` : `text-${formState.color}-600`
@@ -391,9 +392,10 @@ const NewDivisionModal: React.FC<NewDivisionModalProps> = ({
                       `bg-${formState.color}-500/20`
                     )}
                   >
+                    {/* Fix: Render the selected icon component correctly */}
                     {(() => {
-                      const SelectedIcon = LucideIcons[formState.iconKey];
-                      return <SelectedIcon className={cn(
+                      const PreviewIcon = LucideIcons[formState.iconKey];
+                      return <PreviewIcon className={cn(
                         "h-6 w-6",
                         isDark ? `text-${formState.color}-400` : `text-${formState.color}-600`
                       )} />;
