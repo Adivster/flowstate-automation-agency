@@ -384,7 +384,7 @@ const FinancialOverview = ({ timeRange }: FinancialOverviewProps) => {
             onClick={handleDataPointClick}
           />
         </div>
-      </div>
+      </Card>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="bg-flow-background/20 backdrop-blur-md border-flow-border p-4">
