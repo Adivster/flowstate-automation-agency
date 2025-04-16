@@ -1,9 +1,10 @@
+
 import React, { useState, useCallback } from 'react';
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Plus, Save, Download, Upload } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast"
-import { OfficeGrid } from './OfficeGrid';
+import { OfficeGrid } from './OfficeGrid';  // Ensure this import is correct
 import { SolarpunkWindow } from '@/components/ui/design-system/SolarpunkWindow';
 import NewDivisionModal from './division-modal/NewDivisionModal';
 
