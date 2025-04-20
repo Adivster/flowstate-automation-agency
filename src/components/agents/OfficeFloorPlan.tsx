@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import OfficeElements from './office/OfficeElements';
 import { useToast } from '@/hooks/use-toast';
@@ -9,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { VisualizationState } from './office/types/visualizationTypes';
 import { Division, DecorativeElement, ZIndexLayers } from './office/types/officeTypes';
 import { Book, Database, BarChart3, Cpu } from 'lucide-react';
-import { agents } from './office/data/agentsData';
 import TaskWorkflowPanel from './office/TaskWorkflowPanel';
 import NewDivisionModal from './office/division-modal/NewDivisionModal';
 import { AnimatePresence } from 'framer-motion';
@@ -20,6 +18,8 @@ import { EnhancedBackground } from './office/layout/EnhancedBackground';
 import { PerformanceMetricsOverlay } from './office/metrics/PerformanceMetricsOverlay';
 import { FloorPlanFilters, FilterOptions } from './office/filters/FloorPlanFilters';
 import { ContextualActionPanel } from './office/actions/ContextualActionPanel';
+import UnifiedControls from './office/controls/UnifiedControls';
+import { agents } from './office/data/agentsData';
 
 const officeData = {
   divisions: [
@@ -108,6 +108,9 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
     workload: [0, 100],
     tasks: []
   });
+  const [controlsCollapsed, setControlsCollapsed] = useState(true);
+  const [activeControlTab, setActiveControlTab] = useState('visualizations');
+  
   const terminalRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
@@ -119,7 +122,21 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
     totalAgents: officeData.agents.length,
     systemLoad: Array.from({ length: 20 }, () => Math.floor(Math.random() * 60) + 20),
     alerts: Math.floor(Math.random() * 3),
-    status: (Math.random() > 0.8 ? 'warning' : 'healthy') as 'healthy' | 'warning' | 'critical'
+    status: (Math.random() > 0.8 ? 'warning' : 'healthy') as 'healthy' | 'warning' | 'critical',
+    uptime: 99.8,
+    efficiency: 87,
+    responseTime: 324,
+    throughput: [220, 230, 210, 250, 270, 240, 256],
+    errorRate: 0.8
+  });
+
+  const [visualizationSettings, setVisualizationSettings] = useState({
+    showHeatmap: false,
+    showStatusMarkers: true,
+    showHotspots: true,
+    showPerformanceMetrics: true,
+    showSparklines: true,
+    showQuickActions: true
   });
   
   useEffect(() => {
@@ -165,6 +182,10 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
       if (e.key === 'm' && e.altKey) {
         setShowMetrics(prev => !prev);
       }
+
+      if (e.key === 'l' && e.altKey) {
+        setControlsCollapsed(prev => !prev);
+      }
     };
     
     window.addEventListener('keydown', handleKeyDown);
@@ -188,11 +209,16 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
     const perfDataInterval = setInterval(() => {
       setPerformanceData(prev => {
         const newSystemLoad = [...prev.systemLoad.slice(1), Math.floor(Math.random() * 60) + 20];
+        const newThroughput = [...(prev.throughput || []).slice(1), 
+          Math.max(200, Math.min(300, (prev.throughput ? prev.throughput[prev.throughput.length-1] : 256) + 
+            (Math.random() * 20) - 10))];
+            
         return {
           ...prev,
           cpu: Math.min(100, Math.max(10, prev.cpu + (Math.random() * 10) - 5)),
           memory: Math.min(100, Math.max(20, prev.memory + (Math.random() * 6) - 3)),
           systemLoad: newSystemLoad,
+          throughput: newThroughput,
           alerts: Math.random() > 0.9 ? prev.alerts + 1 : Math.max(0, prev.alerts - (Math.random() > 0.7 ? 1 : 0)),
           status: prev.alerts > 3 ? 'critical' : prev.alerts > 0 ? 'warning' : 'healthy'
         };
@@ -295,6 +321,8 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
           '  workflows - Show workflows for the current division',
           '  create division - Create a new division',
           '  edit <on|off> - Toggle edit mode',
+          '  metrics <show|hide> - Toggle performance metrics',
+          '  filters <show|hide> - Toggle filters panel',
           '  clear - Clear the terminal',
           '  exit - Close the terminal'
         ];
@@ -399,6 +427,36 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         }
         
         return ['Error: Invalid edit mode. Use "on" or "off"'];
+
+      case 'metrics':
+        if (args.length < 2) return ['Error: Usage: metrics <show|hide>'];
+        
+        if (args[1] === 'show') {
+          setShowMetrics(true);
+          return ['Performance metrics displayed.'];
+        }
+        
+        if (args[1] === 'hide') {
+          setShowMetrics(false);
+          return ['Performance metrics hidden.'];
+        }
+        
+        return ['Error: Invalid option. Use "show" or "hide"'];
+        
+      case 'filters':
+        if (args.length < 2) return ['Error: Usage: filters <show|hide>'];
+        
+        if (args[1] === 'show') {
+          setShowFilters(true);
+          return ['Filters panel displayed.'];
+        }
+        
+        if (args[1] === 'hide') {
+          setShowFilters(false);
+          return ['Filters panel hidden.'];
+        }
+        
+        return ['Error: Invalid option. Use "show" or "hide"'];
       
       case 'clear':
         setTimeout(() => {
@@ -539,6 +597,29 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
   const handleFilterChange = (filters: FilterOptions) => {
     setActiveFilters(filters);
   };
+
+  const handleVisualizationChange = (settings: Partial<typeof visualizationSettings>) => {
+    setVisualizationSettings(prev => ({
+      ...prev,
+      ...settings
+    }));
+    
+    if (visualizationState) {
+      console.log('Visualization settings updated:', settings);
+    }
+  };
+  
+  const handleToggleControlsCollapse = () => {
+    setControlsCollapsed(prev => !prev);
+  };
+  
+  const handleControlTabChange = (tab: string) => {
+    setActiveControlTab(tab);
+  };
+  
+  const handleViewDetails = () => {
+    window.location.href = '/performance';
+  };
   
   return (
     <div className="relative h-full w-full bg-black rounded-xl overflow-hidden office-container" style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center center' }}>
@@ -561,6 +642,26 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         zoomLevel={zoomLevel}
         visualizationState={visualizationState}
         onHotspotAction={onHotspotAction}
+      />
+      
+      <UnifiedControls
+        collapsed={controlsCollapsed}
+        onToggleCollapse={handleToggleControlsCollapse}
+        activeTab={activeControlTab}
+        onTabChange={handleControlTabChange}
+        visualizationSettings={visualizationSettings}
+        onVisualizationChange={handleVisualizationChange}
+        onTogglePerformanceMetrics={handleToggleMetrics}
+        onToggleFilters={handleToggleFilters}
+        onToggleCommandCenter={() => setCommandCenterVisible(prev => !prev)}
+        performanceMetricsVisible={showMetrics}
+        filtersVisible={showFilters}
+        commandCenterVisible={commandCenterVisible}
+        zoomLevel={zoomLevel}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+        onResetZoom={() => setZoomLevel(1)}
+        onOpenTerminal={() => setShowTerminal(true)}
       />
       
       <OfficeControls
@@ -637,6 +738,7 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         visible={showMetrics}
         position="bottom-right"
         onClose={() => setShowMetrics(false)}
+        onViewDetails={handleViewDetails}
       />
       
       <FloorPlanFilters
