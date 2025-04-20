@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import { MiniSparkline } from '../MiniSparkline';
+import MiniSparkline from '../MiniSparkline';
 
 interface PerformanceData {
   cpu: number;

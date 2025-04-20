@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import OfficeElements from './office/OfficeElements';
 import { useToast } from '@/hooks/use-toast';
@@ -216,10 +217,11 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
     const division = divisions.find(d => d.id === divisionId);
     if (!division) return;
     
+    const previouslySelectedDivision = selectedDivision;
     setSelectedDivision(prevId => prevId === divisionId ? null : divisionId);
     setSelectedAgent(null);
     
-    if (prevId !== divisionId) {
+    if (previouslySelectedDivision !== divisionId) {
       setSelectedEntity({
         id: divisionId,
         type: 'division',
@@ -236,12 +238,13 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
     const agent = officeData.agents.find(a => a.id === agentId);
     if (!agent) return;
     
+    const previouslySelectedAgent = selectedAgent;
     setSelectedAgent(prevId => prevId === agentId ? null : agentId);
     
     if (agent) {
       setSelectedDivision(agent.division || null);
       
-      if (prevId !== agentId) {
+      if (previouslySelectedAgent !== agentId) {
         setSelectedEntity({
           id: agentId,
           type: 'agent',
