@@ -1,17 +1,24 @@
 import React, { useState, useRef, useEffect } from 'react';
 import OfficeElements from './office/OfficeElements';
 import { useToast } from '@/hooks/use-toast';
-import { Terminal, X, ZoomIn, ZoomOut, Building2, PlusCircle, Clock, ChevronDown, ChevronRight, Settings, Search } from 'lucide-react';
+import { 
+  Terminal, X, Building2, PlusCircle, Clock, Settings, Search
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { VisualizationState } from './office/types/visualizationTypes';
 import { Division, DecorativeElement, ZIndexLayers } from './office/types/officeTypes';
 import { Book, Database, BarChart3, Cpu } from 'lucide-react';
 import { agents } from './office/data/agentsData';
 import TaskWorkflowPanel from './office/TaskWorkflowPanel';
-import NewDivisionModal from './office/NewDivisionModal';
+import NewDivisionModal from './office/division-modal/NewDivisionModal';
 import { AnimatePresence } from 'framer-motion';
 import { useTaskContext } from '@/contexts/TaskContext';
 import { OfficeControls } from './office/layout/OfficeControls';
+import { CommandCenter } from './office/layout/CommandCenter';
+import { EnhancedBackground } from './office/layout/EnhancedBackground';
+import { PerformanceMetricsOverlay } from './office/metrics/PerformanceMetricsOverlay';
+import { FloorPlanFilters, FilterOptions } from './office/filters/FloorPlanFilters';
+import { ContextualActionPanel } from './office/actions/ContextualActionPanel';
 
 const officeData = {
   divisions: [
@@ -69,6 +76,11 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
   const [divisions, setDivisions] = useState<Division[]>(officeData.divisions);
   const [selectedDivision, setSelectedDivision] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<number | null>(null);
+  const [selectedEntity, setSelectedEntity] = useState<{id: string | number | null, type: 'division' | 'agent' | 'workstation' | 'server' | 'none', name: string, status?: 'working' | 'idle' | 'paused' | 'error'}>({
+    id: null,
+    type: 'none',
+    name: '',
+  });
   const [showTerminal, setShowTerminal] = useState(false);
   const [command, setCommand] = useState('');
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
@@ -83,8 +95,31 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
   const [divisionPositions, setDivisionPositions] = useState<Record<string, { x: number, y: number }>>({});
   const [showTaskPanel, setShowTaskPanel] = useState(false);
   const [showNewDivisionModal, setShowNewDivisionModal] = useState(false);
+  const [showVisualizationControls, setShowVisualizationControls] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showMetrics, setShowMetrics] = useState(false);
+  const [showContextActions, setShowContextActions] = useState(false);
+  const [commandCenterVisible, setCommandCenterVisible] = useState(true);
+  const [activeFilters, setActiveFilters] = useState<FilterOptions>({
+    divisions: [],
+    statuses: ['working', 'idle', 'paused', 'error'],
+    efficiency: [0, 100],
+    workload: [0, 100],
+    tasks: []
+  });
   const terminalRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  
+  const [performanceData, setPerformanceData] = useState({
+    cpu: Math.floor(Math.random() * 60) + 20,
+    memory: Math.floor(Math.random() * 60) + 30,
+    network: Math.floor(Math.random() * 80) + 10,
+    agentsActive: officeData.agents.filter(a => a.status === 'working').length,
+    totalAgents: officeData.agents.length,
+    systemLoad: Array.from({ length: 20 }, () => Math.floor(Math.random() * 60) + 20),
+    alerts: Math.floor(Math.random() * 3),
+    status: (Math.random() > 0.8 ? 'warning' : 'healthy') as 'healthy' | 'warning' | 'critical'
+  });
   
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -99,9 +134,35 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
           setShowTaskPanel(false);
         } else if (selectedDivision) {
           setSelectedDivision(null);
+          setSelectedEntity({ id: null, type: 'none', name: '' });
+          setShowContextActions(false);
         } else if (selectedAgent) {
           setSelectedAgent(null);
+          setSelectedEntity({ id: null, type: 'none', name: '' });
+          setShowContextActions(false);
+        } else if (showVisualizationControls) {
+          setShowVisualizationControls(false);
+        } else if (showFilters) {
+          setShowFilters(false);
+        } else if (showMetrics) {
+          setShowMetrics(false);
         }
+      }
+      
+      if (e.key === 'c' && e.altKey) {
+        setCommandCenterVisible(prev => !prev);
+      }
+      
+      if (e.key === 'v' && e.altKey) {
+        setShowVisualizationControls(prev => !prev);
+      }
+      
+      if (e.key === 'f' && e.altKey) {
+        setShowFilters(prev => !prev);
+      }
+      
+      if (e.key === 'm' && e.altKey) {
+        setShowMetrics(prev => !prev);
       }
     };
     
@@ -123,12 +184,27 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
       }, 5000);
     }, 10000);
     
+    const perfDataInterval = setInterval(() => {
+      setPerformanceData(prev => {
+        const newSystemLoad = [...prev.systemLoad.slice(1), Math.floor(Math.random() * 60) + 20];
+        return {
+          ...prev,
+          cpu: Math.min(100, Math.max(10, prev.cpu + (Math.random() * 10) - 5)),
+          memory: Math.min(100, Math.max(20, prev.memory + (Math.random() * 6) - 3)),
+          systemLoad: newSystemLoad,
+          alerts: Math.random() > 0.9 ? prev.alerts + 1 : Math.max(0, prev.alerts - (Math.random() > 0.7 ? 1 : 0)),
+          status: prev.alerts > 3 ? 'critical' : prev.alerts > 0 ? 'warning' : 'healthy'
+        };
+      });
+    }, 5000);
+    
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('openCommandTerminal', () => setShowTerminal(true));
       clearInterval(pulseInterval);
+      clearInterval(perfDataInterval);
     };
-  }, [showTerminal, showTaskPanel, selectedDivision, selectedAgent, divisions]);
+  }, [showTerminal, showTaskPanel, selectedDivision, selectedAgent, divisions, showVisualizationControls, showFilters, showMetrics]);
   
   useEffect(() => {
     if (terminalRef.current) {
@@ -137,17 +213,46 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
   }, [terminalOutput]);
   
   const handleDivisionClick = (divisionId: string) => {
+    const division = divisions.find(d => d.id === divisionId);
+    if (!division) return;
+    
     setSelectedDivision(prevId => prevId === divisionId ? null : divisionId);
     setSelectedAgent(null);
-    setShowTaskPanel(true);
+    
+    if (prevId !== divisionId) {
+      setSelectedEntity({
+        id: divisionId,
+        type: 'division',
+        name: division.name
+      });
+      setShowContextActions(true);
+    } else {
+      setSelectedEntity({ id: null, type: 'none', name: '' });
+      setShowContextActions(false);
+    }
   };
   
   const handleAgentClick = (agentId: number) => {
+    const agent = officeData.agents.find(a => a.id === agentId);
+    if (!agent) return;
+    
     setSelectedAgent(prevId => prevId === agentId ? null : agentId);
     
-    const agent = officeData.agents.find(a => a.id === agentId);
     if (agent) {
       setSelectedDivision(agent.division || null);
+      
+      if (prevId !== agentId) {
+        setSelectedEntity({
+          id: agentId,
+          type: 'agent',
+          name: agent.name,
+          status: agent.status
+        });
+        setShowContextActions(true);
+      } else {
+        setSelectedEntity({ id: null, type: 'none', name: '' });
+        setShowContextActions(false);
+      }
     }
     
     if (onAgentClick) {
@@ -382,9 +487,60 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
   const handleCloseTaskPanel = () => {
     setShowTaskPanel(false);
   };
+
+  const handleToggleVisualizationControls = () => {
+    setShowVisualizationControls(prev => !prev);
+    
+    if (!showVisualizationControls) {
+      setShowFilters(false);
+      setShowMetrics(false);
+    }
+  };
+  
+  const handleToggleFilters = () => {
+    setShowFilters(prev => !prev);
+    
+    if (!showFilters) {
+      setShowVisualizationControls(false);
+      setShowMetrics(false);
+    }
+  };
+  
+  const handleToggleMetrics = () => {
+    setShowMetrics(prev => !prev);
+    
+    if (!showMetrics) {
+      setShowVisualizationControls(false);
+      setShowFilters(false);
+    }
+  };
+  
+  const handleContextualAction = (action: string, entityId: string | number, entityType: string) => {
+    toast({
+      title: `${action.charAt(0).toUpperCase() + action.slice(1)}`,
+      description: `Performed "${action}" on ${entityType} ${entityId}`,
+      duration: 3000,
+    });
+    
+    if (action === 'chat' && entityType === 'agent') {
+      toast({
+        title: `Chat with Agent`,
+        description: `Opening chat with agent ${entityId}`,
+        duration: 3000,
+      });
+    }
+    
+    setShowContextActions(false);
+  };
+  
+  const handleFilterChange = (filters: FilterOptions) => {
+    setActiveFilters(filters);
+  };
   
   return (
-    <div className="relative h-full w-full bg-black bg-opacity-50 rounded-xl overflow-hidden office-container" style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center center' }}>
+    <div className="relative h-full w-full bg-black rounded-xl overflow-hidden office-container" style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center center' }}>
+      <EnhancedBackground animated={true} intensityLevel="medium" />
+      
       <OfficeElements
         divisions={divisions}
         agents={officeData.agents}
@@ -409,8 +565,20 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
         onResetZoom={() => setZoomLevel(1)}
-        onToggleVisualizationControls={() => setShowTaskPanel(true)}
+        onToggleVisualizationControls={handleToggleVisualizationControls}
         visualizationActive={!!visualizationState?.activeLayerIds?.length}
+        onToggleFilters={handleToggleFilters}
+        filtersActive={showFilters}
+        onToggleMetrics={handleToggleMetrics}
+        metricsActive={showMetrics}
+        onAddDivision={() => setShowNewDivisionModal(true)}
+        onSave={() => {
+          toast({
+            title: "Layout Saved",
+            description: "The current office layout has been saved.",
+            duration: 3000,
+          });
+        }}
       />
       
       {showTerminal && (
@@ -449,26 +617,43 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         </div>
       )}
       
-      <div className="absolute top-2 left-2 z-30 flex gap-2">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="h-8 w-8 p-0 bg-black/50 border-white/20 text-white hover:bg-black/70"
-          onClick={() => setShowNewDivisionModal(true)}
-          title="Create new division"
-        >
-          <PlusCircle className="h-4 w-4" />
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="h-8 w-8 p-0 bg-black/50 border-white/20 text-white hover:bg-black/70"
-          onClick={() => setShowTaskPanel(true)}
-          title="View tasks and workflows"
-        >
-          <Clock className="h-4 w-4" />
-        </Button>
-      </div>
+      {commandCenterVisible && (
+        <CommandCenter 
+          onToggleVisualizationControls={handleToggleVisualizationControls}
+          visualizationActive={!!visualizationState?.activeLayerIds?.length}
+          onShowMetrics={handleToggleMetrics}
+          metricsActive={showMetrics}
+          systemStatus={performanceData.status}
+          activeAgents={performanceData.agentsActive}
+          totalAgents={performanceData.totalAgents}
+        />
+      )}
+      
+      <PerformanceMetricsOverlay
+        data={performanceData}
+        visible={showMetrics}
+        position="bottom-right"
+        onClose={() => setShowMetrics(false)}
+      />
+      
+      <FloorPlanFilters
+        visible={showFilters}
+        onClose={() => setShowFilters(false)}
+        divisions={divisions.map(d => ({ id: d.id, name: d.name }))}
+        onFilterChange={handleFilterChange}
+        initialFilters={activeFilters}
+      />
+      
+      <ContextualActionPanel
+        visible={showContextActions}
+        entityType={selectedEntity.type}
+        entityId={selectedEntity.id}
+        entityName={selectedEntity.name}
+        entityStatus={selectedEntity.status}
+        position="right"
+        onAction={handleContextualAction}
+        onClose={() => setShowContextActions(false)}
+      />
       
       <AnimatePresence>
         {showTaskPanel && (

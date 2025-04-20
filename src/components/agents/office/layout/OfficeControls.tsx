@@ -1,6 +1,9 @@
 
 import React, { useState } from 'react';
-import { Info, ZoomIn, ZoomOut, Eye, EyeOff, Layers, Settings, Maximize, Minimize, Save, Download, Upload, Plus } from 'lucide-react';
+import { 
+  Info, ZoomIn, ZoomOut, Layers, Maximize, Minimize, Save, Plus,
+  Filter, Activity, Settings, ChevronDown, ChevronUp, Eye
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,9 +11,9 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { OfficeGrid } from '../OfficeGrid';
 import { SolarpunkWindow } from '@/components/ui/design-system/SolarpunkWindow';
 import NewDivisionModal from '../division-modal/NewDivisionModal';
+import { Badge } from '@/components/ui/badge';
 
 interface OfficeControlsProps {
   zoomLevel: number;
@@ -19,6 +22,10 @@ interface OfficeControlsProps {
   onResetZoom: () => void;
   onToggleVisualizationControls?: () => void;
   visualizationActive?: boolean;
+  onToggleFilters?: () => void;
+  filtersActive?: boolean;
+  onToggleMetrics?: () => void;
+  metricsActive?: boolean;
   onAddDivision?: () => void;
   onSave?: () => void;
   onLoad?: () => void;
@@ -33,6 +40,10 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
   onResetZoom,
   onToggleVisualizationControls,
   visualizationActive = false,
+  onToggleFilters,
+  filtersActive = false,
+  onToggleMetrics,
+  metricsActive = false,
   onAddDivision,
   onSave,
   onLoad,
@@ -43,6 +54,7 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
   const { toast } = useToast();
   const isDark = theme === 'dark';
   const [expanded, setExpanded] = useState(false);
+  const [controlsExpanded, setControlsExpanded] = useState(false);
   const [isNewDivisionModalOpen, setIsNewDivisionModalOpen] = useState(false);
   
   const handleCreateDivision = (data: any) => {
@@ -53,10 +65,12 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
       title: "Division Created",
       description: `${data.name} division has been created successfully.`,
     });
+    setIsNewDivisionModalOpen(false);
   };
 
   return (
     <>
+      {/* Help icon in top right */}
       <div className="absolute top-3 right-4 z-40">
         <Popover>
           <PopoverTrigger asChild>
@@ -86,43 +100,167 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
                 <span>Use <strong>Visualization Layers</strong> to toggle different data overlays</span>
               </li>
               <li className="flex items-start gap-2">
-                <Info className={cn("h-4 w-4 mt-0.5", isDark ? "text-blue-400" : "text-blue-600")} />
-                <span>Click on divisions or agents to view detailed information</span>
+                <Filter className={cn("h-4 w-4 mt-0.5", isDark ? "text-blue-400" : "text-blue-600")} />
+                <span>Use <strong>Filters</strong> to focus on specific divisions or agent states</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Activity className={cn("h-4 w-4 mt-0.5", isDark ? "text-amber-400" : "text-amber-600")} />
+                <span>Toggle <strong>Performance Metrics</strong> to view system status</span>
               </li>
               <li className="flex items-start gap-2">
                 <ZoomIn className={cn("h-4 w-4 mt-0.5", isDark ? "text-green-400" : "text-green-600")} />
-                <span>Use zoom controls or hold Option/Alt + drag to pan around</span>
+                <span>Use zoom controls or hold Alt + drag to pan around</span>
               </li>
             </ul>
           </PopoverContent>
         </Popover>
       </div>
 
-      <AnimatePresence>
-        <motion.div 
-          className="absolute top-3 left-3 z-40 flex gap-2"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
+      {/* Main control toolbar */}
+      <motion.div 
+        className={cn(
+          "absolute top-3 left-1/2 transform -translate-x-1/2 z-40",
+          "rounded-lg backdrop-blur-md shadow-lg border flex items-center",
+          isDark 
+            ? "bg-black/60 border-white/10 shadow-black/20" 
+            : "bg-white/60 border-emerald-200/30 shadow-emerald-100/10"
+        )}
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30, delay: 0.2 }}
+      >
+        <div className="px-2 py-1.5 flex items-center gap-1">
           <Button
             size="sm"
-            variant="outline"
+            variant={visualizationActive ? "default" : "ghost"}
             className={cn(
-              "h-8 p-0 backdrop-blur-md border transition-all duration-300", 
-              visualizationActive 
-                ? isDark ? "bg-purple-500/20 border-purple-500/50 text-white" : "bg-emerald-500/20 border-emerald-500/50 text-emerald-800"
-                : isDark ? "bg-black/60 border-white/10 text-white" : "bg-white/60 border-emerald-200/50 text-emerald-800",
-              "flex items-center gap-2"
+              "h-8 rounded-md text-xs",
+              visualizationActive && (isDark 
+                ? "bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 hover:text-purple-200" 
+                : "bg-purple-500/10 text-purple-700 hover:bg-purple-500/20 hover:text-purple-800")
             )}
             onClick={onToggleVisualizationControls}
           >
-            <Layers className="h-4 w-4" />
-            <span className="px-2">Visualization Controls</span>
+            <Layers className="h-3.5 w-3.5 mr-1.5" />
+            Visualizations
           </Button>
-        </motion.div>
+          
+          <Button
+            size="sm"
+            variant={filtersActive ? "default" : "ghost"}
+            className={cn(
+              "h-8 rounded-md text-xs",
+              filtersActive && (isDark 
+                ? "bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 hover:text-blue-200" 
+                : "bg-blue-500/10 text-blue-700 hover:bg-blue-500/20 hover:text-blue-800")
+            )}
+            onClick={onToggleFilters}
+          >
+            <Filter className="h-3.5 w-3.5 mr-1.5" />
+            Filters
+          </Button>
+          
+          <Button
+            size="sm"
+            variant={metricsActive ? "default" : "ghost"}
+            className={cn(
+              "h-8 rounded-md text-xs",
+              metricsActive && (isDark 
+                ? "bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 hover:text-amber-200" 
+                : "bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 hover:text-amber-800")
+            )}
+            onClick={onToggleMetrics}
+          >
+            <Activity className="h-3.5 w-3.5 mr-1.5" />
+            Metrics
+          </Button>
+          
+          <Separator orientation="vertical" className="h-6 mx-0.5" />
+          
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-8 rounded-md text-xs"
+            onClick={() => setIsNewDivisionModalOpen(true)}
+          >
+            <Plus className="h-3.5 w-3.5 mr-1.5" />
+            Division
+          </Button>
+          
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-8 w-8 p-0"
+            onClick={() => setControlsExpanded(!controlsExpanded)}
+          >
+            {controlsExpanded ? (
+              <ChevronUp className="h-3.5 w-3.5" />
+            ) : (
+              <ChevronDown className="h-3.5 w-3.5" />
+            )}
+          </Button>
+        </div>
+      </motion.div>
+      
+      {/* Expanded controls panel */}
+      <AnimatePresence>
+        {controlsExpanded && (
+          <motion.div
+            className={cn(
+              "absolute top-14 left-1/2 transform -translate-x-1/2 z-40",
+              "rounded-lg backdrop-blur-md shadow-lg border p-3",
+              isDark 
+                ? "bg-black/60 border-white/10 shadow-black/20" 
+                : "bg-white/60 border-emerald-200/30 shadow-emerald-100/10"
+            )}
+            initial={{ y: -10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -10, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="grid grid-cols-3 gap-3">
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[10px] opacity-70">View Mode</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full h-8 text-xs"
+                >
+                  <Eye className="h-3.5 w-3.5 mr-1.5" />
+                  Standard
+                </Button>
+              </div>
+              
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[10px] opacity-70">Settings</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full h-8 text-xs"
+                >
+                  <Settings className="h-3.5 w-3.5 mr-1.5" />
+                  Configure
+                </Button>
+              </div>
+              
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-[10px] opacity-70">Save</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full h-8 text-xs"
+                  onClick={onSave}
+                >
+                  <Save className="h-3.5 w-3.5 mr-1.5" />
+                  Save Layout
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
 
+      {/* Zoom controls */}
       <div className="absolute bottom-3 right-3 flex items-center gap-2 z-40">
         <Button
           size="sm"
@@ -205,6 +343,7 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
                     : "bg-white/50 text-gray-700 border-gray-200/50"
                 )}
                 onClick={() => setIsNewDivisionModalOpen(true)}
+                title="Add new division"
               >
                 <Plus className="h-3.5 w-3.5" />
               </Button>
@@ -219,6 +358,7 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
                     : "bg-white/50 text-gray-700 border-gray-200/50"
                 )}
                 onClick={onSave}
+                title="Save layout"
               >
                 <Save className="h-3.5 w-3.5" />
               </Button>
