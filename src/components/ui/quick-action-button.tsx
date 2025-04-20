@@ -12,6 +12,7 @@ interface QuickActionButtonProps {
   variant?: 'default' | 'primary' | 'dashboard' | 'office' | 'workflows' | 'tasks' | 'knowledge' | 'business' | 'analytics' | 'courses';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  disabled?: boolean;
 }
 
 export const QuickActionButton: React.FC<QuickActionButtonProps> = ({
@@ -21,6 +22,7 @@ export const QuickActionButton: React.FC<QuickActionButtonProps> = ({
   variant = 'default',
   size = 'md',
   className,
+  disabled = false
 }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -100,24 +102,31 @@ export const QuickActionButton: React.FC<QuickActionButtonProps> = ({
     tap: { 
       scale: 0.97,
       transition: { duration: 0.1, ease: "easeIn" }
+    },
+    disabled: {
+      opacity: 0.5,
+      scale: 1
     }
   };
 
   return (
     <motion.button
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
       className={cn(
         'flex items-center justify-center gap-2 border transition-colors',
         getVariantStyles(),
         getSizeStyles(),
         'font-medium',
         isDark ? 'shadow-lg shadow-black/30' : 'shadow-sm',
+        disabled && 'opacity-50 cursor-not-allowed',
         className
       )}
       initial="rest"
-      whileHover="hover"
-      whileTap="tap"
+      animate={disabled ? "disabled" : "rest"}
+      whileHover={disabled ? "disabled" : "hover"}
+      whileTap={disabled ? "disabled" : "tap"}
       variants={buttonVariants}
+      disabled={disabled}
     >
       {icon}
       <span>{label}</span>

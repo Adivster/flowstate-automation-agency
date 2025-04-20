@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { 
   Info, ZoomIn, ZoomOut, Layers, Maximize, Minimize, Save, Plus,
-  Filter, Activity, Settings, ChevronDown, ChevronUp, Eye
+  Filter, Activity, Settings, ChevronDown, ChevronUp, Eye, Terminal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -28,9 +28,7 @@ interface OfficeControlsProps {
   metricsActive?: boolean;
   onAddDivision?: () => void;
   onSave?: () => void;
-  onLoad?: () => void;
-  onExport?: () => void;
-  onImport?: () => void;
+  onOpenTerminal?: () => void;
 }
 
 export const OfficeControls: React.FC<OfficeControlsProps> = ({
@@ -46,9 +44,7 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
   metricsActive = false,
   onAddDivision,
   onSave,
-  onLoad,
-  onExport,
-  onImport
+  onOpenTerminal
 }) => {
   const { theme } = useTheme();
   const { toast } = useToast();
@@ -108,8 +104,8 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
                 <span>Toggle <strong>Performance Metrics</strong> to view system status</span>
               </li>
               <li className="flex items-start gap-2">
-                <ZoomIn className={cn("h-4 w-4 mt-0.5", isDark ? "text-green-400" : "text-green-600")} />
-                <span>Use zoom controls or hold Alt + drag to pan around</span>
+                <Terminal className={cn("h-4 w-4 mt-0.5", isDark ? "text-green-400" : "text-green-600")} />
+                <span>Press <strong>Ctrl+Space</strong> to open the command terminal</span>
               </li>
             </ul>
           </PopoverContent>
@@ -192,6 +188,7 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
             variant="ghost"
             className="h-8 w-8 p-0"
             onClick={() => setControlsExpanded(!controlsExpanded)}
+            aria-label={controlsExpanded ? "Collapse controls" : "Expand controls"}
           >
             {controlsExpanded ? (
               <ChevronUp className="h-3.5 w-3.5" />
@@ -225,6 +222,7 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
                   size="sm"
                   variant="outline"
                   className="w-full h-8 text-xs"
+                  onClick={onToggleVisualizationControls}
                 >
                   <Eye className="h-3.5 w-3.5 mr-1.5" />
                   Standard
@@ -232,14 +230,15 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
               </div>
               
               <div className="flex flex-col items-center gap-1">
-                <span className="text-[10px] opacity-70">Settings</span>
+                <span className="text-[10px] opacity-70">Terminal</span>
                 <Button
                   size="sm"
                   variant="outline"
                   className="w-full h-8 text-xs"
+                  onClick={onOpenTerminal}
                 >
-                  <Settings className="h-3.5 w-3.5 mr-1.5" />
-                  Configure
+                  <Terminal className="h-3.5 w-3.5 mr-1.5" />
+                  Open
                 </Button>
               </div>
               
@@ -314,6 +313,7 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
               : isDark ? "bg-black/80 text-white border-gray-600/50" : "bg-white/80 text-gray-700 border-gray-200/50"
           )}
           onClick={() => setExpanded(!expanded)}
+          aria-label={expanded ? "Collapse additional controls" : "Expand additional controls"}
         >
           {expanded ? <Minimize className="h-3.5 w-3.5" /> : <Maximize className="h-3.5 w-3.5" />}
         </Button>
@@ -361,6 +361,21 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
                 title="Save layout"
               >
                 <Save className="h-3.5 w-3.5" />
+              </Button>
+              
+              <Button
+                size="sm"
+                variant="outline"
+                className={cn(
+                  "h-8 w-8 p-0", 
+                  isDark 
+                    ? "bg-black/50 text-white border-gray-700/50" 
+                    : "bg-white/50 text-gray-700 border-gray-200/50"
+                )}
+                onClick={onOpenTerminal}
+                title="Open terminal"
+              >
+                <Terminal className="h-3.5 w-3.5" />
               </Button>
             </div>
           </motion.div>

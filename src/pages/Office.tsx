@@ -1,4 +1,3 @@
-
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
@@ -585,7 +584,8 @@ const Office = () => {
                     )}>
                       <span className={isDark ? "text-flow-accent" : "text-emerald-600"}>
                         {t('proTip')}
-                      </span> {t('openTerminal')}
+                      </span>{" "}
+                      Press <kbd className="font-mono px-1 py-0.5 text-[10px] bg-black/20 rounded">Ctrl+Space</kbd> to open the terminal
                     </div>
                   </div>
                 </TabsContent>

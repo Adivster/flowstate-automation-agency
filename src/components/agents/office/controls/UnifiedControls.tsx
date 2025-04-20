@@ -17,6 +17,7 @@ import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 interface VisualizationSettings {
   showHeatmap: boolean;
@@ -74,6 +75,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
   onOpenTerminal
 }) => {
   const { theme } = useTheme();
+  const { toast } = useToast();
   const isDark = theme === 'dark';
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -89,6 +91,14 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
     if (onTabChange) {
       onTabChange(value);
     }
+  };
+  
+  const handleFeatureNotImplemented = (feature: string) => {
+    toast({
+      title: "Feature Not Implemented",
+      description: `${feature} feature is coming soon.`,
+      variant: "default",
+    });
   };
   
   return (
@@ -114,6 +124,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
           size="icon"
           className="h-6 w-6 ml-auto"
           onClick={onToggleCollapse}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
@@ -419,6 +430,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                           id="filter-active"
                           defaultChecked={true}
                           className="data-[state=checked]:bg-green-600"
+                          onCheckedChange={() => handleFeatureNotImplemented("Active Agent Filtering")}
                         />
                       </div>
                       
@@ -430,6 +442,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                           id="filter-idle"
                           defaultChecked={true}
                           className="data-[state=checked]:bg-blue-600"
+                          onCheckedChange={() => handleFeatureNotImplemented("Idle Agent Filtering")}
                         />
                       </div>
                       
@@ -441,6 +454,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                           id="filter-paused"
                           defaultChecked={true}
                           className="data-[state=checked]:bg-amber-600"
+                          onCheckedChange={() => handleFeatureNotImplemented("Paused Agent Filtering")}
                         />
                       </div>
                       
@@ -452,6 +466,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                           id="filter-error"
                           defaultChecked={true}
                           className="data-[state=checked]:bg-red-600"
+                          onCheckedChange={() => handleFeatureNotImplemented("Errored Agent Filtering")}
                         />
                       </div>
                     </div>
@@ -466,6 +481,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                           id="division-kb"
                           defaultChecked={true}
                           className="data-[state=checked]:bg-emerald-600"
+                          onCheckedChange={() => handleFeatureNotImplemented("Knowledge Base Division Filtering")}
                         />
                       </div>
                       
@@ -477,6 +493,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                           id="division-analytics"
                           defaultChecked={true}
                           className="data-[state=checked]:bg-blue-600"
+                          onCheckedChange={() => handleFeatureNotImplemented("Analytics Division Filtering")}
                         />
                       </div>
                       
@@ -488,6 +505,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                           id="division-operations"
                           defaultChecked={true}
                           className="data-[state=checked]:bg-orange-600"
+                          onCheckedChange={() => handleFeatureNotImplemented("Operations Division Filtering")}
                         />
                       </div>
                       
@@ -499,6 +517,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                           id="division-strategy"
                           defaultChecked={true}
                           className="data-[state=checked]:bg-purple-600"
+                          onCheckedChange={() => handleFeatureNotImplemented("Strategy Division Filtering")}
                         />
                       </div>
                     </div>
@@ -523,6 +542,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                         variant="outline" 
                         size="sm" 
                         className="w-full justify-start text-xs"
+                        onClick={() => handleFeatureNotImplemented("Agent Performance Metrics")}
                       >
                         <Activity className="h-3 w-3 mr-2" />
                         Agent Performance Metrics
@@ -532,6 +552,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                         variant="outline" 
                         size="sm" 
                         className="w-full justify-start text-xs"
+                        onClick={() => handleFeatureNotImplemented("Division Performance View")}
                       >
                         <LayoutDashboard className="h-3 w-3 mr-2" />
                         Division Performance
@@ -541,7 +562,14 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                         variant="outline" 
                         size="sm" 
                         className="w-full justify-between text-xs h-auto py-2"
-                        onClick={() => window.location.href = '/performance'}
+                        onClick={() => {
+                          toast({
+                            title: "Navigating to Performance Page",
+                            description: "Redirecting to the full performance dashboard...",
+                            variant: "default",
+                          });
+                          window.location.href = '/performance';
+                        }}
                       >
                         <div className="flex items-center">
                           <Monitor className="h-3 w-3 mr-2" />
@@ -616,6 +644,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                         <Switch
                           id="view-grid"
                           defaultChecked={true}
+                          onCheckedChange={() => handleFeatureNotImplemented("Show Grid Toggle")}
                         />
                       </div>
                       
@@ -626,6 +655,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                         <Switch
                           id="view-labels"
                           defaultChecked={true}
+                          onCheckedChange={() => handleFeatureNotImplemented("Show Labels Toggle")}
                         />
                       </div>
                       
@@ -636,6 +666,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                         <Switch
                           id="view-ambient"
                           defaultChecked={true}
+                          onCheckedChange={() => handleFeatureNotImplemented("Ambient Effects Toggle")}
                         />
                       </div>
                     </div>
@@ -646,6 +677,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                         variant="outline"
                         size="sm"
                         className="w-full justify-start text-xs"
+                        onClick={() => handleFeatureNotImplemented("Default Layout")}
                       >
                         <Layout className="h-3 w-3 mr-2" />
                         Default Layout
@@ -655,6 +687,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                         variant="outline"
                         size="sm"
                         className="w-full justify-start text-xs"
+                        onClick={() => handleFeatureNotImplemented("Compact Layout")}
                       >
                         <PanelLeft className="h-3 w-3 mr-2" />
                         Compact Layout
@@ -664,6 +697,7 @@ const UnifiedControls: React.FC<UnifiedControlsProps> = ({
                         variant="outline"
                         size="sm"
                         className="w-full justify-start text-xs"
+                        onClick={() => handleFeatureNotImplemented("Extended Layout")}
                       >
                         <PanelRight className="h-3 w-3 mr-2" />
                         Extended Layout
