@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import OfficeElements from './office/OfficeElements';
 import { useToast } from '@/hooks/use-toast';
@@ -21,6 +20,7 @@ import { FloorPlanFilters, FilterOptions } from './office/filters/FloorPlanFilte
 import { ContextualActionPanel } from './office/actions/ContextualActionPanel';
 import UnifiedControls from './office/controls/UnifiedControls';
 import { agents } from './office/data/agentsData';
+import VisualizationControls from './office/VisualizationControls';
 
 const officeData = {
   divisions: [
@@ -149,9 +149,7 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
     showQuickActions: true
   });
   
-  // Handle clicks outside overlays
   const handleClickOutside = useCallback((e: MouseEvent) => {
-    // Skip if clicked on any button that might trigger these panels
     if ((e.target as Element).closest('button')) return;
     
     if (showTaskPanel && taskPanelRef.current && !taskPanelRef.current.contains(e.target as Node)) {
@@ -685,7 +683,7 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
       {!hideTopControls && (
         <UnifiedControls
           collapsed={controlsCollapsed}
-          onToggleCollapse={handleToggleControlsCollapsed}
+          onToggleCollapse={handleToggleControlsCollapse}
           activeTab={activeControlTab}
           onTabChange={handleControlTabChange}
           visualizationSettings={visualizationSettings}
