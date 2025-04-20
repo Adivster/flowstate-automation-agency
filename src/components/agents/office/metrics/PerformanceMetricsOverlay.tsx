@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { LineChart, Cpu, Activity, Gauge, AlertTriangle, CheckCircle, Clock, ChevronDown, ChevronUp, Users, Server, BarChart3 } from 'lucide-react';
@@ -47,6 +47,7 @@ export const PerformanceMetricsOverlay: React.FC<PerformanceMetricsOverlayProps>
   const isDark = theme === 'dark';
   const [expanded, setExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('system');
+  const overlayRef = useRef<HTMLDivElement>(null);
   
   const getPositionClasses = () => {
     switch (position) {
@@ -88,11 +89,29 @@ export const PerformanceMetricsOverlay: React.FC<PerformanceMetricsOverlayProps>
   const toggleExpand = () => {
     setExpanded(!expanded);
   };
+
+  // Handle clicking outside to close
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (overlayRef.current && !overlayRef.current.contains(e.target as Node)) {
+        if (onClose) onClose();
+      }
+    };
+
+    if (visible) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [visible, onClose]);
   
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
+          ref={overlayRef}
           className={`absolute ${getPositionClasses()} z-40`}
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}

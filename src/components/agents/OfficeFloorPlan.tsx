@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import OfficeElements from './office/OfficeElements';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -66,12 +67,14 @@ interface OfficeFloorPlanProps {
   visualizationState?: VisualizationState;
   onHotspotAction?: (action: string, entityId: string, entityType: string) => void;
   onAgentClick?: (agentId: number) => void;
+  hideTopControls?: boolean;
 }
 
 const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({ 
   visualizationState,
   onHotspotAction,
-  onAgentClick
+  onAgentClick,
+  hideTopControls = false
 }) => {
   const { tasks } = useTaskContext();
   const [divisions, setDivisions] = useState<Division[]>(officeData.divisions);
@@ -112,6 +115,13 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
   const [activeControlTab, setActiveControlTab] = useState('visualizations');
   
   const terminalRef = useRef<HTMLDivElement>(null);
+  const taskPanelRef = useRef<HTMLDivElement>(null);
+  const metricsRef = useRef<HTMLDivElement>(null);
+  const filtersRef = useRef<HTMLDivElement>(null);
+  const contextActionsRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const visualizationControlsRef = useRef<HTMLDivElement>(null);
+  
   const { toast } = useToast();
   
   const [performanceData, setPerformanceData] = useState({
@@ -138,6 +148,39 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
     showSparklines: true,
     showQuickActions: true
   });
+  
+  // Handle clicks outside overlays
+  const handleClickOutside = useCallback((e: MouseEvent) => {
+    // Skip if clicked on any button that might trigger these panels
+    if ((e.target as Element).closest('button')) return;
+    
+    if (showTaskPanel && taskPanelRef.current && !taskPanelRef.current.contains(e.target as Node)) {
+      setShowTaskPanel(false);
+    }
+    
+    if (showVisualizationControls && visualizationControlsRef.current && !visualizationControlsRef.current.contains(e.target as Node)) {
+      setShowVisualizationControls(false);
+    }
+    
+    if (showFilters && filtersRef.current && !filtersRef.current.contains(e.target as Node)) {
+      setShowFilters(false);
+    }
+    
+    if (showContextActions && contextActionsRef.current && !contextActionsRef.current.contains(e.target as Node)) {
+      setShowContextActions(false);
+    }
+    
+    if (showNewDivisionModal && modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      setShowNewDivisionModal(false);
+    }
+  }, [showTaskPanel, showVisualizationControls, showFilters, showContextActions, showNewDivisionModal]);
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [handleClickOutside]);
   
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -243,20 +286,19 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
     const division = divisions.find(d => d.id === divisionId);
     if (!division) return;
     
-    const previouslySelectedDivision = selectedDivision;
-    setSelectedDivision(prevId => prevId === divisionId ? null : divisionId);
-    setSelectedAgent(null);
-    
-    if (previouslySelectedDivision !== divisionId) {
+    if (selectedDivision === divisionId) {
+      setSelectedDivision(null);
+      setSelectedEntity({ id: null, type: 'none', name: '' });
+      setShowContextActions(false);
+    } else {
+      setSelectedDivision(divisionId);
+      setSelectedAgent(null);
       setSelectedEntity({
         id: divisionId,
         type: 'division',
         name: division.name
       });
       setShowContextActions(true);
-    } else {
-      setSelectedEntity({ id: null, type: 'none', name: '' });
-      setShowContextActions(false);
     }
   };
   
@@ -264,24 +306,20 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
     const agent = officeData.agents.find(a => a.id === agentId);
     if (!agent) return;
     
-    const previouslySelectedAgent = selectedAgent;
-    setSelectedAgent(prevId => prevId === agentId ? null : agentId);
-    
-    if (agent) {
+    if (selectedAgent === agentId) {
+      setSelectedAgent(null);
+      setSelectedEntity({ id: null, type: 'none', name: '' });
+      setShowContextActions(false);
+    } else {
+      setSelectedAgent(agentId);
       setSelectedDivision(agent.division || null);
-      
-      if (previouslySelectedAgent !== agentId) {
-        setSelectedEntity({
-          id: agentId,
-          type: 'agent',
-          name: agent.name,
-          status: agent.status
-        });
-        setShowContextActions(true);
-      } else {
-        setSelectedEntity({ id: null, type: 'none', name: '' });
-        setShowContextActions(false);
-      }
+      setSelectedEntity({
+        id: agentId,
+        type: 'agent',
+        name: agent.name,
+        status: agent.status
+      });
+      setShowContextActions(true);
     }
     
     if (onAgentClick) {
@@ -644,25 +682,27 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         onHotspotAction={onHotspotAction}
       />
       
-      <UnifiedControls
-        collapsed={controlsCollapsed}
-        onToggleCollapse={handleToggleControlsCollapse}
-        activeTab={activeControlTab}
-        onTabChange={handleControlTabChange}
-        visualizationSettings={visualizationSettings}
-        onVisualizationChange={handleVisualizationChange}
-        onTogglePerformanceMetrics={handleToggleMetrics}
-        onToggleFilters={handleToggleFilters}
-        onToggleCommandCenter={() => setCommandCenterVisible(prev => !prev)}
-        performanceMetricsVisible={showMetrics}
-        filtersVisible={showFilters}
-        commandCenterVisible={commandCenterVisible}
-        zoomLevel={zoomLevel}
-        onZoomIn={handleZoomIn}
-        onZoomOut={handleZoomOut}
-        onResetZoom={() => setZoomLevel(1)}
-        onOpenTerminal={() => setShowTerminal(true)}
-      />
+      {!hideTopControls && (
+        <UnifiedControls
+          collapsed={controlsCollapsed}
+          onToggleCollapse={handleToggleControlsCollapsed}
+          activeTab={activeControlTab}
+          onTabChange={handleControlTabChange}
+          visualizationSettings={visualizationSettings}
+          onVisualizationChange={handleVisualizationChange}
+          onTogglePerformanceMetrics={handleToggleMetrics}
+          onToggleFilters={handleToggleFilters}
+          onToggleCommandCenter={() => setCommandCenterVisible(prev => !prev)}
+          performanceMetricsVisible={showMetrics}
+          filtersVisible={showFilters}
+          commandCenterVisible={commandCenterVisible}
+          zoomLevel={zoomLevel}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onResetZoom={() => setZoomLevel(1)}
+          onOpenTerminal={() => setShowTerminal(true)}
+        />
+      )}
       
       <OfficeControls
         zoomLevel={zoomLevel}
@@ -741,40 +781,64 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
         onViewDetails={handleViewDetails}
       />
       
-      <FloorPlanFilters
-        visible={showFilters}
-        onClose={() => setShowFilters(false)}
-        divisions={divisions.map(d => ({ id: d.id, name: d.name }))}
-        onFilterChange={handleFilterChange}
-        initialFilters={activeFilters}
-      />
+      <div ref={filtersRef}>
+        <FloorPlanFilters
+          visible={showFilters}
+          onClose={() => setShowFilters(false)}
+          divisions={divisions.map(d => ({ id: d.id, name: d.name }))}
+          onFilterChange={handleFilterChange}
+          initialFilters={activeFilters}
+        />
+      </div>
       
-      <ContextualActionPanel
-        visible={showContextActions}
-        entityType={selectedEntity.type}
-        entityId={selectedEntity.id}
-        entityName={selectedEntity.name}
-        entityStatus={selectedEntity.status}
-        position="right"
-        onAction={handleContextualAction}
-        onClose={() => setShowContextActions(false)}
-      />
+      <div ref={contextActionsRef}>
+        <ContextualActionPanel
+          visible={showContextActions}
+          entityType={selectedEntity.type}
+          entityId={selectedEntity.id}
+          entityName={selectedEntity.name}
+          entityStatus={selectedEntity.status}
+          position="right"
+          onAction={handleContextualAction}
+          onClose={() => setShowContextActions(false)}
+        />
+      </div>
       
       <AnimatePresence>
         {showTaskPanel && (
-          <TaskWorkflowPanel 
-            selectedDivision={selectedDivision} 
-            onClose={handleCloseTaskPanel} 
-          />
+          <div ref={taskPanelRef}>
+            <TaskWorkflowPanel 
+              selectedDivision={selectedDivision} 
+              onClose={handleCloseTaskPanel} 
+            />
+          </div>
         )}
       </AnimatePresence>
       
       <AnimatePresence>
         {showNewDivisionModal && (
-          <NewDivisionModal 
-            onClose={() => setShowNewDivisionModal(false)}
-            onCreateDivision={handleCreateDivision}
-          />
+          <div ref={modalRef}>
+            <NewDivisionModal 
+              onClose={() => setShowNewDivisionModal(false)}
+              onCreateDivision={handleCreateDivision}
+            />
+          </div>
+        )}
+      </AnimatePresence>
+      
+      <AnimatePresence>
+        {showVisualizationControls && (
+          <div ref={visualizationControlsRef} className="absolute top-4 right-4 z-50">
+            <VisualizationControls 
+              visualizationState={visualizationState || {
+                activeLayerIds: [],
+                layers: [],
+                layerData: {}
+              }}
+              updateVisualizationState={() => {}}
+              onClose={() => setShowVisualizationControls(false)}
+            />
+          </div>
         )}
       </AnimatePresence>
     </div>

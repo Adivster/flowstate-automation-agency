@@ -1,3 +1,4 @@
+
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
@@ -37,16 +38,10 @@ const Office = () => {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const isDark = theme === 'dark';
-  const [filterOptions, setFilterOptions] = useState({
-    division: 'all',
-    status: 'all',
-    sortBy: 'name'
-  });
   const [loaded, setLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState('office');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const contentLoaded = useRef(false);
-  const [showVisualizationControls, setShowVisualizationControls] = useState(false);
   const [selectedAgentInfo, setSelectedAgentInfo] = useState<any>(null);
   const [selectedAgentForChat, setSelectedAgentForChat] = useState<typeof agents[0] | null>(null);
   const [visualizationState, setVisualizationState] = useState<VisualizationState>({
@@ -102,30 +97,6 @@ const Office = () => {
     };
   }, []);
   
-  const handleFilterChange = (key: string, value: string) => {
-    setFilterOptions(prev => ({
-      ...prev,
-      [key]: value
-    }));
-    
-    toast({
-      title: "Filter applied",
-      description: `Filtering agents by ${key}: ${value}`,
-      duration: 3000,
-    });
-  };
-
-  const handleToggleVisualization = () => {
-    setShowVisualizationControls(!showVisualizationControls);
-  };
-  
-  const updateVisualizationState = (newState: Partial<VisualizationState>) => {
-    setVisualizationState(prev => ({
-      ...prev,
-      ...newState
-    }));
-  };
-  
   const handleAgentClick = (agent: any) => {
     setSelectedAgentInfo(agent);
   };
@@ -175,6 +146,31 @@ const Office = () => {
     const foundAgent = agents.find(a => a.id === agentId);
     if (foundAgent) {
       setSelectedAgentForChat(foundAgent);
+    }
+  };
+  
+  const handleActionClick = (action: string) => {
+    switch(action) {
+      case 'reorganize':
+        toast({
+          title: "Reorganize Office",
+          description: "Office reorganization tool opened",
+          duration: 3000,
+        });
+        break;
+      case 'refresh':
+        toast({
+          title: "Refreshing Status",
+          description: "Updating latest agent and system status",
+          duration: 3000,
+        });
+        break;
+      default:
+        toast({
+          title: action,
+          description: `Action: ${action}`,
+          duration: 3000,
+        });
     }
   };
   
@@ -239,20 +235,11 @@ const Office = () => {
               actions={
                 <div className="flex flex-wrap items-center gap-2">
                   <Button 
-                    variant="outline" 
+                    variant={isDark ? "cyberpunk" : "eco"} 
                     size="sm"
-                    className={cn(
-                      isDark 
-                        ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
-                        : "bg-emerald-100 border-emerald-300 hover:bg-emerald-200 text-emerald-700"
-                    )}
-                    onClick={() => toast({
-                      title: "Reorganize Office",
-                      description: "Office reorganization feature can be added here",
-                      duration: 3000,
-                    })}
+                    onClick={() => handleActionClick('reorganize')}
                   >
-                    <Grid className="h-4 w-4 mr-2" />
+                    <Grid className="h-4 w-4" />
                     Reorganize Office
                   </Button>
                   
@@ -268,15 +255,11 @@ const Office = () => {
                       if (selectedAgentInfo) {
                         handleCloseAgentInfo();
                       } else {
-                        toast({
-                          title: "View Agent Details",
-                          description: "Select an agent to view their details",
-                          duration: 3000,
-                        });
+                        handleActionClick('agent-details');
                       }
                     }}
                   >
-                    <Users className="h-4 w-4 mr-2" />
+                    <Users className="h-4 w-4" />
                     {selectedAgentInfo ? 'Close Agent Details' : 'View Agent Details'}
                   </Button>
                   
@@ -288,32 +271,10 @@ const Office = () => {
                         ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
                         : "bg-emerald-100 border-emerald-300 hover:bg-emerald-200 text-emerald-700"
                     )}
-                    onClick={() => toast({
-                      title: "Refreshing Status",
-                      description: "Updating latest agent and system status",
-                      duration: 3000,
-                    })}
+                    onClick={() => handleActionClick('refresh')}
                   >
-                    <RefreshCw className="h-4 w-4 mr-2" />
+                    <RefreshCw className="h-4 w-4" />
                     Refresh Status
-                  </Button>
-                  
-                  <Button 
-                    variant={showVisualizationControls ? "default" : "outline"}
-                    size="sm"
-                    className={cn(
-                      showVisualizationControls
-                        ? isDark 
-                          ? "bg-purple-500 hover:bg-purple-600 text-white" 
-                          : "bg-emerald-600 hover:bg-emerald-700 text-white"
-                        : isDark 
-                          ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
-                          : "bg-emerald-100 border-emerald-300 hover:bg-emerald-200 text-emerald-700"
-                    )}
-                    onClick={handleToggleVisualization}
-                  >
-                    <Layers className="h-4 w-4 mr-2" />
-                    Visualization Controls
                   </Button>
 
                   <Button
@@ -326,7 +287,7 @@ const Office = () => {
                     )}
                     onClick={handleViewPerformance}
                   >
-                    <Activity className="h-4 w-4 mr-2" />
+                    <Activity className="h-4 w-4" />
                     Performance Monitoring
                   </Button>
                 </div>
@@ -356,7 +317,8 @@ const Office = () => {
                 )}>
                   <Zap className={cn(
                     "h-5 w-5", 
-                    isDark ? "text-green-500" : "text-emerald-600"
+                    isDark ? "text-green-500" : "text-emerald-600",
+                    "agent-glow-green"
                   )} />
                 </div>
                 <div>
@@ -403,7 +365,8 @@ const Office = () => {
                 )}>
                   <Cpu className={cn(
                     "h-5 w-5", 
-                    isDark ? "text-blue-500" : "text-blue-600"
+                    isDark ? "text-blue-500" : "text-blue-600",
+                    "agent-glow-blue"
                   )} />
                 </div>
                 <div>
@@ -450,7 +413,8 @@ const Office = () => {
                 )}>
                   <Cpu className={cn(
                     "h-5 w-5", 
-                    isDark ? "text-amber-500" : "text-amber-600"
+                    isDark ? "text-amber-500" : "text-amber-600",
+                    "agent-glow-amber"
                   )} />
                 </div>
                 <div>
@@ -497,7 +461,8 @@ const Office = () => {
                 )}>
                   <Terminal className={cn(
                     "h-5 w-5", 
-                    isDark ? "text-red-500" : "text-red-600"
+                    isDark ? "text-red-500" : "text-red-600",
+                    "agent-glow-red"
                   )} />
                 </div>
                 <div>
@@ -594,44 +559,6 @@ const Office = () => {
                         : "Navigate your sustainable digital workspace"
                       }
                     </div>
-                    <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
-                      <Select onValueChange={(value) => handleFilterChange('division', value)}>
-                        <SelectTrigger className={cn(
-                          "w-[140px] h-8 text-xs",
-                          isDark 
-                            ? "bg-flow-background/30 border-flow-border/50" 
-                            : "bg-white/50 border-emerald-200"
-                        )}>
-                          <SelectValue placeholder="Filter Division" />
-                        </SelectTrigger>
-                        <SelectContent className={cn(
-                          isDark 
-                            ? "bg-flow-background/90 backdrop-blur-md border-flow-border" 
-                            : "bg-white/90 backdrop-blur-md border-emerald-200"
-                        )}>
-                          <SelectItem value="all">All Divisions</SelectItem>
-                          <SelectItem value="kb">Knowledge Base</SelectItem>
-                          <SelectItem value="analytics">Analytics</SelectItem>
-                          <SelectItem value="operations">Operations</SelectItem>
-                          <SelectItem value="strategy">Strategy</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className={cn(
-                          "h-8 px-2 text-xs flex items-center gap-1",
-                          isDark 
-                            ? "bg-flow-background/30 border-flow-border/50" 
-                            : "bg-white/50 border-emerald-200"
-                        )}
-                        onClick={handleToggleVisualization}
-                      >
-                        <Filter className="h-3 w-3" />
-                        View
-                      </Button>
-                    </div>
                   </div>
                   
                   <div className={cn(
@@ -675,16 +602,12 @@ const Office = () => {
                   
                   <div className="flex justify-center mt-4">
                     <Button 
-                      variant="outline" 
-                      className={cn(
-                        isDark 
-                          ? "border-flow-accent/50 bg-flow-accent/10 hover:bg-flow-accent/20 text-flow-accent" 
-                          : "border-emerald-500/50 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700"
-                      )}
+                      variant={isDark ? "cyberpunk" : "eco"}
+                      onClick={() => handleActionClick('deploy-agent')}
                     >
                       {isDark 
-                        ? <Zap className="h-4 w-4 mr-2" />
-                        : <Leaf className="h-4 w-4 mr-2" />
+                        ? <Zap className="h-4 w-4" />
+                        : <Leaf className="h-4 w-4" />
                       }
                       Deploy New Agent
                     </Button>
@@ -743,11 +666,7 @@ const Office = () => {
                               ? "bg-flow-background/30 border-flow-border/50" 
                               : "bg-white/50 border-emerald-200"
                           )}
-                          onClick={() => toast({
-                            title: "Export Data",
-                            description: "Metrics data export functionality can be added here",
-                            duration: 3000,
-                          })}
+                          onClick={() => handleActionClick('export')}
                         >
                           Export
                         </Button>
@@ -766,23 +685,6 @@ const Office = () => {
                 </TabsContent>
               </Tabs>
             </SolarpunkPanel>
-            
-            <AnimatePresence>
-              {showVisualizationControls && (
-                <motion.div 
-                  className="absolute top-4 right-4 z-50"
-                  initial={{ opacity: 0, x: 100 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 100 }}
-                >
-                  <VisualizationControls
-                    visualizationState={visualizationState}
-                    updateVisualizationState={updateVisualizationState}
-                    onClose={() => setShowVisualizationControls(false)}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
         </div>
         
