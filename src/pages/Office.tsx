@@ -43,6 +43,7 @@ const Office = () => {
   const contentLoaded = useRef(false);
   const [selectedAgentInfo, setSelectedAgentInfo] = useState<any>(null);
   const [selectedAgentForChat, setSelectedAgentForChat] = useState<typeof agents[0] | null>(null);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [visualizationState, setVisualizationState] = useState<VisualizationState>({
     activeLayerIds: ['hotspots', 'performance', 'quickActions'],
     layers: [],
@@ -75,6 +76,10 @@ const Office = () => {
     }
   });
   
+  const [visualizationActive, setVisualizationActive] = useState(true);
+  const [filtersActive, setFiltersActive] = useState(false);
+  const [metricsActive, setMetricsActive] = useState(true);
+  
   const agentStats = {
     total: 24,
     active: 14,
@@ -96,12 +101,79 @@ const Office = () => {
     };
   }, []);
   
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.code === 'Space') {
+        handleActionClick('terminal');
+        event.preventDefault();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, []);
+  
   const handleAgentClick = (agent: any) => {
     setSelectedAgentInfo(agent);
   };
   
   const handleCloseAgentInfo = () => {
     setSelectedAgentInfo(null);
+  };
+  
+  const handleToggleSidebar = () => {
+    setSidebarExpanded(!sidebarExpanded);
+  };
+  
+  const handleToggleVisualizationControls = () => {
+    setVisualizationActive(!visualizationActive);
+    
+    setVisualizationState(prevState => {
+      const newState = {...prevState};
+      if (newState.layerData.hotspots) {
+        newState.layerData.hotspots.active = !visualizationActive;
+      }
+      return newState;
+    });
+    
+    if (!visualizationActive) {
+      toast({
+        title: "Visualizations Activated",
+        description: "Showing enhanced visualization layers.",
+      });
+    }
+  };
+  
+  const handleToggleFilters = () => {
+    setFiltersActive(!filtersActive);
+    
+    if (!filtersActive) {
+      toast({
+        title: "Filters Activated",
+        description: "You can now filter agents by various criteria.",
+      });
+    }
+  };
+  
+  const handleToggleMetrics = () => {
+    setMetricsActive(!metricsActive);
+    
+    setVisualizationState(prevState => {
+      const newState = {...prevState};
+      if (newState.layerData.performance) {
+        newState.layerData.performance.active = !metricsActive;
+      }
+      return newState;
+    });
+    
+    if (!metricsActive) {
+      toast({
+        title: "Metrics Activated",
+        description: "Showing performance metrics overlay.",
+      });
+    }
   };
   
   const handleHotspotAction = (action: string, entityId: string, entityType: string) => {
@@ -157,12 +229,30 @@ const Office = () => {
           duration: 3000,
         });
         break;
+      case 'terminal':
+        toast({
+          title: "Terminal",
+          description: "Command terminal activated",
+          duration: 3000,
+        });
+        break;  
       case 'refresh':
         toast({
           title: "Refreshing Status",
           description: "Updating latest agent and system status",
           duration: 3000,
         });
+        break;
+      case 'agent-details':
+        if (selectedAgentInfo) {
+          handleCloseAgentInfo();
+        } else {
+          toast({
+            title: "Agent Details",
+            description: "Click on an agent to view details",
+            duration: 3000,
+          });
+        }
         break;
       default:
         toast({
@@ -171,6 +261,20 @@ const Office = () => {
           duration: 3000,
         });
     }
+  };
+
+  const [zoomLevel, setZoomLevel] = useState(1);
+  
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + 0.1, 2));
+  };
+  
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - 0.1, 0.5));
+  };
+  
+  const handleResetZoom = () => {
+    setZoomLevel(1);
   };
   
   if (!loaded) {
@@ -213,7 +317,20 @@ const Office = () => {
       
       <Navbar />
       
-      <main className="flex-1 container mx-auto px-4 pt-20 pb-12">
+      <main className="flex-1 container mx-auto px-4 pt-20 pb-12 relative">
+        <CommandCenter 
+          onToggleVisualizationControls={handleToggleVisualizationControls}
+          visualizationActive={visualizationActive}
+          onFilterAgents={handleToggleFilters}
+          onShowMetrics={handleToggleMetrics}
+          metricsActive={metricsActive}
+          onOpenTerminal={() => handleActionClick('terminal')}
+          systemStatus="healthy"
+          activeAgents={agentStats.active}
+          totalAgents={agentStats.total}
+          isMainToolbarVisible={!sidebarExpanded}
+        />
+        
         <div className="max-w-7xl mx-auto space-y-6">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -250,13 +367,7 @@ const Office = () => {
                         ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
                         : "bg-emerald-100 border-emerald-300 hover:bg-emerald-200 text-emerald-700"
                     )}
-                    onClick={() => {
-                      if (selectedAgentInfo) {
-                        handleCloseAgentInfo();
-                      } else {
-                        handleActionClick('agent-details');
-                      }
-                    }}
+                    onClick={() => handleActionClick('agent-details')}
                   >
                     <Users className="h-4 w-4" />
                     {selectedAgentInfo ? 'Close Agent Details' : 'View Agent Details'}
@@ -565,7 +676,13 @@ const Office = () => {
                     isDark 
                       ? "bg-black/40 rounded-xl backdrop-blur-sm overflow-hidden border border-purple-500/20" 
                       : "bg-white/10 rounded-xl backdrop-blur-sm overflow-hidden border border-emerald-300/30"
-                  )}>
+                  )}
+                    style={{ 
+                      transform: `scale(${zoomLevel})`,
+                      transformOrigin: 'center',
+                      transition: 'transform 0.3s ease-out'
+                    }}
+                  >
                     <TaskProvider>
                       <OfficeFloorPlan 
                         visualizationState={visualizationState}
@@ -585,7 +702,7 @@ const Office = () => {
                       <span className={isDark ? "text-flow-accent" : "text-emerald-600"}>
                         {t('proTip')}
                       </span>{" "}
-                      Press <kbd className="font-mono px-1 py-0.5 text-[10px] bg-black/20 rounded">Ctrl+Space</kbd> to open the terminal
+                      Press <kbd className="font-mono px-1 py-0.5 text-[10px] bg-black/20 rounded">Ctrl+Space</kbd> to open the command terminal
                     </div>
                   </div>
                 </TabsContent>
@@ -687,6 +804,23 @@ const Office = () => {
             </SolarpunkPanel>
           </div>
         </div>
+        
+        <OfficeControls 
+          zoomLevel={zoomLevel}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onResetZoom={handleResetZoom}
+          onToggleVisualizationControls={handleToggleVisualizationControls}
+          visualizationActive={visualizationActive}
+          onToggleFilters={handleToggleFilters}
+          filtersActive={filtersActive}
+          onToggleMetrics={handleToggleMetrics}
+          metricsActive={metricsActive}
+          onAddDivision={() => setIsNewDivisionModalOpen(true)}
+          onSave={() => handleActionClick('save')}
+          onOpenTerminal={() => handleActionClick('terminal')}
+          isSidebarExpanded={sidebarExpanded}
+        />
         
         <AnimatePresence>
           {selectedAgentInfo && (

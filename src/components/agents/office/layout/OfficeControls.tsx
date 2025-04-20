@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { SolarpunkWindow } from '@/components/ui/design-system/SolarpunkWindow';
 import NewDivisionModal from '../division-modal/NewDivisionModal';
 import { Badge } from '@/components/ui/badge';
+import { QuickActionButton } from '@/components/ui/quick-action-button';
 
 interface OfficeControlsProps {
   zoomLevel: number;
@@ -29,6 +30,7 @@ interface OfficeControlsProps {
   onAddDivision?: () => void;
   onSave?: () => void;
   onOpenTerminal?: () => void;
+  isSidebarExpanded?: boolean;
 }
 
 export const OfficeControls: React.FC<OfficeControlsProps> = ({
@@ -44,7 +46,8 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
   metricsActive = false,
   onAddDivision,
   onSave,
-  onOpenTerminal
+  onOpenTerminal,
+  isSidebarExpanded = false
 }) => {
   const { theme } = useTheme();
   const { toast } = useToast();
@@ -112,96 +115,86 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
         </Popover>
       </div>
 
-      {/* Main control toolbar */}
-      <motion.div 
-        className={cn(
-          "absolute top-3 left-1/2 transform -translate-x-1/2 z-40",
-          "rounded-lg backdrop-blur-md shadow-lg border flex items-center",
-          isDark 
-            ? "bg-black/60 border-white/10 shadow-black/20" 
-            : "bg-white/60 border-emerald-200/30 shadow-emerald-100/10"
-        )}
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 300, damping: 30, delay: 0.2 }}
-      >
-        <div className="px-2 py-1.5 flex items-center gap-1">
-          <Button
-            size="sm"
-            variant={visualizationActive ? "default" : "ghost"}
-            className={cn(
-              "h-8 rounded-md text-xs",
-              visualizationActive && (isDark 
-                ? "bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 hover:text-purple-200" 
-                : "bg-purple-500/10 text-purple-700 hover:bg-purple-500/20 hover:text-purple-800")
-            )}
-            onClick={onToggleVisualizationControls}
-          >
-            <Layers className="h-3.5 w-3.5 mr-1.5" />
-            Visualizations
-          </Button>
-          
-          <Button
-            size="sm"
-            variant={filtersActive ? "default" : "ghost"}
-            className={cn(
-              "h-8 rounded-md text-xs",
-              filtersActive && (isDark 
-                ? "bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 hover:text-blue-200" 
-                : "bg-blue-500/10 text-blue-700 hover:bg-blue-500/20 hover:text-blue-800")
-            )}
-            onClick={onToggleFilters}
-          >
-            <Filter className="h-3.5 w-3.5 mr-1.5" />
-            Filters
-          </Button>
-          
-          <Button
-            size="sm"
-            variant={metricsActive ? "default" : "ghost"}
-            className={cn(
-              "h-8 rounded-md text-xs",
-              metricsActive && (isDark 
-                ? "bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 hover:text-amber-200" 
-                : "bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 hover:text-amber-800")
-            )}
-            onClick={onToggleMetrics}
-          >
-            <Activity className="h-3.5 w-3.5 mr-1.5" />
-            Metrics
-          </Button>
-          
-          <Separator orientation="vertical" className="h-6 mx-0.5" />
-          
-          <Button
-            size="sm"
-            variant="ghost"
-            className="h-8 rounded-md text-xs"
-            onClick={() => setIsNewDivisionModalOpen(true)}
-          >
-            <Plus className="h-3.5 w-3.5 mr-1.5" />
-            Division
-          </Button>
-          
-          <Button
-            size="sm"
-            variant="ghost"
-            className="h-8 w-8 p-0"
-            onClick={() => setControlsExpanded(!controlsExpanded)}
-            aria-label={controlsExpanded ? "Collapse controls" : "Expand controls"}
-          >
-            {controlsExpanded ? (
-              <ChevronUp className="h-3.5 w-3.5" />
-            ) : (
-              <ChevronDown className="h-3.5 w-3.5" />
-            )}
-          </Button>
-        </div>
-      </motion.div>
+      {/* Main control toolbar - only show if sidebar is collapsed */}
+      {!isSidebarExpanded && (
+        <motion.div 
+          className={cn(
+            "absolute top-3 left-1/2 transform -translate-x-1/2 z-40",
+            "rounded-lg backdrop-blur-md shadow-lg border flex items-center",
+            isDark 
+              ? "bg-black/60 border-white/10 shadow-black/20" 
+              : "bg-white/60 border-emerald-200/30 shadow-emerald-100/10"
+          )}
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30, delay: 0.2 }}
+        >
+          <div className="px-2 py-1.5 flex items-center gap-1">
+            <QuickActionButton
+              size="sm"
+              variant="office"
+              className="h-8 rounded-md text-xs"
+              onClick={onToggleVisualizationControls}
+              icon={<Layers className="h-3.5 w-3.5" />}
+              label="Visualizations"
+              active={visualizationActive}
+              tooltip="Toggle visualization layers"
+            />
+            
+            <QuickActionButton
+              size="sm"
+              variant="office"
+              className="h-8 rounded-md text-xs"
+              onClick={onToggleFilters}
+              icon={<Filter className="h-3.5 w-3.5" />}
+              label="Filters"
+              active={filtersActive}
+              tooltip="Apply filters to agents view"
+            />
+            
+            <QuickActionButton
+              size="sm"
+              variant="office"
+              className="h-8 rounded-md text-xs"
+              onClick={onToggleMetrics}
+              icon={<Activity className="h-3.5 w-3.5" />}
+              label="Metrics"
+              active={metricsActive}
+              tooltip="Show performance metrics"
+            />
+            
+            <Separator orientation="vertical" className="h-6 mx-0.5" />
+            
+            <QuickActionButton
+              size="sm"
+              variant="default"
+              className="h-8 rounded-md text-xs"
+              onClick={() => setIsNewDivisionModalOpen(true)}
+              icon={<Plus className="h-3.5 w-3.5" />}
+              label="Division"
+              tooltip="Create new division"
+            />
+            
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-8 w-8 p-0"
+              onClick={() => setControlsExpanded(!controlsExpanded)}
+              aria-label={controlsExpanded ? "Collapse controls" : "Expand controls"}
+            >
+              {controlsExpanded ? (
+                <ChevronUp className="h-3.5 w-3.5" />
+              ) : (
+                <ChevronDown className="h-3.5 w-3.5" />
+              )}
+            </Button>
+          </div>
+        </motion.div>
+      )}
       
       {/* Expanded controls panel */}
       <AnimatePresence>
-        {controlsExpanded && (
+        {controlsExpanded && !isSidebarExpanded && (
           <motion.div
             className={cn(
               "absolute top-14 left-1/2 transform -translate-x-1/2 z-40",
@@ -218,48 +211,48 @@ export const OfficeControls: React.FC<OfficeControlsProps> = ({
             <div className="grid grid-cols-3 gap-3">
               <div className="flex flex-col items-center gap-1">
                 <span className="text-[10px] opacity-70">View Mode</span>
-                <Button
+                <QuickActionButton
                   size="sm"
-                  variant="outline"
+                  variant="default"
                   className="w-full h-8 text-xs"
                   onClick={onToggleVisualizationControls}
-                >
-                  <Eye className="h-3.5 w-3.5 mr-1.5" />
-                  Standard
-                </Button>
+                  icon={<Eye className="h-3.5 w-3.5" />}
+                  label="Standard"
+                  tooltip="Switch to standard view"
+                />
               </div>
               
               <div className="flex flex-col items-center gap-1">
                 <span className="text-[10px] opacity-70">Terminal</span>
-                <Button
+                <QuickActionButton
                   size="sm"
-                  variant="outline"
+                  variant="default"
                   className="w-full h-8 text-xs"
                   onClick={onOpenTerminal}
-                >
-                  <Terminal className="h-3.5 w-3.5 mr-1.5" />
-                  Open
-                </Button>
+                  icon={<Terminal className="h-3.5 w-3.5" />}
+                  label="Open"
+                  tooltip="Open command terminal (Ctrl+Space)"
+                />
               </div>
               
               <div className="flex flex-col items-center gap-1">
                 <span className="text-[10px] opacity-70">Save</span>
-                <Button
+                <QuickActionButton
                   size="sm"
-                  variant="outline"
+                  variant="default"
                   className="w-full h-8 text-xs"
                   onClick={onSave}
-                >
-                  <Save className="h-3.5 w-3.5 mr-1.5" />
-                  Save Layout
-                </Button>
+                  icon={<Save className="h-3.5 w-3.5" />}
+                  label="Save Layout"
+                  tooltip="Save current office layout"
+                />
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Zoom controls */}
+      {/* Zoom controls - always visible */}
       <div className="absolute bottom-3 right-3 flex items-center gap-2 z-40">
         <Button
           size="sm"

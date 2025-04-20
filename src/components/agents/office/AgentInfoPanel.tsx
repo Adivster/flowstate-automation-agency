@@ -22,7 +22,9 @@ const AgentInfoPanel: React.FC<AgentInfoPanelProps> = ({ agent, onClose }) => {
       // If click is outside the panel and not on a button or interactive element
       if (target && !target.closest('.agent-info-panel') && 
           !target.closest('button') &&
-          !target.closest('[role="button"]')) {
+          !target.closest('[role="button"]') &&
+          !target.closest('[data-popover-dialog]') &&
+          !target.closest('[data-radix-menu]')) {
         onClose();
       }
     };

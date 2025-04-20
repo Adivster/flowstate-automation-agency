@@ -13,6 +13,9 @@ interface QuickActionButtonProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   disabled?: boolean;
+  active?: boolean;
+  position?: 'sidebar' | 'toolbar' | 'panel';
+  tooltip?: string;
 }
 
 export const QuickActionButton: React.FC<QuickActionButtonProps> = ({
@@ -22,7 +25,10 @@ export const QuickActionButton: React.FC<QuickActionButtonProps> = ({
   variant = 'default',
   size = 'md',
   className,
-  disabled = false
+  disabled = false,
+  active = false,
+  position = 'toolbar',
+  tooltip
 }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -92,6 +98,29 @@ export const QuickActionButton: React.FC<QuickActionButtonProps> = ({
     }
   };
 
+  // Get position-specific styling
+  const getPositionStyles = () => {
+    if (position === 'sidebar') {
+      return size === 'sm' ? 'w-8 h-8 p-0 rounded-full' : 'w-full';
+    }
+    return '';
+  };
+
+  // Get active state styling
+  const getActiveStyles = () => {
+    if (!active) return '';
+    
+    if (isDark) {
+      return variant === 'default' 
+        ? 'bg-white/30 text-white border-white/50' 
+        : `bg-${variant}-500/30 text-${variant}-300 border-${variant}-500/70`;
+    } else {
+      return variant === 'default'
+        ? 'bg-emerald-200 text-emerald-900 border-emerald-500'
+        : `bg-${variant}-200 text-${variant}-900 border-${variant}-500`;
+    }
+  };
+
   // Animation variants
   const buttonVariants = {
     rest: { scale: 1 },
@@ -116,8 +145,10 @@ export const QuickActionButton: React.FC<QuickActionButtonProps> = ({
         'flex items-center justify-center gap-2 border transition-colors',
         getVariantStyles(),
         getSizeStyles(),
+        getPositionStyles(),
         'font-medium',
         isDark ? 'shadow-lg shadow-black/30' : 'shadow-sm',
+        active && getActiveStyles(),
         disabled && 'opacity-50 cursor-not-allowed',
         className
       )}
@@ -127,9 +158,10 @@ export const QuickActionButton: React.FC<QuickActionButtonProps> = ({
       whileTap={disabled ? "disabled" : "tap"}
       variants={buttonVariants}
       disabled={disabled}
+      title={tooltip}
     >
       {icon}
-      <span>{label}</span>
+      {(position !== 'sidebar' || size !== 'sm') && <span>{label}</span>}
     </motion.button>
   );
 };

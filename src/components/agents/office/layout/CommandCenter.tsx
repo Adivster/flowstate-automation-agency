@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
@@ -8,9 +8,11 @@ import { cn } from '@/lib/utils';
 import ThemeSelector from '@/components/ui/ThemeSelector';
 import { 
   ChevronLeft, ChevronRight, Layers, Settings, Activity, Users, Database,
-  LayoutDashboard, Sliders, Eye, Filter, LineChart
+  LayoutDashboard, Sliders, Eye, Filter, LineChart, Terminal
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { QuickActionButton } from '@/components/ui/quick-action-button';
+import { useToast } from '@/hooks/use-toast';
 
 interface CommandCenterProps {
   onToggleVisualizationControls?: () => void;
@@ -19,9 +21,11 @@ interface CommandCenterProps {
   onChangeViewMode?: (mode: string) => void;
   onShowMetrics?: (show: boolean) => void;
   metricsActive?: boolean;
+  onOpenTerminal?: () => void;
   systemStatus?: 'healthy' | 'warning' | 'critical';
   activeAgents?: number;
   totalAgents?: number;
+  isMainToolbarVisible?: boolean;
 }
 
 export const CommandCenter: React.FC<CommandCenterProps> = ({
@@ -31,11 +35,14 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({
   onChangeViewMode,
   onShowMetrics,
   metricsActive = false,
+  onOpenTerminal,
   systemStatus = 'healthy',
   activeAgents = 0,
   totalAgents = 0,
+  isMainToolbarVisible = true,
 }) => {
   const { theme } = useTheme();
+  const { toast } = useToast();
   const isDark = theme === 'dark';
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState('visualizations');
@@ -52,6 +59,24 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({
       default: return 'bg-blue-500';
     }
   };
+  
+  // Show a warning if any controls are used when the toolbar is active
+  useEffect(() => {
+    if (!isMainToolbarVisible) return;
+    
+    const handleKeyPress = (event: KeyboardEvent) => {
+      // Detect Ctrl+Space
+      if (event.ctrlKey && event.code === 'Space') {
+        onOpenTerminal && onOpenTerminal();
+        event.preventDefault();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [onOpenTerminal, isMainToolbarVisible]);
 
   return (
     <div className="absolute top-0 left-0 h-full z-40 flex">
@@ -170,51 +195,51 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({
               
               <TabsContent value="visualizations" className="mt-0">
                 <div className="space-y-2">
-                  <Button
+                  <QuickActionButton
                     size="sm"
-                    variant={visualizationActive ? "default" : "outline"}
-                    className={cn(
-                      "w-full justify-start text-xs h-8",
-                      visualizationActive && "bg-purple-500/20 text-purple-300 border-purple-500/50 hover:bg-purple-500/30"
-                    )}
+                    variant={visualizationActive ? "office" : "default"}
+                    className="w-full justify-start text-xs h-8"
                     onClick={onToggleVisualizationControls}
-                  >
-                    <Layers className="h-3.5 w-3.5 mr-2" />
-                    Visualization Layers
-                  </Button>
+                    icon={<Layers className="h-3.5 w-3.5" />}
+                    label="Visualization Layers"
+                    active={visualizationActive}
+                    position="sidebar"
+                    tooltip="Toggle visualization layers"
+                  />
                   
-                  <Button
+                  <QuickActionButton
                     size="sm"
-                    variant={metricsActive ? "default" : "outline"}
-                    className={cn(
-                      "w-full justify-start text-xs h-8",
-                      metricsActive && "bg-blue-500/20 text-blue-300 border-blue-500/50 hover:bg-blue-500/30"
-                    )}
+                    variant={metricsActive ? "office" : "default"}
+                    className="w-full justify-start text-xs h-8"
                     onClick={() => onShowMetrics && onShowMetrics(!metricsActive)}
-                  >
-                    <Activity className="h-3.5 w-3.5 mr-2" />
-                    Performance Metrics
-                  </Button>
+                    icon={<Activity className="h-3.5 w-3.5" />}
+                    label="Performance Metrics"
+                    active={metricsActive}
+                    position="sidebar"
+                    tooltip="Toggle performance metrics"
+                  />
                   
-                  <Button
+                  <QuickActionButton
                     size="sm"
-                    variant="outline"
+                    variant="default"
                     className="w-full justify-start text-xs h-8"
                     onClick={() => onFilterAgents && onFilterAgents('all')}
-                  >
-                    <Filter className="h-3.5 w-3.5 mr-2" />
-                    Filter Agents
-                  </Button>
+                    icon={<Filter className="h-3.5 w-3.5" />}
+                    label="Filter Agents" 
+                    position="sidebar"
+                    tooltip="Filter agents by criteria"
+                  />
                   
-                  <Button
+                  <QuickActionButton
                     size="sm"
-                    variant="outline"
+                    variant="default" 
                     className="w-full justify-start text-xs h-8"
                     onClick={() => onChangeViewMode && onChangeViewMode('standard')}
-                  >
-                    <Eye className="h-3.5 w-3.5 mr-2" />
-                    View Mode
-                  </Button>
+                    icon={<Eye className="h-3.5 w-3.5" />}
+                    label="View Mode"
+                    position="sidebar"
+                    tooltip="Change view mode"
+                  />
                 </div>
               </TabsContent>
               
@@ -281,42 +306,102 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({
                       Visual Effects
                     </Button>
                   </div>
+
+                  <div className="flex flex-col space-y-1 mt-3">
+                    <span className="text-xs opacity-70 ml-1">Commands</span>
+                    <QuickActionButton
+                      size="sm"
+                      variant="default"
+                      className="w-full justify-start text-xs h-8"
+                      onClick={onOpenTerminal}
+                      icon={<Terminal className="h-3.5 w-3.5" />}
+                      label="Open Terminal"
+                      position="sidebar"
+                      tooltip="Open command terminal (Ctrl+Space)"
+                    />
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
           ) : (
             <div className="flex flex-col items-center space-y-4">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8 rounded-full"
-                onClick={() => setActiveTab('visualizations')}
-              >
-                <Layers className="h-4 w-4" />
-              </Button>
+              <QuickActionButton
+                size="sm" 
+                variant="office"
+                active={visualizationActive}
+                className="h-8 w-8"
+                onClick={onToggleVisualizationControls}
+                icon={<Layers className="h-4 w-4" />}
+                label="" 
+                position="sidebar"
+                tooltip="Toggle visualization layers"
+              />
               
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8 rounded-full"
-                onClick={() => setActiveTab('analytics')}
-              >
-                <LineChart className="h-4 w-4" />
-              </Button>
+              <QuickActionButton
+                size="sm"
+                variant="office" 
+                active={metricsActive}
+                className="h-8 w-8"
+                onClick={() => onShowMetrics && onShowMetrics(!metricsActive)}
+                icon={<Activity className="h-4 w-4" />}
+                label=""
+                position="sidebar"
+                tooltip="Toggle performance metrics" 
+              />
               
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8 rounded-full"
+              <QuickActionButton
+                size="sm"
+                variant="default"
+                className="h-8 w-8" 
+                onClick={() => onFilterAgents && onFilterAgents('all')}
+                icon={<Filter className="h-4 w-4" />}
+                label=""
+                position="sidebar"
+                tooltip="Filter agents by criteria"
+              />
+              
+              <QuickActionButton 
+                size="sm"
+                variant="default"
+                className="h-8 w-8"
+                onClick={() => onChangeViewMode && onChangeViewMode('standard')} 
+                icon={<Eye className="h-4 w-4" />}
+                label=""
+                position="sidebar" 
+                tooltip="Change view mode"
+              />
+              
+              <QuickActionButton
+                size="sm" 
+                variant="default"
+                className="h-8 w-8"
                 onClick={() => setActiveTab('settings')}
-              >
-                <Settings className="h-4 w-4" />
-              </Button>
+                icon={<Settings className="h-4 w-4" />}
+                label=""
+                position="sidebar"
+                tooltip="Settings" 
+              />
             </div>
           )}
           
-          {/* Theme selector at bottom */}
+          {/* Terminal access at bottom */}
           <div className="mt-auto pt-4">
+            {!isExpanded ? (
+              <QuickActionButton
+                size="sm"
+                variant="default" 
+                className="h-8 w-8"
+                onClick={onOpenTerminal}
+                icon={<Terminal className="h-4 w-4" />}
+                label="" 
+                position="sidebar"
+                tooltip="Open command terminal (Ctrl+Space)"
+              />
+            ) : null}
+          </div>
+
+          {/* Theme selector at bottom */}
+          <div className="mt-2">
             {!isExpanded && (
               <ThemeSelector />
             )}
