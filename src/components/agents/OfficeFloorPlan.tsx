@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import OfficeElements from './office/OfficeElements';
 import { useToast } from '@/hooks/use-toast';
@@ -831,7 +832,47 @@ const OfficeFloorPlan: React.FC<OfficeFloorPlanProps> = ({
               visualizationState={visualizationState || {
                 activeLayerIds: [],
                 layers: [],
-                layerData: {}
+                layerData: {
+                  heatmap: { active: false, data: [] },
+                  statusMarkers: { active: false, data: [] },
+                  hotspots: { 
+                    active: false,
+                    divisionHotspots: false,
+                    workstationHotspots: false,
+                    serverHotspots: false,
+                    glowIntensity: 50
+                  },
+                  performance: {
+                    active: false,
+                    showSparklines: false,
+                    showEfficiency: false,
+                    chartStyle: 'minimal',
+                    position: 'bottom-right'
+                  },
+                  quickActions: {
+                    active: false,
+                    style: 'icon',
+                    position: 'bottom-right'
+                  },
+                  grid: {
+                    active: false,
+                    size: 20,
+                    opacity: 0.2,
+                    color: '#ffffff'
+                  },
+                  ambientEffects: {
+                    active: false,
+                    scanlines: false,
+                    noise: false,
+                    glow: false
+                  },
+                  analytics: {
+                    active: false,
+                    position: 'bottom-right',
+                    showLabels: false,
+                    showTrends: false
+                  }
+                }
               }}
               updateVisualizationState={() => {}}
               onClose={() => setShowVisualizationControls(false)}
