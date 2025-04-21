@@ -9,14 +9,16 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { agents } from '@/components/agents/office/data/agentsData';
 import { VisualizationState } from '@/components/agents/office/types/visualizationTypes';
-import { CommandCenter } from '@/components/agents/office/layout/CommandCenter';
-import { OfficeControls } from '@/components/agents/office/layout/OfficeControls';
+import AgentInfoPanel from '@/components/agents/office/AgentInfoPanel';
+import AgentChatAnalyticsPanel from '@/components/agents/office/AgentChatAnalyticsPanel';
 import OfficeHeader from '@/components/office/OfficeHeader';
 import OfficeStatCards from '@/components/office/OfficeStatCards';
 import OfficeTabs from '@/components/office/OfficeTabs';
 import OfficeZoomControls from '@/components/office/OfficeZoomControls';
-import AgentInfoPanel from '@/components/agents/office/AgentInfoPanel';
-import AgentChatAnalyticsPanel from '@/components/agents/office/AgentChatAnalyticsPanel';
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
+import { Building2, Filter, Eye, Settings, Terminal, PlusCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { PerformanceMetricsOverlay } from '@/components/agents/office/metrics/PerformanceMetricsOverlay';
 
 const Office = () => {
   const { t } = useLanguage();
@@ -66,6 +68,7 @@ const Office = () => {
   const [visualizationActive, setVisualizationActive] = useState(true);
   const [filtersActive, setFiltersActive] = useState(false);
   const [metricsActive, setMetricsActive] = useState(true);
+  const [showPerformance, setShowPerformance] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
   
   const agentStats = {
@@ -74,6 +77,22 @@ const Office = () => {
     idle: 7,
     paused: 2,
     error: 1
+  };
+  
+  const performanceData = {
+    cpu: Math.floor(Math.random() * 60) + 20,
+    memory: Math.floor(Math.random() * 60) + 30,
+    network: Math.floor(Math.random() * 80) + 10,
+    agentsActive: agentStats.active,
+    totalAgents: agentStats.total,
+    systemLoad: Array.from({ length: 20 }, () => Math.floor(Math.random() * 60) + 20),
+    alerts: Math.floor(Math.random() * 3),
+    status: 'healthy' as 'healthy' | 'warning' | 'critical',
+    uptime: 99.8,
+    efficiency: 87,
+    responseTime: 324,
+    throughput: [220, 230, 210, 250, 270, 240, 256],
+    errorRate: 0.8
   };
   
   useEffect(() => {
@@ -197,8 +216,8 @@ const Office = () => {
     }
   };
   
-  const handleViewPerformance = () => {
-    window.location.href = '/performance';
+  const handleTogglePerformance = () => {
+    setShowPerformance(prev => !prev);
   };
 
   const handleAgentFloorClick = (agentId: number) => {
@@ -241,6 +260,14 @@ const Office = () => {
             duration: 3000,
           });
         }
+        break;
+      case 'add-division':
+        setIsNewDivisionModalOpen(true);
+        toast({
+          title: "Add Division",
+          description: "New division dialog opened",
+          duration: 3000,
+        });
         break;
       default:
         toast({
@@ -304,30 +331,11 @@ const Office = () => {
       <Navbar />
       
       <main className="flex-1 container mx-auto px-4 pt-20 pb-12 relative">
-        {/* Single row of contextual actions */}
-        <div className="flex flex-wrap gap-2 justify-end items-center mb-4">
-          <OfficeControls
-            zoomLevel={zoomLevel}
-            onZoomIn={handleZoomIn}
-            onZoomOut={handleZoomOut}
-            onResetZoom={handleResetZoom}
-            onToggleVisualizationControls={handleToggleVisualizationControls}
-            visualizationActive={visualizationActive}
-            onToggleFilters={handleToggleFilters}
-            filtersActive={filtersActive}
-            onToggleMetrics={handleToggleMetrics}
-            metricsActive={metricsActive}
-            onAddDivision={() => setIsNewDivisionModalOpen(true)}
-            onSave={() => handleActionClick('save')}
-            onOpenTerminal={handleOpenTerminal}
-          />
-        </div>
-
         <div className="max-w-7xl mx-auto space-y-6">
           <OfficeHeader 
             handleActionClick={handleActionClick}
             selectedAgentInfo={selectedAgentInfo}
-            handleViewPerformance={handleViewPerformance}
+            handleViewPerformance={handleTogglePerformance}
             isDark={isDark}
           />
           
@@ -336,44 +344,130 @@ const Office = () => {
             isDark={isDark}
           />
           
-          <div className="relative">
-            <OfficeTabs
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              handleActionClick={handleActionClick}
-              handleHotspotAction={handleHotspotAction}
-              handleAgentFloorClick={handleAgentFloorClick}
-              visualizationState={visualizationState}
-              zoomLevel={zoomLevel}
-              isDark={isDark}
-            />
+          <div className="relative flex">
+            {/* Floor plan sidebar */}
+            <div className="w-64 mr-4">
+              <Sidebar collapsible="icon">
+                <SidebarContent>
+                  <SidebarGroup>
+                    <SidebarGroupLabel>Floor Plan Controls</SidebarGroupLabel>
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          onClick={handleToggleFilters}
+                          tooltip="Toggle Filters"
+                        >
+                          <Filter className="mr-2" />
+                          <span>Filters</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          onClick={handleToggleVisualizationControls}
+                          tooltip="Toggle Visualization"
+                        >
+                          <Eye className="mr-2" />
+                          <span>View Options</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          onClick={handleToggleMetrics}
+                          tooltip="Toggle Metrics"
+                        >
+                          <Settings className="mr-2" />
+                          <span>System Metrics</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          onClick={handleOpenTerminal}
+                          tooltip="Open Terminal"
+                        >
+                          <Terminal className="mr-2" />
+                          <span>Command Line</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      
+                      <SidebarMenuItem>
+                        <SidebarMenuButton 
+                          onClick={() => handleActionClick('add-division')}
+                          tooltip="Add New Division"
+                        >
+                          <PlusCircle className="mr-2" />
+                          <span>Add Division</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                      
+                      <SidebarMenuItem>
+                        <Button 
+                          onClick={handleZoomIn} 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full justify-start"
+                        >
+                          <span>Zoom In</span>
+                        </Button>
+                      </SidebarMenuItem>
+                      
+                      <SidebarMenuItem>
+                        <Button 
+                          onClick={handleZoomOut} 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full justify-start"
+                        >
+                          <span>Zoom Out</span>
+                        </Button>
+                      </SidebarMenuItem>
+                      
+                      <SidebarMenuItem>
+                        <Button 
+                          onClick={handleResetZoom} 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full justify-start"
+                        >
+                          <span>Reset Zoom</span>
+                        </Button>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroup>
+                </SidebarContent>
+              </Sidebar>
+            </div>
             
-            {activeTab === 'office' && (
-              <OfficeZoomControls
-                handleZoomIn={handleZoomIn}
-                handleZoomOut={handleZoomOut}
-                handleResetZoom={handleResetZoom}
+            {/* Main content area */}
+            <div className="flex-1">
+              <OfficeTabs
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                handleActionClick={handleActionClick}
+                handleHotspotAction={handleHotspotAction}
+                handleAgentFloorClick={handleAgentFloorClick}
+                visualizationState={visualizationState}
+                zoomLevel={zoomLevel}
                 isDark={isDark}
               />
-            )}
+            </div>
           </div>
         </div>
         
-        {/* Command center and agent info panel */}
-        <CommandCenter
-          onToggleVisualizationControls={handleToggleVisualizationControls}
-          visualizationActive={visualizationActive}
-          onFilterAgents={() => {}}
-          onChangeViewMode={() => {}}
-          onShowMetrics={handleToggleMetrics}
-          metricsActive={metricsActive}
-          onOpenTerminal={handleOpenTerminal}
-          systemStatus="healthy"
-          activeAgents={agentStats.active}
-          totalAgents={agentStats.total}
-          isMainToolbarVisible={true}
-        />
+        {/* Performance metrics overlay */}
+        {showPerformance && (
+          <PerformanceMetricsOverlay
+            data={performanceData}
+            visible={showPerformance}
+            position="bottom-right"
+            onClose={handleTogglePerformance}
+            onViewDetails={handleTogglePerformance}
+          />
+        )}
         
+        {/* Agent info panels */}
         {selectedAgentInfo && (
           <AgentInfoPanel
             agent={selectedAgentInfo}
