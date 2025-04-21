@@ -14,10 +14,7 @@ import AgentChatAnalyticsPanel from '@/components/agents/office/AgentChatAnalyti
 import OfficeHeader from '@/components/office/OfficeHeader';
 import OfficeStatCards from '@/components/office/OfficeStatCards';
 import OfficeTabs from '@/components/office/OfficeTabs';
-import OfficeZoomControls from '@/components/office/OfficeZoomControls';
-import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
-import { Building2, Filter, Eye, Settings, Terminal, PlusCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import UnifiedControlPanel from '@/components/office/UnifiedControlPanel';
 import { PerformanceMetricsOverlay } from '@/components/agents/office/metrics/PerformanceMetricsOverlay';
 
 const Office = () => {
@@ -31,7 +28,6 @@ const Office = () => {
   const contentLoaded = useRef(false);
   const [selectedAgentInfo, setSelectedAgentInfo] = useState<any>(null);
   const [selectedAgentForChat, setSelectedAgentForChat] = useState<typeof agents[0] | null>(null);
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const [isNewDivisionModalOpen, setIsNewDivisionModalOpen] = useState(false);
   const [visualizationState, setVisualizationState] = useState<VisualizationState>({
     activeLayerIds: ['hotspots', 'performance', 'quickActions'],
@@ -130,11 +126,7 @@ const Office = () => {
     setSelectedAgentInfo(null);
   };
   
-  const handleToggleSidebar = () => {
-    setSidebarExpanded(!sidebarExpanded);
-  };
-  
-  const handleToggleVisualizationControls = () => {
+  const handleToggleVisualization = () => {
     setVisualizationActive(!visualizationActive);
     
     setVisualizationState(prevState => {
@@ -345,115 +337,38 @@ const Office = () => {
           />
           
           <div className="relative flex">
-            {/* Floor plan sidebar */}
-            <div className="w-64 mr-4">
-              <SidebarProvider>
-                <Sidebar collapsible="icon">
-                  <SidebarContent>
-                    <SidebarGroup>
-                      <SidebarGroupLabel>Floor Plan Controls</SidebarGroupLabel>
-                      <SidebarMenu>
-                        <SidebarMenuItem>
-                          <SidebarMenuButton 
-                            onClick={handleToggleFilters}
-                            tooltip="Toggle Filters"
-                          >
-                            <Filter className="mr-2" />
-                            <span>Filters</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        
-                        <SidebarMenuItem>
-                          <SidebarMenuButton 
-                            onClick={handleToggleVisualizationControls}
-                            tooltip="Toggle Visualization"
-                          >
-                            <Eye className="mr-2" />
-                            <span>View Options</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        
-                        <SidebarMenuItem>
-                          <SidebarMenuButton 
-                            onClick={handleToggleMetrics}
-                            tooltip="Toggle Metrics"
-                          >
-                            <Settings className="mr-2" />
-                            <span>System Metrics</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        
-                        <SidebarMenuItem>
-                          <SidebarMenuButton 
-                            onClick={handleOpenTerminal}
-                            tooltip="Open Terminal"
-                          >
-                            <Terminal className="mr-2" />
-                            <span>Command Line</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        
-                        <SidebarMenuItem>
-                          <SidebarMenuButton 
-                            onClick={() => handleActionClick('add-division')}
-                            tooltip="Add New Division"
-                          >
-                            <PlusCircle className="mr-2" />
-                            <span>Add Division</span>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        
-                        <SidebarMenuItem>
-                          <Button 
-                            onClick={handleZoomIn} 
-                            variant="outline" 
-                            size="sm" 
-                            className="w-full justify-start"
-                          >
-                            <span>Zoom In</span>
-                          </Button>
-                        </SidebarMenuItem>
-                        
-                        <SidebarMenuItem>
-                          <Button 
-                            onClick={handleZoomOut} 
-                            variant="outline" 
-                            size="sm" 
-                            className="w-full justify-start"
-                          >
-                            <span>Zoom Out</span>
-                          </Button>
-                        </SidebarMenuItem>
-                        
-                        <SidebarMenuItem>
-                          <Button 
-                            onClick={handleResetZoom} 
-                            variant="outline" 
-                            size="sm" 
-                            className="w-full justify-start"
-                          >
-                            <span>Reset Zoom</span>
-                          </Button>
-                        </SidebarMenuItem>
-                      </SidebarMenu>
-                    </SidebarGroup>
-                  </SidebarContent>
-                </Sidebar>
-              </SidebarProvider>
-            </div>
-            
-            {/* Main content area */}
+            {/* Main content area with unified control panel */}
             <div className="flex-1">
-              <OfficeTabs
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                handleActionClick={handleActionClick}
-                handleHotspotAction={handleHotspotAction}
-                handleAgentFloorClick={handleAgentFloorClick}
-                visualizationState={visualizationState}
-                zoomLevel={zoomLevel}
-                isDark={isDark}
-              />
+              <div className="relative">
+                <UnifiedControlPanel
+                  onToggleVisualization={handleToggleVisualization}
+                  onToggleFilters={handleToggleFilters}
+                  onToggleMetrics={handleToggleMetrics}
+                  onTogglePerformance={handleTogglePerformance}
+                  onAddDivision={() => handleActionClick('add-division')}
+                  onOpenTerminal={handleOpenTerminal}
+                  visualizationActive={visualizationActive}
+                  filtersActive={filtersActive}
+                  metricsActive={metricsActive}
+                  performanceVisible={showPerformance}
+                  zoomLevel={zoomLevel}
+                  onZoomIn={handleZoomIn}
+                  onZoomOut={handleZoomOut}
+                  onResetZoom={handleResetZoom}
+                  isDark={isDark}
+                />
+                
+                <OfficeTabs
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                  handleActionClick={handleActionClick}
+                  handleHotspotAction={handleHotspotAction}
+                  handleAgentFloorClick={handleAgentFloorClick}
+                  visualizationState={visualizationState}
+                  zoomLevel={zoomLevel}
+                  isDark={isDark}
+                />
+              </div>
             </div>
           </div>
         </div>
