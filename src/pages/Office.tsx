@@ -1,4 +1,3 @@
-
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect, useRef } from 'react';
 import Navbar from '@/components/layout/Navbar';
@@ -14,8 +13,9 @@ import AgentChatAnalyticsPanel from '@/components/agents/office/AgentChatAnalyti
 import OfficeHeader from '@/components/office/OfficeHeader';
 import OfficeStatCards from '@/components/office/OfficeStatCards';
 import OfficeTabs from '@/components/office/OfficeTabs';
-import UnifiedControlPanel from '@/components/office/UnifiedControlPanel';
 import { PerformanceMetricsOverlay } from '@/components/agents/office/metrics/PerformanceMetricsOverlay';
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import OfficeSidebarControls from "@/components/office/OfficeSidebarControls";
 
 const Office = () => {
   const { t } = useLanguage();
@@ -322,83 +322,72 @@ const Office = () => {
       
       <Navbar />
       
-      <main className="flex-1 container mx-auto px-4 pt-20 pb-12 relative">
-        <div className="max-w-7xl mx-auto space-y-6">
-          <OfficeHeader 
-            handleActionClick={handleActionClick}
-            selectedAgentInfo={selectedAgentInfo}
-            handleViewPerformance={handleTogglePerformance}
+      <SidebarProvider>
+        <div className="flex min-h-screen w-full relative">
+          <OfficeSidebarControls
+            onToggleVisualization={handleToggleVisualization}
+            onToggleFilters={handleToggleFilters}
+            onToggleMetrics={handleToggleMetrics}
+            onTogglePerformance={handleTogglePerformance}
+            onAddDivision={() => handleActionClick('add-division')}
+            onOpenTerminal={handleOpenTerminal}
+            visualizationActive={visualizationActive}
+            filtersActive={filtersActive}
+            metricsActive={metricsActive}
+            performanceVisible={showPerformance}
+            zoomLevel={zoomLevel}
+            onZoomIn={handleZoomIn}
+            onZoomOut={handleZoomOut}
+            onResetZoom={handleResetZoom}
             isDark={isDark}
           />
-          
-          <OfficeStatCards 
-            agentStats={agentStats}
-            isDark={isDark}
-          />
-          
-          <div className="relative flex">
-            {/* Main content area with unified control panel */}
-            <div className="flex-1">
-              <div className="relative">
-                <UnifiedControlPanel
-                  onToggleVisualization={handleToggleVisualization}
-                  onToggleFilters={handleToggleFilters}
-                  onToggleMetrics={handleToggleMetrics}
-                  onTogglePerformance={handleTogglePerformance}
-                  onAddDivision={() => handleActionClick('add-division')}
-                  onOpenTerminal={handleOpenTerminal}
-                  visualizationActive={visualizationActive}
-                  filtersActive={filtersActive}
-                  metricsActive={metricsActive}
-                  performanceVisible={showPerformance}
-                  zoomLevel={zoomLevel}
-                  onZoomIn={handleZoomIn}
-                  onZoomOut={handleZoomOut}
-                  onResetZoom={handleResetZoom}
-                  isDark={isDark}
-                />
-                
-                <OfficeTabs
-                  activeTab={activeTab}
-                  setActiveTab={setActiveTab}
-                  handleActionClick={handleActionClick}
-                  handleHotspotAction={handleHotspotAction}
-                  handleAgentFloorClick={handleAgentFloorClick}
-                  visualizationState={visualizationState}
-                  zoomLevel={zoomLevel}
-                  isDark={isDark}
-                />
+          <main className="flex-1 container mx-auto px-4 pt-20 pb-12 relative">
+            <div className="max-w-7xl mx-auto space-y-6">
+              <OfficeHeader
+                handleActionClick={handleActionClick}
+                selectedAgentInfo={selectedAgentInfo}
+                handleViewPerformance={handleTogglePerformance}
+                isDark={isDark}
+              />
+              <OfficeStatCards agentStats={agentStats} isDark={isDark} />
+              <div className="relative flex">
+                <div className="flex-1">
+                  <div className="relative">
+                    <OfficeTabs
+                      activeTab={activeTab}
+                      setActiveTab={setActiveTab}
+                      handleActionClick={handleActionClick}
+                      handleHotspotAction={handleHotspotAction}
+                      handleAgentFloorClick={handleAgentFloorClick}
+                      visualizationState={visualizationState}
+                      zoomLevel={zoomLevel}
+                      isDark={isDark}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+            {showPerformance && (
+              <PerformanceMetricsOverlay
+                data={performanceData}
+                visible={showPerformance}
+                position="bottom-right"
+                onClose={handleTogglePerformance}
+                onViewDetails={handleTogglePerformance}
+              />
+            )}
+            {selectedAgentInfo && (
+              <AgentInfoPanel agent={selectedAgentInfo} onClose={handleCloseAgentInfo} />
+            )}
+            {selectedAgentForChat && (
+              <AgentChatAnalyticsPanel agent={selectedAgentForChat} onClose={() => setSelectedAgentForChat(null)} />
+            )}
+            <div className="fixed left-3 top-3 z-40 md:hidden">
+              <SidebarTrigger />
+            </div>
+          </main>
         </div>
-        
-        {/* Performance metrics overlay */}
-        {showPerformance && (
-          <PerformanceMetricsOverlay
-            data={performanceData}
-            visible={showPerformance}
-            position="bottom-right"
-            onClose={handleTogglePerformance}
-            onViewDetails={handleTogglePerformance}
-          />
-        )}
-        
-        {/* Agent info panels */}
-        {selectedAgentInfo && (
-          <AgentInfoPanel
-            agent={selectedAgentInfo}
-            onClose={handleCloseAgentInfo}
-          />
-        )}
-        
-        {selectedAgentForChat && (
-          <AgentChatAnalyticsPanel
-            agent={selectedAgentForChat}
-            onClose={() => setSelectedAgentForChat(null)}
-          />
-        )}
-      </main>
+      </SidebarProvider>
       
       <Footer />
     </div>
