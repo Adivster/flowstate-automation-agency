@@ -66,6 +66,7 @@ const Office = () => {
   const [visualizationActive, setVisualizationActive] = useState(true);
   const [filtersActive, setFiltersActive] = useState(false);
   const [metricsActive, setMetricsActive] = useState(true);
+  const [zoomLevel, setZoomLevel] = useState(1);
   
   const agentStats = {
     total: 24,
@@ -249,8 +250,6 @@ const Office = () => {
         });
     }
   };
-
-  const [zoomLevel, setZoomLevel] = useState(1);
   
   const handleZoomIn = () => {
     setZoomLevel(prev => Math.min(prev + 0.1, 2));
@@ -262,6 +261,10 @@ const Office = () => {
   
   const handleResetZoom = () => {
     setZoomLevel(1);
+  };
+  
+  const handleOpenTerminal = () => {
+    handleActionClick('terminal');
   };
   
   if (!loaded) {
@@ -304,15 +307,19 @@ const Office = () => {
         {/* Single row of contextual actions */}
         <div className="flex flex-wrap gap-2 justify-end items-center mb-4">
           <OfficeControls
-            toggleVisualization={handleToggleVisualizationControls}
-            toggleFilters={handleToggleFilters}
-            toggleMetrics={handleToggleMetrics}
+            zoomLevel={zoomLevel}
+            onZoomIn={handleZoomIn}
+            onZoomOut={handleZoomOut}
+            onResetZoom={handleResetZoom}
+            onToggleVisualizationControls={handleToggleVisualizationControls}
             visualizationActive={visualizationActive}
+            onToggleFilters={handleToggleFilters}
             filtersActive={filtersActive}
+            onToggleMetrics={handleToggleMetrics}
             metricsActive={metricsActive}
-            isDark={isDark}
-            newDivisionModalOpen={isNewDivisionModalOpen}
-            setNewDivisionModalOpen={setIsNewDivisionModalOpen}
+            onAddDivision={() => setIsNewDivisionModalOpen(true)}
+            onSave={() => handleActionClick('save')}
+            onOpenTerminal={handleOpenTerminal}
           />
         </div>
 
@@ -354,9 +361,17 @@ const Office = () => {
         
         {/* Command center and agent info panel */}
         <CommandCenter
-          visible={activeTab === 'office'}
-          position="bottom"
-          theme={isDark ? 'dark' : 'light'}
+          onToggleVisualizationControls={handleToggleVisualizationControls}
+          visualizationActive={visualizationActive}
+          onFilterAgents={() => {}}
+          onChangeViewMode={() => {}}
+          onShowMetrics={handleToggleMetrics}
+          metricsActive={metricsActive}
+          onOpenTerminal={handleOpenTerminal}
+          systemStatus="healthy"
+          activeAgents={agentStats.active}
+          totalAgents={agentStats.total}
+          isMainToolbarVisible={true}
         />
         
         {selectedAgentInfo && (
