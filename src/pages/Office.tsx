@@ -321,19 +321,60 @@ const Office = () => {
       <Navbar />
       
       <main className="flex-1 container mx-auto px-4 pt-20 pb-12 relative">
-        <CommandCenter 
-          onToggleVisualizationControls={handleToggleVisualizationControls}
-          visualizationActive={visualizationActive}
-          onFilterAgents={handleToggleFilters}
-          onShowMetrics={handleToggleMetrics}
-          metricsActive={metricsActive}
-          onOpenTerminal={() => handleActionClick('terminal')}
-          systemStatus="healthy"
-          activeAgents={agentStats.active}
-          totalAgents={agentStats.total}
-          isMainToolbarVisible={!sidebarExpanded}
-        />
-        
+        {/* -------------------------------------------------------------------- */}
+        {/* Simplified single row of contextual actions, NO MORE floating toolbar */}
+        {/* -------------------------------------------------------------------- */}
+        <div className="flex flex-wrap gap-2 justify-end items-center mb-4">
+          <Button 
+            variant={isDark ? "cyberpunk" : "eco"} 
+            size="sm"
+            onClick={() => handleActionClick('reorganize')}
+          >
+            <Grid className="h-4 w-4" />
+            Reorganize Office
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            className={cn(
+              isDark 
+                ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
+                : "bg-emerald-100 border-emerald-300 hover:bg-emerald-200 text-emerald-700"
+            )}
+            onClick={() => handleActionClick('agent-details')}
+          >
+            <Users className="h-4 w-4" />
+            {selectedAgentInfo ? 'Close Agent Details' : 'View Agent Details'}
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            className={cn(
+              isDark 
+                ? "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-400" 
+                : "bg-emerald-100 border-emerald-300 hover:bg-emerald-200 text-emerald-700"
+            )}
+            onClick={() => handleActionClick('refresh')}
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh Status
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className={cn(
+              isDark 
+                ? "bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-400" 
+                : "bg-blue-100 border-blue-300 hover:bg-blue-200 text-blue-700"
+            )}
+            onClick={handleViewPerformance}
+          >
+            <Activity className="h-4 w-4" />
+            Performance Monitoring
+          </Button>
+        </div>
+        {/* -------------------------------------------------------------------- */}
+
         <div className="max-w-7xl mx-auto space-y-6">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -773,136 +814,4 @@ const Office = () => {
                           )}>
                             <SelectItem value="24h">Last 24 Hours</SelectItem>
                             <SelectItem value="7d">Last 7 Days</SelectItem>
-                            <SelectItem value="30d">Last 30 Days</SelectItem>
-                            <SelectItem value="90d">Last Quarter</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          className={cn(
-                            "h-8 px-2 text-xs",
-                            isDark 
-                              ? "bg-flow-background/30 border-flow-border/50" 
-                              : "bg-white/50 border-emerald-200"
-                          )}
-                          onClick={() => handleActionClick('export')}
-                        >
-                          Export
-                        </Button>
-                      </div>
-                    </div>
-                  </GlassMorphism>
-                  
-                  <div className={cn(
-                    "min-h-[550px] h-[550px] relative",
-                    isDark 
-                      ? "bg-black/40 rounded-xl backdrop-blur-sm overflow-hidden border border-cyan-500/20" 
-                      : "bg-white/10 rounded-xl backdrop-blur-sm overflow-hidden border border-cyan-300/30"
-                  )}>
-                    <AgencyMetrics />
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </SolarpunkPanel>
-          </div>
-        </div>
-        
-        <OfficeControls 
-          zoomLevel={zoomLevel}
-          onZoomIn={handleZoomIn}
-          onZoomOut={handleZoomOut}
-          onResetZoom={handleResetZoom}
-          onToggleVisualizationControls={handleToggleVisualizationControls}
-          visualizationActive={visualizationActive}
-          onToggleFilters={handleToggleFilters}
-          filtersActive={filtersActive}
-          onToggleMetrics={handleToggleMetrics}
-          metricsActive={metricsActive}
-          onAddDivision={() => setIsNewDivisionModalOpen(true)}
-          onSave={() => {
-            toast({
-              title: "Layout Saved",
-              description: "The current office layout has been saved.",
-              duration: 3000,
-            });
-          }}
-          onOpenTerminal={() => handleActionClick('terminal')}
-          isSidebarExpanded={sidebarExpanded}
-        />
-        
-        <AnimatePresence>
-          {selectedAgentInfo && (
-            <AgentInfoPanel 
-              agent={selectedAgentInfo} 
-              onClose={handleCloseAgentInfo} 
-            />
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {selectedAgentForChat && (
-            <AgentChatAnalyticsPanel 
-              agent={selectedAgentForChat} 
-              onClose={() => setSelectedAgentForChat(null)} 
-            />
-          )}
-        </AnimatePresence>
-      </main>
-      
-      <Footer />
-      
-      <style>
-        {`
-        .scrollbar-dark::-webkit-scrollbar {
-          width: 6px;
-        }
-        
-        .scrollbar-dark::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.2);
-          border-radius: 8px;
-        }
-        
-        .scrollbar-dark::-webkit-scrollbar-thumb {
-          background: rgba(139, 92, 246, 0.5);
-          border-radius: 8px;
-        }
-        
-        .scrollbar-dark::-webkit-scrollbar-thumb:hover {
-          background: rgba(139, 92, 246, 0.7);
-        }
-        
-        .scrollbar-light::-webkit-scrollbar {
-          width: 6px;
-        }
-        
-        .scrollbar-light::-webkit-scrollbar-track {
-          background: rgba(16, 185, 129, 0.1);
-          border-radius: 8px;
-        }
-        
-        .scrollbar-light::-webkit-scrollbar-thumb {
-          background: rgba(16, 185, 129, 0.3);
-          border-radius: 8px;
-        }
-        
-        .scrollbar-light::-webkit-scrollbar-thumb:hover {
-          background: rgba(16, 185, 129, 0.5);
-        }
-        
-        .animate-pulse-subtle {
-          animation: pulse-subtle 3s infinite;
-        }
-        
-        @keyframes pulse-subtle {
-          0%, 100% { opacity: 0.8; }
-          50% { opacity: 1; }
-        }
-        `}
-      </style>
-    </div>
-  );
-};
-
-export default Office;
+                            <SelectItem value="30d">Last
