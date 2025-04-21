@@ -15,7 +15,7 @@ import OfficeHeader from '@/components/office/OfficeHeader';
 import OfficeStatCards from '@/components/office/OfficeStatCards';
 import OfficeTabs from '@/components/office/OfficeTabs';
 import OfficeZoomControls from '@/components/office/OfficeZoomControls';
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { Building2, Filter, Eye, Settings, Terminal, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PerformanceMetricsOverlay } from '@/components/agents/office/metrics/PerformanceMetricsOverlay';
@@ -347,97 +347,99 @@ const Office = () => {
           <div className="relative flex">
             {/* Floor plan sidebar */}
             <div className="w-64 mr-4">
-              <Sidebar collapsible="icon">
-                <SidebarContent>
-                  <SidebarGroup>
-                    <SidebarGroupLabel>Floor Plan Controls</SidebarGroupLabel>
-                    <SidebarMenu>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          onClick={handleToggleFilters}
-                          tooltip="Toggle Filters"
-                        >
-                          <Filter className="mr-2" />
-                          <span>Filters</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          onClick={handleToggleVisualizationControls}
-                          tooltip="Toggle Visualization"
-                        >
-                          <Eye className="mr-2" />
-                          <span>View Options</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          onClick={handleToggleMetrics}
-                          tooltip="Toggle Metrics"
-                        >
-                          <Settings className="mr-2" />
-                          <span>System Metrics</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          onClick={handleOpenTerminal}
-                          tooltip="Open Terminal"
-                        >
-                          <Terminal className="mr-2" />
-                          <span>Command Line</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          onClick={() => handleActionClick('add-division')}
-                          tooltip="Add New Division"
-                        >
-                          <PlusCircle className="mr-2" />
-                          <span>Add Division</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      
-                      <SidebarMenuItem>
-                        <Button 
-                          onClick={handleZoomIn} 
-                          variant="outline" 
-                          size="sm" 
-                          className="w-full justify-start"
-                        >
-                          <span>Zoom In</span>
-                        </Button>
-                      </SidebarMenuItem>
-                      
-                      <SidebarMenuItem>
-                        <Button 
-                          onClick={handleZoomOut} 
-                          variant="outline" 
-                          size="sm" 
-                          className="w-full justify-start"
-                        >
-                          <span>Zoom Out</span>
-                        </Button>
-                      </SidebarMenuItem>
-                      
-                      <SidebarMenuItem>
-                        <Button 
-                          onClick={handleResetZoom} 
-                          variant="outline" 
-                          size="sm" 
-                          className="w-full justify-start"
-                        >
-                          <span>Reset Zoom</span>
-                        </Button>
-                      </SidebarMenuItem>
-                    </SidebarMenu>
-                  </SidebarGroup>
-                </SidebarContent>
-              </Sidebar>
+              <SidebarProvider>
+                <Sidebar collapsible="icon">
+                  <SidebarContent>
+                    <SidebarGroup>
+                      <SidebarGroupLabel>Floor Plan Controls</SidebarGroupLabel>
+                      <SidebarMenu>
+                        <SidebarMenuItem>
+                          <SidebarMenuButton 
+                            onClick={handleToggleFilters}
+                            tooltip="Toggle Filters"
+                          >
+                            <Filter className="mr-2" />
+                            <span>Filters</span>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        
+                        <SidebarMenuItem>
+                          <SidebarMenuButton 
+                            onClick={handleToggleVisualizationControls}
+                            tooltip="Toggle Visualization"
+                          >
+                            <Eye className="mr-2" />
+                            <span>View Options</span>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        
+                        <SidebarMenuItem>
+                          <SidebarMenuButton 
+                            onClick={handleToggleMetrics}
+                            tooltip="Toggle Metrics"
+                          >
+                            <Settings className="mr-2" />
+                            <span>System Metrics</span>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        
+                        <SidebarMenuItem>
+                          <SidebarMenuButton 
+                            onClick={handleOpenTerminal}
+                            tooltip="Open Terminal"
+                          >
+                            <Terminal className="mr-2" />
+                            <span>Command Line</span>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        
+                        <SidebarMenuItem>
+                          <SidebarMenuButton 
+                            onClick={() => handleActionClick('add-division')}
+                            tooltip="Add New Division"
+                          >
+                            <PlusCircle className="mr-2" />
+                            <span>Add Division</span>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                        
+                        <SidebarMenuItem>
+                          <Button 
+                            onClick={handleZoomIn} 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full justify-start"
+                          >
+                            <span>Zoom In</span>
+                          </Button>
+                        </SidebarMenuItem>
+                        
+                        <SidebarMenuItem>
+                          <Button 
+                            onClick={handleZoomOut} 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full justify-start"
+                          >
+                            <span>Zoom Out</span>
+                          </Button>
+                        </SidebarMenuItem>
+                        
+                        <SidebarMenuItem>
+                          <Button 
+                            onClick={handleResetZoom} 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full justify-start"
+                          >
+                            <span>Reset Zoom</span>
+                          </Button>
+                        </SidebarMenuItem>
+                      </SidebarMenu>
+                    </SidebarGroup>
+                  </SidebarContent>
+                </Sidebar>
+              </SidebarProvider>
             </div>
             
             {/* Main content area */}
