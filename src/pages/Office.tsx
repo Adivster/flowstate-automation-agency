@@ -31,6 +31,8 @@ import { VisualizationState } from '@/components/agents/office/types/visualizati
 import { agents } from '@/components/agents/office/data/agentsData';
 import AgentChatAnalyticsPanel from '@/components/agents/office/AgentChatAnalyticsPanel';
 import { TaskProvider } from '@/contexts/TaskContext';
+import { CommandCenter } from '@/components/agents/office/layout/CommandCenter';
+import { OfficeControls } from '@/components/agents/office/layout/OfficeControls';
 
 const Office = () => {
   const { t } = useLanguage();
@@ -79,6 +81,7 @@ const Office = () => {
   const [visualizationActive, setVisualizationActive] = useState(true);
   const [filtersActive, setFiltersActive] = useState(false);
   const [metricsActive, setMetricsActive] = useState(true);
+  const [isNewDivisionModalOpen, setIsNewDivisionModalOpen] = useState(false);
   
   const agentStats = {
     total: 24,
@@ -688,6 +691,7 @@ const Office = () => {
                         visualizationState={visualizationState}
                         onHotspotAction={handleHotspotAction}
                         onAgentClick={handleAgentFloorClick}
+                        hideTopControls={true}
                       />
                     </TaskProvider>
                   </div>
@@ -817,7 +821,13 @@ const Office = () => {
           onToggleMetrics={handleToggleMetrics}
           metricsActive={metricsActive}
           onAddDivision={() => setIsNewDivisionModalOpen(true)}
-          onSave={() => handleActionClick('save')}
+          onSave={() => {
+            toast({
+              title: "Layout Saved",
+              description: "The current office layout has been saved.",
+              duration: 3000,
+            });
+          }}
           onOpenTerminal={() => handleActionClick('terminal')}
           isSidebarExpanded={sidebarExpanded}
         />
