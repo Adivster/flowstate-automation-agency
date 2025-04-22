@@ -13,8 +13,11 @@ export interface WorkflowPerformanceData {
   successRate: number;
   averageCompletionTime?: number;
   data: Array<{
+    name: string;
+    value: number;
     timestamp: string;
-    efficiency: number;
+    annotation?: string;
+    event?: string;
   }>;
 }
 
@@ -121,12 +124,12 @@ export const useWorkflowPerformance = (timeRange: '1h' | '24h' | '7d' | '30d') =
   return { workflows, loading };
 };
 
-// Helper function to generate mock time series data based on current efficiency and trend
+// Modified function to generate mock time series data that's compatible with WorkflowPerformanceChart
 function generateMockTimeSeriesData(
   timeRange: '1h' | '24h' | '7d' | '30d',
   currentValue: number,
   trend: 'up' | 'down' | 'neutral'
-): Array<{ timestamp: string; efficiency: number }> {
+): Array<{ name: string; value: number; timestamp: string; annotation?: string; event?: string }> {
   const dataPoints = timeRange === '1h' ? 60 : timeRange === '24h' ? 24 : timeRange === '7d' ? 7 : 30;
   const result = [];
   
@@ -143,27 +146,53 @@ function generateMockTimeSeriesData(
     value = Math.min(Math.max(value, 50), 100);
     
     const date = new Date(now);
+    let nameText: string;
+    
     if (timeRange === '1h') {
       date.setMinutes(now.getMinutes() - i);
+      nameText = `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
     } else if (timeRange === '24h') {
       date.setHours(now.getHours() - i);
+      nameText = `${date.getHours()}:00`;
     } else if (timeRange === '7d') {
       date.setDate(now.getDate() - i);
+      nameText = date.toLocaleDateString('en-US', { weekday: 'short' });
     } else {
       date.setDate(now.getDate() - i);
+      nameText = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
     
-    result.push({
-      timestamp: date.toISOString(),
-      efficiency: Number(value.toFixed(1)),
-    });
+    const dataPoint = {
+      name: nameText,
+      value: Number(value.toFixed(1)),
+      timestamp: date.toISOString()
+    };
+    
+    // Add annotations to some data points
+    if (Math.random() > 0.9) {
+      dataPoint.annotation = i % 2 === 0
+        ? "Performance spike detected"
+        : "Efficiency drop due to API latency";
+    }
+    
+    // Add occasional events
+    if (Math.random() > 0.95) {
+      dataPoint.event = i % 2 === 0
+        ? "System upgrade applied"
+        : "Config changes deployed";
+    }
+    
+    result.push(dataPoint);
   }
   
   // Add the current value as the last data point
-  result.push({
-    timestamp: now.toISOString(),
-    efficiency: currentValue,
-  });
+  const lastPoint = {
+    name: 'Now',
+    value: currentValue,
+    timestamp: now.toISOString()
+  };
+  
+  result.push(lastPoint);
   
   return result;
 }

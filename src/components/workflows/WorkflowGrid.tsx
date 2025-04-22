@@ -128,8 +128,10 @@ const WorkflowGrid: React.FC<WorkflowGridProps> = ({ onSelectWorkflow, onViewVer
       setIsDialogOpen(true);
     } else if (action === 'history' && onViewVersionHistory) {
       onViewVersionHistory(workflow.id);
-    } else if (action !== 'history' && action !== 'configure' && onSelectWorkflow) {
-      onSelectWorkflow(workflow.id);
+    } else if (action === 'start' || action === 'pause') {
+      if (onSelectWorkflow) {
+        onSelectWorkflow(workflow.id);
+      }
     }
   };
 
