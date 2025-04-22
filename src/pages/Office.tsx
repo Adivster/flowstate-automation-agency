@@ -13,9 +13,6 @@ import AgentChatAnalyticsPanel from '@/components/agents/office/AgentChatAnalyti
 import OfficeHeader from '@/components/office/OfficeHeader';
 import OfficeStatCards from '@/components/office/OfficeStatCards';
 import OfficeTabs from '@/components/office/OfficeTabs';
-import { PerformanceMetricsOverlay } from '@/components/agents/office/metrics/PerformanceMetricsOverlay';
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import OfficeSidebarControls from "@/components/office/OfficeSidebarControls";
 
 const Office = () => {
   const { t } = useLanguage();
@@ -60,37 +57,7 @@ const Office = () => {
       }
     }
   });
-  
-  const [visualizationActive, setVisualizationActive] = useState(true);
-  const [filtersActive, setFiltersActive] = useState(false);
-  const [metricsActive, setMetricsActive] = useState(true);
-  const [showPerformance, setShowPerformance] = useState(false);
-  const [zoomLevel, setZoomLevel] = useState(1);
-  
-  const agentStats = {
-    total: 24,
-    active: 14,
-    idle: 7,
-    paused: 2,
-    error: 1
-  };
-  
-  const performanceData = {
-    cpu: Math.floor(Math.random() * 60) + 20,
-    memory: Math.floor(Math.random() * 60) + 30,
-    network: Math.floor(Math.random() * 80) + 10,
-    agentsActive: agentStats.active,
-    totalAgents: agentStats.total,
-    systemLoad: Array.from({ length: 20 }, () => Math.floor(Math.random() * 60) + 20),
-    alerts: Math.floor(Math.random() * 3),
-    status: 'healthy' as 'healthy' | 'warning' | 'critical',
-    uptime: 99.8,
-    efficiency: 87,
-    responseTime: 324,
-    throughput: [220, 230, 210, 250, 270, 240, 256],
-    errorRate: 0.8
-  };
-  
+
   useEffect(() => {
     if (contentLoaded.current) return;
     
@@ -322,72 +289,39 @@ const Office = () => {
       
       <Navbar />
       
-      <SidebarProvider>
-        <div className="flex min-h-screen w-full relative">
-          <OfficeSidebarControls
-            onToggleVisualization={handleToggleVisualization}
-            onToggleFilters={handleToggleFilters}
-            onToggleMetrics={handleToggleMetrics}
-            onTogglePerformance={handleTogglePerformance}
-            onAddDivision={() => handleActionClick('add-division')}
-            onOpenTerminal={handleOpenTerminal}
-            visualizationActive={visualizationActive}
-            filtersActive={filtersActive}
-            metricsActive={metricsActive}
-            performanceVisible={showPerformance}
-            zoomLevel={zoomLevel}
-            onZoomIn={handleZoomIn}
-            onZoomOut={handleZoomOut}
-            onResetZoom={handleResetZoom}
+      <main className="flex-1 container mx-auto px-4 pt-20 pb-12 relative">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <OfficeHeader
+            handleActionClick={handleActionClick}
+            selectedAgentInfo={selectedAgentInfo}
+            handleViewPerformance={handleTogglePerformance}
             isDark={isDark}
           />
-          <main className="flex-1 container mx-auto px-4 pt-20 pb-12 relative">
-            <div className="max-w-7xl mx-auto space-y-6">
-              <OfficeHeader
-                handleActionClick={handleActionClick}
-                selectedAgentInfo={selectedAgentInfo}
-                handleViewPerformance={handleTogglePerformance}
-                isDark={isDark}
-              />
-              <OfficeStatCards agentStats={agentStats} isDark={isDark} />
-              <div className="relative flex">
-                <div className="flex-1">
-                  <div className="relative">
-                    <OfficeTabs
-                      activeTab={activeTab}
-                      setActiveTab={setActiveTab}
-                      handleActionClick={handleActionClick}
-                      handleHotspotAction={handleHotspotAction}
-                      handleAgentFloorClick={handleAgentFloorClick}
-                      visualizationState={visualizationState}
-                      zoomLevel={zoomLevel}
-                      isDark={isDark}
-                    />
-                  </div>
-                </div>
+          <OfficeStatCards agentStats={agentStats} isDark={isDark} />
+          <div className="relative flex">
+            <div className="flex-1">
+              <div className="relative">
+                <OfficeTabs
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                  handleActionClick={handleActionClick}
+                  handleHotspotAction={handleHotspotAction}
+                  handleAgentFloorClick={handleAgentFloorClick}
+                  visualizationState={visualizationState}
+                  zoomLevel={zoomLevel}
+                  isDark={isDark}
+                />
               </div>
             </div>
-            {showPerformance && (
-              <PerformanceMetricsOverlay
-                data={performanceData}
-                visible={showPerformance}
-                position="bottom-right"
-                onClose={handleTogglePerformance}
-                onViewDetails={handleTogglePerformance}
-              />
-            )}
-            {selectedAgentInfo && (
-              <AgentInfoPanel agent={selectedAgentInfo} onClose={handleCloseAgentInfo} />
-            )}
-            {selectedAgentForChat && (
-              <AgentChatAnalyticsPanel agent={selectedAgentForChat} onClose={() => setSelectedAgentForChat(null)} />
-            )}
-            <div className="fixed left-3 top-3 z-40 md:hidden">
-              <SidebarTrigger />
-            </div>
-          </main>
+          </div>
         </div>
-      </SidebarProvider>
+        {selectedAgentInfo && (
+          <AgentInfoPanel agent={selectedAgentInfo} onClose={handleCloseAgentInfo} />
+        )}
+        {selectedAgentForChat && (
+          <AgentChatAnalyticsPanel agent={selectedAgentForChat} onClose={() => setSelectedAgentForChat(null)} />
+        )}
+      </main>
       
       <Footer />
     </div>
