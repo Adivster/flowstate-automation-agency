@@ -162,7 +162,13 @@ function generateMockTimeSeriesData(
       nameText = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
     
-    const dataPoint = {
+    const dataPoint: {
+      name: string;
+      value: number;
+      timestamp: string;
+      annotation?: string;
+      event?: string;
+    } = {
       name: nameText,
       value: Number(value.toFixed(1)),
       timestamp: date.toISOString()
@@ -186,7 +192,11 @@ function generateMockTimeSeriesData(
   }
   
   // Add the current value as the last data point
-  const lastPoint = {
+  const lastPoint: {
+    name: string;
+    value: number;
+    timestamp: string;
+  } = {
     name: 'Now',
     value: currentValue,
     timestamp: now.toISOString()
