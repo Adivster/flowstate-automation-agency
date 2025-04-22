@@ -1,10 +1,9 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
 import { 
   Play, Pause, Settings, Users, ActivitySquare, 
   ArrowRight, Filter, Clock, Search, History,
-  Plus, ChevronDown, Tag, ArrowDownUp, CheckSquare
+  Plus, ChevronDown, Tag, ArrowDownUp, CheckSquare, BarChart3
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
+import { useWorkflowAIInsights } from '@/hooks/useWorkflowAIInsights';
 
 interface WorkflowGridProps {
   onSelectWorkflow?: (workflowId: string) => void;
@@ -165,6 +165,7 @@ const WorkflowGrid: React.FC<WorkflowGridProps> = ({ onSelectWorkflow, onViewVer
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
   const [hoveredWorkflow, setHoveredWorkflow] = useState<string | null>(null);
+  const { insights, loading: insightsLoading } = useWorkflowAIInsights(selectedWorkflow?.id || '');
   
   // Function to check if a workflow is selected
   const isSelected = (id: string) => selectedWorkflows.includes(id);
@@ -213,41 +214,19 @@ const WorkflowGrid: React.FC<WorkflowGridProps> = ({ onSelectWorkflow, onViewVer
     return 0;
   });
 
-  const handleWorkflowAction = (workflow: typeof mockWorkflows[0], action: 'start' | 'pause' | 'configure' | 'history' | 'optimize') => {
-    const actionMessages = {
-      start: `Started "${workflow.name}" workflow`,
-      pause: `Paused "${workflow.name}" workflow`,
-      configure: `Opening configuration for "${workflow.name}" workflow`,
-      history: `Viewing version history for "${workflow.name}" workflow`,
-      optimize: `Analyzing "${workflow.name}" for optimization opportunities`
-    };
-    
-    toast({
-      title: `Workflow Action`,
-      description: actionMessages[action],
-      duration: 3000,
-    });
-    
-    if (action === 'configure') {
-      setSelectedWorkflow(workflow);
-      setIsDialogOpen(true);
-    } else if (action === 'history' && onViewVersionHistory) {
-      onViewVersionHistory(workflow.id);
-    } else if (action === 'start' || action === 'pause') {
+  const handleWorkflowAction = (workflow: typeof mockWorkflows[0], action: 'start' | 'pause' | 'configure') => {
+    if (action === 'start' || action === 'pause') {
+      toast({
+        title: action === 'start' ? 'Starting Workflow' : 'Pausing Workflow',
+        description: `${workflow.name} has been ${action === 'start' ? 'started' : 'paused'}.`,
+      });
+      
       if (onSelectWorkflow) {
         onSelectWorkflow(workflow.id);
       }
-    } else if (action === 'optimize') {
-      // Show AI insight toast for optimization
-      setTimeout(() => {
-        toast({
-          title: "AI Optimization Insights",
-          description: workflow.id === '6' 
-            ? "Suggestion: Add retry logic to OCR step to reduce failures by 40%" 
-            : "Suggestion: Merge sequential steps to reduce latency by 15%",
-          duration: 5000,
-        });
-      }, 1500);
+    } else if (action === 'configure') {
+      setSelectedWorkflow(workflow);
+      setIsDialogOpen(true);
     }
   };
   
@@ -517,199 +496,99 @@ const WorkflowGrid: React.FC<WorkflowGridProps> = ({ onSelectWorkflow, onViewVer
                         Start
                       </Button>
                     )}
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="bg-orange-500/10 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 dark:text-orange-400"
-                      onClick={() => handleWorkflowAction(workflow, 'configure')}
-                    >
-                      <Settings className="h-4 w-4 mr-2" />
-                      Configure
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="bg-orange-500/10 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 dark:text-orange-400"
-                      onClick={() => handleWorkflowAction(workflow, 'history')}
-                    >
-                      <History className="h-4 w-4 mr-2" />
-                      History
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="bg-orange-500/10 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 dark:text-orange-400"
-                      onClick={() => handleWorkflowAction(workflow, 'optimize')}
-                    >
-                      <ActivitySquare className="h-4 w-4 mr-2" />
-                      Optimize
-                    </Button>
-                  </div>
-                </div>
-              </SolarpunkPanel>
-              
-              {/* Flow Preview Popover */}
-              {hoveredWorkflow === workflow.id && (
-                <Popover open={hoveredWorkflow === workflow.id}>
+
+                <Popover>
                   <PopoverTrigger asChild>
-                    <div className="absolute top-0 right-0 w-full h-full opacity-0"></div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="flex-1 bg-orange-500/10 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 dark:text-orange-400"
+                    >
+                      <BarChart3 className="h-4 w-4 mr-2" />
+                      Insights
+                    </Button>
                   </PopoverTrigger>
-                  <PopoverContent 
-                    className={cn(
-                      "w-64 p-3 animate-fade-in",
-                      isDark ? "bg-gray-900/90 border-gray-700" : "bg-white/90"
-                    )}
-                    side="right"
-                  >
+                  <PopoverContent className="w-80">
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-medium">Flow Preview</h4>
-                        <Button 
-                          size="sm" 
-                          variant="ghost" 
-                          className="h-6 w-6 p-0 rounded-full"
-                          onClick={() => setHoveredWorkflow(null)}
+                      <h4 className="font-medium">AI Insights</h4>
+                      {insightsLoading ? (
+                        <p className="text-sm text-muted-foreground">Analyzing workflow...</p>
+                      ) : insights.map((insight, index) => (
+                        <div
+                          key={index}
+                          className={cn(
+                            "p-3 rounded-lg text-sm",
+                            insight.type === 'optimization' && "bg-blue-500/10 text-blue-500",
+                            insight.type === 'warning' && "bg-yellow-500/10 text-yellow-500",
+                            insight.type === 'success' && "bg-green-500/10 text-green-500"
+                          )}
                         >
-                          <Play className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <div className="space-y-2 py-1">
-                        {workflow.flowPreview.map((step, idx) => (
-                          <div 
-                            key={step.id} 
-                            className={cn(
-                              "flex items-center p-1.5 rounded-md text-xs",
-                              step.type === 'input' 
-                                ? "bg-blue-500/20 text-blue-500 dark:text-blue-300" 
-                                : step.type === 'output' 
-                                  ? "bg-green-500/20 text-green-500 dark:text-green-300" 
-                                  : "bg-orange-500/20 text-orange-500 dark:text-orange-300"
-                            )}
-                          >
-                            <div className="flex-1">{idx + 1}. {step.name}</div>
-                            <Badge variant="outline" className="text-[10px] py-0 h-4">
-                              {step.type}
-                            </Badge>
-                          </div>
-                        ))}
-                      </div>
+                          <p>{insight.message}</p>
+                          <p className="mt-1 text-xs opacity-80">
+                            Potential impact: {insight.impact}% improvement
+                          </p>
+                        </div>
+                      ))}
                     </div>
                   </PopoverContent>
                 </Popover>
-              )}
-            </motion.div>
+
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="flex-1 bg-orange-500/10 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 dark:text-orange-400"
+                  onClick={() => handleWorkflowAction(workflow, 'configure')}
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  Configure
+                </Button>
+              </div>
+            </div>
+          </SolarpunkPanel>
+        </motion.div>
           ))
         )}
       </motion.div>
 
+      {/* Configuration Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle className={cn(
-              "text-xl flex items-center gap-2",
-              isDark ? "text-orange-400" : "text-orange-600"
-            )}>
+            <DialogTitle className="text-xl flex items-center gap-2">
               <Settings className="h-5 w-5" />
               {selectedWorkflow?.name} Configuration
             </DialogTitle>
-            <DialogDescription>
-              Manage settings and steps for this workflow
-            </DialogDescription>
           </DialogHeader>
           
-          <div className="py-4">
-            {selectedWorkflow && (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-sm font-medium mb-2">Workflow Details</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Status</p>
-                      <p className="font-medium">{selectedWorkflow.status}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Last Run</p>
-                      <p className="font-medium">{selectedWorkflow.lastRun}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Next Run</p>
-                      <p className="font-medium">{selectedWorkflow.nextRun}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Steps</p>
-                      <p className="font-medium">{selectedWorkflow.steps}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-sm font-medium mb-2">Configuration Options</h3>
-                  
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-sm text-muted-foreground">Schedule Type</label>
-                        <Select defaultValue="interval">
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="interval">Interval</SelectItem>
-                            <SelectItem value="cron">Cron</SelectItem>
-                            <SelectItem value="manual">Manual</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <label className="text-sm text-muted-foreground">Interval</label>
-                        <Select defaultValue="4h">
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="15m">15 minutes</SelectItem>
-                            <SelectItem value="30m">30 minutes</SelectItem>
-                            <SelectItem value="1h">1 hour</SelectItem>
-                            <SelectItem value="4h">4 hours</SelectItem>
-                            <SelectItem value="12h">12 hours</SelectItem>
-                            <SelectItem value="24h">24 hours</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="text-sm text-muted-foreground">Timeout (seconds)</label>
-                      <Input type="number" defaultValue="300" />
-                    </div>
-                    
-                    <div>
-                      <label className="text-sm text-muted-foreground">Retry Count</label>
-                      <Input type="number" defaultValue="3" />
-                    </div>
-                  </div>
-                </div>
+          <div className="space-y-4">
+            {/* Add configuration options here */}
+            <div className="grid gap-4">
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium">Workflow Details</h3>
+                <p className="text-sm text-muted-foreground">
+                  Current Status: {selectedWorkflow?.status}
+                </p>
               </div>
-            )}
-          </div>
-          
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={() => {
-                toast({
-                  title: "Configuration Saved",
-                  description: `Changes to "${selectedWorkflow?.name}" have been saved`,
-                  duration: 3000
-                });
-                setIsDialogOpen(false);
-              }}
-              className={isDark ? "bg-orange-500 hover:bg-orange-600" : "bg-orange-500 hover:bg-orange-600"}
-            >
-              Save Changes
-            </Button>
+
+              <div className="space-y-2">
+                <h3 className="text-sm font-medium">AI Insights</h3>
+                {insights.map((insight, index) => (
+                  <div
+                    key={index}
+                    className={cn(
+                      "p-3 rounded-lg",
+                      insight.type === 'optimization' && "bg-blue-500/10 text-blue-500",
+                      insight.type === 'warning' && "bg-yellow-500/10 text-yellow-500",
+                      insight.type === 'success' && "bg-green-500/10 text-green-500"
+                    )}
+                  >
+                    <p className="font-medium">{insight.message}</p>
+                    <p className="text-sm mt-1">Suggested action: {insight.improvement}</p>
+                    <p className="text-sm opacity-80">Impact: {insight.impact}% improvement</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
