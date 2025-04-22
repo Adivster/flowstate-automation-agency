@@ -1,4 +1,3 @@
-
 import {
   Sidebar,
   SidebarContent,
@@ -24,7 +23,7 @@ import {
   ChevronRight,
   Terminal,
   Cpu,
-  CircleInfo
+  CircleIcon
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
@@ -69,16 +68,12 @@ export const OfficeSidebarControls: React.FC<OfficeSidebarControlsProps> = ({
 }) => {
   const { state, openMobile, setOpenMobile } = useSidebar();
 
-  // Auto-hide sidebar on mobile after action
   const handleMenuAction = (fn: () => void) => {
     return () => {
       fn();
       if (openMobile) setOpenMobile(false);
     };
   };
-
-  // Collapsible desktop sidebar: none (shown), mobile: hides
-  // For accessibility, show sidebar always above office grid (not overlapping).
 
   return (
     <Sidebar
@@ -93,7 +88,7 @@ export const OfficeSidebarControls: React.FC<OfficeSidebarControlsProps> = ({
       )}
     >
       <SidebarHeader className="px-1 pt-3 pb-0 flex items-center justify-center">
-        <CircleInfo className={cn("h-6 w-6", isDark ? "text-white" : "text-emerald-900")} aria-label="Office Controls" />
+        <CircleIcon className={cn("h-6 w-6", isDark ? "text-white" : "text-emerald-900")} aria-label="Office Controls" />
       </SidebarHeader>
       <SidebarContent className="flex-1 overflow-visible p-0">
         <SidebarGroup>
