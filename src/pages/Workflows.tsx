@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
-import { Workflow, Zap, Play, Settings, Users, ActivitySquare, PlayCircle, PlusCircle, BarChart3 } from 'lucide-react';
+import { Workflow, Zap, Play, Settings, Users, ActivitySquare, PlayCircle, PlusCircle, BarChart3, History } from 'lucide-react';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -17,6 +17,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useWorkflowPerformance } from '@/hooks/useWorkflowPerformance';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { CommandCenter } from '@/components/workflows/CommandCenter';
+import TaskWorkflowPanel from '@/components/workflows/TaskWorkflowPanel';
+import WorkflowVersionHistory from '@/components/workflows/WorkflowVersionHistory';
 
 const Workflows: React.FC = () => {
   const { t } = useLanguage();
@@ -26,6 +28,20 @@ const Workflows: React.FC = () => {
   const [timeRange, setTimeRange] = useState<'1h' | '24h' | '7d' | '30d'>('24h');
   const { workflows, loading } = useWorkflowPerformance(timeRange);
   const [showCommandCenter, setShowCommandCenter] = useState(true);
+  const [selectedWorkflow, setSelectedWorkflow] = useState<string | null>(null);
+  const [showWorkflowPanel, setShowWorkflowPanel] = useState(false);
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
+  const [selectedVersionWorkflow, setSelectedVersionWorkflow] = useState<string | null>(null);
+  
+  const handleWorkflowSelect = (workflowId: string) => {
+    setSelectedWorkflow(workflowId);
+    setShowWorkflowPanel(true);
+  };
+  
+  const handleVersionHistoryOpen = (workflowId: string) => {
+    setSelectedVersionWorkflow(workflowId);
+    setShowVersionHistory(true);
+  };
   
   return (
     <ThemedBackground>
@@ -106,42 +122,45 @@ const Workflows: React.FC = () => {
                 </TabsTrigger>
               </TabsList>
             </GlassMorphism>
-          </Tabs>
-          
-          <TabsContent value="workflows" className={activeTab === "workflows" ? "block" : "hidden"}>
-            <SolarpunkPanel
-              accentColor="orange"
-              className={cn("p-5 md:p-8", 
-                isDark ? "" : "bg-gradient-to-br from-orange-50/70 via-white/90 to-orange-50/70"
-              )}
-            >
-              <WorkflowGrid />
-            </SolarpunkPanel>
-          </TabsContent>
-          
-          <TabsContent value="performance" className={activeTab === "performance" ? "block" : "hidden"}>
-            <SolarpunkPanel
-              accentColor="orange"
-              className={cn("p-5 md:p-8", 
-                isDark ? "" : "bg-gradient-to-br from-orange-50/70 via-white/90 to-orange-50/70"
-              )}
-            >
-              {loading ? (
-                <div className="flex items-center justify-center h-64">
-                  <div className={cn(
-                    "w-12 h-12 rounded-full border-4 border-t-transparent animate-spin",
-                    isDark ? "border-orange-400" : "border-orange-500"
-                  )}></div>
-                </div>
-              ) : (
-                <WorkflowPerformanceGrid 
-                  workflows={workflows} 
-                  timeRange={timeRange}
-                  onTimeRangeChange={setTimeRange}
+            
+            <TabsContent value="workflows" className="mt-6">
+              <SolarpunkPanel
+                accentColor="orange"
+                className={cn("p-5 md:p-8", 
+                  isDark ? "" : "bg-gradient-to-br from-orange-50/70 via-white/90 to-orange-50/70"
+                )}
+              >
+                <WorkflowGrid 
+                  onSelectWorkflow={handleWorkflowSelect}
+                  onViewVersionHistory={handleVersionHistoryOpen}
                 />
-              )}
-            </SolarpunkPanel>
-          </TabsContent>
+              </SolarpunkPanel>
+            </TabsContent>
+            
+            <TabsContent value="performance" className="mt-6">
+              <SolarpunkPanel
+                accentColor="orange"
+                className={cn("p-5 md:p-8", 
+                  isDark ? "" : "bg-gradient-to-br from-orange-50/70 via-white/90 to-orange-50/70"
+                )}
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center h-64">
+                    <div className={cn(
+                      "w-12 h-12 rounded-full border-4 border-t-transparent animate-spin",
+                      isDark ? "border-orange-400" : "border-orange-500"
+                    )}></div>
+                  </div>
+                ) : (
+                  <WorkflowPerformanceGrid 
+                    workflows={workflows} 
+                    timeRange={timeRange}
+                    onTimeRangeChange={setTimeRange}
+                  />
+                )}
+              </SolarpunkPanel>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
       
@@ -152,6 +171,20 @@ const Workflows: React.FC = () => {
           systemStatus="healthy"
           timeRange={timeRange}
           onTimeRangeChange={setTimeRange}
+        />
+      )}
+      
+      {showWorkflowPanel && selectedWorkflow && (
+        <TaskWorkflowPanel
+          onClose={() => setShowWorkflowPanel(false)}
+          workflowId={selectedWorkflow}
+        />
+      )}
+      
+      {showVersionHistory && selectedVersionWorkflow && (
+        <WorkflowVersionHistory
+          workflowId={selectedVersionWorkflow}
+          onClose={() => setShowVersionHistory(false)}
         />
       )}
       

@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
-import { Play, Pause, Settings, Users, ActivitySquare, ArrowRight, Filter, Clock, Search } from 'lucide-react';
+import { Play, Pause, Settings, Users, ActivitySquare, ArrowRight, Filter, Clock, Search, History } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +11,11 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
+
+interface WorkflowGridProps {
+  onSelectWorkflow?: (workflowId: string) => void;
+  onViewVersionHistory?: (workflowId: string) => void;
+}
 
 // Mock data for workflows
 const mockWorkflows = [
@@ -24,6 +28,8 @@ const mockWorkflows = [
     nextRun: 'in 4h',
     steps: 8,
     agents: 3,
+    versions: 7,
+    lastModified: 'Apr 22, 2025'
   },
   {
     id: '2',
@@ -34,6 +40,8 @@ const mockWorkflows = [
     nextRun: 'manual',
     steps: 5,
     agents: 2,
+    versions: 3,
+    lastModified: 'Apr 20, 2025'
   },
   {
     id: '3',
@@ -44,6 +52,8 @@ const mockWorkflows = [
     nextRun: 'in 1h',
     steps: 6,
     agents: 4,
+    versions: 5,
+    lastModified: 'Apr 21, 2025'
   },
   {
     id: '4',
@@ -54,6 +64,8 @@ const mockWorkflows = [
     nextRun: 'in 2h',
     steps: 7,
     agents: 2,
+    versions: 4,
+    lastModified: 'Apr 22, 2025'
   },
   {
     id: '5',
@@ -64,6 +76,8 @@ const mockWorkflows = [
     nextRun: 'manual',
     steps: 4,
     agents: 1,
+    versions: 2,
+    lastModified: 'Apr 19, 2025'
   },
   {
     id: '6',
@@ -74,10 +88,12 @@ const mockWorkflows = [
     nextRun: 'in 3h',
     steps: 5,
     agents: 3,
+    versions: 6,
+    lastModified: 'Apr 23, 2025'
   },
 ];
 
-const WorkflowGrid: React.FC = () => {
+const WorkflowGrid: React.FC<WorkflowGridProps> = ({ onSelectWorkflow, onViewVersionHistory }) => {
   const { theme } = useTheme();
   const { toast } = useToast();
   const isDark = theme === 'dark';
@@ -93,11 +109,12 @@ const WorkflowGrid: React.FC = () => {
     return matchesSearch && matchesStatus;
   });
 
-  const handleWorkflowAction = (workflow: typeof mockWorkflows[0], action: 'start' | 'pause' | 'configure') => {
+  const handleWorkflowAction = (workflow: typeof mockWorkflows[0], action: 'start' | 'pause' | 'configure' | 'history') => {
     const actionMessages = {
       start: `Started "${workflow.name}" workflow`,
       pause: `Paused "${workflow.name}" workflow`,
-      configure: `Opening configuration for "${workflow.name}" workflow`
+      configure: `Opening configuration for "${workflow.name}" workflow`,
+      history: `Viewing version history for "${workflow.name}" workflow`
     };
     
     toast({
@@ -109,6 +126,10 @@ const WorkflowGrid: React.FC = () => {
     if (action === 'configure') {
       setSelectedWorkflow(workflow);
       setIsDialogOpen(true);
+    } else if (action === 'history' && onViewVersionHistory) {
+      onViewVersionHistory(workflow.id);
+    } else if (action !== 'history' && action !== 'configure' && onSelectWorkflow) {
+      onSelectWorkflow(workflow.id);
     }
   };
 
@@ -147,6 +168,8 @@ const WorkflowGrid: React.FC = () => {
           Create Workflow
         </Button>
       </div>
+      
+      <div className="text-sm text-muted-foreground mb-2">Showing {filteredWorkflows.length} workflow{filteredWorkflows.length !== 1 ? 's' : ''}</div>
       
       <motion.div 
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -223,13 +246,13 @@ const WorkflowGrid: React.FC = () => {
                         "flex items-center gap-2",
                         isDark ? "text-gray-400" : "text-gray-500"
                       )}>
-                        <Settings className="h-4 w-4" />
-                        <span>{workflow.steps} Steps</span>
+                        <History className="h-4 w-4" />
+                        <span>{workflow.versions} versions</span>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {workflow.status === 'active' ? (
                       <Button 
                         variant="outline" 
@@ -254,11 +277,20 @@ const WorkflowGrid: React.FC = () => {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      className="flex-1 bg-orange-500/10 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 dark:text-orange-400"
+                      className="bg-orange-500/10 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 dark:text-orange-400"
                       onClick={() => handleWorkflowAction(workflow, 'configure')}
                     >
                       <Settings className="h-4 w-4 mr-2" />
                       Configure
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="bg-orange-500/10 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 dark:text-orange-400"
+                      onClick={() => handleWorkflowAction(workflow, 'history')}
+                    >
+                      <History className="h-4 w-4 mr-2" />
+                      History
                     </Button>
                   </div>
                 </div>
