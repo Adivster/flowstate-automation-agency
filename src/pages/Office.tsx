@@ -1,3 +1,4 @@
+
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect, useRef } from 'react';
 import Navbar from '@/components/layout/Navbar';
@@ -26,6 +27,21 @@ const Office = () => {
   const [selectedAgentInfo, setSelectedAgentInfo] = useState<any>(null);
   const [selectedAgentForChat, setSelectedAgentForChat] = useState<typeof agents[0] | null>(null);
   const [isNewDivisionModalOpen, setIsNewDivisionModalOpen] = useState(false);
+  const [visualizationActive, setVisualizationActive] = useState(false);
+  const [filtersActive, setFiltersActive] = useState(false);
+  const [metricsActive, setMetricsActive] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [showPerformance, setShowPerformance] = useState(false);
+  
+  // Mock data for agent statistics
+  const agentStats = {
+    total: 12,
+    active: 7,
+    idle: 3,
+    paused: 1,
+    error: 1
+  };
+  
   const [visualizationState, setVisualizationState] = useState<VisualizationState>({
     activeLayerIds: ['hotspots', 'performance', 'quickActions'],
     layers: [],
