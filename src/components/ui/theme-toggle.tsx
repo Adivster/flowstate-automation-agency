@@ -1,10 +1,10 @@
 
 import { useState, useEffect } from "react";
-import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Sun, Moon, Leaf, SunMoon, Sparkles, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useTheme } from "@/providers/theme-provider";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();

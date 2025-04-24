@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useTheme } from 'next-themes';
 import { Sparkles, Leaf } from 'lucide-react';
 import {
   DropdownMenu,
@@ -10,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { motion } from 'framer-motion';
+import { useTheme } from '@/providers/theme-provider';
 
 const ThemeSelector: React.FC = () => {
   const { theme, setTheme } = useTheme();

@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/providers/theme-provider';
 
 interface ThemedBackgroundProps {
   children: React.ReactNode;
