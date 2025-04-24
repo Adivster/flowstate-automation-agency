@@ -4,7 +4,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AgencyDashboard from '@/components/dashboard/AgencyDashboard';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { LayoutGrid, PlayCircle, UserPlus, Building2, Terminal, Rocket, Zap, RefreshCw, AlertCircle, LayoutDashboard } from 'lucide-react';
+import { RefreshCw, AlertCircle, LayoutDashboard, LayoutGrid, Terminal } from 'lucide-react';
 import PageHeader from '@/components/ui/design-system/PageHeader';
 import { motion } from 'framer-motion';
 import { QuickActionButton } from '@/components/ui/quick-action-button';
@@ -28,9 +28,9 @@ const Index: React.FC = () => {
       
       <main className="flex-1 mt-20 px-4 sm:px-6 pb-12 overflow-hidden relative z-10">
         <PageHeader 
-          title="Dashboard"
+          title="Mission Control"
           extendedTitle="Real-Time Command Center"
-          description="View live performance, system alerts, and AI insights in one unified space."
+          description="Discover opportunities, track performance, and optimize your operations."
           icon={<LayoutDashboard className="h-12 w-12 text-blue-400 dark:text-blue-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.8)]" />}
           variant="dashboard"
           glassEffect={true}

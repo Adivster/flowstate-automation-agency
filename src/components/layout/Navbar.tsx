@@ -5,18 +5,15 @@ import {
   BookOpen, 
   BarChart, 
   LayoutGrid, 
-  Compass, 
+  Users,
   GraduationCap, 
   CheckSquare, 
   Menu, 
   X, 
-  Building2, 
-  Workflow, 
-  BadgeDollarSign,
-  Database,     // For ERP
-  PhoneCall,    // For Call Center
-  ShoppingCart, // For Inventory
-  FileSpreadsheet // For Reports
+  Workflow,
+  LayoutDashboard,
+  FileText,
+  LightbulbIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -29,22 +26,18 @@ const navItems = [
   {
     name: "dashboard",
     link: "/",
-    icon: LayoutGrid,
+    icon: LayoutDashboard,
   },
   {
-    name: "office",
-    link: "/office",
-    icon: Building2,
+    name: "agents",
+    link: "/agents",
+    icon: Users,
   },
   {
-    name: "workflows",
-    link: "/workflows",
+    name: "tasksAndFlows",
+    displayName: "Tasks & Flows",
+    link: "/tasks-flows",
     icon: Workflow,
-  },
-  {
-    name: "tasks",
-    link: "/tasks",
-    icon: CheckSquare,
   },
   {
     name: "knowledge",
@@ -52,14 +45,9 @@ const navItems = [
     icon: BookOpen,
   },
   {
-    name: "business",
-    link: "/business",
-    icon: BadgeDollarSign,
-  },
-  {
-    name: "analytics",
-    link: "/analytics",
-    icon: BarChart,
+    name: "insights",
+    link: "/insights",
+    icon: LightbulbIcon,
   },
   {
     name: "courses",
@@ -95,8 +83,8 @@ export default function Navbar() {
               const isActive = location.pathname === item.link || 
                 (item.link !== "/" && location.pathname.startsWith(item.link));
               
-              // Capitalize "Business"
-              const displayName = item.name === "business" ? "Business" : t(item.name);
+              // Use displayName if provided, otherwise use translated name
+              const displayName = item.displayName || t(item.name);
                 
               return (
                 <Link
@@ -148,8 +136,8 @@ export default function Navbar() {
                 const isActive = location.pathname === item.link || 
                   (item.link !== "/" && location.pathname.startsWith(item.link));
                 
-                // Capitalize "Business" in mobile menu too
-                const displayName = item.name === "business" ? "Business" : t(item.name);
+                // Use displayName if provided, otherwise use translated name
+                const displayName = item.displayName || t(item.name);
                   
                 return (
                   <Link
@@ -163,7 +151,7 @@ export default function Navbar() {
                     )}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <item.icon className="h-4 w-4 mr-2" />
+                    <item.icon className="h-4 w-4 mr-1.5" />
                     {displayName}
                   </Link>
                 );

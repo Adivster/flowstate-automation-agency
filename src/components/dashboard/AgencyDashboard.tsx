@@ -1,54 +1,23 @@
+
 import React, { useState, useEffect } from 'react';
-import { 
-  BookOpen, 
-  BarChart, 
-  LayoutGrid, 
-  Shield, 
-  DollarSign, 
-  Users, 
-  Share2, 
-  MessagesSquare,
-  TestTube,
-  Terminal,
-  Zap,
-  Brain,
-  Globe,
-  ArrowUpRight,
-  Activity,
-  ChevronDown,
-  ChevronRight,
-  Settings,
-  PanelLeft,
-  PanelRight,
-  Maximize,
-  Minimize,
-  Rocket,
-  Search
-} from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Search, PanelLeft, PanelRight, Maximize, Minimize } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { motion } from 'framer-motion';
-import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { useDashboardActions } from '@/hooks/useDashboardActions';
-import SystemStatusModule from './modules/SystemStatusModule';
-import AIInsightsPanel from './modules/AIInsightsPanel';
-import PerformanceMap from './modules/PerformanceMap';
-import DivisionOverview from './modules/DivisionOverview';
-import AgentEvolutionMap from './modules/AgentEvolutionMap';
-import RecentActivityFeed from './modules/RecentActivityFeed';
-import TaskFeed from './modules/TaskFeed';
-import GlobalMeshStatus from './modules/GlobalMeshStatus';
+import WelcomeHeader from './WelcomeHeader';
+import GlobalOpportunityPlaybook from './GlobalOpportunityPlaybook';
+import SnapshotGrid from './SnapshotGrid';
+import SystemVitality from './SystemVitality';
+import RecentWins from './RecentWins';
+import WeeklyGrowth from './WeeklyGrowth';
 import DivisionsTab from './tabs/DivisionsTab';
 import AgentsTab from './tabs/AgentsTab';
 import SystemTab from './tabs/SystemTab';
-import { Input } from '@/components/ui/input';
 
 const AgencyDashboard = () => {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState("mission-control");
-  const dashboardActions = useDashboardActions();
   const [systemHealth, setSystemHealth] = useState(95);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -140,37 +109,22 @@ const AgencyDashboard = () => {
         </TabsList>
         
         <TabsContent value="mission-control">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-            <SystemStatusModule systemHealth={systemHealth} />
-            <AIInsightsPanel />
-          </div>
+          <WelcomeHeader />
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-            <div className="lg:col-span-1">
-              <PerformanceMap />
+            <div className="lg:col-span-2">
+              <GlobalOpportunityPlaybook />
             </div>
-            
             <div className="lg:col-span-1">
-              <DivisionOverview />
-            </div>
-            
-            <div className="lg:col-span-1">
-              <AgentEvolutionMap />
+              <SystemVitality />
             </div>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="lg:col-span-1">
-              <RecentActivityFeed />
-            </div>
-            
-            <div className="lg:col-span-1">
-              <TaskFeed />
-            </div>
-          </div>
+          <SnapshotGrid />
           
-          <div className="mt-4">
-            <GlobalMeshStatus />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+            <RecentWins />
+            <WeeklyGrowth />
           </div>
         </TabsContent>
         
