@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '@/components/layout/Navbar';
@@ -19,7 +18,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 
-// Mock data for agents
 const mockAgents = [
   {
     id: '1',
@@ -142,16 +140,13 @@ const Agents: React.FC = () => {
   const isDark = theme === 'dark';
   const { toast } = useToast();
   
-  // State for filtering and sorting
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('name');
   
-  // State for tabs
   const [activeTab, setActiveTab] = useState<string>('all');
   
-  // Filter agents based on search, status, and type
   const filteredAgents = mockAgents.filter(agent => {
     const matchesSearch = agent.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           agent.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -165,7 +160,6 @@ const Agents: React.FC = () => {
     return 0;
   });
   
-  // Get all unique agent types for filtering
   const agentTypes = Array.from(new Set(mockAgents.map(agent => agent.type)));
   
   const handleAgentAction = (agent: any, action: string) => {
@@ -303,7 +297,7 @@ const Agents: React.FC = () => {
               
               <TabsContent value="all" className="mt-0">
                 <SolarpunkPanel 
-                  accentColor="purple" 
+                  accentColor="lavender" 
                   className="p-6"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -371,7 +365,6 @@ const Agents: React.FC = () => {
                               </div>
                             </div>
                             
-                            {/* Agent Capabilities */}
                             <div className="mb-4">
                               <div className="text-xs uppercase text-muted-foreground font-medium mb-2">Capabilities</div>
                               <div className="flex flex-wrap gap-1">
@@ -383,7 +376,6 @@ const Agents: React.FC = () => {
                               </div>
                             </div>
                             
-                            {/* Agent Insight */}
                             <div className={cn(
                               "p-3 rounded-lg mb-4 text-sm",
                               agent.insights.trend === 'up' 
@@ -396,7 +388,6 @@ const Agents: React.FC = () => {
                               <div className="text-xs mt-1">{agent.insights.recommendation}</div>
                             </div>
                             
-                            {/* Action Buttons */}
                             <div className="flex gap-2">
                               <Button 
                                 variant="outline" 
@@ -442,10 +433,8 @@ const Agents: React.FC = () => {
                     {filteredAgents
                       .filter(agent => agent.status === 'active')
                       .map((agent) => (
-                        // Similar agent card structure as in the "all" tab
                         <div key={agent.id} className="rounded-xl border p-4 bg-background/30 backdrop-blur-sm">
                           <h3 className="font-medium">{agent.name}</h3>
-                          {/* Additional content */}
                         </div>
                       ))}
                   </div>
@@ -458,10 +447,8 @@ const Agents: React.FC = () => {
                     {filteredAgents
                       .filter(agent => agent.status !== 'active')
                       .map((agent) => (
-                        // Similar agent card structure as in the "all" tab
                         <div key={agent.id} className="rounded-xl border p-4 bg-background/30 backdrop-blur-sm">
                           <h3 className="font-medium">{agent.name}</h3>
-                          {/* Additional content */}
                         </div>
                       ))}
                   </div>
