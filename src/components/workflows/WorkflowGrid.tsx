@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
 import { 
@@ -214,11 +215,12 @@ const WorkflowGrid: React.FC<WorkflowGridProps> = ({ onSelectWorkflow, onViewVer
     return 0;
   });
 
-  const handleWorkflowAction = (workflow: typeof mockWorkflows[0], action: 'start' | 'pause' | 'configure') => {
+  const handleWorkflowAction = (workflow: typeof mockWorkflows[0], action: 'start' | 'pause' | 'configure' | 'insights') => {
     if (action === 'start' || action === 'pause') {
       toast({
         title: action === 'start' ? 'Starting Workflow' : 'Pausing Workflow',
         description: `${workflow.name} has been ${action === 'start' ? 'started' : 'paused'}.`,
+        duration: 3000,
       });
       
       if (onSelectWorkflow) {
@@ -227,6 +229,14 @@ const WorkflowGrid: React.FC<WorkflowGridProps> = ({ onSelectWorkflow, onViewVer
     } else if (action === 'configure') {
       setSelectedWorkflow(workflow);
       setIsDialogOpen(true);
+    } else if (action === 'insights') {
+      setSelectedWorkflow(workflow);
+      // The insights will be shown in the popover or dialog
+      toast({
+        title: "AI Insights Activated",
+        description: `Analyzing ${workflow.name} for optimization opportunities...`,
+        duration: 2000,
+      });
     }
   };
   
@@ -474,7 +484,9 @@ const WorkflowGrid: React.FC<WorkflowGridProps> = ({ onSelectWorkflow, onViewVer
                     </div>
                   </div>
                   
+                  {/* Simplify to just 3 buttons as per the rule of threes */}
                   <div className="flex flex-wrap gap-2">
+                    {/* Button 1: Start/Pause (depending on current status) */}
                     {workflow.status === 'active' ? (
                       <Button 
                         variant="outline" 
@@ -497,60 +509,84 @@ const WorkflowGrid: React.FC<WorkflowGridProps> = ({ onSelectWorkflow, onViewVer
                       </Button>
                     )}
 
-                <Popover>
-                  <PopoverTrigger asChild>
+                    {/* Button 2: AI Insights with Popover */}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex-1 bg-orange-500/10 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 dark:text-orange-400"
+                          onClick={() => handleWorkflowAction(workflow, 'insights')}
+                        >
+                          <BarChart3 className="h-4 w-4 mr-2" />
+                          Insights
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80">
+                        <div className="space-y-2">
+                          <h4 className="font-medium">AI Insights</h4>
+                          {workflow.id === selectedWorkflow?.id ? (
+                            insightsLoading ? (
+                              <p className="text-sm text-muted-foreground">Analyzing workflow...</p>
+                            ) : insights.map((insight, index) => (
+                              <div
+                                key={index}
+                                className={cn(
+                                  "p-3 rounded-lg text-sm",
+                                  insight.type === 'optimization' && "bg-blue-500/10 text-blue-500",
+                                  insight.type === 'warning' && "bg-yellow-500/10 text-yellow-500",
+                                  insight.type === 'success' && "bg-green-500/10 text-green-500",
+                                  insight.type === 'opportunity' && "bg-purple-500/10 text-purple-500"
+                                )}
+                              >
+                                <p>{insight.message}</p>
+                                <p className="mt-1 text-xs opacity-80">
+                                  Potential impact: {insight.impact}% improvement
+                                </p>
+                                {insight.action && (
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    className="mt-2 text-xs h-6"
+                                    onClick={() => {
+                                      toast({
+                                        title: `${insight.action?.label}`,
+                                        description: `Applied action: ${insight.improvement}`,
+                                        duration: 3000,
+                                      });
+                                    }}
+                                  >
+                                    {insight.action.label}
+                                  </Button>
+                                )}
+                              </div>
+                            ))
+                          ) : (
+                            <p className="text-sm text-muted-foreground">Select this workflow to view insights</p>
+                          )}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+
+                    {/* Button 3: Configure */}
                     <Button 
                       variant="outline" 
                       size="sm"
                       className="flex-1 bg-orange-500/10 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 dark:text-orange-400"
+                      onClick={() => handleWorkflowAction(workflow, 'configure')}
                     >
-                      <BarChart3 className="h-4 w-4 mr-2" />
-                      Insights
+                      <Settings className="h-4 w-4 mr-2" />
+                      Configure
                     </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80">
-                    <div className="space-y-2">
-                      <h4 className="font-medium">AI Insights</h4>
-                      {insightsLoading ? (
-                        <p className="text-sm text-muted-foreground">Analyzing workflow...</p>
-                      ) : insights.map((insight, index) => (
-                        <div
-                          key={index}
-                          className={cn(
-                            "p-3 rounded-lg text-sm",
-                            insight.type === 'optimization' && "bg-blue-500/10 text-blue-500",
-                            insight.type === 'warning' && "bg-yellow-500/10 text-yellow-500",
-                            insight.type === 'success' && "bg-green-500/10 text-green-500"
-                          )}
-                        >
-                          <p>{insight.message}</p>
-                          <p className="mt-1 text-xs opacity-80">
-                            Potential impact: {insight.impact}% improvement
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="flex-1 bg-orange-500/10 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 dark:text-orange-400"
-                  onClick={() => handleWorkflowAction(workflow, 'configure')}
-                >
-                  <Settings className="h-4 w-4 mr-2" />
-                  Configure
-                </Button>
-              </div>
-            </div>
-          </SolarpunkPanel>
-        </motion.div>
+                  </div>
+                </div>
+              </SolarpunkPanel>
+            </motion.div>
           ))
         )}
       </motion.div>
 
-      {/* Configuration Dialog */}
+      {/* Configuration Dialog with AI Insights */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -572,22 +608,66 @@ const WorkflowGrid: React.FC<WorkflowGridProps> = ({ onSelectWorkflow, onViewVer
 
               <div className="space-y-2">
                 <h3 className="text-sm font-medium">AI Insights</h3>
-                {insights.map((insight, index) => (
-                  <div
-                    key={index}
-                    className={cn(
-                      "p-3 rounded-lg",
-                      insight.type === 'optimization' && "bg-blue-500/10 text-blue-500",
-                      insight.type === 'warning' && "bg-yellow-500/10 text-yellow-500",
-                      insight.type === 'success' && "bg-green-500/10 text-green-500"
-                    )}
-                  >
-                    <p className="font-medium">{insight.message}</p>
-                    <p className="text-sm mt-1">Suggested action: {insight.improvement}</p>
-                    <p className="text-sm opacity-80">Impact: {insight.impact}% improvement</p>
-                  </div>
-                ))}
+                {selectedWorkflow ? (
+                  insightsLoading ? (
+                    <p className="text-sm text-muted-foreground">Analyzing workflow...</p>
+                  ) : insights.length > 0 ? insights.map((insight, index) => (
+                    <div
+                      key={index}
+                      className={cn(
+                        "p-3 rounded-lg",
+                        insight.type === 'optimization' && "bg-blue-500/10 text-blue-500",
+                        insight.type === 'warning' && "bg-yellow-500/10 text-yellow-500",
+                        insight.type === 'success' && "bg-green-500/10 text-green-500",
+                        insight.type === 'opportunity' && "bg-purple-500/10 text-purple-500"
+                      )}
+                    >
+                      <p className="font-medium">{insight.message}</p>
+                      <p className="text-sm mt-1">Suggested action: {insight.improvement}</p>
+                      <p className="text-sm opacity-80">Impact: {insight.impact}% improvement</p>
+                      {insight.action && (
+                        <Button 
+                          variant="outline"
+                          size="sm"
+                          className="mt-2"
+                          onClick={() => {
+                            toast({
+                              title: `${insight.action?.label}`,
+                              description: `Applied action: ${insight.improvement}`,
+                              duration: 3000,
+                            });
+                          }}
+                        >
+                          {insight.action.label}
+                        </Button>
+                      )}
+                    </div>
+                  )) : (
+                    <p className="text-sm text-muted-foreground">No insights available for this workflow</p>
+                  )
+                ) : (
+                  <p className="text-sm text-muted-foreground">Select a workflow to view insights</p>
+                )}
               </div>
+            </div>
+
+            {/* Configuration Actions */}
+            <div className="flex justify-end gap-2 mt-4">
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  toast({
+                    title: "Configuration Saved",
+                    description: `${selectedWorkflow?.name} configuration has been updated.`,
+                    duration: 3000,
+                  });
+                  setIsDialogOpen(false);
+                }}
+              >
+                Save Changes
+              </Button>
             </div>
           </div>
         </DialogContent>

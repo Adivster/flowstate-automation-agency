@@ -171,7 +171,7 @@ const TasksAndFlows: React.FC = () => {
             
             <TabsContent value="tasks" className="mt-6">
               <SolarpunkPanel
-                accentColor="indigo"
+                accentColor="blue"
                 className="p-5 md:p-8"
               >
                 {/* Task Filter Bar */}
@@ -275,7 +275,7 @@ const TasksAndFlows: React.FC = () => {
                 </GlassMorphism>
                 
                 <SolarpunkPanel
-                  accentColor="indigo"
+                  accentColor="blue"
                   className={cn("p-5 md:p-8", 
                     isDark ? "" : "bg-gradient-to-br from-indigo-50/70 via-white/90 to-indigo-50/70"
                   )}
