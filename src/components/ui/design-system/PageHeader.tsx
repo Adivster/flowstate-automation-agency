@@ -4,12 +4,14 @@ import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/providers/theme-provider';
 
+export type PageHeaderVariant = 'default' | 'dashboard' | 'modal' | 'section' | 'office' | 'analytics' | 'tasks' | 'workflows' | 'knowledge' | 'courses' | 'business';
+
 interface PageHeaderProps {
   title: string;
   extendedTitle?: string;
   description?: string;
   icon?: React.ReactNode;
-  variant?: 'default' | 'dashboard' | 'modal' | 'section';
+  variant?: PageHeaderVariant;
   actions?: React.ReactNode;
   glassEffect?: boolean;
   className?: string;

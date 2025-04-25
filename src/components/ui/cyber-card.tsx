@@ -5,6 +5,8 @@ import { useTheme } from '@/providers/theme-provider';
 import { motion } from 'framer-motion';
 import { cva, type VariantProps } from "class-variance-authority";
 
+type ColorType = "default" | "cyan" | "magenta" | "lime" | "amber" | "blue" | "purple";
+
 const cardVariants = cva(
   "rounded-xl border shadow transition-all duration-200",
   {
@@ -16,13 +18,13 @@ const cardVariants = cva(
         insight: "",
       },
       color: {
-        default: "",
-        cyan: "",  // Primary actions
-        magenta: "", // Warnings/mid-priority
-        lime: "", // Success/positive
-        amber: "", // Caution
-        blue: "", // Information
-        purple: "", // Special
+        default: "",  
+        cyan: "",     // Primary actions
+        magenta: "",  // Warnings/mid-priority
+        lime: "",     // Success/positive
+        amber: "",    // Caution
+        blue: "",     // Information
+        purple: "",   // Special
       },
       size: {
         default: "p-6",
@@ -48,7 +50,7 @@ const cardVariants = cva(
 
 export interface CyberCardProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cardVariants> {
+    Omit<VariantProps<typeof cardVariants>, 'color'> {
   title?: string;
   subtitle?: string;
   badge?: React.ReactNode;
@@ -56,6 +58,7 @@ export interface CyberCardProps
   headerAction?: React.ReactNode;
   footer?: React.ReactNode;
   elevation?: "flat" | "raised" | "floating";
+  color?: ColorType;
 }
 
 const CyberCard = forwardRef<HTMLDivElement, CyberCardProps>(
@@ -63,7 +66,7 @@ const CyberCard = forwardRef<HTMLDivElement, CyberCardProps>(
     className, 
     children, 
     variant,
-    color, 
+    color = "default", 
     size,
     animation,
     title,
@@ -137,7 +140,7 @@ const CyberCard = forwardRef<HTMLDivElement, CyberCardProps>(
     
     // Combine all style classes
     const cardClasses = cn(
-      cardVariants({ variant, color, size, animation }),
+      cardVariants({ variant, color: color as any, size, animation }),
       getColorStyles(),
       getAnimationStyles(),
       getElevationStyles(),
@@ -168,17 +171,43 @@ const CyberCard = forwardRef<HTMLDivElement, CyberCardProps>(
       isDark ? "border-t border-flow-border/20" : "border-t border-gray-100"
     );
     
-    const CardComponent = interactive ? motion.div : "div";
-    const motionProps = interactive ? {
-      whileHover: { scale: 1.02 },
-      transition: { duration: 0.2 }
-    } : {};
+    if (interactive) {
+      return (
+        <motion.div
+          ref={ref}
+          className={cardClasses}
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: 0.2 }}
+          {...props}
+        >
+          {(title || badge || headerAction) && (
+            <div className={headerClasses}>
+              <div className="flex-1">
+                {title && <h3 className={titleClasses}>{title}</h3>}
+                {subtitle && <p className={subtitleClasses}>{subtitle}</p>}
+              </div>
+              <div className="flex items-center gap-2">
+                {badge}
+                {headerAction}
+              </div>
+            </div>
+          )}
+          
+          {children}
+          
+          {footer && (
+            <div className={footerClasses}>
+              {footer}
+            </div>
+          )}
+        </motion.div>
+      );
+    }
     
     return (
-      <CardComponent
+      <div
         ref={ref}
         className={cardClasses}
-        {...motionProps}
         {...props}
       >
         {(title || badge || headerAction) && (
@@ -201,7 +230,7 @@ const CyberCard = forwardRef<HTMLDivElement, CyberCardProps>(
             {footer}
           </div>
         )}
-      </CardComponent>
+      </div>
     );
   }
 );
