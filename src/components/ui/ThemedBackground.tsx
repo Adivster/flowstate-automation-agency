@@ -26,7 +26,7 @@ export const ThemedBackground: React.FC<ThemedBackgroundProps> = ({
     : 'bg-gradient-to-br from-amber-50/70 to-emerald-50/70 leaf-pattern';
     
   return (
-    <div className={cn(`min-h-screen flex flex-col bg-flow-background ${withPatterns ? backgroundPattern : ''}`, className)}>
+    <div className={cn(`min-h-screen flex flex-col ${isDark ? 'bg-flow-background' : 'bg-solar-background'} ${withPatterns ? backgroundPattern : ''}`, className)}>
       {/* Decorative floating elements for solarpunk theme */}
       {!isDark && (
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -60,13 +60,18 @@ export const ThemedBackground: React.FC<ThemedBackgroundProps> = ({
           {[...Array(particleCount)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute rounded-full bg-flow-accent/30"
+              className="absolute rounded-full"
               style={{
                 width: Math.random() * 4 + 1 + 'px',
                 height: Math.random() * 4 + 1 + 'px',
                 left: Math.random() * 100 + '%',
                 top: Math.random() * 100 + '%',
-                filter: "blur(1px)"
+                filter: "blur(1px)",
+                backgroundColor: i % 3 === 0 
+                  ? 'rgba(6, 182, 212, 0.7)' // Cyan
+                  : i % 3 === 1
+                    ? 'rgba(236, 72, 153, 0.7)' // Magenta
+                    : 'rgba(192, 132, 252, 0.7)' // Purple
               }}
               animate={{
                 x: [0, Math.random() * 50 - 25],
@@ -133,7 +138,6 @@ export const ThemedBackground: React.FC<ThemedBackgroundProps> = ({
       
       {children}
       
-      {/* Replace the <style jsx> tag with a global style element */}
       <style>
         {`
         .animated-path {

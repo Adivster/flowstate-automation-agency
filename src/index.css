@@ -35,10 +35,12 @@
  
     --radius: 0.75rem;
 
-    /* Solar theme variables */
+    /* Solarpunk Theme Variables - Light mode */
     --solar-background: 60 100% 99%;
-    --solar-foreground: 160 84% 39%;
-    --solar-accent: 45 100% 60%;
+    --solar-foreground: 160 50% 30%;
+    --solar-accent: 142 72% 29%;
+    --solar-accent2: 45 100% 60%;
+    --solar-accent3: 22 100% 60%;
     --solar-muted: 45 30% 94%;
     --solar-border: 160 30% 85%;
   }
@@ -72,29 +74,22 @@
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
 
-    /* Cyber theme variables */
-    --flow-background: 240 10% 3.9%; /* Dark background */
-    --flow-foreground: 0 0% 98%; /* Light text */
-    --flow-border: 240 24% 20%; /* Subtle border */
-    --flow-accent: 270 76% 53%; /* Vibrant purple */
-    --flow-accent-foreground: 0 0% 98%; /* Light text on accent */
-    --flow-muted: 240 8% 12%; /* Muted background */
-  }
-
-  /* Custom Flow Colors for Cyberpunk Theme */
-  .dark {
-    /* Common */
-    --flow-radius: 0.5rem;
-
-    /* Colors - Cyberpunk Theme */
-    --flow-background: 225 14% 5%; /* Dark background */
-    --flow-foreground: 210 6% 93%; /* Light text */
-    --flow-muted: 223 14% 10%; /* Muted background elements */
-    --flow-muted-foreground: 215 10% 65%; /* Subtle text on muted backgrounds */
-    --flow-border: 235 23% 18%; /* Border colors */
-    --flow-accent: 265 89% 78%; /* Bright purple accent */
-    --flow-accent-secondary: 187 100% 69%; /* Cyan accent */
-    --flow-accent-tertiary: 326 100% 74%; /* Pink accent */
+    /* Cyberpunk Theme Variables - Dark mode */
+    --flow-background: 225 14% 5%; /* Deep charcoal background */
+    --flow-foreground: 210 6% 93%; /* Light text on dark */
+    --flow-border: 235 23% 18%; /* Subtle border with depth */
+    --flow-accent: 265 89% 78%; /* Vibrant purple/magenta - primary neon */
+    --flow-accent-secondary: 187 100% 69%; /* Electric cyan - secondary neon */
+    --flow-accent-tertiary: 326 100% 74%; /* Hot pink accent */
+    --flow-accent-lime: 85 80% 60%; /* Electric lime accent */
+    --flow-muted: 223 14% 10%; /* Slightly lighter background for cards */
+    --flow-muted-foreground: 215 10% 65%; /* Muted text on dark backgrounds */
+    
+    /* Status color variables for cyberpunk theme */
+    --flow-success: 158 64% 52%; /* Neon green success */
+    --flow-warning: 35 92% 58%; /* Amber warning */
+    --flow-error: 346 87% 61%; /* Magenta error */
+    --flow-info: 190 100% 60%; /* Cyan info */
   }
 
   /* Root Variables for Both Themes */
@@ -102,18 +97,20 @@
     /* Cyberpunk Theme Colors */
     --color-cyber-bg: 225 14% 5%;
     --color-cyber-text: 210 6% 93%; 
-    --color-cyber-accent: 265 89% 78%;
-    --color-cyber-accent2: 187 100% 69%;
-    --color-cyber-accent3: 326 100% 74%;
+    --color-cyber-accent: 265 89% 78%; /* Purple/magenta */
+    --color-cyber-accent2: 187 100% 69%; /* Electric cyan */
+    --color-cyber-accent3: 326 100% 74%; /* Hot pink */
+    --color-cyber-accent4: 85 80% 60%; /* Electric lime */
     --color-cyber-muted: 223 14% 10%;
     --color-cyber-border: 235 23% 18%;
     
     /* Solarpunk Theme Colors */
     --color-solar-bg: 60 100% 99%;
     --color-solar-text: 160 50% 30%;
-    --color-solar-accent: 142 72% 29%;
-    --color-solar-accent2: 45 100% 60%;
-    --color-solar-accent3: 22 100% 60%;
+    --color-solar-accent: 142 72% 29%; /* Mint green */
+    --color-solar-accent2: 45 100% 60%; /* Warm yellow */
+    --color-solar-accent3: 22 100% 60%; /* Peach/orange */
+    --color-solar-accent4: 195 70% 50%; /* Sky teal */
     --color-solar-muted: 45 30% 94%;
     --color-solar-border: 160 30% 85%;
   }
@@ -132,6 +129,11 @@
 /* Theme-specific typography */
 .dark {
   --font-cyber: 'JetBrains Mono', monospace;
+}
+
+/* Light theme uses rounded sans-serif */
+:root:not(.dark) {
+  --font-solar: 'Inter', 'Nunito', system-ui, sans-serif;
 }
 
 /* Custom animations */
@@ -160,42 +162,49 @@
   text-shadow: 0 0 10px rgba(139, 92, 246, 0.7);
 }
 
-.neon-text-green {
-  color: #4ade80;
-  text-shadow: 0 0 10px rgba(74, 222, 128, 0.7);
+/* Updated neon text colors matching the cyberpunk palette */
+.neon-text-cyan {
+  color: #06b6d4; /* Electric cyan */
+  text-shadow: 0 0 10px rgba(6, 182, 212, 0.7);
 }
 
-.neon-text-blue {
-  color: #38bdf8;
-  text-shadow: 0 0 10px rgba(56, 189, 248, 0.7);
+.neon-text-magenta {
+  color: #ec4899; /* Hot pink */
+  text-shadow: 0 0 10px rgba(236, 72, 153, 0.7);
+}
+
+.neon-text-lime {
+  color: #84cc16; /* Electric lime */
+  text-shadow: 0 0 10px rgba(132, 204, 22, 0.7);
 }
 
 .neon-text-purple {
-  color: #a78bfa;
-  text-shadow: 0 0 10px rgba(167, 139, 250, 0.7);
+  color: #c084fc; /* Vibrant purple */
+  text-shadow: 0 0 10px rgba(192, 132, 252, 0.7);
+}
+
+/* Updated neon borders matching the cyberpunk palette */
+.neon-border-cyan {
+  box-shadow: 0 0 5px rgba(6, 182, 212, 0.5);
+  border-color: rgba(6, 182, 212, 0.5);
+  transition: all 0.2s ease;
+}
+
+.neon-border-magenta {
+  box-shadow: 0 0 5px rgba(236, 72, 153, 0.5);
+  border-color: rgba(236, 72, 153, 0.5);
+  transition: all 0.2s ease;
+}
+
+.neon-border-lime {
+  box-shadow: 0 0 5px rgba(132, 204, 22, 0.5);
+  border-color: rgba(132, 204, 22, 0.5);
+  transition: all 0.2s ease;
 }
 
 .neon-border-purple {
-  box-shadow: 0 0 5px rgba(139, 92, 246, 0.5);
-  border-color: rgba(139, 92, 246, 0.5);
-  transition: all 0.2s ease;
-}
-
-.neon-border-green {
-  box-shadow: 0 0 5px rgba(74, 222, 128, 0.5);
-  border-color: rgba(74, 222, 128, 0.5);
-  transition: all 0.2s ease;
-}
-
-.neon-border-blue {
-  box-shadow: 0 0 5px rgba(56, 189, 248, 0.5);
-  border-color: rgba(56, 189, 248, 0.5);
-  transition: all 0.2s ease;
-}
-
-.neon-border-orange {
-  box-shadow: 0 0 5px rgba(251, 146, 60, 0.5);
-  border-color: rgba(251, 146, 60, 0.5);
+  box-shadow: 0 0 5px rgba(192, 132, 252, 0.5);
+  border-color: rgba(192, 132, 252, 0.5);
   transition: all 0.2s ease;
 }
 
@@ -231,12 +240,13 @@
   z-index: 1;
 }
 
-.bg-glassmorphism-gradient {
+.bg-glassmorphism-dark {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.05) 0%,
-    rgba(255, 255, 255, 0.02) 100%
+    rgba(18, 18, 24, 0.8) 0%,
+    rgba(18, 18, 24, 0.4) 100%
   );
+  backdrop-filter: blur(10px);
 }
 
 .animate-glow-pulse {
@@ -257,6 +267,11 @@
 }
 
 /* --- Solarpunk Theme Classes --- */
+.font-solar {
+  font-family: var(--font-solar);
+  letter-spacing: 0.01em;
+}
+
 .solar-button {
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
   transition: all 0.3s ease;
@@ -318,4 +333,33 @@
 
 .hover-scale:hover {
   box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);
+}
+
+/* Theme-specific status colors */
+.dark .status-success {
+  color: #4ade80; /* Neon green in dark mode */
+}
+.status-success {
+  color: #10b981; /* Softer green in light mode */
+}
+
+.dark .status-warning {
+  color: #fbbf24; /* Bright amber in dark mode */
+}
+.status-warning {
+  color: #f59e0b; /* Softer amber in light mode */
+}
+
+.dark .status-error {
+  color: #f472b6; /* Magenta in dark mode */
+}
+.status-error {
+  color: #ef4444; /* Red in light mode */
+}
+
+.dark .status-info {
+  color: #22d3ee; /* Cyan in dark mode */
+}
+.status-info {
+  color: #0ea5e9; /* Blue in light mode */
 }

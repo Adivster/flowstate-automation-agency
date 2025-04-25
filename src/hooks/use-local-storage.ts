@@ -1,44 +1,45 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 
-export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
-  // Get from local storage then
-  // parse stored json or return initialValue
-  const readValue = () => {
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
-      return initialValue;
-    }
-  };
-
+export const useLocalStorage = <T>(
+  key: string,
+  initialValue: T
+): [T, (value: T) => void] => {
   // State to store our value
-  // Pass initial state function to useState so logic is only executed once
-  const [storedValue, setStoredValue] = useState<T>(readValue);
+  const [storedValue, setStoredValue] = useState<T>(initialValue)
 
-  // Return a wrapped version of useState's setter function
-  // that persists the new value to localStorage.
+  // Initialize on mount
+  useEffect(() => {
+    try {
+      // Get from local storage by key
+      const item = window.localStorage.getItem(key)
+      // Parse stored json or if none return initialValue
+      setStoredValue(item ? JSON.parse(item) : initialValue)
+    } catch (error) {
+      // If error also return initialValue
+      console.log(error)
+      setStoredValue(initialValue)
+    }
+  }, [key, initialValue])
+
+  // Return a wrapped version of useState's setter function that
+  // persists the new value to localStorage.
   const setValue = (value: T) => {
     try {
       // Allow value to be a function so we have same API as useState
-      const newValue = value instanceof Function ? value(storedValue) : value;
-      
-      // Save to local storage
-      window.localStorage.setItem(key, JSON.stringify(newValue));
-      
+      const valueToStore =
+        value instanceof Function ? value(storedValue) : value
       // Save state
-      setStoredValue(newValue);
+      setStoredValue(valueToStore)
+      // Save to local storage
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(key, JSON.stringify(valueToStore))
+      }
     } catch (error) {
-      console.warn(`Error setting localStorage key "${key}":`, error);
+      // A more advanced implementation would handle the error case
+      console.log(error)
     }
-  };
+  }
 
-  useEffect(() => {
-    setStoredValue(readValue());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return [storedValue, setValue];
+  return [storedValue, setValue]
 }

@@ -24,7 +24,11 @@ export function ThemeProvider({
 
   useEffect(() => {
     const root = window.document.documentElement;
+    
+    // Remove both classes first
     root.classList.remove('light', 'dark');
+    
+    // Add the appropriate class
     root.classList.add(theme);
   }, [theme]);
 

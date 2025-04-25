@@ -1,8 +1,7 @@
 
 import React, { forwardRef } from 'react';
 import { cn } from '@/lib/utils';
-import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/providers/theme-provider';
 import { motion, HTMLMotionProps } from 'framer-motion';
 
 interface SolarpunkPanelProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -33,16 +32,16 @@ export const SolarpunkPanel = forwardRef<HTMLDivElement, SolarpunkPanelProps>(({
   // Get accent color styles based on the theme and accent color prop
   const getAccentColorStyles = () => {
     if (isDark) {
-      // Cyberpunk theme accent styles
+      // Cyberpunk theme accent styles - using the neon color palette
       switch (accentColor) {
-        case 'yellow': return 'border-blue-500/50 hover:border-blue-500/70';
-        case 'green': return 'border-purple-500/50 hover:border-purple-500/70';
-        case 'orange': return 'border-lime-500/50 hover:border-lime-500/70';
-        case 'coral': return 'border-red-500/50 hover:border-red-500/70';
-        case 'aqua': return 'border-teal-500/50 hover:border-teal-500/70';
-        case 'gold': return 'border-amber-500/50 hover:border-amber-500/70';
+        case 'yellow': return 'border-amber-400/50 hover:border-amber-400/70';
+        case 'green': return 'border-lime-500/50 hover:border-lime-500/70';
+        case 'orange': return 'border-orange-500/50 hover:border-orange-500/70';
+        case 'coral': return 'border-red-400/50 hover:border-red-400/70';
+        case 'aqua': return 'border-cyan-500/50 hover:border-cyan-500/70';
+        case 'gold': return 'border-yellow-500/50 hover:border-yellow-500/70';
         case 'blue': return 'border-blue-500/50 hover:border-blue-500/70';
-        case 'lavender': return 'border-orange-500/50 hover:border-orange-500/50';
+        case 'lavender': return 'border-purple-400/50 hover:border-purple-400/70';
         case 'teal': return 'border-teal-500/50 hover:border-teal-500/70';
         default: return 'border-flow-accent/50 hover:border-flow-accent/70';
       }
@@ -66,9 +65,25 @@ export const SolarpunkPanel = forwardRef<HTMLDivElement, SolarpunkPanelProps>(({
   // Get shadow styles based on theme and elevation
   const getShadowStyles = () => {
     if (isDark) {
+      // Cyberpunk glow based on accent color
+      const getGlowColor = () => {
+        switch (accentColor) {
+          case 'yellow': return 'rgba(251, 191, 36, 0.3)';
+          case 'green': return 'rgba(132, 204, 22, 0.3)';
+          case 'orange': return 'rgba(249, 115, 22, 0.3)';
+          case 'coral': return 'rgba(248, 113, 113, 0.3)';
+          case 'aqua': return 'rgba(6, 182, 212, 0.3)';
+          case 'gold': return 'rgba(250, 204, 21, 0.3)';
+          case 'blue': return 'rgba(59, 130, 246, 0.3)';
+          case 'lavender': return 'rgba(192, 132, 252, 0.3)';
+          case 'teal': return 'rgba(20, 184, 166, 0.3)';
+          default: return 'rgba(192, 132, 252, 0.3)';
+        }
+      };
+      
       return elevated 
-        ? 'shadow-xl shadow-black/40' 
-        : 'shadow-md shadow-black/20';
+        ? `shadow-xl shadow-black/40 ${interactive ? `hover:shadow-[0_0_15px_${getGlowColor()}]` : ''}` 
+        : `shadow-md shadow-black/20 ${interactive ? `hover:shadow-[0_0_10px_${getGlowColor()}]` : ''}`;
     } else {
       return elevated 
         ? 'shadow-xl shadow-black/10' 
@@ -90,12 +105,12 @@ export const SolarpunkPanel = forwardRef<HTMLDivElement, SolarpunkPanelProps>(({
   // Common className for both div and motion.div
   const commonClassName = cn(
     'rounded-xl overflow-hidden',
-    !noBorder && 'border-2',
+    !noBorder && 'border',
     fullWidth ? 'w-full' : '',
     getAccentColorStyles(),
     getShadowStyles(),
     interactive && 'cursor-pointer transition-all duration-300',
-    isDark ? 'bg-flow-background/20 backdrop-blur-md text-flow-foreground' : 'backdrop-blur-sm text-gray-800',
+    isDark ? 'bg-flow-background/80 backdrop-blur-md text-flow-foreground' : 'backdrop-blur-sm text-gray-800',
     className
   );
 
