@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/providers/theme-provider';
 import { motion } from 'framer-motion';
 
 type GlassMorphismProps = {
@@ -34,31 +33,29 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
   
   const getBackgroundVariant = () => {
     if (isDark) {
-      // Cyberpunk theme variants (dark mode)
       switch (variant) {
         case 'accent':
-          return 'bg-flow-accent/10 border-flow-accent/30';
+          return 'bg-gradient-to-br from-black/90 to-flow-accent/20 border-flow-accent/30';
         case 'dark':
-          return 'bg-black/40 border-white/10';
+          return 'bg-gradient-to-br from-black/95 to-gray-900/50 border-white/10';
         case 'light':
-          return 'bg-white/10 border-white/20';
+          return 'bg-gradient-to-br from-black/80 to-white/5 border-white/20';
         case 'success':
-          return 'bg-green-500/10 border-green-500/30';
+          return 'bg-gradient-to-br from-black/90 to-green-950/30 border-green-500/30';
         case 'warning':
-          return 'bg-amber-500/10 border-amber-500/30';
+          return 'bg-gradient-to-br from-black/90 to-amber-950/30 border-amber-500/30';
         case 'error':
-          return 'bg-red-500/10 border-red-500/30';
+          return 'bg-gradient-to-br from-black/90 to-red-950/30 border-red-500/30';
         case 'nature':
-          return 'bg-emerald-600/10 border-emerald-400/30';
+          return 'bg-gradient-to-br from-black/90 to-emerald-950/30 border-emerald-400/30';
         case 'sunlit':
-          return 'bg-amber-500/10 border-amber-400/30';
+          return 'bg-gradient-to-br from-black/90 to-amber-950/30 border-amber-400/30';
         case 'sky':
-          return 'bg-sky-500/10 border-sky-400/30';
+          return 'bg-gradient-to-br from-black/90 to-sky-950/30 border-sky-400/30';
         default:
-          return 'bg-black/30 border-flow-border/30';
+          return 'bg-gradient-to-br from-black/90 to-gray-900/30 border-flow-border/30';
       }
     } else {
-      // Solarpunk light theme variants - improved for better contrast
       switch (variant) {
         case 'accent':
           return 'bg-amber-50/90 border-emerald-300 text-emerald-900';
@@ -119,10 +116,11 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
   const getGlowEffect = () => {
     if (!isDark) return {};
     
-    // Subtle light source on cyberpunk glass elements
     return {
+      boxShadow: `0 8px 32px rgba(0, 0, 0, 0.5), 
+                  inset 0 0 32px rgba(255, 255, 255, 0.05), 
+                  0 0 2px rgba(255, 255, 255, 0.1)`,
       backgroundImage: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
-      boxShadow: `0 4px 20px -5px rgba(0, 0, 0, 0.4), inset 0 0 4px rgba(255, 255, 255, 0.05)`,
     };
   };
   
@@ -135,6 +133,7 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
         getBackgroundVariant(),
         blur ? getIntensity() : '',
         getHoverEffect(),
+        'transition-all duration-300',
         className
       )}
       style={{
@@ -153,5 +152,4 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
   );
 };
 
-// For backwards compatibility, add default export
 export default GlassMorphism;

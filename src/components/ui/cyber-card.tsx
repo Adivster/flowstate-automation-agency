@@ -85,19 +85,19 @@ const CyberCard = forwardRef<HTMLDivElement, CyberCardProps>(
       
       switch (color) {
         case "cyan":
-          return "bg-gradient-to-br from-black/90 to-cyan-950/50 border-cyan-500/30 hover:border-cyan-500/50";
+          return "bg-gradient-to-br from-black/95 to-cyan-950/30 border-cyan-500/30 hover:border-cyan-500/50 shadow-[0_4px_15px_rgba(6,182,212,0.15)]";
         case "magenta":
-          return "bg-gradient-to-br from-black/90 to-pink-950/50 border-pink-500/30 hover:border-pink-500/50";
+          return "bg-gradient-to-br from-black/95 to-pink-950/30 border-pink-500/30 hover:border-pink-500/50 shadow-[0_4px_15px_rgba(236,72,153,0.15)]";
         case "lime":
-          return "bg-gradient-to-br from-black/90 to-lime-950/50 border-lime-500/30 hover:border-lime-500/50";
+          return "bg-gradient-to-br from-black/95 to-lime-950/30 border-lime-500/30 hover:border-lime-500/50 shadow-[0_4px_15px_rgba(132,204,22,0.15)]";
         case "amber":
-          return "bg-gradient-to-br from-black/90 to-amber-950/50 border-amber-500/30 hover:border-amber-500/50";
+          return "bg-gradient-to-br from-black/95 to-amber-950/30 border-amber-500/30 hover:border-amber-500/50 shadow-[0_4px_15px_rgba(245,158,11,0.15)]";
         case "blue":
-          return "bg-gradient-to-br from-black/90 to-blue-950/50 border-blue-500/30 hover:border-blue-500/50";
+          return "bg-gradient-to-br from-black/95 to-blue-950/30 border-blue-500/30 hover:border-blue-500/50 shadow-[0_4px_15px_rgba(59,130,246,0.15)]";
         case "purple":
-          return "bg-gradient-to-br from-black/90 to-purple-950/50 border-purple-500/30 hover:border-purple-500/50";
+          return "bg-gradient-to-br from-black/95 to-purple-950/30 border-purple-500/30 hover:border-purple-500/50 shadow-[0_4px_15px_rgba(147,51,234,0.15)]";
         default:
-          return "bg-gradient-to-br from-black/90 to-gray-900/50 border-gray-500/30 hover:border-gray-500/50";
+          return "bg-gradient-to-br from-black/95 to-gray-900/30 border-gray-500/30 hover:border-gray-500/50 shadow-[0_4px_15px_rgba(107,114,128,0.15)]";
       }
     };
     
@@ -139,7 +139,8 @@ const CyberCard = forwardRef<HTMLDivElement, CyberCardProps>(
       getColorStyles(),
       getAnimationStyles(),
       getElevationStyles(),
-      isDark && "border backdrop-blur-md bg-black/40",
+      isDark && "border backdrop-blur-xl bg-black/40",
+      "transition-all duration-300",
       className
     );
     
