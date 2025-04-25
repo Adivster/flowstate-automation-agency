@@ -13,7 +13,7 @@ import { useDashboardActions } from '@/hooks/useDashboardActions';
 import CommunicationTerminal from '@/components/communication/CommunicationTerminal';
 import ThemeSelector from '@/components/ui/ThemeSelector';
 import { Button } from '@/components/ui/button';
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/providers/theme-provider';
 import { cn } from '@/lib/utils';
 import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
 
@@ -26,12 +26,12 @@ const Index: React.FC = () => {
     <ThemedBackground>
       <Navbar />
       
-      <main className="flex-1 mt-20 px-4 sm:px-6 pb-12 overflow-hidden relative z-10">
+      <main className="flex-1 mt-24 px-4 sm:px-6 pb-12 overflow-hidden relative z-10">
         <PageHeader 
           title="Mission Control"
           extendedTitle="Real-Time Command Center"
           description="Discover opportunities, track performance, and optimize your operations."
-          icon={<LayoutDashboard className="h-12 w-12 text-blue-400 dark:text-blue-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.8)]" />}
+          icon={<LayoutDashboard className="h-12 w-12 text-blue-400 dark:text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" />}
           variant="dashboard"
           glassEffect={true}
           actions={
@@ -39,7 +39,9 @@ const Index: React.FC = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                className="bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-500 dark:text-blue-400"
+                className={cn(
+                  isDark ? "cta-button-primary" : "bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-700"
+                )}
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh Metrics
@@ -48,7 +50,9 @@ const Index: React.FC = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                className="bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-500 dark:text-blue-400"
+                className={cn(
+                  isDark ? "cta-button-secondary" : "bg-amber-500/10 border-amber-500/50 hover:bg-amber-500/20 text-amber-700"
+                )}
               >
                 <AlertCircle className="h-4 w-4 mr-2" />
                 View Alerts
@@ -57,7 +61,9 @@ const Index: React.FC = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                className="bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-500 dark:text-blue-400"
+                className={cn(
+                  isDark ? "cta-button-primary" : "bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-700"
+                )}
               >
                 <LayoutGrid className="h-4 w-4 mr-2" />
                 Customize Dashboard
@@ -66,7 +72,9 @@ const Index: React.FC = () => {
               <Button 
                 variant="outline" 
                 size="sm"
-                className="bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-500 dark:text-blue-400"
+                className={cn(
+                  isDark ? "cta-button-secondary" : "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-700"
+                )}
               >
                 <Terminal className="h-4 w-4 mr-2" />
                 Open CLI

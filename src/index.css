@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -47,10 +46,10 @@
  
   .dark {
     --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --foreground: 210 6% 93%; /* Adjusted for better contrast */
  
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --card: 240 10% 5%;  /* Darkened to #111 for better contrast */
+    --card-foreground: 0 0% 95%; /* Lighter for better contrast */
  
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
@@ -62,7 +61,7 @@
     --secondary-foreground: 0 0% 98%;
  
     --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted-foreground: 240 5% 75%; /* Lightened for better contrast */
  
     --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 98%;
@@ -83,7 +82,12 @@
     --flow-accent-tertiary: 326 100% 74%; /* Hot pink accent */
     --flow-accent-lime: 85 80% 60%; /* Electric lime accent */
     --flow-muted: 223 14% 10%; /* Slightly lighter background for cards */
-    --flow-muted-foreground: 215 10% 65%; /* Muted text on dark backgrounds */
+    --flow-muted-foreground: 215 10% 75%; /* Lighter for better contrast */
+    
+    /* Semantic color mapping for cyberpunk theme */
+    --flow-primary: 187 100% 69%; /* Cyan for primary actions */
+    --flow-warning: 326 100% 74%; /* Magenta for warnings */
+    --flow-success: 85 80% 60%; /* Lime for success */
     
     /* Status color variables for cyberpunk theme */
     --flow-success: 158 64% 52%; /* Neon green success */
@@ -124,6 +128,22 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  /* High contrast mode overrides */
+  .high-contrast.dark {
+    --flow-foreground: 0 0% 100%;
+    --card-foreground: 0 0% 100%;
+    --muted-foreground: 0 0% 85%;
+    --flow-border: 0 0% 30%;
+    --flow-accent: 265 100% 85%;
+    --flow-accent-secondary: 187 100% 75%;
+  }
+
+  /* Animation toggle */
+  .no-animations * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 /* Theme-specific typography */
@@ -159,51 +179,51 @@
 }
 
 .neon-text {
-  text-shadow: 0 0 10px rgba(139, 92, 246, 0.7);
+  text-shadow: 0 0 8px rgba(139, 92, 246, 0.6); /* Reduced intensity for better legibility */
 }
 
 /* Updated neon text colors matching the cyberpunk palette */
 .neon-text-cyan {
   color: #06b6d4; /* Electric cyan */
-  text-shadow: 0 0 10px rgba(6, 182, 212, 0.7);
+  text-shadow: 0 0 8px rgba(6, 182, 212, 0.6); /* Reduced intensity */
 }
 
 .neon-text-magenta {
   color: #ec4899; /* Hot pink */
-  text-shadow: 0 0 10px rgba(236, 72, 153, 0.7);
+  text-shadow: 0 0 8px rgba(236, 72, 153, 0.6); /* Reduced intensity */
 }
 
 .neon-text-lime {
   color: #84cc16; /* Electric lime */
-  text-shadow: 0 0 10px rgba(132, 204, 22, 0.7);
+  text-shadow: 0 0 8px rgba(132, 204, 22, 0.6); /* Reduced intensity */
 }
 
 .neon-text-purple {
   color: #c084fc; /* Vibrant purple */
-  text-shadow: 0 0 10px rgba(192, 132, 252, 0.7);
+  text-shadow: 0 0 8px rgba(192, 132, 252, 0.6); /* Reduced intensity */
 }
 
 /* Updated neon borders matching the cyberpunk palette */
 .neon-border-cyan {
-  box-shadow: 0 0 5px rgba(6, 182, 212, 0.5);
+  box-shadow: 0 0 5px rgba(6, 182, 212, 0.4); /* Primary action color */
   border-color: rgba(6, 182, 212, 0.5);
   transition: all 0.2s ease;
 }
 
 .neon-border-magenta {
-  box-shadow: 0 0 5px rgba(236, 72, 153, 0.5);
+  box-shadow: 0 0 5px rgba(236, 72, 153, 0.4); /* Warning/mid-priority color */
   border-color: rgba(236, 72, 153, 0.5);
   transition: all 0.2s ease;
 }
 
 .neon-border-lime {
-  box-shadow: 0 0 5px rgba(132, 204, 22, 0.5);
+  box-shadow: 0 0 5px rgba(132, 204, 22, 0.4); /* Success/positive color */
   border-color: rgba(132, 204, 22, 0.5);
   transition: all 0.2s ease;
 }
 
 .neon-border-purple {
-  box-shadow: 0 0 5px rgba(192, 132, 252, 0.5);
+  box-shadow: 0 0 5px rgba(192, 132, 252, 0.4);
   border-color: rgba(192, 132, 252, 0.5);
   transition: all 0.2s ease;
 }
@@ -362,4 +382,36 @@
 }
 .status-info {
   color: #0ea5e9; /* Blue in light mode */
+}
+
+/* Card Layout Improvements */
+.dark .cyber-card {
+  @apply p-6 rounded-xl border border-flow-border/50 bg-card;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+.dark .cyber-card-header {
+  @apply -mx-6 -mt-6 mb-4 px-6 py-3 border-b border-flow-border/40 flex items-center;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Consistent card padding and spacing */
+.dark .snapshot-card {
+  @apply p-6 mb-4;
+}
+
+/* Flash animations for badges */
+@keyframes badge-flash {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.6; }
+}
+
+.dark .badge-flash {
+  animation: badge-flash 2s infinite ease-in-out;
+}
+
+/* New insight badge */
+.dark .insight-badge {
+  @apply bg-gradient-to-r from-pink-500 to-purple-500 text-white;
+  box-shadow: 0 0 10px rgba(236, 72, 153, 0.6);
 }
