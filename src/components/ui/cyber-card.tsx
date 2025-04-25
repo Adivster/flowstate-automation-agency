@@ -1,4 +1,3 @@
-
 import React, { forwardRef } from 'react';
 import { cn } from "@/lib/utils";
 import { useTheme } from '@/providers/theme-provider';
@@ -8,7 +7,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 type ColorType = "default" | "cyan" | "magenta" | "lime" | "amber" | "blue" | "purple";
 
 const cardVariants = cva(
-  "rounded-xl border shadow transition-all duration-200",
+  "rounded-xl backdrop-blur-sm transition-all duration-200",
   {
     variants: {
       variant: {
@@ -18,7 +17,7 @@ const cardVariants = cva(
         insight: "",
       },
       color: {
-        default: "",  
+        default: "",
         cyan: "",     // Primary actions
         magenta: "",  // Warnings/mid-priority
         lime: "",     // Success/positive
@@ -81,29 +80,27 @@ const CyberCard = forwardRef<HTMLDivElement, CyberCardProps>(
     const { theme } = useTheme();
     const isDark = theme === 'dark';
     
-    // Color styling based on theme and color prop
     const getColorStyles = () => {
       if (!isDark) return "";
       
       switch (color) {
         case "cyan":
-          return "border-cyan-500/50 dark:bg-gradient-to-br dark:from-cyan-950/30 dark:to-black/50";
+          return "bg-gradient-to-br from-black/90 to-cyan-950/50 border-cyan-500/30 hover:border-cyan-500/50";
         case "magenta":
-          return "border-pink-500/50 dark:bg-gradient-to-br dark:from-pink-950/30 dark:to-black/50";
+          return "bg-gradient-to-br from-black/90 to-pink-950/50 border-pink-500/30 hover:border-pink-500/50";
         case "lime":
-          return "border-lime-500/50 dark:bg-gradient-to-br dark:from-lime-950/30 dark:to-black/50";
+          return "bg-gradient-to-br from-black/90 to-lime-950/50 border-lime-500/30 hover:border-lime-500/50";
         case "amber":
-          return "border-amber-500/50 dark:bg-gradient-to-br dark:from-amber-950/30 dark:to-black/50";
+          return "bg-gradient-to-br from-black/90 to-amber-950/50 border-amber-500/30 hover:border-amber-500/50";
         case "blue":
-          return "border-blue-500/50 dark:bg-gradient-to-br dark:from-blue-950/30 dark:to-black/50";
+          return "bg-gradient-to-br from-black/90 to-blue-950/50 border-blue-500/30 hover:border-blue-500/50";
         case "purple":
-          return "border-purple-500/50 dark:bg-gradient-to-br dark:from-purple-950/30 dark:to-black/50";
+          return "bg-gradient-to-br from-black/90 to-purple-950/50 border-purple-500/30 hover:border-purple-500/50";
         default:
-          return "border-flow-border/30 dark:bg-gradient-to-br dark:from-gray-900/50 dark:to-black/50";
+          return "bg-gradient-to-br from-black/90 to-gray-900/50 border-gray-500/30 hover:border-gray-500/50";
       }
     };
     
-    // Animation styling
     const getAnimationStyles = () => {
       if (!isDark) return "";
       
@@ -119,7 +116,6 @@ const CyberCard = forwardRef<HTMLDivElement, CyberCardProps>(
       }
     };
     
-    // Elevation styling
     const getElevationStyles = () => {
       if (!isDark) {
         switch (elevation) {
@@ -130,21 +126,20 @@ const CyberCard = forwardRef<HTMLDivElement, CyberCardProps>(
         }
       } else {
         switch (elevation) {
-          case "flat": return "shadow-md shadow-black/30";
-          case "raised": return "shadow-lg shadow-black/40";
-          case "floating": return "shadow-xl shadow-black/50";
-          default: return "shadow-md shadow-black/30";
+          case "flat": return "shadow-lg shadow-black/50";
+          case "raised": return "shadow-xl shadow-black/60";
+          case "floating": return "shadow-2xl shadow-black/70";
+          default: return "shadow-lg shadow-black/50";
         }
       }
     };
     
-    // Combine all style classes
     const cardClasses = cn(
       cardVariants({ variant, color: color as any, size, animation }),
       getColorStyles(),
       getAnimationStyles(),
       getElevationStyles(),
-      isDark && "bg-card backdrop-blur-sm",
+      isDark && "border backdrop-blur-md bg-black/40",
       className
     );
     
@@ -152,26 +147,25 @@ const CyberCard = forwardRef<HTMLDivElement, CyberCardProps>(
       "flex items-center justify-between",
       size === "none" ? "p-4" : "",
       size === "sm" ? "mb-3" : "mb-4",
-      title && isDark ? "border-b border-flow-border/20 pb-3" : ""
+      title && isDark ? "border-b border-flow-border/10 pb-3" : ""
     );
     
     const titleClasses = cn(
       "font-semibold",
-      size === "lg" ? "text-xl" : "text-lg",
+      size === "lg" ? "text-2xl" : "text-xl",
       isDark ? "text-white" : "text-gray-800"
     );
     
     const subtitleClasses = cn(
-      "mt-0.5 text-sm",
-      isDark ? "text-gray-300" : "text-gray-600"
+      "mt-1 text-sm",
+      isDark ? "text-gray-400" : "text-gray-600"
     );
     
     const footerClasses = cn(
       "mt-4 pt-3",
-      isDark ? "border-t border-flow-border/20" : "border-t border-gray-100"
+      isDark ? "border-t border-flow-border/10" : "border-t border-gray-100"
     );
     
-    // Create a card content element that will be used in both interactive and non-interactive versions
     const cardContent = (
       <>
         {(title || badge || headerAction) && (
