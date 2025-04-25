@@ -3,19 +3,18 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/providers/theme-provider';
+import { getPageStyles, type PageVariant } from '@/utils/pageStyles';
 
-export type PageHeaderVariant = 'default' | 'dashboard' | 'modal' | 'section' | 'office' | 'analytics' | 'tasks' | 'workflows' | 'knowledge' | 'courses' | 'business';
-
-interface PageHeaderProps {
+export type PageHeaderProps = {
   title: string;
   extendedTitle?: string;
   description?: string;
   icon?: React.ReactNode;
-  variant?: PageHeaderVariant;
+  variant?: PageVariant;
   actions?: React.ReactNode;
   glassEffect?: boolean;
   className?: string;
-}
+};
 
 const PageHeader = ({
   title,
@@ -24,26 +23,38 @@ const PageHeader = ({
   icon,
   variant = 'default',
   actions,
-  glassEffect = false,
+  glassEffect = true,
   className,
 }: PageHeaderProps) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const styles = getPageStyles(variant);
   
   return (
     <div className={cn(
       "relative", 
       variant === 'dashboard' ? 'mb-8' : 'mb-6', 
-      glassEffect && "p-4 sm:p-6 rounded-2xl",
-      glassEffect && isDark && "bg-flow-background/70 backdrop-blur-lg border border-flow-border/30",
-      glassEffect && !isDark && "bg-white/60 backdrop-blur-md border border-gray-200/60 shadow-sm",
+      glassEffect && [
+        "p-4 sm:p-6 rounded-2xl border backdrop-blur-xl",
+        `bg-gradient-to-br ${styles.gradient}`,
+        styles.border,
+        isDark && `${styles.glow} shadow-lg`
+      ],
       className
     )}>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1.5 flex">
           {icon && (
-            <div className="mr-4 hidden md:flex items-center justify-center">
-              {icon}
+            <div className={cn(
+              "mr-4 hidden md:flex items-center justify-center p-2 rounded-lg",
+              styles.accent
+            )}>
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                className={styles.icon}
+              >
+                {icon}
+              </motion.div>
             </div>
           )}
           <div>
@@ -53,39 +64,34 @@ const PageHeader = ({
               transition={{ duration: 0.5 }}
               className="flex flex-wrap items-center gap-2"
             >
-              {icon && <span className="md:hidden mr-2">{icon}</span>}
-              
-              {variant === 'dashboard' ? (
-                <h1 className={cn(
-                  "text-2xl sm:text-3xl font-bold tracking-tight",
-                  isDark ? "text-white" : "text-gray-900"
-                )}>
-                  <span className={isDark ? "" : ""}>{title}</span>
-                  {extendedTitle && (
-                    <>
-                      <span className={cn(
-                        "hidden md:inline opacity-70 font-light mx-2 text-xl",
-                        isDark ? "text-gray-300" : "text-gray-500"
-                      )}>
-                        /
-                      </span>
-                      <span className={cn(
-                        "block md:inline text-lg md:text-2xl font-medium mt-1 md:mt-0",
-                        isDark ? "text-gray-300" : "text-gray-600"
-                      )}>
-                        {extendedTitle}
-                      </span>
-                    </>
-                  )}
-                </h1>
-              ) : (
-                <h1 className={cn(
-                  "text-2xl font-semibold",
-                  isDark ? "text-white" : "text-gray-900"
-                )}>
-                  {title}
-                </h1>
+              {icon && (
+                <span className={cn("md:hidden mr-2", styles.icon)}>
+                  {icon}
+                </span>
               )}
+              
+              <h1 className={cn(
+                "text-2xl sm:text-3xl font-bold tracking-tight",
+                isDark ? "text-white" : "text-gray-900"
+              )}>
+                <span>{title}</span>
+                {extendedTitle && (
+                  <>
+                    <span className={cn(
+                      "hidden md:inline opacity-70 font-light mx-2 text-xl",
+                      isDark ? "text-gray-300" : "text-gray-500"
+                    )}>
+                      /
+                    </span>
+                    <span className={cn(
+                      "block md:inline text-lg md:text-2xl font-medium mt-1 md:mt-0",
+                      isDark ? "text-gray-300" : "text-gray-600"
+                    )}>
+                      {extendedTitle}
+                    </span>
+                  </>
+                )}
+              </h1>
             </motion.div>
 
             {description && (
@@ -115,8 +121,31 @@ const PageHeader = ({
           </motion.div>
         )}
       </div>
+      
+      {/* Add a subtle animated glow effect */}
+      <div className="absolute inset-0 -z-10 rounded-2xl overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-black/10 to-black/30" />
+        {isDark && (
+          <motion.div
+            className={cn(
+              "absolute inset-0 opacity-30",
+              `bg-gradient-to-br ${styles.gradient}`
+            )}
+            animate={{
+              opacity: [0.2, 0.3, 0.2],
+              scale: [1, 1.02, 1],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 };
 
 export default PageHeader;
+

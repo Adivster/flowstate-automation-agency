@@ -82,7 +82,7 @@ export const ThemedBackground: React.FC<ThemedBackgroundProps> = ({
 
       {children}
       
-      <style jsx>{`
+      <style>{`
         .circuit-background {
           background-size: 50px 50px;
           background-image: 
