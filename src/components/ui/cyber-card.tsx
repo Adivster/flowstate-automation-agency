@@ -171,45 +171,9 @@ const CyberCard = forwardRef<HTMLDivElement, CyberCardProps>(
       isDark ? "border-t border-flow-border/20" : "border-t border-gray-100"
     );
     
-    if (interactive) {
-      return (
-        <motion.div
-          ref={ref}
-          className={cardClasses}
-          whileHover={{ scale: 1.02 }}
-          transition={{ duration: 0.2 }}
-          {...props}
-        >
-          {(title || badge || headerAction) && (
-            <div className={headerClasses}>
-              <div className="flex-1">
-                {title && <h3 className={titleClasses}>{title}</h3>}
-                {subtitle && <p className={subtitleClasses}>{subtitle}</p>}
-              </div>
-              <div className="flex items-center gap-2">
-                {badge}
-                {headerAction}
-              </div>
-            </div>
-          )}
-          
-          {children}
-          
-          {footer && (
-            <div className={footerClasses}>
-              {footer}
-            </div>
-          )}
-        </motion.div>
-      );
-    }
-    
-    return (
-      <div
-        ref={ref}
-        className={cardClasses}
-        {...props}
-      >
+    // Create a card content element that will be used in both interactive and non-interactive versions
+    const cardContent = (
+      <>
         {(title || badge || headerAction) && (
           <div className={headerClasses}>
             <div className="flex-1">
@@ -230,6 +194,30 @@ const CyberCard = forwardRef<HTMLDivElement, CyberCardProps>(
             {footer}
           </div>
         )}
+      </>
+    );
+    
+    if (interactive) {
+      return (
+        <motion.div
+          ref={ref}
+          className={cardClasses}
+          whileHover={{ scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          {...props as any}
+        >
+          {cardContent}
+        </motion.div>
+      );
+    }
+    
+    return (
+      <div
+        ref={ref}
+        className={cardClasses}
+        {...props}
+      >
+        {cardContent}
       </div>
     );
   }
