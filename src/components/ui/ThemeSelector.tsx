@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Leaf } from 'lucide-react';
@@ -11,7 +10,7 @@ import {
 import { motion } from 'framer-motion';
 import { useTheme } from '@/providers/theme-provider';
 
-const ThemeSelector: React.FC = () => {
+export function ThemeSelector() {
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
   
@@ -30,7 +29,7 @@ const ThemeSelector: React.FC = () => {
           }
         >
           {isDark ? (
-            <Sparkles className="h-3.5 w-3.5 text-flow-accent-secondary" />
+            <Sparkles className="h-3.5 w-3.5 text-purple-400" />
           ) : (
             <Leaf className="h-3.5 w-3.5 text-emerald-500" />
           )}
@@ -76,6 +75,4 @@ const ThemeSelector: React.FC = () => {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
-
-export default ThemeSelector;
+}

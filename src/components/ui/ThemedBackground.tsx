@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -21,11 +20,11 @@ export const ThemedBackground: React.FC<ThemedBackgroundProps> = ({
   const isDark = theme === 'dark';
   
   const backgroundPattern = isDark 
-    ? 'bg-black circuit-background' 
+    ? 'bg-black/95 circuit-background' 
     : 'bg-gradient-to-br from-amber-50/70 to-emerald-50/70 leaf-pattern';
     
   return (
-    <div className={cn(`min-h-screen flex flex-col ${isDark ? 'bg-black' : 'bg-solar-background'} ${withPatterns ? backgroundPattern : ''}`, className)}>
+    <div className={cn(`min-h-screen flex flex-col ${isDark ? 'bg-black/95' : 'bg-solar-background'} ${withPatterns ? backgroundPattern : ''}`, className)}>
       {/* Enhanced cyberpunk particle and spark effects */}
       {isDark && (
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
