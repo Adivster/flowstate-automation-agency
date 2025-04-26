@@ -32,7 +32,7 @@ const PageHeader = ({
   
   return (
     <div className={cn(
-      "relative", 
+      "relative w-full", 
       variant === 'dashboard' ? 'mb-8' : 'mb-6', 
       glassEffect && [
         "p-4 sm:p-6 rounded-2xl border backdrop-blur-xl",
@@ -42,7 +42,7 @@ const PageHeader = ({
       ],
       className
     )}>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 max-w-7xl mx-auto">
         <div className="space-y-1.5 flex">
           {icon && (
             <div className={cn(
@@ -51,13 +51,22 @@ const PageHeader = ({
             )}>
               <motion.div
                 whileHover={{ scale: 1.1 }}
+                animate={{
+                  opacity: [0.8, 1, 0.8],
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
                 className={styles.icon}
               >
                 {icon}
               </motion.div>
             </div>
           )}
-          <div>
+          <div className="flex-1 min-w-0">
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -65,16 +74,43 @@ const PageHeader = ({
               className="flex flex-wrap items-center gap-2"
             >
               {icon && (
-                <span className={cn("md:hidden mr-2", styles.icon)}>
+                <motion.span 
+                  animate={{
+                    opacity: [0.8, 1, 0.8],
+                    textShadow: [
+                      `0 0 4px rgba(255, 255, 255, 0.3)`,
+                      `0 0 8px rgba(255, 255, 255, 0.5)`,
+                      `0 0 4px rgba(255, 255, 255, 0.3)`
+                    ],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className={cn("md:hidden mr-2", styles.icon)}>
                   {icon}
-                </span>
+                </motion.span>
               )}
               
               <h1 className={cn(
                 "text-2xl sm:text-3xl font-bold tracking-tight",
                 isDark ? "text-white" : "text-gray-900"
               )}>
-                <span>{title}</span>
+                <motion.span
+                  animate={{
+                    textShadow: [
+                      `0 0 4px rgba(255, 255, 255, 0)`,
+                      `0 0 8px rgba(255, 255, 255, 0.3)`,
+                      `0 0 4px rgba(255, 255, 255, 0)`
+                    ],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >{title}</motion.span>
                 {extendedTitle && (
                   <>
                     <span className={cn(
@@ -122,25 +158,38 @@ const PageHeader = ({
         )}
       </div>
       
-      {/* Add a subtle animated glow effect */}
+      {/* Enhanced animated glow effect with pulsing */}
       <div className="absolute inset-0 -z-10 rounded-2xl overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-black/10 to-black/30" />
         {isDark && (
-          <motion.div
-            className={cn(
-              "absolute inset-0 opacity-30",
-              `bg-gradient-to-br ${styles.gradient}`
-            )}
-            animate={{
-              opacity: [0.2, 0.3, 0.2],
-              scale: [1, 1.02, 1],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
+          <>
+            <motion.div
+              className={cn(
+                "absolute inset-0 opacity-30",
+                `bg-gradient-to-br ${styles.gradient}`
+              )}
+              animate={{
+                opacity: [0.2, 0.35, 0.2],
+                scale: [1, 1.03, 1],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+            <motion.div
+              className="absolute inset-0 bg-purple-900/10"
+              animate={{
+                opacity: [0.1, 0.2, 0.1],
+              }}
+              transition={{
+                duration: 2.5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          </>
         )}
       </div>
     </div>
@@ -148,4 +197,3 @@ const PageHeader = ({
 };
 
 export default PageHeader;
-

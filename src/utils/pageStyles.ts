@@ -1,7 +1,7 @@
 
 import { type VariantProps } from "class-variance-authority";
 
-export type PageVariant = 'tasks' | 'insights' | 'analytics' | 'knowledge' | 'agents' | 'office' | 'courses' | 'default';
+export type PageVariant = 'tasks' | 'insights' | 'analytics' | 'knowledge' | 'agents' | 'office' | 'courses' | 'default' | 'dashboard' | 'workflows' | 'business';
 
 interface PageStyle {
   gradient: string;
@@ -69,6 +69,30 @@ export const getPageStyles = (variant: PageVariant = 'default'): PageStyle => {
         accent: 'bg-orange-500/20 border-orange-500/30 hover:bg-orange-500/30 text-orange-400',
         icon: 'text-orange-400 drop-shadow-[0_0_15px_rgba(249,115,22,0.5)]'
       };
+    case 'dashboard':
+      return {
+        gradient: 'from-blue-950/50 to-violet-900/30',
+        border: 'border-blue-500/30',
+        glow: 'shadow-blue-500/20',
+        accent: 'bg-blue-500/20 border-blue-500/30 hover:bg-blue-500/30 text-blue-400',
+        icon: 'text-blue-400 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]'
+      };
+    case 'workflows':
+      return {
+        gradient: 'from-orange-950/50 to-red-900/30',
+        border: 'border-orange-500/30',
+        glow: 'shadow-orange-500/20',
+        accent: 'bg-orange-500/20 border-orange-500/30 hover:bg-orange-500/30 text-orange-400',
+        icon: 'text-orange-400 drop-shadow-[0_0_15px_rgba(249,115,22,0.5)]'
+      };
+    case 'business':
+      return {
+        gradient: 'from-amber-950/50 to-yellow-900/30',
+        border: 'border-amber-500/30',
+        glow: 'shadow-amber-500/20',
+        accent: 'bg-amber-500/20 border-amber-500/30 hover:bg-amber-500/30 text-amber-400',
+        icon: 'text-amber-400 drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]'
+      };
     default:
       return {
         gradient: 'from-gray-950/50 to-slate-900/30',
@@ -79,4 +103,3 @@ export const getPageStyles = (variant: PageVariant = 'default'): PageStyle => {
       };
   }
 };
-

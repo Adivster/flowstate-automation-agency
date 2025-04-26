@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/providers/theme-provider';
@@ -53,7 +54,7 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
         case 'sky':
           return 'bg-gradient-to-br from-black/90 to-sky-950/30 border-sky-400/30';
         default:
-          return 'bg-gradient-to-br from-black/90 to-gray-900/30 border-flow-border/30';
+          return 'bg-gradient-to-br from-black/90 to-purple-950/20 border-purple-600/30';
       }
     } else {
       switch (variant) {
@@ -107,7 +108,7 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
     if (!hoverEffect) return '';
     
     if (isDark) {
-      return 'transition-all duration-300 hover:bg-opacity-40 hover:border-opacity-60 hover:shadow-lg hover:shadow-flow-accent/10';
+      return 'transition-all duration-300 hover:bg-opacity-40 hover:border-opacity-80 hover:shadow-lg hover:shadow-flow-accent/15';
     } else {
       return 'transition-all duration-300 hover:bg-opacity-90 hover:border-opacity-70 hover:shadow-md hover:shadow-emerald-300/20';
     }
@@ -117,9 +118,9 @@ export const GlassMorphism: React.FC<GlassMorphismProps> = ({
     if (!isDark) return {};
     
     return {
-      boxShadow: `0 8px 32px rgba(0, 0, 0, 0.5), 
+      boxShadow: `0 8px 32px rgba(0, 0, 0, 0.7), 
                   inset 0 0 32px rgba(255, 255, 255, 0.05), 
-                  0 0 2px rgba(255, 255, 255, 0.1)`,
+                  0 0 2px rgba(255, 255, 255, 0.15)`,
       backgroundImage: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
     };
   };
