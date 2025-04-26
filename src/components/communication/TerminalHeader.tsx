@@ -5,8 +5,8 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MessageSquare, Terminal, X, RefreshCw } from 'lucide-react';
 
 interface TerminalHeaderProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
+  activeTab: 'chat' | 'command';
+  setActiveTab: React.Dispatch<React.SetStateAction<'chat' | 'command'>>;
   clearTerminal: () => void;
   closeTerminal: () => void;
 }
@@ -19,7 +19,7 @@ const TerminalHeader: React.FC<TerminalHeaderProps> = ({
 }) => {
   return (
     <div className="flex justify-between items-center p-2 border-b border-purple-500/30">
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'chat' | 'command')}>
         <TabsList className="bg-black/20 border border-purple-500/20">
           <TabsTrigger value="chat" className="px-3 py-1 text-xs data-[state=active]:bg-purple-500/30">
             <MessageSquare className="h-3 w-3 mr-1" />
