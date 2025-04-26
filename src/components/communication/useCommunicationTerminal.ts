@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useConversationalFlow } from './useConversationalFlow';
 import { CommandHistoryItem, ConversationResponse, ActionResponse, InsightResponse } from './types/conversationTypes';
@@ -262,6 +261,11 @@ export const useCommunicationTerminal = () => {
     // This could be used by the parent component to show a badge
   }, [hasUnreadInsights, isOpen]);
   
+  // Add a function to handle closing the terminal
+  const closeTerminal = () => {
+    setIsOpen(false);
+  };
+  
   return {
     isOpen,
     setIsOpen,
@@ -283,6 +287,7 @@ export const useCommunicationTerminal = () => {
     clearTerminal,
     handleActionResponse,
     activeContext,
-    contextEntity
+    contextEntity,
+    closeTerminal
   };
 };

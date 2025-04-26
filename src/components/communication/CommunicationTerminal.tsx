@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,23 +9,33 @@ import CommandTerminalContent from './CommandTerminalContent';
 
 const CommunicationTerminal: React.FC = () => {
   const { 
-    isVisible, 
-    terminalType, 
-    closeTerminal,
+    isOpen, 
+    setIsOpen,
+    activeTab,
+    setActiveTab,
+    command,
+    setCommand,
+    commandHistory,
+    newMessage,
+    setNewMessage,
     messages,
-    setMessages,
-    inputValue,
-    setInputValue,
-    handleSubmit,
-    isLoading,
-    clearChat,
-    prevScrollHeight,
-    setPrevScrollHeight
+    handleCommand,
+    handleSendMessage,
+    handleKeyPress,
+    formatTime,
+    clearTerminal,
+    handleActionResponse,
+    activeContext,
+    contextEntity,
+    activeSuggestions,
+    pendingPrompts
   } = useCommunicationTerminal();
+
+  const closeTerminal = () => setIsOpen(false);
 
   return (
     <AnimatePresence>
-      {isVisible && (
+      {isOpen && (
         <motion.div 
           className="fixed bottom-0 right-0 z-50 h-auto w-full sm:w-[500px] lg:w-[550px]"
           initial={{ y: '100%' }}
@@ -40,25 +51,36 @@ const CommunicationTerminal: React.FC = () => {
             "rounded-t-xl"
           )}>
             <TerminalHeader
-              terminalType={terminalType}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              clearTerminal={clearTerminal}
               closeTerminal={closeTerminal}
-              clearChat={clearChat}
             />
 
             <div className="flex-1 overflow-y-auto overflow-x-hidden terminal-content">
-              {terminalType === 'chatbot' ? (
+              {activeTab === 'chat' ? (
                 <ChatBotContent
                   messages={messages}
-                  setMessages={setMessages}
-                  inputValue={inputValue}
-                  setInputValue={setInputValue}
-                  handleSubmit={handleSubmit}
-                  isLoading={isLoading}
-                  prevScrollHeight={prevScrollHeight}
-                  setPrevScrollHeight={setPrevScrollHeight}
+                  newMessage={newMessage}
+                  setNewMessage={setNewMessage}
+                  handleSendMessage={handleSendMessage}
+                  handleKeyPress={handleKeyPress}
+                  formatTime={formatTime}
+                  activeSuggestions={activeSuggestions}
+                  pendingPrompts={pendingPrompts}
+                  onActionResponse={handleActionResponse}
+                  activeContext={activeContext}
+                  contextEntity={contextEntity}
                 />
               ) : (
-                <CommandTerminalContent />
+                <CommandTerminalContent
+                  commandHistory={commandHistory}
+                  command={command}
+                  setCommand={setCommand}
+                  handleCommand={handleCommand}
+                  handleKeyPress={handleKeyPress}
+                  clearTerminal={clearTerminal}
+                />
               )}
             </div>
           </div>

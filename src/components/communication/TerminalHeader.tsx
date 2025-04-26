@@ -24,6 +24,7 @@ const TerminalHeader: React.FC<TerminalHeaderProps> = ({
           <TabsTrigger 
             value="command" 
             className={`text-xs py-1 px-3 ${activeTab === 'command' ? 'data-[state=active]:bg-indigo-600/40' : ''} flex items-center gap-1`}
+            onClick={() => setActiveTab('command')}
           >
             <Terminal className="h-3.5 w-3.5 text-cyan-400" />
             CLI
@@ -31,6 +32,7 @@ const TerminalHeader: React.FC<TerminalHeaderProps> = ({
           <TabsTrigger 
             value="chat"
             className={`text-xs py-1 px-3 ${activeTab === 'chat' ? 'data-[state=active]:bg-indigo-600/40' : ''} flex items-center gap-1`}
+            onClick={() => setActiveTab('chat')}
           >
             <MessageSquare className="h-3.5 w-3.5 text-green-400" />
             Chat
