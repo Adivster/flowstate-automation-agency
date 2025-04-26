@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Leaf } from 'lucide-react';
@@ -42,7 +43,7 @@ export function ThemeSelector() {
             transition={{ duration: 0.3 }}
             className={`absolute -top-6 px-2 py-0.5 text-[10px] rounded-md ${
               isDark 
-                ? 'bg-flow-accent-secondary/30 border border-flow-accent-secondary/40 text-flow-accent-secondary shadow-[0_0_10px_rgba(6,182,212,0.2)]'
+                ? 'bg-flow-accent/30 border border-flow-accent/40 text-flow-accent shadow-[0_0_10px_rgba(139,92,246,0.3)]'
                 : 'bg-emerald-500/30 border border-emerald-500/40 text-emerald-600 shadow-[0_0_10px_rgba(16,185,129,0.2)]'
             }`}
           >
@@ -60,7 +61,7 @@ export function ThemeSelector() {
           className="flex items-center gap-2 text-xs cursor-pointer"
           onClick={() => setTheme('dark')}
         >
-          <Sparkles className={`h-3.5 w-3.5 ${isDark ? 'text-flow-accent-secondary' : 'text-purple-400'}`} />
+          <Sparkles className={`h-3.5 w-3.5 ${isDark ? 'text-purple-400' : 'text-purple-400'}`} />
           <span>Cyberpunk Theme</span>
           <span className="ml-auto text-[10px] opacity-60">System-wide</span>
         </DropdownMenuItem>

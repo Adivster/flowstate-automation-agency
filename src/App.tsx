@@ -29,7 +29,11 @@ function App() {
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>
-      <CommunicationTerminal />
+      
+      {/* Fixed position communication terminal */}
+      <div className="fixed bottom-4 left-4 z-50">
+        <CommunicationTerminal />
+      </div>
     </>
   );
 }

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -27,7 +28,7 @@ export const ThemedBackground: React.FC<ThemedBackgroundProps> = ({
     <div className={cn(`min-h-screen flex flex-col ${isDark ? 'bg-black/95' : 'bg-solar-background'} ${withPatterns ? backgroundPattern : ''}`, className)}>
       {/* Enhanced cyberpunk particle and spark effects */}
       {isDark && (
-        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
           {/* Energy particles */}
           {[...Array(particleCount)].map((_, i) => (
             <motion.div
@@ -105,7 +106,7 @@ export const ThemedBackground: React.FC<ThemedBackgroundProps> = ({
             preserveAspectRatio="none">
             <defs>
               <linearGradient id="grid-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="rgba(6, 182, 212, 0.4)" />
+                <stop offset="0%" stopColor="rgba(139, 92, 246, 0.4)" />
                 <stop offset="50%" stopColor="rgba(236, 72, 153, 0.4)" />
                 <stop offset="100%" stopColor="rgba(192, 132, 252, 0.4)" />
               </linearGradient>

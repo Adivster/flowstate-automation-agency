@@ -56,6 +56,7 @@ const navItems = [
   },
   {
     name: "insights",
+    displayName: "Insights", // Fixed capitalization
     link: "/insights",
     icon: LightbulbIcon,
   },

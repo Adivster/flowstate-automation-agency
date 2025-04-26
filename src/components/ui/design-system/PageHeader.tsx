@@ -34,12 +34,10 @@ const PageHeader = ({
     <div className={cn(
       "relative w-full", 
       variant === 'dashboard' ? 'mb-8' : 'mb-6', 
-      glassEffect && [
-        "p-4 sm:p-6 rounded-2xl border backdrop-blur-xl",
-        `bg-gradient-to-br ${styles.gradient}`,
-        styles.border,
-        isDark && `${styles.glow} shadow-lg`
-      ],
+      "p-4 sm:p-6 rounded-2xl border backdrop-blur-xl",
+      `bg-gradient-to-br ${styles.gradient}`,
+      styles.border,
+      isDark && `${styles.glow} shadow-lg`,
       className
     )}>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 max-w-7xl mx-auto">
