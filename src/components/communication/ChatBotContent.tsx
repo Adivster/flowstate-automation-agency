@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -49,7 +50,7 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
       return (
         <ActionPromptCard 
           key={actionId || actionData.id}
-          actionPrompt={actionData}
+          prompt={actionData} // Changed from actionPrompt to prompt to match the component's props
           onAction={(action) => onActionResponse(actionData.id, action)}
         />
       );
@@ -173,3 +174,4 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
 };
 
 export default ChatBotContent;
+

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { AlertTriangle, Info, Zap, BarChart, ArrowUpRight, ThumbsUp, ThumbsDown, PlusCircle } from 'lucide-react';
