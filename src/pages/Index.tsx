@@ -11,7 +11,7 @@ import { QuickActionButton } from '@/components/ui/quick-action-button';
 import ThemedBackground from '@/components/ui/ThemedBackground';
 import { useDashboardActions } from '@/hooks/useDashboardActions';
 import CommunicationTerminal from '@/components/communication/CommunicationTerminal';
-import ThemeSelector from '@/components/ui/ThemeSelector';
+import { ThemeSelector } from '@/components/ui/ThemeSelector'; // Changed from default import
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/providers/theme-provider';
 import { cn } from '@/lib/utils';
