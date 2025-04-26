@@ -1,6 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { useConversationalFlow } from './useConversationalFlow';
 import { CommandHistoryItem, ConversationResponse, ActionResponse, InsightResponse } from './types/conversationTypes';
+import { useToast } from '@/hooks/use-toast';
 
 export const useCommunicationTerminal = () => {
   // Terminal state
@@ -17,6 +19,9 @@ export const useCommunicationTerminal = () => {
     { sender: 'bot', text: 'Hello! I\'m your agency communication assistant. How can I help you today?', timestamp: new Date() }
   ]);
   
+  // Toast integration
+  const { toast } = useToast();
+  
   // Conversational flow integration
   const conversationalFlow = useConversationalFlow();
   const { 
@@ -29,6 +34,50 @@ export const useCommunicationTerminal = () => {
     handlePromptAction,
     markInsightsAsRead 
   } = conversationalFlow;
+  
+  // Listen for terminal open events from toasts
+  useEffect(() => {
+    const handleOpenTerminalWithInsight = (event: CustomEvent) => {
+      const { message, title, type } = event.detail;
+      
+      if (message) {
+        setIsOpen(true);
+        setActiveTab('chat');
+        
+        // Add the insight message to chat
+        setTimeout(() => {
+          setMessages(prev => [
+            ...prev,
+            {
+              sender: 'bot',
+              text: title ? `**${title}**\n\n${message}` : message,
+              timestamp: new Date()
+            }
+          ]);
+          
+          // If it's an insight, suggest some relevant actions
+          if (type === 'insight') {
+            setTimeout(() => {
+              setMessages(prev => [
+                ...prev,
+                {
+                  sender: 'bot',
+                  text: 'Would you like me to analyze this insight further or suggest actions based on this information?',
+                  timestamp: new Date()
+                }
+              ]);
+            }, 800);
+          }
+        }, 300);
+      }
+    };
+    
+    window.addEventListener('openCommunicationTerminal', handleOpenTerminalWithInsight as EventListener);
+    
+    return () => {
+      window.removeEventListener('openCommunicationTerminal', handleOpenTerminalWithInsight as EventListener);
+    };
+  }, [setIsOpen, setActiveTab, setMessages]);
   
   // Handle anomaly alerts from the useDisplayState hook
   useEffect(() => {
@@ -77,6 +126,13 @@ export const useCommunicationTerminal = () => {
             actionId: actionPrompt.id
           }
         ]);
+        
+        // Also show a toast that links to the terminal
+        toast({
+          title: `Anomaly Detected: ${anomaly.title}`,
+          description: anomaly.description,
+          duration: 5000,
+        });
       }
     };
     
@@ -86,7 +142,7 @@ export const useCommunicationTerminal = () => {
     return () => {
       window.removeEventListener('anomalyAlert', handleAnomalyAlert as EventListener);
     };
-  }, [setIsOpen]);
+  }, [setIsOpen, toast]);
   
   // Handle command submission
   const handleCommand = (e: React.FormEvent) => {
@@ -162,6 +218,13 @@ export const useCommunicationTerminal = () => {
               actionId: insight.id
             }
           ]);
+          
+          // Also create a toast for each insight
+          toast({
+            title: insight.title,
+            description: insight.description,
+            duration: 5000,
+          });
         });
       }
       
@@ -258,7 +321,9 @@ export const useCommunicationTerminal = () => {
   // Update notification badge when insights change
   useEffect(() => {
     // If we have unread insights and the terminal is closed, we should show a notification
-    // This could be used by the parent component to show a badge
+    if (hasUnreadInsights && !isOpen) {
+      // Potential place to show a notification badge
+    }
   }, [hasUnreadInsights, isOpen]);
   
   // Add a function to handle closing the terminal

@@ -1,24 +1,23 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Send, Bot, User } from 'lucide-react';
 import ActionPromptCard from './ActionPromptCard';
-import { ActionPrompt } from './useConversationalFlow';
-import AIControlPanel from './AIControlPanel';
-import { ControlAction, SystemMetric } from './types/conversationTypes';
+import { useToast } from '@/hooks/use-toast';
 
 interface ChatBotContentProps {
   messages: Array<{sender: 'user' | 'bot', text: string, timestamp: Date, isAction?: boolean, actionId?: string}>;
   newMessage: string;
-  setNewMessage: (message: string) => void;
+  setNewMessage: React.Dispatch<React.SetStateAction<string>>;
   handleSendMessage: () => void;
   handleKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   formatTime: (date: Date) => string;
   activeSuggestions: string[];
-  pendingPrompts: ActionPrompt[];
+  pendingPrompts: any[];
   onActionResponse: (promptId: string, action: 'confirm' | 'decline' | 'moreInfo') => void;
-  activeContext: 'global' | 'division' | 'agent';
-  contextEntity: {id: string; name: string; type: string} | null;
+  activeContext?: string;
+  contextEntity?: {id: string, name: string};
 }
 
 const ChatBotContent: React.FC<ChatBotContentProps> = ({
@@ -34,382 +33,140 @@ const ChatBotContent: React.FC<ChatBotContentProps> = ({
   activeContext,
   contextEntity
 }) => {
-  const chatRef = useRef<HTMLDivElement>(null);
-  const [isControlPanelExpanded, setIsControlPanelExpanded] = useState(true);
+  const chatContainerRef = React.useRef<HTMLDivElement>(null);
   
-  const generateQuickActions = (): ControlAction[] => {
-    if (activeContext === 'global') {
-      return [
-        {
-          id: 'action-1',
-          label: 'System Diagnostics',
-          icon: 'chart',
-          action: 'diagnose',
-          severity: 'low',
-        },
-        {
-          id: 'action-2',
-          label: 'Optimize Network',
-          icon: 'zap',
-          action: 'optimize',
-          severity: 'medium',
-        },
-        {
-          id: 'action-3',
-          label: 'Resource Allocation',
-          icon: 'sliders',
-          action: 'tune',
-          severity: 'low',
-        },
-        {
-          id: 'action-4',
-          label: 'Performance Report',
-          icon: 'chart',
-          action: 'report',
-          severity: 'low',
-        }
-      ];
-    } else if (activeContext === 'division' && contextEntity) {
-      return [
-        {
-          id: `${contextEntity.id}-action-1`,
-          label: 'Division Tune-up',
-          icon: 'sliders',
-          action: 'tune',
-          entityType: 'division',
-          entityId: contextEntity.id,
-          severity: 'medium',
-        },
-        {
-          id: `${contextEntity.id}-action-2`,
-          label: 'Resource Reallocation',
-          icon: 'refresh',
-          action: 'reassign',
-          entityType: 'division',
-          entityId: contextEntity.id,
-          severity: 'high',
-        },
-        {
-          id: `${contextEntity.id}-action-3`,
-          label: 'Performance Test',
-          icon: 'chart',
-          action: 'simulate',
-          entityType: 'division',
-          entityId: contextEntity.id,
-          severity: 'low',
-        },
-        {
-          id: `${contextEntity.id}-action-4`,
-          label: 'Agent Management',
-          icon: 'users',
-          action: 'optimize',
-          entityType: 'division',
-          entityId: contextEntity.id,
-          severity: 'medium',
-        }
-      ];
-    } else if (activeContext === 'agent' && contextEntity) {
-      return [
-        {
-          id: `${contextEntity.id}-action-1`,
-          label: 'Optimize Agent',
-          icon: 'zap',
-          action: 'optimize',
-          entityType: 'agent',
-          entityId: contextEntity.id,
-          severity: 'medium',
-        },
-        {
-          id: `${contextEntity.id}-action-2`,
-          label: 'Run Diagnostics',
-          icon: 'cpu',
-          action: 'diagnose',
-          entityType: 'agent',
-          entityId: contextEntity.id,
-          severity: 'low',
-        },
-        {
-          id: `${contextEntity.id}-action-3`,
-          label: 'Reassign Tasks',
-          icon: 'refresh',
-          action: 'reassign',
-          entityType: 'agent',
-          entityId: contextEntity.id,
-          severity: 'high',
-        },
-        {
-          id: `${contextEntity.id}-action-4`,
-          label: 'Simulate Workload',
-          icon: 'chart',
-          action: 'simulate',
-          entityType: 'agent',
-          entityId: contextEntity.id,
-          severity: 'low',
-        }
-      ];
-    }
-    
-    return [];
-  };
-  
-  const generateSystemMetrics = (): SystemMetric[] => {
-    if (activeContext === 'global') {
-      return [
-        {
-          id: 'metric-1',
-          label: 'Overall Efficiency',
-          value: 87,
-          previousValue: 85, 
-          unit: '%',
-          trend: 'up',
-          status: 'normal'
-        },
-        {
-          id: 'metric-2',
-          label: 'Resource Utilization',
-          value: 72,
-          previousValue: 78,
-          unit: '%', 
-          trend: 'down',
-          status: 'warning'
-        },
-        {
-          id: 'metric-3',
-          label: 'Response Time',
-          value: 120,
-          previousValue: 150,
-          unit: 'ms',
-          trend: 'down',
-          status: 'normal'
-        },
-        {
-          id: 'metric-4',
-          label: 'Error Rate',
-          value: 2.3,
-          previousValue: 1.8,
-          unit: '%',
-          trend: 'up',
-          status: 'warning'
-        }
-      ];
-    } else if (activeContext === 'division' && contextEntity) {
-      return [
-        {
-          id: `${contextEntity.id}-metric-1`,
-          label: 'Division Efficiency',
-          value: 84,
-          previousValue: 79,
-          unit: '%',
-          trend: 'up',
-          status: 'normal'
-        },
-        {
-          id: `${contextEntity.id}-metric-2`,
-          label: 'Agent Utilization',
-          value: 68,
-          previousValue: 70,
-          unit: '%',
-          trend: 'down',
-          status: 'normal'
-        },
-        {
-          id: `${contextEntity.id}-metric-3`,
-          label: 'Task Completion Rate',
-          value: 91,
-          previousValue: 89,
-          unit: '%',
-          trend: 'up',
-          status: 'normal'
-        },
-        {
-          id: `${contextEntity.id}-metric-4`,
-          label: 'Bottleneck Index',
-          value: 12,
-          previousValue: 8,
-          unit: '%',
-          trend: 'up',
-          status: 'critical'
-        }
-      ];
-    } else if (activeContext === 'agent' && contextEntity) {
-      return [
-        {
-          id: `${contextEntity.id}-metric-1`,
-          label: 'Processing Capacity',
-          value: 76,
-          previousValue: 72,
-          unit: '%',
-          trend: 'up',
-          status: 'normal'
-        },
-        {
-          id: `${contextEntity.id}-metric-2`,
-          label: 'Response Accuracy',
-          value: 94,
-          previousValue: 96,
-          unit: '%',
-          trend: 'down',
-          status: 'warning'
-        },
-        {
-          id: `${contextEntity.id}-metric-3`,
-          label: 'Task Completion Time',
-          value: 3.2,
-          previousValue: 3.5,
-          unit: 'min',
-          trend: 'down',
-          status: 'normal'
-        },
-        {
-          id: `${contextEntity.id}-metric-4`,
-          label: 'Cognitive Load',
-          value: 87,
-          previousValue: 80,
-          unit: '%',
-          trend: 'up',
-          status: 'warning'
-        }
-      ];
-    }
-    
-    return [];
-  };
-  
-  const handleExecuteAction = (actionId: string) => {
-    const action = quickActions.find(a => a.id === actionId);
-    if (action) {
-      onActionResponse(actionId, 'confirm');
-      setNewMessage(`Execute ${action.action} on ${action.entityType || 'system'} ${action.entityId || ''}`);
-      setTimeout(() => {
-        handleSendMessage();
-      }, 100);
-    }
-  };
-
-  useEffect(() => {
-    if (chatRef.current) {
-      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+  // Scroll to bottom on new messages
+  React.useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
-
-  const findPromptFromJson = (jsonString: string): ActionPrompt | null => {
+  
+  // Parse action cards (JSON) from message
+  const parseActionCard = (message: string, actionId?: string) => {
     try {
-      const promptData = JSON.parse(jsonString);
-      return promptData.id ? promptData as ActionPrompt : null;
-    } catch {
-      return null;
+      const actionData = JSON.parse(message);
+      return (
+        <ActionPromptCard 
+          key={actionId || actionData.id}
+          actionPrompt={actionData}
+          onAction={(action) => onActionResponse(actionData.id, action)}
+        />
+      );
+    } catch (e) {
+      // Handle markdown formatting
+      if (message.includes('**')) {
+        return (
+          <div className="whitespace-pre-wrap">
+            {message.split('\n\n').map((paragraph, i) => {
+              // Bold text between ** markers
+              if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
+                return <h4 key={i} className="font-bold text-purple-300 mb-2">{paragraph.slice(2, -2)}</h4>;
+              }
+              return <p key={i} className="mb-2">{paragraph}</p>;
+            })}
+          </div>
+        );
+      }
+      
+      // Just return the plain text if not JSON or markdown
+      return <div className="whitespace-pre-wrap">{message}</div>;
     }
   };
-
-  const handleSuggestionClick = (suggestion: string) => {
-    setNewMessage(suggestion);
-  };
-
-  const quickActions = generateQuickActions();
-  const systemMetrics = generateSystemMetrics();
-
+  
   return (
-    <div className="flex h-full">
-      <div className="flex-1 flex flex-col h-full scan-lines overflow-hidden">
-        <div 
-          ref={chatRef}
-          className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-black/60 backdrop-blur-lg"
-          style={{
-            backgroundImage: "radial-gradient(circle at 50% 50%, rgba(90, 70, 255, 0.1) 0%, transparent 50%)",
-          }}
-        >
-          {messages.map((message, index) => {
-            if (message.sender === 'bot' && message.isAction && message.text.startsWith('{')) {
-              const promptData = findPromptFromJson(message.text);
-              if (promptData) {
-                return (
-                  <ActionPromptCard 
-                    key={index}
-                    prompt={promptData}
-                    onAction={(action) => onActionResponse(promptData.id, action)}
-                  />
-                );
-              }
-            }
+    <div className="flex flex-col h-full">
+      <div 
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar"
+      >
+        {activeContext && contextEntity && (
+          <div className="bg-purple-900/30 border border-purple-500/30 rounded-lg p-3 mb-4">
+            <div className="text-xs text-flow-foreground/70">Currently focused on:</div>
+            <div className="text-sm text-purple-300 font-medium">{activeContext}: {contextEntity.name}</div>
+          </div>
+        )}
+        
+        {messages.map((message, index) => (
+          <div 
+            key={index}
+            className={cn(
+              "flex gap-3",
+              message.sender === 'user' ? 'justify-end' : 'justify-start'
+            )}
+          >
+            {message.sender === 'bot' && (
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center">
+                <Bot className="h-4 w-4 text-white" />
+              </div>
+            )}
             
-            return (
-              <motion.div 
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className={`mb-4 ${message.sender === 'user' ? 'text-right' : ''}`}
-              >
-                <div 
-                  className={`inline-block rounded-lg px-4 py-2 max-w-[85%] break-words ${
-                    message.sender === 'user' 
-                      ? 'bg-indigo-600/40 text-white border border-indigo-500/30' 
-                      : 'bg-gray-800/70 text-gray-100 border border-gray-700/50'
-                  }`}
-                >
-                  {message.text}
-                </div>
-                <div className={`text-xs mt-1 ${message.sender === 'user' ? 'text-indigo-400/70' : 'text-gray-400/70'}`}>
-                  {formatTime(message.timestamp)}
-                </div>
-              </motion.div>
-            );
-          })}
-
-          {activeSuggestions.length > 0 && (
-            <div className="mb-4 mt-2">
-              <div className="text-xs text-cyan-400/70 mb-2">Suggested commands:</div>
-              <div className="flex flex-wrap gap-2">
-                {activeSuggestions.map((suggestion, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    size="sm"
-                    className="text-xs bg-gray-800/70 border-cyan-500/30 hover:bg-cyan-900/20 hover:text-cyan-300"
-                    onClick={() => handleSuggestionClick(suggestion)}
-                  >
-                    {suggestion}
-                  </Button>
-                ))}
+            <div className={cn(
+              "max-w-[85%] p-3 rounded-lg",
+              message.sender === 'user' 
+                ? "bg-blue-600/30 border border-blue-500/30" 
+                : message.isAction
+                  ? "bg-transparent" // Action cards have their own styling
+                  : "bg-purple-500/10 border border-purple-500/20"
+            )}>
+              {message.isAction 
+                ? parseActionCard(message.text, message.actionId)
+                : parseActionCard(message.text)
+              }
+              <div className="text-[10px] text-flow-foreground/50 mt-1">
+                {formatTime(message.timestamp)}
               </div>
             </div>
-          )}
-        </div>
-        
-        <form 
-          onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
-          className="p-3 border-t border-indigo-500/30 bg-black/70"
-        >
-          <div className="flex items-center">
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className="flex-1 bg-gray-800/50 text-gray-100 rounded-l-md border-y border-l border-gray-600/50 px-3 py-2 outline-none focus:ring-1 focus:ring-indigo-500/50"
-              placeholder="Type your message..."
-            />
-            <Button 
-              type="submit" 
-              size="sm"
-              className="rounded-l-none bg-indigo-600 hover:bg-indigo-700 text-white h-[38px]"
-            >
-              <ArrowRight className="h-4 w-4" />
-            </Button>
+            
+            {message.sender === 'user' && (
+              <div className="w-7 h-7 rounded-full bg-blue-600/50 border border-blue-500/30 flex items-center justify-center">
+                <User className="h-4 w-4 text-blue-100" />
+              </div>
+            )}
           </div>
-        </form>
+        ))}
+        
+        {activeSuggestions.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-4">
+            {activeSuggestions.map((suggestion, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                size="sm"
+                className="bg-purple-900/20 hover:bg-purple-900/30 border-purple-500/30 text-xs"
+                onClick={() => {
+                  setNewMessage(suggestion);
+                  setTimeout(() => {
+                    handleSendMessage();
+                  }, 100);
+                }}
+              >
+                {suggestion}
+              </Button>
+            ))}
+          </div>
+        )}
       </div>
       
-      <div className="w-64 border-l border-indigo-500/30 bg-gray-900/80 backdrop-blur-md">
-        <AIControlPanel
-          activeContext={activeContext}
-          contextEntity={contextEntity}
-          quickActions={quickActions}
-          systemMetrics={systemMetrics}
-          onExecuteAction={handleExecuteAction}
-          isExpanded={isControlPanelExpanded}
-          setIsExpanded={setIsControlPanelExpanded}
-        />
+      <div className="p-3 border-t border-purple-500/30 bg-black/30">
+        <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex items-center gap-2">
+          <Input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder="Type your message..."
+            className="flex-1 bg-black/30 border-purple-500/30 focus-visible:ring-purple-500/50 text-sm"
+            onKeyPress={handleKeyPress}
+          />
+          <Button 
+            type="submit"
+            size="sm"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          >
+            <Send className="h-4 w-4 mr-1" />
+            Send
+          </Button>
+        </form>
       </div>
     </div>
   );

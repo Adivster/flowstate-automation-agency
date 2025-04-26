@@ -11,6 +11,7 @@ import Performance from '@/pages/Performance';
 import NotFound from '@/pages/NotFound';
 import PageTransition from '@/components/ui/PageTransition';
 import CommunicationTerminal from '@/components/communication/CommunicationTerminal';
+import { Toaster } from '@/components/ui/toaster';
 
 function App() {
   const location = useLocation();
@@ -30,10 +31,11 @@ function App() {
         </Routes>
       </AnimatePresence>
       
-      {/* Fixed position communication terminal */}
-      <div className="fixed bottom-4 left-4 z-50">
-        <CommunicationTerminal />
-      </div>
+      {/* Communication terminal */}
+      <CommunicationTerminal />
+      
+      {/* Toasts */}
+      <Toaster />
     </>
   );
 }
