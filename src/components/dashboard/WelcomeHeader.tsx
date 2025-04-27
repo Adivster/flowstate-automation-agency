@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Zap, MousePointerClick, TrendingUp, MessageCircle, FileUp } from 'lucide-react';
+import { Zap, MousePointerClick, TrendingUp, MessageCircle, FileUp, ChevronRight } from 'lucide-react';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
 import { Button } from '@/components/ui/button';
@@ -43,10 +42,8 @@ const WelcomeHeader: React.FC = () => {
         className="p-5 rounded-xl border-flow-accent/30 mb-4 relative overflow-hidden"
         variant="default"
       >
-        {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-flow-accent/7 to-purple-500/5 z-0"></div>
         
-        {/* Animated background elements */}
         <motion.div 
           className="absolute top-0 right-0 w-64 h-64 bg-flow-accent/5 rounded-full blur-3xl"
           animate={{
