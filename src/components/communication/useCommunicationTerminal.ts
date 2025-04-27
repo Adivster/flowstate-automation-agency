@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 export const useCommunicationTerminal = () => {
   // Terminal state
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'command' | 'chat'>('command');
+  const [activeTab, setActiveTab] = useState<'chat' | 'command'>('chat'); // Default to chat for better user experience
   const [command, setCommand] = useState('');
   const [commandHistory, setCommandHistory] = useState<CommandHistoryItem[]>([
     { type: 'system', content: 'Terminal initialized. Type "help" for available commands.' }
@@ -16,7 +16,7 @@ export const useCommunicationTerminal = () => {
   // Chat state
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState<Array<{sender: 'user' | 'bot', text: string, timestamp: Date, isAction?: boolean, actionId?: string}>>([
-    { sender: 'bot', text: 'Hello! I\'m your agency communication assistant. How can I help you today?', timestamp: new Date() }
+    { sender: 'bot', text: 'Hello! I\'m your FlowBot assistant. How can I help optimize your operations today?', timestamp: new Date() }
   ]);
   
   // Toast integration
@@ -58,12 +58,31 @@ export const useCommunicationTerminal = () => {
           // If it's an insight, suggest some relevant actions
           if (type === 'insight') {
             setTimeout(() => {
+              // Generate a dynamic action prompt for the insight
+              const actionPrompt = {
+                id: `insight-${Date.now()}`,
+                title: title || "New Insight Available",
+                description: "Would you like me to analyze this insight further?",
+                actionType: 'diagnose',
+                severity: 'low',
+                entityType: 'insight',
+                entityId: `insight-${Date.now()}`,
+                entityName: title || "New Insight",
+                actions: {
+                  confirm: 'Analyze Insight',
+                  decline: 'Not Now',
+                  moreInfo: 'Tell Me More'
+                }
+              };
+              
               setMessages(prev => [
                 ...prev,
                 {
                   sender: 'bot',
-                  text: 'Would you like me to analyze this insight further or suggest actions based on this information?',
-                  timestamp: new Date()
+                  text: JSON.stringify(actionPrompt),
+                  timestamp: new Date(),
+                  isAction: true,
+                  actionId: actionPrompt.id
                 }
               ]);
             }, 800);
@@ -231,7 +250,7 @@ export const useCommunicationTerminal = () => {
       // If suggestions should be shown
       if (activeSuggestions.length > 0 && Math.random() > 0.5) {
         setTimeout(() => {
-          const suggestionText = "Here are some commands you might find helpful:";
+          const suggestionText = "Here are some actions that might help optimize your operations:";
           setMessages(prev => [
             ...prev, 
             { 
@@ -258,7 +277,7 @@ export const useCommunicationTerminal = () => {
   
   // Format time for display
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
   
   // Process terminal commands
@@ -305,6 +324,15 @@ export const useCommunicationTerminal = () => {
   const handleActionResponse = (promptId: string, action: 'confirm' | 'decline' | 'moreInfo') => {
     const response = handlePromptAction(promptId, action);
     
+    // Create success toast for confirm actions
+    if (action === 'confirm') {
+      toast({
+        title: "Action Applied",
+        description: "Your requested action is being processed",
+        duration: 3000,
+      });
+    }
+    
     if (response) {
       setMessages(prev => [
         ...prev, 
@@ -322,9 +350,14 @@ export const useCommunicationTerminal = () => {
   useEffect(() => {
     // If we have unread insights and the terminal is closed, we should show a notification
     if (hasUnreadInsights && !isOpen) {
-      // Potential place to show a notification badge
+      // Show a toast notification for new insights
+      toast({
+        title: "New System Insight Available",
+        description: "A new insight has been generated for your system",
+        duration: 5000,
+      });
     }
-  }, [hasUnreadInsights, isOpen]);
+  }, [hasUnreadInsights, isOpen, toast]);
   
   // Add a function to handle closing the terminal
   const closeTerminal = () => {

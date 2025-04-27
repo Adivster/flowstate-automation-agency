@@ -31,10 +31,10 @@ function App() {
         </Routes>
       </AnimatePresence>
       
-      {/* Communication terminal */}
+      {/* Global Communication Terminal */}
       <CommunicationTerminal />
       
-      {/* Toasts */}
+      {/* Global Toast container */}
       <Toaster />
     </>
   );
