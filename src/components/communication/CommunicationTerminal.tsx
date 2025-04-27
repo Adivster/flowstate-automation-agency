@@ -5,15 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCommunicationTerminal } from './useCommunicationTerminal';
 import TerminalHeader from './TerminalHeader';
 import ChatBotContent from './ChatBotContent';
-import CommandTerminalContent from './CommandTerminalContent';
-import { MessageSquare, Terminal, Sparkles, Zap } from 'lucide-react';
+import { Terminal, Sparkles, Zap } from 'lucide-react';
+import AIControlPanel from './AIControlPanel';
 
 const CommunicationTerminal: React.FC = () => {
   const { 
     isOpen, 
     setIsOpen,
-    activeTab,
-    setActiveTab,
     command,
     setCommand,
     commandHistory,
@@ -34,23 +32,15 @@ const CommunicationTerminal: React.FC = () => {
   } = useCommunicationTerminal();
 
   const closeTerminal = () => setIsOpen(false);
-
-  // Toggle button for showing/hiding terminal
   const toggleTerminal = () => setIsOpen(!isOpen);
-  
-  // Effect for animation on new insights
   const [pulseAnimation, setPulseAnimation] = useState(false);
   
   useEffect(() => {
-    // Pulse animation when there are new insights or prompts
     if (pendingPrompts.length > 0 || hasUnreadInsights) {
       setPulseAnimation(true);
-      
-      // Reset pulse after animation
       const timer = setTimeout(() => {
         setPulseAnimation(false);
       }, 2000);
-      
       return () => clearTimeout(timer);
     }
   }, [pendingPrompts, hasUnreadInsights]);
@@ -112,17 +102,8 @@ const CommunicationTerminal: React.FC = () => {
           ))}
         </div>
         
-        {isOpen ? (
-          <Terminal className="h-4 w-4 relative z-10" />
-        ) : (
-          <>
-            <MessageSquare className="h-4 w-4 relative z-10" />
-            {pendingPrompts.length > 0 && (
-              <Sparkles className="h-3 w-3 text-yellow-300 animate-pulse relative z-10" />
-            )}
-          </>
-        )}
-        <span className="relative z-10 font-medium">{isOpen ? "Close Terminal" : "FlowBot Terminal"}</span>
+        <Terminal className="h-4 w-4 relative z-10" />
+        <span className="relative z-10 font-medium">{isOpen ? "Close Terminal" : "FlowBot >_"}</span>
         
         {/* Notification Indicator */}
         {!isOpen && (pendingPrompts.length > 0 || hasUnreadInsights) && (
@@ -149,38 +130,92 @@ const CommunicationTerminal: React.FC = () => {
               "rounded-xl overflow-hidden"
             )}>
               <TerminalHeader
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
                 clearTerminal={clearTerminal}
                 closeTerminal={closeTerminal}
               />
 
               <div className="flex flex-1 overflow-hidden">
                 <div className="flex-grow">
-                  {activeTab === 'chat' ? (
-                    <ChatBotContent
-                      messages={messages}
-                      newMessage={newMessage}
-                      setNewMessage={setNewMessage}
-                      handleSendMessage={handleSendMessage}
-                      handleKeyPress={handleKeyPress}
-                      formatTime={formatTime}
-                      activeSuggestions={activeSuggestions}
-                      pendingPrompts={pendingPrompts}
-                      onActionResponse={handleActionResponse}
-                      activeContext={activeContext}
-                      contextEntity={contextEntity}
-                    />
-                  ) : (
-                    <CommandTerminalContent
-                      commandHistory={commandHistory}
-                      command={command}
-                      setCommand={setCommand}
-                      handleCommand={handleCommand}
-                      handleKeyPress={handleKeyPress}
-                      clearTerminal={clearTerminal}
-                    />
-                  )}
+                  <ChatBotContent
+                    messages={messages}
+                    newMessage={newMessage}
+                    setNewMessage={setNewMessage}
+                    handleSendMessage={handleSendMessage}
+                    handleKeyPress={handleKeyPress}
+                    formatTime={formatTime}
+                    activeSuggestions={activeSuggestions}
+                    pendingPrompts={pendingPrompts}
+                    onActionResponse={handleActionResponse}
+                    activeContext={activeContext}
+                    contextEntity={contextEntity}
+                    command={command}
+                    setCommand={setCommand}
+                    commandHistory={commandHistory}
+                    handleCommand={handleCommand}
+                  />
+                </div>
+                
+                {/* AI Control Panel - Right side panel */}
+                <div className="w-64 border-l border-indigo-500/30 bg-gray-900/80 backdrop-blur-md">
+                  <AIControlPanel
+                    activeContext="global"
+                    contextEntity={null}
+                    quickActions={[
+                      {
+                        id: 'cmd-action-1',
+                        label: 'Clear Terminal',
+                        icon: 'refresh',
+                        action: 'optimize',
+                        severity: 'low',
+                      },
+                      {
+                        id: 'cmd-action-2',
+                        label: 'System Status',
+                        icon: 'chart',
+                        action: 'diagnose',
+                        severity: 'low',
+                      },
+                      {
+                        id: 'cmd-action-3',
+                        label: 'List Agents',
+                        icon: 'users',
+                        action: 'report',
+                        severity: 'low',
+                      }
+                    ]}
+                    systemMetrics={[
+                      {
+                        id: 'metric-1',
+                        label: 'CPU Load',
+                        value: 42,
+                        previousValue: 38, 
+                        unit: '%',
+                        trend: 'up',
+                        status: 'normal'
+                      },
+                      {
+                        id: 'metric-2',
+                        label: 'Memory Usage',
+                        value: 68,
+                        previousValue: 65,
+                        unit: '%', 
+                        trend: 'up',
+                        status: 'normal'
+                      },
+                      {
+                        id: 'metric-3',
+                        label: 'Network I/O',
+                        value: 12.4,
+                        previousValue: 10.8,
+                        unit: 'MB/s',
+                        trend: 'up',
+                        status: 'normal'
+                      }
+                    ]}
+                    onExecuteAction={() => {}}
+                    isExpanded={true}
+                    setIsExpanded={() => {}}
+                  />
                 </div>
               </div>
             </div>

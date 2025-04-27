@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/providers/theme-provider';
 import { cn } from '@/lib/utils';
 import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
+import CommunicationTerminal from '@/components/communication/CommunicationTerminal';
 
 const Index: React.FC = () => {
   const dashboardActions = useDashboardActions();
@@ -104,6 +105,9 @@ const Index: React.FC = () => {
       </main>
       
       <Footer />
+      
+      {/* Add Communication Terminal here */}
+      <CommunicationTerminal />
     </ThemedBackground>
   );
 };

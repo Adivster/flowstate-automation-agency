@@ -10,7 +10,6 @@ import Courses from '@/pages/Courses';
 import Performance from '@/pages/Performance';
 import NotFound from '@/pages/NotFound';
 import PageTransition from '@/components/ui/PageTransition';
-import CommunicationTerminal from '@/components/communication/CommunicationTerminal';
 import { Toaster } from '@/components/ui/toaster';
 
 function App() {
@@ -30,9 +29,6 @@ function App() {
           <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>
-      
-      {/* Global Communication Terminal */}
-      <CommunicationTerminal />
       
       {/* Global Toast container */}
       <Toaster />

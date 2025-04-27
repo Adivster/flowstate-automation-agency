@@ -1,36 +1,23 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MessageSquare, Terminal, X, RefreshCw } from 'lucide-react';
+import { Terminal, X, RefreshCw } from 'lucide-react';
 
 interface TerminalHeaderProps {
-  activeTab: 'chat' | 'command';
-  setActiveTab: React.Dispatch<React.SetStateAction<'chat' | 'command'>>;
   clearTerminal: () => void;
   closeTerminal: () => void;
 }
 
 const TerminalHeader: React.FC<TerminalHeaderProps> = ({
-  activeTab,
-  setActiveTab,
   clearTerminal,
   closeTerminal
 }) => {
   return (
     <div className="flex justify-between items-center p-2 border-b border-purple-500/30">
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'chat' | 'command')}>
-        <TabsList className="bg-black/20 border border-purple-500/20">
-          <TabsTrigger value="chat" className="px-3 py-1 text-xs data-[state=active]:bg-purple-500/30">
-            <MessageSquare className="h-3 w-3 mr-1" />
-            Chat
-          </TabsTrigger>
-          <TabsTrigger value="command" className="px-3 py-1 text-xs data-[state=active]:bg-purple-500/30">
-            <Terminal className="h-3 w-3 mr-1" />
-            Command
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <div className="flex items-center gap-2">
+        <Terminal className="h-4 w-4 text-purple-400" />
+        <span className="text-sm font-medium text-purple-300">FlowBot Terminal</span>
+      </div>
 
       <div className="flex items-center gap-1">
         <button
