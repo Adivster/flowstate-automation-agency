@@ -3,8 +3,8 @@ import React from 'react';
 import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { Button } from '@/components/ui/button';
-import { History, RotateCcw, CheckCircle, Clock, Users, FileText, Bot } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { History, RotateCcw, CheckCircle, Clock, Users, FileText, Bot, Sparkles } from 'lucide-react';
+import { useTheme } from '@/providers/theme-provider';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -24,30 +24,30 @@ const RecentWins: React.FC = () => {
   const wins: Win[] = [
     {
       id: '1',
-      action: 'Auto-scaled Agent',
+      action: 'Flow Optimization +20%',
       time: '2h ago',
-      icon: Bot,
+      icon: Sparkles,
       iconColor: 'text-purple-400'
     },
     {
       id: '2',
-      action: 'Optimized Document Indexing',
+      action: 'Agent X Deployed Successfully',
       time: '3h ago',
-      icon: FileText,
+      icon: Bot,
       iconColor: 'text-blue-400'
     },
     {
       id: '3',
-      action: 'Customer Response Time Improved',
+      action: 'Knowledge Base Enriched',
       time: '5h ago',
-      icon: Clock,
+      icon: FileText,
       iconColor: 'text-green-400'
     },
     {
       id: '4',
-      action: 'New Team Member Onboarded',
+      action: 'Customer Response Time Improved',
       time: '1d ago',
-      icon: Users,
+      icon: Clock,
       iconColor: 'text-orange-400'
     },
     {
@@ -102,6 +102,7 @@ const RecentWins: React.FC = () => {
                 size="sm"
                 className="h-8 w-8 p-0 text-flow-foreground/60 hover:text-flow-foreground"
                 onClick={() => handleRevert(win.id)}
+                title="Undo this action"
               >
                 <span className="sr-only">Revert</span>
                 <RotateCcw className="h-4 w-4" />

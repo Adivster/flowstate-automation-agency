@@ -10,8 +10,7 @@ import { motion } from 'framer-motion';
 import { QuickActionButton } from '@/components/ui/quick-action-button';
 import ThemedBackground from '@/components/ui/ThemedBackground';
 import { useDashboardActions } from '@/hooks/useDashboardActions';
-import CommunicationTerminal from '@/components/communication/CommunicationTerminal';
-import { ThemeSelector } from '@/components/ui/ThemeSelector'; // Changed from default import
+import { ThemeSelector } from '@/components/ui/ThemeSelector'; 
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/providers/theme-provider';
 import { cn } from '@/lib/utils';
@@ -42,6 +41,7 @@ const Index: React.FC = () => {
                 className={cn(
                   isDark ? "cta-button-primary" : "bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-700"
                 )}
+                onClick={dashboardActions.handleOptimizeResources}
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh Metrics
@@ -53,6 +53,7 @@ const Index: React.FC = () => {
                 className={cn(
                   isDark ? "cta-button-secondary" : "bg-amber-500/10 border-amber-500/50 hover:bg-amber-500/20 text-amber-700"
                 )}
+                onClick={() => dashboardActions.handleSystemAlert("Viewing system alerts dashboard")}
               >
                 <AlertCircle className="h-4 w-4 mr-2" />
                 View Alerts
@@ -75,6 +76,7 @@ const Index: React.FC = () => {
                 className={cn(
                   isDark ? "cta-button-secondary" : "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-700"
                 )}
+                onClick={dashboardActions.handleOpenCommandTerminal}
               >
                 <Terminal className="h-4 w-4 mr-2" />
                 Open CLI
@@ -102,7 +104,6 @@ const Index: React.FC = () => {
       </main>
       
       <Footer />
-      <CommunicationTerminal />
     </ThemedBackground>
   );
 };

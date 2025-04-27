@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import { Search, PanelLeft, PanelRight, Maximize, Minimize } from 'lucide-react';
+import { Search, PanelLeft, PanelRight, Maximize, Minimize, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WelcomeHeader from './WelcomeHeader';
 import GlobalOpportunityPlaybook from './GlobalOpportunityPlaybook';
@@ -14,10 +14,17 @@ import WeeklyGrowth from './WeeklyGrowth';
 import DivisionsTab from './tabs/DivisionsTab';
 import AgentsTab from './tabs/AgentsTab';
 import SystemTab from './tabs/SystemTab';
+import GrowthCenter from './GrowthCenter';
+import { OverviewContent } from './OverviewContent';
+import { cn } from '@/lib/utils';
+import { useTheme } from '@/providers/theme-provider';
 
 const AgencyDashboard = () => {
   const { t } = useLanguage();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [activeTab, setActiveTab] = useState("mission-control");
+  const [dashboardView, setDashboardView] = useState<'overview' | 'growth-center'>('overview');
   const [systemHealth, setSystemHealth] = useState(95);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -109,22 +116,58 @@ const AgencyDashboard = () => {
         </TabsList>
         
         <TabsContent value="mission-control">
+          {/* Dashboard Hero */}
           <WelcomeHeader />
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-            <div className="lg:col-span-2">
-              <GlobalOpportunityPlaybook />
-            </div>
-            <div className="lg:col-span-1">
-              <SystemVitality />
-            </div>
+          {/* Dashboard Toggle Bar */}
+          <div className={cn(
+            "flex mb-4 p-1 rounded-md border",
+            isDark 
+              ? "bg-gray-900/50 border-gray-800" 
+              : "bg-white/50 border-gray-100"
+          )}>
+            <Button 
+              variant={dashboardView === 'overview' ? 'default' : 'ghost'}
+              size="sm"
+              className={cn(
+                "flex-1 text-xs font-medium", 
+                dashboardView === 'overview' 
+                  ? isDark 
+                    ? "bg-flow-accent/30 text-blue-300" 
+                    : "bg-blue-50 text-blue-600"
+                  : ""
+              )}
+              onClick={() => setDashboardView('overview')}
+            >
+              Overview Mode
+            </Button>
+            <Button 
+              variant={dashboardView === 'growth-center' ? 'default' : 'ghost'}
+              size="sm"
+              className={cn(
+                "flex-1 text-xs font-medium", 
+                dashboardView === 'growth-center'
+                  ? isDark 
+                    ? "bg-emerald-500/30 text-emerald-300" 
+                    : "bg-emerald-50 text-emerald-600"
+                  : ""
+              )}
+              onClick={() => setDashboardView('growth-center')}
+            >
+              Growth Center Mode
+            </Button>
           </div>
           
-          <SnapshotGrid />
+          {/* Main Content Area - Dynamic based on selected view */}
+          {dashboardView === 'overview' ? (
+            <OverviewContent />
+          ) : (
+            <GrowthCenter />
+          )}
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+          {/* Recent Wins Section */}
+          <div className="mt-4">
             <RecentWins />
-            <WeeklyGrowth />
           </div>
         </TabsContent>
         

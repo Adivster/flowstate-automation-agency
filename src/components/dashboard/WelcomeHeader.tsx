@@ -8,10 +8,14 @@ import { useDashboardActions } from '@/hooks/useDashboardActions';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { useTheme } from '@/providers/theme-provider';
+import { cn } from '@/lib/utils';
 
 const WelcomeHeader: React.FC = () => {
   const { handleAiConsult, handleStartWorkflow, handleQuickTask } = useDashboardActions();
   const { toast } = useToast();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   const handleHeroAction = (action: string) => {
     toast({
@@ -39,7 +43,7 @@ const WelcomeHeader: React.FC = () => {
         className="p-5 rounded-xl border-flow-accent/30 mb-4 relative overflow-hidden"
         variant="default"
       >
-        {/* We'll move the gradient to a className instead of inline style */}
+        {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-flow-accent/7 to-purple-500/5 z-0"></div>
         
         {/* Animated background elements */}
@@ -66,20 +70,39 @@ const WelcomeHeader: React.FC = () => {
             >
               <TrendingUp className="w-6 h-6 text-flow-accent" />
             </motion.div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-flow-foreground/70">
-              Mission Control
-            </h2>
+            <div>
+              <h2 className={cn(
+                "text-2xl sm:text-3xl font-bold",
+                isDark 
+                  ? "text-transparent bg-clip-text bg-gradient-to-r from-white to-flow-foreground/70"
+                  : "text-gray-800"
+              )}>
+                Mission Control
+              </h2>
+              <p className={cn(
+                "text-sm sm:text-base",
+                isDark ? "text-gray-300" : "text-gray-600"
+              )}>
+                Real-Time Command Center
+              </p>
+            </div>
           </div>
           
-          <p className="text-flow-foreground/80 max-w-2xl">
-            Your system is thriving at
+          <p className={cn(
+            "text-flow-foreground/80 max-w-2xl",
+            isDark ? "text-gray-300" : "text-gray-600"
+          )}>
+            Discover opportunities. Optimize operations. Celebrate wins.
             <span className="text-green-400 font-semibold"> 98% operational capacity</span>.
-            Ready to uncover new opportunities?
           </p>
           
           <div className="flex flex-wrap gap-3 mt-4">
             <Button 
-              className="bg-gradient-to-r from-flow-accent/90 to-purple-500/90 hover:from-flow-accent hover:to-purple-500 text-flow-accent-foreground rounded-md border border-flow-accent/50 shadow-[0_0_10px_rgba(217,70,239,0.3)] transition-all duration-300 hover:scale-105"
+              className={cn(
+                "bg-gradient-to-r from-flow-accent/90 to-purple-500/90 hover:from-flow-accent hover:to-purple-500",
+                "text-flow-accent-foreground rounded-md border border-flow-accent/50",
+                "shadow-[0_0_10px_rgba(217,70,239,0.3)] transition-all duration-300 hover:scale-105"
+              )}
               onClick={() => handleHeroAction('chat')}
             >
               <MessageCircle className="w-4 h-4 mr-2" />
@@ -87,7 +110,10 @@ const WelcomeHeader: React.FC = () => {
             </Button>
             <Button 
               variant="outline" 
-              className="border-flow-border/50 hover:border-flow-accent/50 hover:text-flow-accent transition-all duration-300"
+              className={cn(
+                "border-flow-border/50 hover:border-flow-accent/50 hover:text-flow-accent",
+                "transition-all duration-300"
+              )}
               onClick={() => handleHeroAction('spotlight')}
             >
               <TrendingUp className="w-4 h-4 mr-2" />
@@ -95,7 +121,10 @@ const WelcomeHeader: React.FC = () => {
             </Button>
             <Button 
               variant="outline" 
-              className="border-flow-border/50 hover:border-flow-accent/50 hover:text-flow-accent transition-all duration-300"
+              className={cn(
+                "border-flow-border/50 hover:border-flow-accent/50 hover:text-flow-accent",
+                "transition-all duration-300"
+              )}
               onClick={() => handleHeroAction('ingest')}
             >
               <FileUp className="w-4 h-4 mr-2" />
@@ -107,7 +136,7 @@ const WelcomeHeader: React.FC = () => {
             <span>Last system update: Today at 09:34 AM</span>
             <Link to="/insights" className="text-flow-accent hover:text-flow-accent/80 flex items-center">
               View detailed insights
-              <TrendingUp className="h-3 w-3 ml-1" />
+              <ChevronRight className="h-3 w-3 ml-1" />
             </Link>
           </div>
         </div>
