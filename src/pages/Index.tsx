@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -82,7 +81,8 @@ const Index: React.FC = () => {
       {/* Communication Terminal */}
       <CommunicationTerminal />
 
-      <style jsx global>{`
+      <style>
+        {`
         .cyber-background::before {
           content: '';
           position: fixed;
@@ -108,7 +108,8 @@ const Index: React.FC = () => {
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
