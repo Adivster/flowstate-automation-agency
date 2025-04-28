@@ -110,7 +110,8 @@ const Index: React.FC = () => {
       {/* Communication Terminal */}
       <CommunicationTerminal />
       
-      <style jsx global>{`
+      <style>
+        {`
         .cyber-background {
           position: relative;
         }
@@ -162,7 +163,8 @@ const Index: React.FC = () => {
           border-color: rgba(192, 132, 252, 0.5);
           box-shadow: 0 0 12px rgba(192, 132, 252, 0.4);
         }
-      `}</style>
+        `}
+      </style>
     </ThemedBackground>
   );
 };

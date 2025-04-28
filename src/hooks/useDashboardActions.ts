@@ -31,9 +31,19 @@ export const useDashboardActions = () => {
   };
 
   const handleQuickTask = () => {
+    toast({
+      title: "Quick Task Creation",
+      description: "Opening document ingestion interface...",
+      duration: 3000
+    });
+    
     const event = new CustomEvent('openTaskCreator');
     window.dispatchEvent(event);
+    
     // In a real app, this would open a modal for quick task creation
+    setTimeout(() => {
+      navigate('/tasks-flows');
+    }, 1000);
   };
   
   const handleOptimizeResources = () => {
@@ -100,7 +110,7 @@ export const useDashboardActions = () => {
   const handleOpenCommandTerminal = () => {
     toast({
       title: "Command Terminal",
-      description: "Opening command terminal interface...",
+      description: "Opening FlowBot interface...",
       duration: 2000
     });
     

@@ -19,6 +19,7 @@ import { OverviewContent } from './OverviewContent';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/providers/theme-provider';
 import { useToast } from '@/hooks/use-toast';
+import { motion } from 'framer-motion';
 
 const AgencyDashboard = () => {
   const { t } = useLanguage();
@@ -142,57 +143,86 @@ const AgencyDashboard = () => {
           {/* Dashboard Hero */}
           <WelcomeHeader />
           
-          {/* Dashboard Toggle Bar - Now with clickable buttons and animation */}
-          <div className={cn(
-            "flex mb-4 p-1 rounded-md border transition-all",
-            isDark 
-              ? "bg-gray-900/50 border-gray-800" 
-              : "bg-white/50 border-gray-100",
-            isGlowing && "animate-pulse-glow"
-          )}>
+          {/* Dashboard Toggle Bar - Enhanced with pulsing animation and improved interaction */}
+          <motion.div 
+            className={cn(
+              "flex mb-4 p-1 rounded-md border transition-all",
+              isDark 
+                ? "bg-gray-900/50 border-gray-800" 
+                : "bg-white/50 border-gray-100",
+              isGlowing && "animate-pulse"
+            )}
+            animate={isGlowing ? {
+              boxShadow: ["0 0 5px rgba(6, 182, 212, 0.3)", "0 0 15px rgba(6, 182, 212, 0.7)", "0 0 5px rgba(6, 182, 212, 0.3)"],
+            } : {}}
+            transition={{ duration: 1.5, repeat: isGlowing ? 2 : 0 }}
+          >
             <Button 
               variant="ghost"
               size="sm"
               className={cn(
-                "flex-1 text-xs font-medium transition-all duration-300", 
+                "flex-1 text-xs font-medium transition-all duration-300 relative overflow-hidden", 
                 dashboardView === 'overview' 
                   ? isDark 
-                    ? "bg-flow-accent/30 text-blue-300 neon-border-cyan" 
-                    : "bg-blue-50 text-blue-600 border-blue-200"
+                    ? "bg-flow-accent/30 text-blue-300 border border-blue-500/30" 
+                    : "bg-blue-50 text-blue-600 border border-blue-200"
                   : ""
               )}
               onClick={() => switchToDashboardView('overview')}
             >
-              Overview Mode
+              {dashboardView === 'overview' && isDark && (
+                <motion.div 
+                  className="absolute inset-0 bg-blue-500/10"
+                  animate={{ 
+                    opacity: [0.3, 0.6, 0.3],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              )}
+              <span className="relative z-10">Overview Mode</span>
             </Button>
+            
             <Button 
               variant="ghost"
               size="sm"
               className={cn(
-                "flex-1 text-xs font-medium transition-all duration-300", 
+                "flex-1 text-xs font-medium transition-all duration-300 relative overflow-hidden", 
                 dashboardView === 'growth-center'
                   ? isDark 
-                    ? "bg-emerald-500/30 text-emerald-300 neon-border-lime" 
-                    : "bg-emerald-50 text-emerald-600 border-emerald-200"
+                    ? "bg-emerald-500/30 text-emerald-300 border border-emerald-500/30" 
+                    : "bg-emerald-50 text-emerald-600 border border-emerald-200"
                   : ""
               )}
               onClick={() => switchToDashboardView('growth-center')}
             >
-              Growth Center Mode
+              {dashboardView === 'growth-center' && isDark && (
+                <motion.div 
+                  className="absolute inset-0 bg-emerald-500/10"
+                  animate={{ 
+                    opacity: [0.3, 0.6, 0.3],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              )}
+              <span className="relative z-10">Growth Center Mode</span>
             </Button>
-          </div>
+          </motion.div>
           
           {/* Main Content Area - Dynamic based on selected view with animation */}
-          <div className={cn(
-            "transition-opacity duration-300",
-            isGlowing ? "opacity-80" : "opacity-100"
-          )}>
+          <motion.div 
+            className="transition-all duration-500"
+            animate={{ 
+              opacity: isGlowing ? 0.8 : 1,
+              scale: isGlowing ? 0.99 : 1,
+            }}
+            transition={{ duration: 0.5 }}
+          >
             {dashboardView === 'overview' ? (
               <OverviewContent />
             ) : (
               <GrowthCenter />
             )}
-          </div>
+          </motion.div>
           
           {/* Recent Wins Section */}
           <div className="mt-4">

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Zap, MousePointerClick, TrendingUp, MessageCircle, FileUp, ChevronRight } from 'lucide-react';
+import { Zap, MousePointerClick, TrendingUp, MessageCircle, FileUp, ChevronRight, Terminal } from 'lucide-react';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
 import { TransitionWrapper } from '@/components/ui/TransitionWrapper';
 import { Button } from '@/components/ui/button';
@@ -111,16 +111,63 @@ const WelcomeHeader: React.FC = () => {
           <div className="flex flex-wrap gap-3 mt-4">
             <Button 
               className={cn(
-                "bg-gradient-to-r hover:scale-105",
+                "bg-gradient-to-r hover:scale-105 group relative overflow-hidden",
                 isDark 
                   ? "from-flow-accent/90 to-purple-500/90 hover:from-flow-accent hover:to-purple-500 text-flow-accent-foreground rounded-md border border-flow-accent/50 shadow-[0_0_10px_rgba(217,70,239,0.3)] transition-all duration-300"
                   : "from-blue-500 to-purple-500 text-white shadow-md hover:shadow-lg"
               )}
               onClick={() => handleHeroAction('chat')}
             >
-              <MessageCircle className="w-4 h-4 mr-2" />
-              Chat with FlowBot
+              {/* Terminal-style glowing icon */}
+              <div className="mr-2 relative">
+                <span className={cn(
+                  "text-lg font-mono text-cyan-300 mr-0.5", 
+                  isDark && "neon-text-cyan"
+                )}>{">"}</span>
+                <span className={cn(
+                  "text-lg font-mono", 
+                  isDark ? "text-purple-300 neon-text-magenta" : "text-purple-200"
+                )}>_</span>
+                
+                {isDark && (
+                  <motion.div 
+                    className="absolute inset-0 blur-sm opacity-50"
+                    animate={{
+                      opacity: [0.3, 0.8, 0.3],
+                    }}
+                    transition={{
+                      duration: 1.5, 
+                      repeat: Infinity,
+                      repeatType: "reverse"
+                    }}
+                  >
+                    <span className="text-lg font-mono text-cyan-300 mr-0.5">{">"}</span>
+                    <span className="text-lg font-mono text-purple-300">_</span>
+                  </motion.div>
+                )}
+              </div>
+              
+              {/* Button text */}
+              <span className="relative z-10">Chat with FlowBot</span>
+              
+              {/* Animated background effect */}
+              {isDark && (
+                <motion.div 
+                  className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20"
+                  animate={{
+                    backgroundPosition: ["0% 0%", "100% 0%"],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    repeatType: "mirror",
+                    ease: "linear",
+                  }}
+                  style={{ backgroundSize: "200% 100%" }}
+                />
+              )}
             </Button>
+            
             <Button 
               variant="outline" 
               className={cn(
