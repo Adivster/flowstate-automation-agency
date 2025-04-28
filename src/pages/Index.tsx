@@ -1,17 +1,12 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AgencyDashboard from '@/components/dashboard/AgencyDashboard';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
-import { RefreshCw, AlertCircle, LayoutDashboard, LayoutGrid, Terminal } from 'lucide-react';
-import PageHeader from '@/components/ui/design-system/PageHeader';
-import { motion } from 'framer-motion';
-import { QuickActionButton } from '@/components/ui/quick-action-button';
-import ThemedBackground from '@/components/ui/ThemedBackground';
-import { useDashboardActions } from '@/hooks/useDashboardActions';
-import { ThemeSelector } from '@/components/ui/ThemeSelector'; 
+import { RefreshCw, LayoutGrid, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useTheme } from '@/providers/theme-provider';
 import { cn } from '@/lib/utils';
 import { SolarpunkPanel } from '@/components/ui/design-system/SolarpunkPanel';
@@ -19,75 +14,52 @@ import CommunicationTerminal from '@/components/communication/CommunicationTermi
 import '@/components/agents/office/styles/neon-effects.css';
 
 const Index: React.FC = () => {
-  const dashboardActions = useDashboardActions();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   
   return (
-    <ThemedBackground particleCount={80} withPatterns={true} className="cyber-background">
+    <div className="relative min-h-screen overflow-hidden bg-background">
       <Navbar />
       
       <main className="flex-1 mt-24 px-4 sm:px-6 pb-12 overflow-hidden relative z-10">
-        <PageHeader 
-          title="Mission Control"
-          extendedTitle="Real-Time Command Center"
-          description="Discover opportunities, track performance, and optimize your operations."
-          icon={<LayoutDashboard className="h-12 w-12 text-blue-400 dark:text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" />}
-          variant="dashboard"
-          glassEffect={true}
-          actions={
-            <div className="flex flex-wrap items-center gap-2">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-6 flex flex-wrap justify-between items-center gap-4">
+            <div className="relative flex-grow max-w-md">
+              <Input 
+                placeholder="Search dashboard..." 
+                className="h-8 w-full text-xs pl-8 bg-black/30 border-flow-border/30"
+              />
+              <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 transform -translate-y-1/2 text-flow-foreground/50" />
+              <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2 bg-flow-background/30 px-1 rounded text-[10px] text-flow-foreground/60">
+                Ctrl+K
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
               <Button 
                 variant="outline" 
                 size="sm"
                 className={cn(
-                  isDark ? "cta-button-primary neon-border-cyan" : "bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-700"
+                  isDark ? "bg-flow-accent/20 border-flow-accent/30 text-flow-accent" : "bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-700"
                 )}
-                onClick={dashboardActions.handleOptimizeResources}
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh Metrics
+                Refresh
               </Button>
               
               <Button 
                 variant="outline" 
                 size="sm"
                 className={cn(
-                  isDark ? "cta-button-secondary neon-border-magenta" : "bg-amber-500/10 border-amber-500/50 hover:bg-amber-500/20 text-amber-700"
-                )}
-                onClick={() => dashboardActions.handleSystemAlert("Viewing system alerts dashboard")}
-              >
-                <AlertCircle className="h-4 w-4 mr-2" />
-                View Alerts
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                size="sm"
-                className={cn(
-                  isDark ? "cta-button-primary neon-border-cyan" : "bg-blue-500/10 border-blue-500/50 hover:bg-blue-500/20 text-blue-700"
+                  isDark ? "bg-purple-500/20 border-purple-500/30 text-purple-400" : "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-700"
                 )}
               >
                 <LayoutGrid className="h-4 w-4 mr-2" />
-                Customize Dashboard
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                size="sm"
-                className={cn(
-                  isDark ? "cta-button-secondary neon-border-purple" : "bg-purple-500/10 border-purple-500/50 hover:bg-purple-500/20 text-purple-700"
-                )}
-                onClick={dashboardActions.handleOpenCommandTerminal}
-              >
-                <Terminal className="h-4 w-4 mr-2" />
-                Open CLI
+                View
               </Button>
             </div>
-          }
-        />
-        
-        <div className="max-w-7xl mx-auto">
+          </div>
+
           <SolarpunkPanel 
             accentColor={isDark ? 'blue' : 'blue'}
             className="overflow-hidden rounded-2xl shadow-xl"
@@ -109,13 +81,8 @@ const Index: React.FC = () => {
       
       {/* Communication Terminal */}
       <CommunicationTerminal />
-      
-      <style>
-        {`
-        .cyber-background {
-          position: relative;
-        }
-        
+
+      <style jsx global>{`
         .cyber-background::before {
           content: '';
           position: fixed;
@@ -141,31 +108,8 @@ const Index: React.FC = () => {
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
         }
-        
-        .cta-button-primary {
-          background-color: rgba(6, 182, 212, 0.15);
-          border-color: rgba(6, 182, 212, 0.3);
-        }
-        
-        .cta-button-primary:hover {
-          background-color: rgba(6, 182, 212, 0.25);
-          border-color: rgba(6, 182, 212, 0.5);
-          box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
-        }
-        
-        .cta-button-secondary {
-          background-color: rgba(192, 132, 252, 0.15);
-          border-color: rgba(192, 132, 252, 0.3);
-        }
-        
-        .cta-button-secondary:hover {
-          background-color: rgba(192, 132, 252, 0.25);
-          border-color: rgba(192, 132, 252, 0.5);
-          box-shadow: 0 0 12px rgba(192, 132, 252, 0.4);
-        }
-        `}
-      </style>
-    </ThemedBackground>
+      `}</style>
+    </div>
   );
 };
 
