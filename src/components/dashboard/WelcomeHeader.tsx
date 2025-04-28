@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Zap, MousePointerClick, TrendingUp, MessageCircle, FileUp, ChevronRight } from 'lucide-react';
 import { GlassMorphism } from '@/components/ui/GlassMorphism';
@@ -39,7 +40,10 @@ const WelcomeHeader: React.FC = () => {
   return (
     <TransitionWrapper>
       <GlassMorphism 
-        className="p-5 rounded-xl border-flow-accent/30 mb-4 relative overflow-hidden"
+        className={cn(
+          "p-5 rounded-xl border-flow-accent/30 mb-4 relative overflow-hidden",
+          isDark && "cyberpunk-border"
+        )}
         variant="default"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-flow-accent/7 to-purple-500/5 z-0"></div>
@@ -63,15 +67,23 @@ const WelcomeHeader: React.FC = () => {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="mr-3 p-2 bg-flow-accent/20 rounded-lg backdrop-blur-sm border border-flow-accent/30"
+              className={cn(
+                "mr-3 p-2 rounded-lg backdrop-blur-sm border",
+                isDark 
+                  ? "bg-flow-accent/20 border-flow-accent/30 neon-glow-cyan" 
+                  : "bg-blue-500/20 border-blue-400/30"
+              )}
             >
-              <TrendingUp className="w-6 h-6 text-flow-accent" />
+              <TrendingUp className={cn(
+                "w-6 h-6",
+                isDark ? "text-cyan-400" : "text-blue-500"
+              )} />
             </motion.div>
             <div>
               <h2 className={cn(
                 "text-2xl sm:text-3xl font-bold",
                 isDark 
-                  ? "text-transparent bg-clip-text bg-gradient-to-r from-white to-flow-foreground/70"
+                  ? "text-transparent bg-clip-text bg-gradient-to-r from-white to-flow-foreground/70 neon-text-cyan"
                   : "text-gray-800"
               )}>
                 Mission Control
@@ -90,15 +102,19 @@ const WelcomeHeader: React.FC = () => {
             isDark ? "text-gray-300" : "text-gray-600"
           )}>
             Discover opportunities. Optimize operations. Celebrate wins.
-            <span className="text-green-400 font-semibold"> 98% operational capacity</span>.
+            <span className={cn(
+              "font-semibold",
+              isDark ? "text-green-400 status-healthy" : "text-green-600"
+            )}> 98% operational capacity</span>.
           </p>
           
           <div className="flex flex-wrap gap-3 mt-4">
             <Button 
               className={cn(
-                "bg-gradient-to-r from-flow-accent/90 to-purple-500/90 hover:from-flow-accent hover:to-purple-500",
-                "text-flow-accent-foreground rounded-md border border-flow-accent/50",
-                "shadow-[0_0_10px_rgba(217,70,239,0.3)] transition-all duration-300 hover:scale-105"
+                "bg-gradient-to-r hover:scale-105",
+                isDark 
+                  ? "from-flow-accent/90 to-purple-500/90 hover:from-flow-accent hover:to-purple-500 text-flow-accent-foreground rounded-md border border-flow-accent/50 shadow-[0_0_10px_rgba(217,70,239,0.3)] transition-all duration-300"
+                  : "from-blue-500 to-purple-500 text-white shadow-md hover:shadow-lg"
               )}
               onClick={() => handleHeroAction('chat')}
             >
@@ -108,8 +124,10 @@ const WelcomeHeader: React.FC = () => {
             <Button 
               variant="outline" 
               className={cn(
-                "border-flow-border/50 hover:border-flow-accent/50 hover:text-flow-accent",
-                "transition-all duration-300"
+                "border-flow-border/50 transition-all duration-300",
+                isDark 
+                  ? "hover:border-flow-accent/50 hover:text-flow-accent neon-border-cyan" 
+                  : "hover:border-blue-500 hover:text-blue-600"
               )}
               onClick={() => handleHeroAction('spotlight')}
             >
@@ -119,8 +137,10 @@ const WelcomeHeader: React.FC = () => {
             <Button 
               variant="outline" 
               className={cn(
-                "border-flow-border/50 hover:border-flow-accent/50 hover:text-flow-accent",
-                "transition-all duration-300"
+                "border-flow-border/50 transition-all duration-300",
+                isDark 
+                  ? "hover:border-flow-accent/50 hover:text-flow-accent neon-border-purple" 
+                  : "hover:border-purple-500 hover:text-purple-600"
               )}
               onClick={() => handleHeroAction('ingest')}
             >
@@ -131,7 +151,12 @@ const WelcomeHeader: React.FC = () => {
           
           <div className="pt-3 mt-3 border-t border-flow-border/20 text-xs text-flow-foreground/60 flex justify-between items-center">
             <span>Last system update: Today at 09:34 AM</span>
-            <Link to="/insights" className="text-flow-accent hover:text-flow-accent/80 flex items-center">
+            <Link to="/insights" className={cn(
+              "flex items-center",
+              isDark 
+                ? "text-flow-accent hover:text-flow-accent/80 neon-text-cyan" 
+                : "text-blue-600 hover:text-blue-700"
+            )}>
               View detailed insights
               <ChevronRight className="h-3 w-3 ml-1" />
             </Link>

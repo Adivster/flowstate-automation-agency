@@ -29,6 +29,24 @@ export const ThemedBackground: React.FC<ThemedBackgroundProps> = ({
       {/* Enhanced cyberpunk particle and spark effects */}
       {isDark && (
         <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+          {/* Pulsating background gradient overlay */}
+          <motion.div
+            className="absolute inset-0 opacity-20"
+            style={{
+              background: 'radial-gradient(circle at center, rgba(139, 92, 246, 0.15), rgba(6, 182, 212, 0.1), rgba(0, 0, 0, 0))',
+              backgroundSize: '150% 150%',
+            }}
+            animate={{
+              backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+              scale: [1, 1.1, 1],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          
           {/* Energy particles */}
           {[...Array(particleCount)].map((_, i) => (
             <motion.div
@@ -116,6 +134,24 @@ export const ThemedBackground: React.FC<ThemedBackgroundProps> = ({
             </pattern>
             <rect width="100%" height="100%" fill="url(#grid)" />
           </svg>
+          
+          {/* Pulsating glow across the screen */}
+          <div className="fixed inset-0 pointer-events-none">
+            <motion.div
+              className="w-full h-full"
+              style={{
+                background: 'radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.15) 0%, rgba(0, 0, 0, 0) 70%)',
+              }}
+              animate={{
+                opacity: [0.3, 0.7, 0.3],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          </div>
 
           {/* Digital scan lines */}
           <div className="fixed inset-0 bg-scanlines opacity-5 pointer-events-none"></div>

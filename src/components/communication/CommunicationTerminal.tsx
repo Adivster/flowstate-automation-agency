@@ -102,12 +102,25 @@ const CommunicationTerminal: React.FC = () => {
           ))}
         </div>
         
-        <Terminal className="h-4 w-4 relative z-10" />
-        <span className="relative z-10 font-medium">{isOpen ? "Close Terminal" : "FlowBot >_"}</span>
+        {/* Command prompt symbol with glowing effect */}
+        <div className="relative z-10 mr-1.5 font-mono text-lg text-cyan-300 font-bold">
+          <span className="text-purple-300">{'>'}</span>
+          <span className="text-cyan-300 relative">
+            _
+            <motion.span 
+              className="absolute top-0 left-0 w-full h-full bg-cyan-500/30 blur-sm"
+              animate={{ opacity: [0.3, 0.9, 0.3] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+          </span>
+        </div>
+        <span className="relative z-10 font-medium">
+          {isOpen ? "Close Terminal" : "FlowBot Terminal"}
+        </span>
         
         {/* Notification Indicator */}
         {!isOpen && (pendingPrompts.length > 0 || hasUnreadInsights) && (
-          <div className="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold animate-bounce">
+          <div className="absolute -top-2 -right-2 w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold animate-bounce shadow-[0_0_8px_rgba(236,72,153,0.7)]">
             {pendingPrompts.length || '!'}
           </div>
         )}
@@ -117,7 +130,7 @@ const CommunicationTerminal: React.FC = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div 
-            className="fixed bottom-16 left-4 z-50 w-[50vw] h-[70vh]"
+            className="fixed bottom-16 left-4 z-50 w-[80vw] h-[70vh]"
             initial={{ y: '100%', opacity: 0 }}
             animate={{ y: '0%', opacity: 1 }}
             exit={{ y: '100%', opacity: 0 }}
@@ -127,7 +140,7 @@ const CommunicationTerminal: React.FC = () => {
               "flex flex-col h-full mx-auto",
               "bg-gradient-to-br from-gray-900/95 via-purple-950/30 to-gray-900/95",
               "backdrop-blur-xl border border-purple-500/30 shadow-xl shadow-purple-900/30",
-              "rounded-xl overflow-hidden"
+              "rounded-xl overflow-hidden neon-border-purple"
             )}>
               <TerminalHeader
                 clearTerminal={clearTerminal}

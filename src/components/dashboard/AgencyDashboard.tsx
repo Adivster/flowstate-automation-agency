@@ -18,10 +18,12 @@ import GrowthCenter from './GrowthCenter';
 import { OverviewContent } from './OverviewContent';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/providers/theme-provider';
+import { useToast } from '@/hooks/use-toast';
 
 const AgencyDashboard = () => {
   const { t } = useLanguage();
   const { theme } = useTheme();
+  const { toast } = useToast();
   const isDark = theme === 'dark';
   const [activeTab, setActiveTab] = useState("mission-control");
   const [dashboardView, setDashboardView] = useState<'overview' | 'growth-center'>('overview');
@@ -29,6 +31,7 @@ const AgencyDashboard = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [dateRange, setDateRange] = useState<'day' | 'week' | 'month' | 'year'>('week');
+  const [isGlowing, setIsGlowing] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -65,6 +68,25 @@ const AgencyDashboard = () => {
     }
   };
   
+  const switchToDashboardView = (view: 'overview' | 'growth-center') => {
+    if (view === dashboardView) return;
+    
+    setDashboardView(view);
+    setIsGlowing(true);
+    
+    // Show toast notification
+    toast({
+      title: view === 'overview' ? "Overview Mode Activated" : "Growth Center Mode Activated",
+      description: view === 'overview' 
+        ? "Showing comprehensive dashboard overview." 
+        : "Showing growth opportunities and optimization tools.",
+      duration: 3000
+    });
+    
+    // Reset the glow effect after animation
+    setTimeout(() => setIsGlowing(false), 1000);
+  };
+  
   return (
     <div className="p-4 relative">
       <div className="mb-6 flex flex-wrap justify-between items-center gap-4">
@@ -72,6 +94,7 @@ const AgencyDashboard = () => {
           <Input 
             placeholder="Search dashboard..." 
             className="h-8 w-full text-xs pl-8 bg-black/30 border-flow-border/30"
+            onKeyDown={handleCommandK}
           />
           <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 transform -translate-y-1/2 text-flow-foreground/50" />
           <div className="absolute right-2.5 top-1/2 transform -translate-y-1/2 bg-flow-background/30 px-1 rounded text-[10px] text-flow-foreground/60">
@@ -119,51 +142,57 @@ const AgencyDashboard = () => {
           {/* Dashboard Hero */}
           <WelcomeHeader />
           
-          {/* Dashboard Toggle Bar */}
+          {/* Dashboard Toggle Bar - Now with clickable buttons and animation */}
           <div className={cn(
-            "flex mb-4 p-1 rounded-md border",
+            "flex mb-4 p-1 rounded-md border transition-all",
             isDark 
               ? "bg-gray-900/50 border-gray-800" 
-              : "bg-white/50 border-gray-100"
+              : "bg-white/50 border-gray-100",
+            isGlowing && "animate-pulse-glow"
           )}>
             <Button 
-              variant={dashboardView === 'overview' ? 'default' : 'ghost'}
+              variant="ghost"
               size="sm"
               className={cn(
-                "flex-1 text-xs font-medium", 
+                "flex-1 text-xs font-medium transition-all duration-300", 
                 dashboardView === 'overview' 
                   ? isDark 
-                    ? "bg-flow-accent/30 text-blue-300" 
-                    : "bg-blue-50 text-blue-600"
+                    ? "bg-flow-accent/30 text-blue-300 neon-border-cyan" 
+                    : "bg-blue-50 text-blue-600 border-blue-200"
                   : ""
               )}
-              onClick={() => setDashboardView('overview')}
+              onClick={() => switchToDashboardView('overview')}
             >
               Overview Mode
             </Button>
             <Button 
-              variant={dashboardView === 'growth-center' ? 'default' : 'ghost'}
+              variant="ghost"
               size="sm"
               className={cn(
-                "flex-1 text-xs font-medium", 
+                "flex-1 text-xs font-medium transition-all duration-300", 
                 dashboardView === 'growth-center'
                   ? isDark 
-                    ? "bg-emerald-500/30 text-emerald-300" 
-                    : "bg-emerald-50 text-emerald-600"
+                    ? "bg-emerald-500/30 text-emerald-300 neon-border-lime" 
+                    : "bg-emerald-50 text-emerald-600 border-emerald-200"
                   : ""
               )}
-              onClick={() => setDashboardView('growth-center')}
+              onClick={() => switchToDashboardView('growth-center')}
             >
               Growth Center Mode
             </Button>
           </div>
           
-          {/* Main Content Area - Dynamic based on selected view */}
-          {dashboardView === 'overview' ? (
-            <OverviewContent />
-          ) : (
-            <GrowthCenter />
-          )}
+          {/* Main Content Area - Dynamic based on selected view with animation */}
+          <div className={cn(
+            "transition-opacity duration-300",
+            isGlowing ? "opacity-80" : "opacity-100"
+          )}>
+            {dashboardView === 'overview' ? (
+              <OverviewContent />
+            ) : (
+              <GrowthCenter />
+            )}
+          </div>
           
           {/* Recent Wins Section */}
           <div className="mt-4">
